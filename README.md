@@ -2,7 +2,7 @@
 
 Portable, agent-neutral governance framework for deterministic collaboration between a Human Owner, a Strategy/Governance Agent, and an Implementation Agent.
 
-This repository is the **source product and testbed** for the governance framework. It is not a governed project instance and must not be interpreted as an installed `.agent-governance/` / `.agent-coordination/` footprint.
+This repository is the **public source product and testbed** for the governance framework. It is intended to be reusable by external projects and contributors, not only by its original author. It is not itself a governed project instance and must not be interpreted as an installed `.agent-governance/` / `.agent-coordination/` footprint.
 
 ## Product layout
 
@@ -20,6 +20,14 @@ evals/               Agent-facing Skill/governance evaluations
 - `governance-skill/` is an operational/distribution layer and MUST NOT become authority.
 - `tests/` and `evals/` validate the governance product itself, not application-task implementation quality.
 - A consumer project receives an installed footprint derived from this repository; consumer mission/task state never belongs in this source repository.
+
+## Public distribution intent
+
+The project is deliberately public so compatible agent users, teams, and tool vendors can inspect, test, adopt, adapt, and contribute to the framework.
+
+Public visibility does not weaken the framework's Skill supply-chain rules: third-party Skills, contributions, releases, and installed artifacts remain subject to provenance, review, exact-version verification, and the applicable governance controls.
+
+A formal open-source license and contribution/release policy must be established before the project is presented as generally redistributable software; public repository visibility alone does not grant reuse rights.
 
 ## Current status
 
