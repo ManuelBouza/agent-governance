@@ -4,6 +4,7 @@ Status: READY
 Type: test/eval infrastructure
 Base branch: `develop`
 Expected topic branch: `test/governance-harness`
+Expected executor handoff: `handoffs/T001-executor-handoff.json`
 Owner for execution: Agente de IA Ejecutor
 Specification owner/reviewer: ChatGPT Orchestrator
 
@@ -20,11 +21,13 @@ Read and follow:
 - `docs/BRANCHING.md`
 - `docs/DEVELOPMENT-WORKFLOW.md`
 - `docs/TASK-CONTRACTS.md`
+- `docs/EXECUTOR-HANDOFFS.md`
 - `docs/TESTING-AND-EVALUATION.md`
 - `docs/decisions/D010-governance-testing-scope.md`
 - `docs/decisions/D016-binary-agent-role-model.md`
 - `docs/decisions/D017-two-skill-architecture.md`
 - `docs/decisions/D019-testing-and-evaluation-strategy.md`
+- `docs/decisions/D021-persisted-executor-handoffs.md`
 - `tests/README.md`
 - `evals/README.md`
 
@@ -50,9 +53,10 @@ The executor may create or modify non-Markdown artifacts required for this first
 - non-Markdown synthetic fixtures under `tests/`;
 - minimal test configuration/dependency files if justified;
 - small reusable non-Markdown test helpers where they reduce duplication;
-- lock/dependency metadata required by the selected local test stack.
+- lock/dependency metadata required by the selected local test stack;
+- `handoffs/T001-executor-handoff.json` as the authoritative persisted executor result.
 
-The executor owns implementation and execution of these tests under D016.
+The executor owns implementation, test execution, and the persisted executor handoff under D016/D021.
 
 ## Required first-increment test surface
 
@@ -93,7 +97,7 @@ Do NOT in T001:
 - access production/external services, credentials, or real consumer repositories;
 - create a live `.agent-governance/` / `.agent-coordination/` consumer instance at repository root;
 - change branch/release policy;
-- open or merge a PR before ChatGPT Orchestrator reviews the implementation and evidence.
+- open or merge a PR before ChatGPT Orchestrator reviews the implementation and persisted handoff.
 
 ## Invariants / constraints
 
@@ -104,6 +108,7 @@ Do NOT in T001:
 - Keep dependencies minimal and local-first.
 - The suite must be deterministic for identical repository content/environment inputs.
 - The implementation should be portable enough to run in normal contributor/CI environments without secrets.
+- The executor handoff is evidence/reporting, not acceptance authority.
 
 ## Acceptance criteria
 
@@ -118,24 +123,26 @@ ChatGPT may accept T001 only if all are true:
 7. The implemented suite is green, or any pre-existing/blocking failure is explicitly reported rather than hidden/skipped.
 8. No test was weakened merely to make implementation pass.
 9. Added dependencies are minimal and justified by the test surface.
-10. The executor returns reproducible evidence sufficient for ChatGPT to review the change.
+10. `handoffs/T001-executor-handoff.json` exists and accurately describes the final implementation branch state and verification evidence.
+11. The executor's visible response points ChatGPT to that persisted handoff rather than duplicating the implementation report in chat.
 
 ## Verification requirements
 
 The executor must:
 - run the complete T001 deterministic suite after implementation;
-- provide the exact command(s) used;
-- report test count and pass/fail/skip outcome;
-- report interpreter/runtime and relevant test-tool versions;
+- record the exact command(s) used;
+- record test count and pass/fail/skip outcome;
+- record interpreter/runtime and relevant test-tool versions;
 - confirm whether network access was required (expected: no);
-- show working-tree status at handoff;
-- identify any dependency/configuration files added or modified.
+- record working-tree status at handoff;
+- identify any dependency/configuration files added or modified;
+- persist all required evidence in `handoffs/T001-executor-handoff.json` after final verification.
 
 Do not claim success from static inspection alone.
 
 ## Stop / escalation conditions
 
-Stop and report to ChatGPT instead of guessing if:
+Stop and persist a `BLOCKED` executor handoff instead of guessing if:
 - repository Markdown contracts conflict materially;
 - satisfying a requirement appears to require editing Markdown;
 - the expected `develop` baseline differs materially from the task assumptions;
@@ -146,10 +153,17 @@ Stop and report to ChatGPT instead of guessing if:
 
 Normal test implementation choices do not require escalation.
 
-## Expected handoff
+## Expected persisted handoff
 
-Return to ChatGPT Orchestrator:
-- current branch and HEAD;
+Before returning to ChatGPT, write/update exactly:
+
+`handoffs/T001-executor-handoff.json`
+
+Follow `docs/EXECUTOR-HANDOFFS.md`. At minimum it must contain:
+- `task_id`: `T001`;
+- `status`: `DONE`, `BLOCKED`, or `PARTIAL`;
+- `task_contract_path`: `docs/tasks/T001-deterministic-test-harness-foundation.md`;
+- current branch and final HEAD;
 - base `develop` SHA used;
 - files created/modified;
 - concise implementation/tooling rationale;
@@ -157,8 +171,24 @@ Return to ChatGPT Orchestrator:
 - exact results, including count/failures/skips;
 - runtime/test-tool versions;
 - dependencies/config changes;
+- network-required flag;
 - `git status` summary;
 - unresolved issues/ambiguities;
-- a proposed next incremental testing task, without implementing it unless separately authorized.
+- proposed next incremental testing task, without implementing it unless separately authorized;
+- `chatgpt_read_path`: `handoffs/T001-executor-handoff.json`.
 
-Do not open or merge a PR until ChatGPT has reviewed this handoff and the repository diff.
+The handoff must describe the actual final branch state. If you change implementation after writing it, update it again before returning.
+
+## Visible executor response
+
+After the persisted handoff is current, return only:
+
+`STATUS: DONE | BLOCKED | PARTIAL`
+
+`HANDOFF: handoffs/T001-executor-handoff.json`
+
+`BRANCH: test/governance-harness`
+
+`HEAD: <final-commit-sha>`
+
+Do not open or merge a PR until ChatGPT has read the persisted handoff and reviewed the repository diff.
