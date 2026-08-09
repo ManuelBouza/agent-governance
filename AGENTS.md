@@ -24,6 +24,8 @@ Do not create a live `.agent-governance/` / `.agent-coordination/` consumer foot
 - Consumer Skill design: `docs/GOVERNANCE-SKILL-CONTRACT.md` and `docs/GOVERNANCE-SKILL-PACKAGE.md`.
 - Maintainer Skill design: `docs/MAINTAINER-SKILL-CONTRACT.md`.
 - Testing/evaluation strategy: `docs/TESTING-AND-EVALUATION.md`.
+- Source-product Task Contract policy: `docs/TASK-CONTRACTS.md`.
+- Executable source-maintenance task records: `docs/tasks/`.
 - Product decisions and operating instructions: `docs/`.
 - Deterministic product tests: `tests/`.
 - Agent-facing product evals: `evals/`.
@@ -40,9 +42,9 @@ Final authority over product scope, priorities, risk, public distribution, relea
 
 ### ChatGPT — Orchestrator and Markdown Owner
 
-ChatGPT owns product strategy, research synthesis, architectural decisions, work decomposition, acceptance criteria, task contracts, agent handoffs, review, and all committed Markdown (`*.md`) authoring/editing.
+ChatGPT owns product strategy, research synthesis, architectural decisions, work decomposition, acceptance criteria, Task Contracts, agent handoffs, review, and all committed Markdown (`*.md`) authoring/editing.
 
-Only ChatGPT may create, rewrite, or persist Markdown instruction/design/decision files in normal agentic development. This includes `AGENTS.md`, `README.md`, `docs/**/*.md`, `governance-core/*.md`, Skill Markdown, and Markdown files inside test/eval fixtures.
+Only ChatGPT may create, rewrite, or persist Markdown instruction/design/decision/task files in normal agentic development. This includes `AGENTS.md`, `README.md`, `docs/**/*.md`, `governance-core/*.md`, Skill Markdown, and Markdown files inside test/eval fixtures.
 
 ChatGPT does not take over implementation merely because a task is difficult. Non-Markdown implementation and verification belong to the Agente de IA Ejecutor.
 
@@ -65,6 +67,19 @@ The executor MUST NOT:
 - claim acceptance authority merely because tests are green.
 
 The executor MAY inspect all Markdown and existing tests/evals as read-only specification/context.
+
+## Persisted task handoff invariant
+
+Executable work for an Agente de IA Ejecutor MUST be defined by a repository-persisted Task Contract under `docs/tasks/` before implementation begins.
+
+- `docs/TASK-CONTRACTS.md` defines the Task Contract format and lifecycle.
+- Chat/terminal prompts are transport only and SHOULD contain only the repository/branch context plus the exact Task Contract path.
+- The executor MUST read `AGENTS.md` and the assigned Task Contract before mutation and follow the contract's controlling references.
+- The executor MUST NOT infer missing task semantics from prior chat history.
+- If a prompt conflicts with the persisted Task Contract, the persisted contract controls unless ChatGPT/Human Owner first persists an explicit revision/supersession.
+- Material objective/scope/acceptance changes require a persisted Task Contract revision before execution continues.
+
+A reviewer must be able to reconstruct what the executor was asked to do from Git alone.
 
 ## File ownership invariant
 
@@ -105,7 +120,7 @@ Neither ChatGPT nor an Agente de IA Ejecutor may bypass this policy because of r
 
 Use `docs/DEVELOPMENT-WORKFLOW.md` for normal product changes and `docs/REFACTORING-WORKFLOW.md` for behavior-preserving refactors. Both operate inside the branch lifecycle defined by `docs/BRANCHING.md` and use the verification strategy in `docs/TESTING-AND-EVALUATION.md`.
 
-No executable task begins until ChatGPT has defined an unambiguous objective, scope, invariants/acceptance, and handoff. The Agente de IA Ejecutor implements and verifies against that contract. ChatGPT reviews the resulting diff and verification evidence before acceptance.
+No executable task begins until ChatGPT has persisted an unambiguous Task Contract defining objective, scope, invariants/acceptance, verification, and handoff. The Agente de IA Ejecutor implements and verifies against that persisted contract. ChatGPT reviews the resulting diff and verification evidence before acceptance.
 
 ## Change discipline
 
