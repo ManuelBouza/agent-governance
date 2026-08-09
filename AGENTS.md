@@ -24,9 +24,9 @@ Do not create a live `.agent-governance/` / `.agent-coordination/` consumer foot
 - Deterministic product tests: `tests/`.
 - Agent-facing product evals: `evals/`.
 
-## Agent operating roles
+## Agent operating model
 
-Repository development uses three distinct agent responsibilities plus the Human Owner.
+Repository development uses two agent roles plus the Human Owner. Agent-product names are adapters, never governance roles.
 
 ### Human Owner
 
@@ -34,42 +34,42 @@ Final authority over product scope, priorities, risk, public distribution, relea
 
 ### ChatGPT — Orchestrator and Markdown Owner
 
-ChatGPT owns product strategy, research synthesis, architectural decisions, work decomposition, acceptance criteria, agent handoffs, and all committed Markdown (`*.md`) authoring/editing.
+ChatGPT owns product strategy, research synthesis, architectural decisions, work decomposition, acceptance criteria, task contracts, agent handoffs, review, and all committed Markdown (`*.md`) authoring/editing.
 
 Only ChatGPT may create, rewrite, or persist Markdown instruction/design/decision files in normal agentic development. This includes `AGENTS.md`, `README.md`, `docs/**/*.md`, `governance-core/*.md`, and Markdown files inside test/eval fixtures.
 
-ChatGPT MUST NOT author or modify test/eval implementation code merely to make an implementation pass. Test ownership belongs to Codex.
+ChatGPT does not take over implementation merely because a task is difficult. Non-Markdown implementation and verification belong to the Agente de IA Ejecutor.
 
-### Implementation Executor — OpenCode or another compatible coding agent
+### Agente de IA Ejecutor — product agnostic
 
-The executor owns non-test implementation code/configuration/assets required by an approved task. OpenCode is the default adapter when used, but product task semantics MUST remain executor-neutral.
+The executor is an abstract role that MAY be fulfilled by OpenCode, Codex, Claude Code, Antigravity, or another compatible local/coding agent. Product identity does not change task semantics, authority, or acceptance.
+
+The Agente de IA Ejecutor owns all authorized non-Markdown technical work, including:
+- product implementation code/configuration/assets;
+- deterministic test code and test fixtures;
+- agent-facing eval code/data/fixtures except committed Markdown;
+- execution of tests/evals and collection of verification evidence;
+- in-scope technical refactoring.
 
 The executor MUST NOT:
 - create or edit committed `*.md` files;
-- create or edit `tests/**` or `evals/**` test/eval implementation;
-- weaken, delete, skip, rewrite, or reinterpret failing tests to make implementation pass;
-- declare test success without Codex verification;
-- change product scope or acceptance criteria.
+- change product scope, architecture, acceptance criteria, or strategic intent;
+- weaken or reinterpret tests/evals in a way that contradicts the ChatGPT-approved contract;
+- alter an established refactor characterization baseline after implementation begins unless ChatGPT explicitly authorizes the baseline change;
+- claim acceptance authority merely because tests are green.
 
-It MAY inspect Markdown and tests/evals as read-only context when the current task requires them.
-
-### Codex — Test and Verification Owner
-
-Codex owns the design, authoring, modification, and execution of deterministic tests and agent-facing evals for this repository.
-
-Codex MAY inspect all product code and Markdown required to derive tests, but during normal verification it MUST NOT modify product implementation code or committed Markdown. A product-code defect discovered by tests is returned to the Implementation Executor; a specification/instruction ambiguity is returned to ChatGPT.
-
-Codex is the authoritative agentic source for test execution evidence. Green status claimed by an implementation executor alone is insufficient for acceptance.
+The executor MAY inspect all Markdown and existing tests/evals as read-only specification/context.
 
 ## File ownership invariant
 
-Normal agentic write ownership is exclusive:
+Normal agentic write ownership is:
 
-- `*.md` -> ChatGPT
-- `tests/**`, `evals/**` test/eval code and fixtures -> Codex
-- product implementation code/config/assets outside those boundaries -> Implementation Executor
+- committed `*.md` -> ChatGPT Orchestrator
+- all authorized non-Markdown implementation/test/eval/config/assets -> Agente de IA Ejecutor
 
-When a file category genuinely crosses responsibilities, ChatGPT defines the exception explicitly before mutation. No agent may silently take over another role's write surface.
+`LICENSE` and repository control files may be additionally protected by product-specific adapters. When a file category genuinely crosses responsibilities, ChatGPT defines the exception explicitly before mutation.
+
+No named executor product gains special authority. OpenCode-specific, Codex-specific, Claude-specific, or other adapter configuration may enforce these rules mechanically but MUST NOT redefine them.
 
 ## Product boundaries
 
@@ -84,12 +84,12 @@ When a file category genuinely crosses responsibilities, ChatGPT defines the exc
 
 Use `docs/DEVELOPMENT-WORKFLOW.md` for normal product changes and `docs/REFACTORING-WORKFLOW.md` for behavior-preserving refactors.
 
-No implementation task begins until ChatGPT has defined an unambiguous objective, scope, invariants/acceptance, and role handoff. No change is accepted until the Codex-owned verification phase is complete when tests/evals apply.
+No executable task begins until ChatGPT has defined an unambiguous objective, scope, invariants/acceptance, and handoff. The Agente de IA Ejecutor implements and verifies against that contract. ChatGPT reviews the resulting diff and verification evidence before acceptance.
 
 ## Change discipline
 
 Prefer one coherent change at a time. Separate behavior-preserving refactors from feature/protocol behavior changes unless ChatGPT explicitly determines that separation is impractical and records why.
 
-When changing protocol behavior, ChatGPT updates the smallest relevant Core Markdown module and applicable product decision/design documentation; Codex updates focused tests/evals; the Implementation Executor changes only implementation artifacts needed by the task.
+When changing protocol behavior, ChatGPT updates the smallest relevant Core Markdown module and applicable product decision/design documentation; the Agente de IA Ejecutor updates implementation plus focused tests/evals and runs verification.
 
 Preserve progressive context loading and avoid duplicating normative rules.
