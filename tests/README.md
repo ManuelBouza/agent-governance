@@ -2,18 +2,31 @@
 
 This directory contains code-driven tests of the Governance Core and deterministic portions of both Agent Skills.
 
-The normative testing architecture, external references, isolation rules, fixture policy, property-testing guidance, and release thresholds live in `../docs/TESTING-AND-EVALUATION.md`. The concrete language/framework decision is `../docs/decisions/D023-python-testing-stack.md`. Testing Skill/capability boundaries are defined by `../docs/TESTING-SKILL-CAPABILITIES.md` and D024.
+The normative testing architecture, external references, isolation rules, fixture policy, property-testing guidance, and release thresholds live in `../docs/TESTING-AND-EVALUATION.md`. The concrete language/framework decision is `../docs/decisions/D023-python-testing-stack.md`. Testing Skill/capability boundaries are defined by `../docs/TESTING-SKILL-CAPABILITIES.md` and D024. Source local tooling and locked commands are defined by `../docs/LOCAL-DEVELOPMENT-TOOLCHAIN.md` and D025.
 
 ## Canonical test stack
 
 Repository-owned deterministic tests use:
 - Python `>=3.13`;
 - pytest `>=9,<10` as the canonical runner/framework;
-- `python -m pytest` as the canonical framework-level invocation;
+- `python -m pytest` as the framework-level invocation;
+- uv as the source-repository Python/environment/dependency/lock wrapper;
+- Ruff `>=0.16,<0.17` for Python lint/format verification;
 - Python standard-library facilities first for filesystem, JSON/JSONL, subprocess, digest, and fixture manipulation;
 - Hypothesis `>=6,<7` only for tasks that genuinely require property/state-machine coverage.
 
-T001's first deterministic harness should require pytest only unless its approved scope is revised to include stateful/property testing. The local environment manager, dependency installation CLI, and lock strategy are defined separately by the development-toolchain decision.
+T001's first deterministic harness requires pytest and Ruff only unless its approved scope is revised to include stateful/property testing.
+
+After repository configuration/lock files exist, the canonical local verification path is:
+
+```text
+uv sync --locked
+uv run --locked ruff check .
+uv run --locked ruff format --check .
+uv run --locked python -m pytest
+```
+
+Ruff configuration MUST exclude committed Markdown so executor tooling cannot mutate ChatGPT-owned `.md` files.
 
 ## Skill boundary
 
@@ -25,7 +38,7 @@ Do not create or require generic pytest/testing/TDD Skills solely to run these t
 
 ## Agent ownership
 
-The `Agente de IA Ejecutor` owns non-Markdown test implementation, synthetic test fixtures, test execution, and verification evidence under `tests/`. The executor role is product agnostic: OpenCode, Codex, Claude Code, Antigravity, or another compatible coding agent may fulfill it.
+The `Agente de IA Ejecutor` owns non-Markdown test implementation, synthetic test fixtures, test execution, executable test configuration, and verification evidence under the scope authorized by a Task Contract. The executor role is product agnostic: OpenCode, Codex, Claude Code, Antigravity, or another compatible coding agent may fulfill it.
 
 ChatGPT owns committed Markdown instructions/specifications and defines the product contract that tests must verify. The executor must not weaken or reinterpret tests in a way that contradicts that contract.
 
@@ -39,6 +52,7 @@ For behavior-preserving refactors, characterization tests accepted during RF1 be
 - Use pytest parametrization for input -> expected-decision policy matrices.
 - Keep protocol data as data files (for example JSON/JSONL) where that is clearer than embedding it in Python source.
 - Use `hypothesis.stateful.RuleBasedStateMachine` only when generated action sequences materially improve coverage.
+- Do not add undeclared packages to `.venv`; dependency truth lives in `pyproject.toml` and committed `uv.lock`.
 
 ## Test layers
 
@@ -91,6 +105,10 @@ Configured release runs must have zero unresolved counterexamples.
 - external-reference pin/drift checks where applicable.
 
 Dynamic/adversarial cases that require running an agent or executable Skill behavior belong in `evals/` or isolated security harnesses, not ordinary unit tests.
+
+## Network policy
+
+Environment provisioning may need network access to obtain the authorized Python/dependencies on a fresh workstation. Ordinary deterministic test execution itself must not require production/external service access unless a later Task Contract explicitly authorizes such a surface.
 
 ## Fixture policy
 
