@@ -29,6 +29,10 @@ The Skill MAY route to source-specific context including:
 - `docs/REFACTORING-WORKFLOW.md`;
 - `docs/BRANCHING.md`;
 - `docs/RELEASES.md`;
+- `docs/TESTING-AND-EVALUATION.md`;
+- `docs/decisions/D023-python-testing-stack.md`;
+- `docs/decisions/D024-testing-skill-capability-model.md`;
+- assigned `docs/tasks/` Task Contracts and `handoffs/` policy;
 - product Decision Records;
 - `governance-core/`;
 - `governance-skill/`;
@@ -36,6 +40,33 @@ The Skill MAY route to source-specific context including:
 - `tests/` and `evals/`.
 
 It MUST preserve progressive context loading rather than preloading the whole repository.
+
+## Testing/evaluation capability routing
+
+The Maintainer Skill is the single project-owned top-level Skill for source-product testing/evaluation work. It does not replace the test runner and source tests MUST remain runnable without the Skill.
+
+When test/eval maintenance is in scope, the Skill SHOULD route progressively to the smallest relevant capability area:
+
+1. **Deterministic test maintenance** — Python/pytest source-product invariants, synthetic fixtures, local deterministic verification and persisted evidence.
+2. **Property/state-machine testing** — Hypothesis stateful/property work only when D019 Layer 2 applies.
+3. **Skill/eval maintenance** — trigger corpora, near misses, repeated clean-context trials, baseline comparison and grader selection.
+4. **Security/supply-chain testing** — identity/digest/envelope checks plus adversarial Skill fixtures and isolated dynamic checks when separately authorized.
+
+These capability areas SHOULD be represented through on-demand references/resources inside the eventual Maintainer Skill package rather than separate broad top-level testing Skills unless future trigger/eval evidence demonstrates a distinct, non-overlapping need.
+
+The Maintainer Skill MUST NOT require an external generic pytest/testing/TDD Skill to perform normal source-product testing. External Skills may be supplemental only after approval under the applicable discovery/supply-chain and coexistence policies.
+
+## Bootstrap / no-Skill operation
+
+The Maintainer Skill is operational assistance, not canonical authority and not a prerequisite for test correctness.
+
+A cold Agente de IA Ejecutor MUST be able to implement/run an authorized source test task from:
+- `AGENTS.md`;
+- the persisted Task Contract;
+- the Task Contract's controlling repository references;
+- the approved local development/test tooling.
+
+This bootstrap path is required so the repository can test and develop the Maintainer Skill before that Skill itself is released. CI and deterministic release checks MUST NOT depend on model-driven Skill activation.
 
 ## Agent roles
 
@@ -63,6 +94,8 @@ The Maintainer Skill MUST NOT:
 - treat this source repository as a real consumer instance;
 - implement application/business features for unrelated consumer projects;
 - redefine Governance Core authority inside Skill-local instructions;
+- become a mandatory runtime dependency for deterministic source tests;
+- duplicate generic pytest/Hypothesis/tool documentation when task-specific repository guidance is sufficient;
 - bypass release, branch, supply-chain, or role ownership rules.
 
 ## Acceptance
@@ -72,5 +105,7 @@ The Maintainer Skill is acceptable only if:
 2. it respects ChatGPT Orchestrator vs Agente de IA Ejecutor ownership;
 3. it follows PD/RF and branch policy correctly;
 4. it can guide a cold maintainer session without requiring chat history;
-5. it never creates a live consumer instance in the source repository;
-6. removing the Maintainer Skill does not alter the canonical product itself.
+5. it routes testing/evaluation work to the smallest relevant capability/context without requiring generic overlapping testing Skills;
+6. source-product deterministic tests remain executable when the Maintainer Skill is absent/disabled;
+7. it never creates a live consumer instance in the source repository;
+8. removing the Maintainer Skill does not alter the canonical product itself.
