@@ -5,24 +5,8 @@
       "*": "allow",
       "*.md": "deny",
       "**/*.md": "deny",
-      "tests/**": "deny",
-      "evals/**": "deny",
       "opencode.json": "deny",
       "LICENSE": "deny"
-    },
-    "bash": {
-      "*": "ask",
-      "pytest *": "deny",
-      "python -m pytest *": "deny",
-      "python -m unittest *": "deny",
-      "uv run pytest *": "deny",
-      "uv run python -m pytest *": "deny",
-      "uv run python -m unittest *": "deny",
-      "npm test*": "deny",
-      "pnpm test*": "deny",
-      "bun test*": "deny",
-      "go test*": "deny",
-      "cargo test*": "deny"
     }
   }
 }
