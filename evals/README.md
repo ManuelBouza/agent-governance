@@ -2,7 +2,7 @@
 
 This directory contains agent-facing evaluations of behavior intrinsic to the Governance product.
 
-The normative eval architecture, external references, isolation rules, grader selection, fixture policy, repeated-trial requirements, and release thresholds live in `../docs/TESTING-AND-EVALUATION.md`. The repository-owned harness language decision is `../docs/decisions/D023-python-testing-stack.md`. Skill/capability boundaries are defined by `../docs/TESTING-SKILL-CAPABILITIES.md` and D024.
+The normative eval architecture, external references, isolation rules, grader selection, fixture policy, repeated-trial requirements, and release thresholds live in `../docs/TESTING-AND-EVALUATION.md`. The repository-owned harness language decision is `../docs/decisions/D023-python-testing-stack.md`. Skill/capability boundaries are defined by `../docs/TESTING-SKILL-CAPABILITIES.md` and D024. Ecosystem/SDD/Skill coexistence is defined by `../governance-core/COEXISTENCE.md` and D026.
 
 ## Harness language
 
@@ -48,9 +48,14 @@ For behavior-preserving refactors, eval cases accepted as part of the RF1 charac
 - handoff and blocker interpretation;
 - portability across compatible agent adapters;
 - discovery-vs-artifact-trust interpretation;
-- refusal to treat unaudited, changed, revoked, or mismatched Skills as approved;
+- refusal to treat unaudited, changed, revoked, mismatched, or shadowed Skills as approved;
 - operation without access to the canonical source repository after installation;
-- refusal to activate for source-product maintenance tasks.
+- refusal to activate for source-product maintenance tasks;
+- refusal to activate as a generic SDD/planning/testing Skill merely because Gentle-AI-like, Spec Kit-like, OpenSpec-like or custom SDD artifacts are present;
+- reuse/adapt behavior when an existing SDD owns specs/plans/tasks;
+- no-SDD operation without proposing an unnecessary SDD install;
+- `CONFLICT` behavior when another governance/orchestration Skill claims equivalent authority;
+- preservation of third-party managed instruction/config surfaces.
 
 ### Maintainer Skill
 - source-product maintenance trigger positives, negatives, and near misses;
@@ -62,9 +67,25 @@ For behavior-preserving refactors, eval cases accepted as part of the RF1 charac
 - refusal to treat ordinary consumer-project governance as source maintenance;
 - refusal to create a live consumer `.agent-coordination/` instance in this repository.
 
+### Ecosystem coexistence behavior
+
+Use synthetic fixtures modeled on public integration shapes rather than real user projects.
+
+Minimum behavioral cases include:
+- Gentle-AI-like environment: recognizes existing SDD/testing/registry capabilities and recommends reuse/adaptation rather than duplicate installation;
+- Spec Kit-like environment: references existing spec/plan/tasks while retaining Governance readiness/Skill-trust/disclosure semantics;
+- OpenSpec-like environment: treats existing specs/change artifacts as native project evidence rather than regenerating them;
+- custom SDD: classifies capability boundaries from observed behavior/artifacts without requiring product recognition;
+- no SDD: continues through Governance lifecycle without trying to install one;
+- same-name Skill collision: distinguishes runtime precedence from approval and rejects an unapproved shadowing artifact;
+- semantic Skill overlap: blocks rather than letting two governance/orchestration Skills both claim authority;
+- managed-file collision: refuses blind overwrite and routes to bounded integration or `CONFLICT`;
+- current-task disclosure: loads only native SDD artifacts referenced by the current Governance task, not the full external work backlog.
+
 ### Cross-product semantics
 - semantic characterization needed to verify behavior-preserving Core/Skill refactors when deterministic checks alone are insufficient;
 - explicit near-miss cases proving that Maintainer and Consumer Skills do not collapse into one broad trigger surface;
+- explicit near-miss cases proving Consumer Governance does not collapse into generic SDD/planning/orchestration Skills;
 - supported adapter/platform portability without assuming equivalent behavior across products.
 
 ### Security/adversarial behavior
@@ -72,6 +93,7 @@ For behavior-preserving refactors, eval cases accepted as part of the RF1 charac
 - undeclared filesystem/network/process behavior where executable fixtures support it;
 - spoofed/lookalike provenance;
 - digest/revision/dependency/permission drift;
+- same-name malicious project Skill shadowing a previously approved user Skill;
 - unpinned/drifted external instructions;
 - sandbox/isolation expectations;
 - cross-platform security differences.
@@ -84,10 +106,13 @@ Synthetic future-task fixtures MAY contain canary markers so the harness can ins
 
 This is an Agent Governance-specific technique built on established trace/outcome verification practice; it is not represented as an external standard.
 
+Coexistence fixtures MAY also place canaries in future native-SDD task artifacts to verify that adaptation does not become a route around Governance sequential disclosure.
+
 ## Out of scope
 
 - coding-agent benchmarks;
 - quality/speed of application task implementation;
-- real business tasks.
+- real business tasks;
+- installing live Gentle-AI, Spec Kit, OpenSpec or another SDD product merely to run ordinary release evals.
 
 Synthetic task records may be used only as minimal fixtures necessary to observe governance behavior.
