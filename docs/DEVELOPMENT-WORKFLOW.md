@@ -14,7 +14,7 @@ All repository mutation occurs inside the branch lifecycle defined by `docs/BRAN
 
 - Human Owner: final authority.
 - ChatGPT: Orchestrator, strategy/specification owner, architectural reviewer, exclusive normal author of committed Markdown, and Task Contract owner.
-- Agente de IA Ejecutor: product-agnostic coding-agent role fulfilled by OpenCode, Codex, Claude Code, Antigravity, or another compatible agent; owns authorized non-Markdown implementation, tests/evals, and their execution.
+- Agente de IA Ejecutor: product-agnostic coding-agent role fulfilled by OpenCode, Codex, Claude Code, Antigravity, or another compatible agent; owns authorized non-Markdown implementation, tests/evals, their execution, and persisted executor handoffs.
 
 `AGENTS.md` is the normative repository adapter for these responsibilities.
 
@@ -29,6 +29,14 @@ The external agent-launch prompt is transport only. It SHOULD contain the minimu
 The executor reads `AGENTS.md`, the assigned Task Contract, and only the controlling references required by that contract. It MUST NOT depend on prior chat history to reconstruct missing task intent.
 
 Material changes to objective, scope, acceptance, or required verification require ChatGPT to persist a Task Contract revision before implementation continues.
+
+## Persisted executor-return precondition
+
+Before the executor claims `DONE`, `BLOCKED`, or `PARTIAL`, it MUST persist its technical result under `handoffs/` according to `docs/EXECUTOR-HANDOFFS.md` and the path specified by the Task Contract.
+
+The persisted executor handoff, not chat output, is the authoritative executor-reported result. It must identify the exact branch/HEAD/base, changed files, verification commands/results, environment details, configuration/dependency changes, unresolved issues, and recommended next work required by the contract.
+
+The executor's visible response SHOULD contain only status, handoff path, branch, and HEAD so ChatGPT can fetch and review the durable record.
 
 ## Branch precondition
 
@@ -64,6 +72,7 @@ The contract defines the minimum durable execution semantics:
 - authorized scope and explicit exclusions;
 - architecture/invariants/compatibility constraints;
 - branch/base requirements;
+- expected executor handoff path;
 - acceptance criteria;
 - verification/evidence requirements;
 - stop/escalation conditions;
@@ -105,14 +114,14 @@ For Markdown-only product changes, this phase is performed by ChatGPT and no exe
 
 For test/eval-only work, the Agente de IA Ejecutor performs the authorized changes and execution.
 
-## PD4 — Verification
+## PD4 — Verify and Persist Handoff
 
-The Agente de IA Ejecutor runs the applicable deterministic tests/evals against the resulting implementation and returns reproducible evidence required by the Task Contract.
+The Agente de IA Ejecutor runs the applicable deterministic tests/evals against the resulting implementation and persists reproducible evidence in the task's executor handoff artifact.
 
 If verification fails:
 - implementation or test implementation defect -> executor diagnoses and fixes within the approved contract;
-- specification/acceptance ambiguity -> stop and return to ChatGPT;
-- proposed behavior change discovered during a refactor -> stop refactor and re-enter PD0 as a behavior-changing change.
+- specification/acceptance ambiguity -> persist a `BLOCKED` handoff and stop for ChatGPT;
+- proposed behavior change discovered during a refactor -> persist the situation, stop refactor, and re-enter PD0 as a behavior-changing change.
 
 The executor MUST NOT make tests green by weakening the ChatGPT-approved behavioral contract. If a previously established baseline must change, ChatGPT must explicitly authorize that change and persist any material contract revision first.
 
@@ -120,16 +129,18 @@ For higher-risk changes ChatGPT MAY request a fresh executor session or a second
 
 ## PD5 — Orchestrator Review
 
-ChatGPT reviews:
-- implementation/test/eval diff against the persisted Task Contract;
+ChatGPT reads and reviews:
+- the persisted Task Contract;
+- the persisted executor handoff;
+- the actual implementation/test/eval diff;
 - architectural consistency;
 - role-boundary compliance;
-- executor verification evidence;
+- verification evidence;
 - required Markdown/documentation/Decision Records;
 - public compatibility and supply-chain implications;
 - branch/PR target compliance.
 
-A green suite is necessary when applicable but is not sufficient if the change violates architecture or specification.
+A green suite is necessary when applicable but is not sufficient if the change violates architecture or specification. The executor handoff is evidence, not acceptance authority; ChatGPT verifies it against Git and the contract.
 
 ## PD6 — Integrate
 
@@ -142,7 +153,8 @@ Promotion of `develop` to `main` is a separate release/stability action governed
 ## Handoff Invariants
 
 - ChatGPT -> Agente de IA Ejecutor: minimal launch prompt pointing to the persisted Task Contract only after the contract is sufficiently complete.
-- Agente de IA Ejecutor -> ChatGPT: implementation/test/eval diff and reproducible verification evidence required by that contract.
+- Agente de IA Ejecutor -> repository: persist the executor handoff under `handoffs/` after verification and before claiming status.
+- Agente de IA Ejecutor -> ChatGPT: minimal status pointer containing handoff path, branch, and HEAD.
 - ChatGPT -> Agente de IA Ejecutor again when technical rework is required, with a persisted contract revision first if objective/scope/acceptance materially changes.
 - ChatGPT -> Human Owner when product scope/risk/public compatibility requires final authority.
 
