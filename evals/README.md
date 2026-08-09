@@ -2,7 +2,13 @@
 
 This directory contains agent-facing evaluations of behavior intrinsic to the Governance product.
 
-The normative eval architecture, external references, isolation rules, grader selection, fixture policy, repeated-trial requirements, and release thresholds live in `../docs/TESTING-AND-EVALUATION.md`.
+The normative eval architecture, external references, isolation rules, grader selection, fixture policy, repeated-trial requirements, and release thresholds live in `../docs/TESTING-AND-EVALUATION.md`. The repository-owned harness language decision is `../docs/decisions/D023-python-testing-stack.md`.
+
+## Harness language
+
+Repository-owned eval harness/orchestration code SHOULD use Python `>=3.13` by default so deterministic checks, fixture manipulation, subprocess/tool traces, and behavioral eval orchestration share one language.
+
+This decision does not select any model-provider SDK, hosted eval platform, executor CLI, environment manager, or required Skill. Those are separate toolchain/capability decisions. Language-specific adapter glue is allowed only when the target system cannot be exercised cleanly from the Python harness.
 
 ## Agent ownership
 
