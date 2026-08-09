@@ -1,12 +1,13 @@
 # Contributing
 
-Contributions are welcome. This repository develops a public, agent-neutral governance framework and its operational Governance Skill.
+Contributions are welcome. This repository develops a public, agent-neutral governance framework and its operational Skills.
 
 ## Scope
 
 Good contributions improve one or more of:
 - Governance Core correctness, portability, clarity, or context efficiency;
-- Governance Skill behavior without expanding its authority;
+- consumer Governance Skill behavior without expanding its authority;
+- source-product Maintainer Skill behavior;
 - deterministic tests of governance mechanics;
 - agent-facing evals of governance/Skill behavior;
 - adapters, templates, documentation, security, or release engineering.
@@ -15,15 +16,27 @@ Application-specific business requirements and tests of an agent's general codin
 
 ## Maintainer agent workflow
 
-The repository maintainers use the role-separated workflow defined in `AGENTS.md`, `docs/DEVELOPMENT-WORKFLOW.md`, and `docs/REFACTORING-WORKFLOW.md`:
-- ChatGPT acts as Orchestrator and owns committed Markdown, strategy, contracts, and review;
-- an agent-product-neutral `Agente de IA Ejecutor` owns authorized non-Markdown implementation, tests/evals, and their execution.
+Repository maintainers use the two-role model defined in `AGENTS.md`:
+- ChatGPT acts as Orchestrator and owns committed Markdown, strategy, contracts, handoffs, and review;
+- an agent-product-neutral **Agente de IA Ejecutor** owns authorized non-Markdown implementation, tests/evals, fixtures, and their execution.
 
 OpenCode, Codex, Claude Code, Antigravity, or another compatible coding agent may fulfill the executor role. No executor product has special governance authority.
 
-This is the project's internal agentic maintenance model. Human external contributors are not required to use those specific products. Contributions are evaluated by the resulting contract, architecture, tests/evals, security, and review quality rather than by which tools produced the patch.
+Human external contributors are not required to use those tools. Contributions are evaluated by the resulting contract, architecture, tests/evals, security, branch policy, and review quality rather than by which tools produced the patch.
 
 Coding agents working directly in this repository should follow `AGENTS.md` and any applicable repository-native adapter restrictions.
+
+## Branching
+
+Normal contributions follow `docs/BRANCHING.md`.
+
+- `main` is stable/default and is not the normal contribution target.
+- `develop` integrates the next unreleased state.
+- create a short-lived topic branch from `develop` using `feat/`, `fix/`, `refactor/`, `test/`, `docs/`, or `chore/`.
+- open the normal pull request back to `develop`.
+- normal topic branches MUST NOT target `main`.
+
+`release/*` and `hotfix/*` are exceptional paths defined in the branching policy.
 
 ## Before changing normative behavior
 
@@ -47,9 +60,9 @@ Behavior-preserving refactors should be separated from intentional behavior chan
 
 Do not include secrets, credentials, proprietary consumer-project data, or copied project-specific mission/task state.
 
-## Governance Skill
+## Skill boundaries
 
-The Governance Skill is an operational layer, not an authority source. Contributions must not make the Skill the sole carrier of protocol semantics or durable project state.
+The consumer Governance Skill and source-product Maintainer Skill are distinct operational surfaces. Contributions must not merge their activation/context responsibilities into one broad Skill or make either Skill the sole carrier of protocol semantics or durable consumer state.
 
 ## Licensing
 

@@ -1,6 +1,6 @@
 # Deterministic Governance Tests
 
-This directory contains code-driven tests of the Governance Core and deterministic portions of the Governance Skill.
+This directory contains code-driven tests of the Governance Core and deterministic portions of both Agent Skills.
 
 ## Agent ownership
 
@@ -10,8 +10,11 @@ ChatGPT owns committed Markdown instructions/specifications and defines the prod
 
 For behavior-preserving refactors, characterization tests accepted during RF1 become a frozen baseline for the refactor unit. Changing that baseline after implementation begins requires explicit ChatGPT authorization.
 
-## In scope
+## Test surfaces
 
+Tests SHOULD remain distinguishable by the product surface they prove:
+
+### Governance Core
 - repository/layout/reference validation;
 - protocol and lifecycle invariants;
 - STATE/EXCHANGE validation and stale-state reconstruction mechanics;
@@ -20,9 +23,21 @@ For behavior-preserving refactors, characterization tests accepted during RF1 be
 - sequential-disclosure mechanics using synthetic fixtures;
 - agent-neutral adapter contract validation;
 - Skill discovery canonical-source resolution mechanics;
-- Skill approval/digest/permission/dependency validation;
-- bootstrap/archive safety;
-- characterization/regression coverage required by `docs/REFACTORING-WORKFLOW.md`.
+- Skill approval/digest/permission/dependency validation.
+
+### Consumer Governance Skill
+- bootstrap/install and overwrite refusal;
+- deterministic state/event/validation commands;
+- source-repository independence after installation;
+- archive safety;
+- installed-footprint generation/validation;
+- consumer-only operation boundaries.
+
+### Maintainer Skill
+- source-repository routing and workflow validation where deterministic;
+- refusal to initialize a live consumer instance in this source repository;
+- branch-policy and release-routing checks where encoded mechanically;
+- separation from consumer-only command surfaces.
 
 ## Out of scope
 

@@ -2,11 +2,12 @@
 
 ## Repository role
 
-This repository develops, refactors, and tests the reusable Agent Governance product. It is NOT an installed consumer-project instance.
+This repository develops, refactors, tests, evaluates, and releases the reusable Agent Governance product. It is NOT an installed consumer-project instance.
 
 Only product artifacts belong here:
 - canonical governance instructions/protocol structure;
-- Governance Skill implementation and supporting code/configuration;
+- consumer Governance Skill and source-product Maintainer Skill;
+- supporting implementation code/configuration/assets;
 - product-development instructions and decisions;
 - deterministic tests and agent-facing evals;
 - minimal synthetic fixtures required by those tests/evals.
@@ -18,11 +19,15 @@ Do not create a live `.agent-governance/` / `.agent-coordination/` consumer foot
 ## Canonical product paths
 
 - Canonical protocol source: `governance-core/`.
-- Governance Skill implementation: `governance-skill/` when release gates permit it.
-- Governance Skill design: `docs/GOVERNANCE-SKILL-CONTRACT.md` and `docs/GOVERNANCE-SKILL-PACKAGE.md`.
+- Consumer Governance Skill: `governance-skill/` when release gates permit it.
+- Source-product Maintainer Skill: `maintainer-skill/` when its own gate permits it.
+- Consumer Skill design: `docs/GOVERNANCE-SKILL-CONTRACT.md` and `docs/GOVERNANCE-SKILL-PACKAGE.md`.
+- Maintainer Skill design: `docs/MAINTAINER-SKILL-CONTRACT.md`.
 - Product decisions and operating instructions: `docs/`.
 - Deterministic product tests: `tests/`.
 - Agent-facing product evals: `evals/`.
+
+The consumer and maintainer Skills have separate activation/triggers and operational contexts. The consumer Skill MUST NOT depend on modifying or reading this source repository after installation.
 
 ## Agent operating model
 
@@ -36,7 +41,7 @@ Final authority over product scope, priorities, risk, public distribution, relea
 
 ChatGPT owns product strategy, research synthesis, architectural decisions, work decomposition, acceptance criteria, task contracts, agent handoffs, review, and all committed Markdown (`*.md`) authoring/editing.
 
-Only ChatGPT may create, rewrite, or persist Markdown instruction/design/decision files in normal agentic development. This includes `AGENTS.md`, `README.md`, `docs/**/*.md`, `governance-core/*.md`, and Markdown files inside test/eval fixtures.
+Only ChatGPT may create, rewrite, or persist Markdown instruction/design/decision files in normal agentic development. This includes `AGENTS.md`, `README.md`, `docs/**/*.md`, `governance-core/*.md`, Skill Markdown, and Markdown files inside test/eval fixtures.
 
 ChatGPT does not take over implementation merely because a task is difficult. Non-Markdown implementation and verification belong to the Agente de IA Ejecutor.
 
@@ -71,18 +76,32 @@ Normal agentic write ownership is:
 
 No named executor product gains special authority. OpenCode-specific, Codex-specific, Claude-specific, or other adapter configuration may enforce these rules mechanically but MUST NOT redefine them.
 
+## Branching invariant
+
+`docs/BRANCHING.md` is authoritative for source-repository branch operation.
+
+- `main` is stable/default and is not a normal development target.
+- `develop` integrates the next unreleased state.
+- normal work starts on a short-lived topic branch from `develop` and returns to `develop` through PR.
+- normal direct writes to `main` or `develop` are prohibited.
+- normal topic branches MUST NOT target `main`.
+- release promotion uses `develop` -> `main`; optional `release/*` and exceptional `hotfix/*` follow the branching policy.
+- branch names describe product work, never agent identity.
+
+Neither ChatGPT nor an Agente de IA Ejecutor may bypass this policy because of role or product identity.
+
 ## Product boundaries
 
 - Keep the Governance Core agent-product neutral.
 - Keep consumer mission/task/state out of this repository except minimal synthetic fixtures under tests/evals.
-- The Governance Skill is operational tooling, never authority over the Core.
-- Do not author final `governance-skill/SKILL.md` until the documented release gate is satisfied.
+- Both Skills are operational tooling, never authority over the Core.
+- Do not author final Skill packages until their documented release gates are satisfied.
 - Tests/evals validate Governance/Skill behavior, not application-task implementation quality.
 - External Skill research follows `governance-core/SKILL-DISCOVERY.md` and `governance-core/SKILL-SUPPLY-CHAIN.md`.
 
 ## Development workflow
 
-Use `docs/DEVELOPMENT-WORKFLOW.md` for normal product changes and `docs/REFACTORING-WORKFLOW.md` for behavior-preserving refactors.
+Use `docs/DEVELOPMENT-WORKFLOW.md` for normal product changes and `docs/REFACTORING-WORKFLOW.md` for behavior-preserving refactors. Both operate inside the branch lifecycle defined by `docs/BRANCHING.md`.
 
 No executable task begins until ChatGPT has defined an unambiguous objective, scope, invariants/acceptance, and handoff. The Agente de IA Ejecutor implements and verifies against that contract. ChatGPT reviews the resulting diff and verification evidence before acceptance.
 

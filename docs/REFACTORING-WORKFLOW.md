@@ -8,9 +8,17 @@ Define the repository-specific workflow for restructuring `agent-governance` wit
 
 A change that intentionally changes behavior, protocol semantics, authority, compatibility, or acceptance outcomes is NOT a refactor and must use `DEVELOPMENT-WORKFLOW.md` as a behavior-changing product change.
 
+All refactor mutation occurs inside the branch lifecycle defined by `docs/BRANCHING.md`.
+
 ## Why this workflow
 
 Safe refactoring depends on small behavior-preserving transformations and a known-good verification baseline. This repository uses ChatGPT to define/refine the semantic contract and an agent-product-neutral Agente de IA Ejecutor to implement and verify it.
+
+## Branch precondition
+
+Normal refactors start from current `develop` on a short-lived `refactor/<slug>` branch and return to `develop` through PR after RF5 acceptance.
+
+Do not refactor directly on `main` or `develop`. A hotfix that requires structural work is exceptional and follows `docs/BRANCHING.md` without weakening the RF invariants below.
 
 ## RF0 — Classify and Define Invariants
 
@@ -96,13 +104,14 @@ Check at minimum:
 - public compatibility was not changed accidentally;
 - Markdown/executor write boundaries were respected;
 - frozen baseline remained intact;
-- executor verification is green.
+- executor verification is green;
+- topic branch and PR target comply with `docs/BRANCHING.md`.
 
 ## RF6 — Integrate
 
 Integrate the refactor only after RF5 acceptance.
 
-Prefer small standalone refactor PRs/commits. Each accepted unit must leave the repository in a working state so rollback and diagnosis remain straightforward.
+Normal integration is `refactor/<slug>` -> `develop` through PR, preferably squash merged as one coherent refactor unit. Each accepted unit must leave the repository in a working state so rollback and diagnosis remain straightforward.
 
 ## Special rule: Core Markdown refactoring
 

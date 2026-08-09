@@ -8,6 +8,8 @@ Define how agents develop the `agent-governance` source product without turning 
 
 This is a repository-maintenance workflow, not an installed `.agent-coordination/` lifecycle. Real consumer-project governance is exercised only in separate repositories or synthetic disposable fixtures.
 
+All repository mutation occurs inside the branch lifecycle defined by `docs/BRANCHING.md`.
+
 ## Roles
 
 - Human Owner: final authority.
@@ -16,6 +18,18 @@ This is a repository-maintenance workflow, not an installed `.agent-coordination
 
 `AGENTS.md` is the normative repository adapter for these responsibilities.
 
+## Branch precondition
+
+Normal work MUST NOT begin by writing directly to `main` or `develop`.
+
+Before mutation:
+1. start from current `develop`;
+2. create the appropriate short-lived topic branch defined by `docs/BRANCHING.md`;
+3. keep the complete coherent PD change on that branch;
+4. integrate by PR back to `develop` after PD5 acceptance.
+
+Release/hotfix exceptions follow `docs/BRANCHING.md` and `docs/RELEASES.md`.
+
 ## PD0 — Frame Change
 
 ChatGPT determines:
@@ -23,7 +37,8 @@ ChatGPT determines:
 - whether the change is protocol/instruction, executable tooling, test/eval infrastructure, refactor, release work, or mixed;
 - scope and exclusions;
 - affected public compatibility surface;
-- whether a Decision Record is required.
+- whether a Decision Record is required;
+- appropriate branch class/target.
 
 Do not create consumer mission/workplan/state records for repository development.
 
@@ -91,7 +106,8 @@ ChatGPT reviews:
 - role-boundary compliance;
 - executor verification evidence;
 - required Markdown/documentation/Decision Records;
-- public compatibility and supply-chain implications.
+- public compatibility and supply-chain implications;
+- branch/PR target compliance.
 
 A green suite is necessary when applicable but is not sufficient if the change violates architecture or specification.
 
@@ -99,7 +115,9 @@ A green suite is necessary when applicable but is not sufficient if the change v
 
 Integrate only when PD5 accepts the change.
 
-Prefer one coherent, reviewable change/PR at a time. Keep refactors separate from behavior changes where practical. Releases additionally follow `docs/RELEASES.md`.
+Normal integration is topic branch -> `develop` through PR. Prefer squash merge for one coherent accepted topic change.
+
+Promotion of `develop` to `main` is a separate release/stability action governed by `docs/BRANCHING.md` and `docs/RELEASES.md` and normally uses a merge commit.
 
 ## Handoff Invariants
 
