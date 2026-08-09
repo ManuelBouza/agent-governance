@@ -2,7 +2,7 @@
 
 This directory contains code-driven tests of the Governance Core and deterministic portions of both Agent Skills.
 
-The normative testing architecture, external references, isolation rules, fixture policy, property-testing guidance, and release thresholds live in `../docs/TESTING-AND-EVALUATION.md`. The concrete language/framework decision is `../docs/decisions/D023-python-testing-stack.md`. Testing Skill/capability boundaries are defined by `../docs/TESTING-SKILL-CAPABILITIES.md` and D024. Source local tooling and locked commands are defined by `../docs/LOCAL-DEVELOPMENT-TOOLCHAIN.md` and D025.
+The normative testing architecture, external references, isolation rules, fixture policy, property-testing guidance, and release thresholds live in `../docs/TESTING-AND-EVALUATION.md`. The concrete language/framework decision is `../docs/decisions/D023-python-testing-stack.md`. Testing Skill/capability boundaries are defined by `../docs/TESTING-SKILL-CAPABILITIES.md` and D024. Source local tooling and locked commands are defined by `../docs/LOCAL-DEVELOPMENT-TOOLCHAIN.md` and D025. Ecosystem/SDD/Skill coexistence is defined by `../governance-core/COEXISTENCE.md` and D026.
 
 ## Canonical test stack
 
@@ -60,10 +60,12 @@ For behavior-preserving refactors, characterization tests accepted during RF1 be
 - repository/layout/reference validation;
 - protocol/lifecycle/task transition invariants;
 - STATE/EXCHANGE validation and stale-state reconstruction mechanics;
+- CAPABILITIES/coexistence inventory shape and non-authority constraints;
 - progressive-context budgets/routing metadata;
 - sequential-disclosure metadata and blocker/dependency rules;
 - agent-neutral adapter contract validation;
 - Skill canonical-source/revision/digest/approval/revocation/permission/dependency checks;
+- host-selected Skill identity vs exact approved artifact checks;
 - bootstrap/archive overwrite and safety behavior.
 
 Release-blocking deterministic regression tests must pass 100%.
@@ -79,7 +81,8 @@ Candidate invariant families include:
 - dependency-constrained READY;
 - STATE deriving but never inventing strategy;
 - rejection of invalid generated event sequences;
-- invalidation of Skill approval after material artifact/dependency/permission drift.
+- invalidation of Skill approval after material artifact/dependency/permission drift;
+- coexistence entries returning to unresolved state after material provider/selected-artifact drift.
 
 Configured release runs must have zero unresolved counterexamples.
 
@@ -89,7 +92,12 @@ Configured release runs must have zero unresolved counterexamples.
 - source-repository independence after installation;
 - archive safety;
 - installed-footprint generation/validation;
-- consumer-only operation boundaries.
+- consumer-only operation boundaries;
+- non-destructive coexistence with pre-existing SDD/Skill/instruction fixtures;
+- reference/adapt behavior instead of duplicate native specs/plans/tasks;
+- `REUSE|ADAPT|COEXIST|MISSING|CONFLICT` inventory validation;
+- no-SDD/no-third-party-Skill operation;
+- same-name Skill shadowing and exact-approved-artifact matching.
 
 ### Maintainer Skill
 - source-repository routing/workflow validation where deterministic;
@@ -101,10 +109,26 @@ Configured release runs must have zero unresolved counterexamples.
 - exact canonical source/revision/content identity;
 - revoked/superseded artifact rejection;
 - permission/dependency envelope drift;
+- same-name shadowing selecting an unapproved artifact;
 - unsafe/unexpected configuration fields where applicable;
 - external-reference pin/drift checks where applicable.
 
 Dynamic/adversarial cases that require running an agent or executable Skill behavior belong in `evals/` or isolated security harnesses, not ordinary unit tests.
+
+## Coexistence fixture families
+
+Synthetic deterministic fixtures SHOULD cover at least:
+- no SDD / no third-party Skill ecosystem;
+- Gentle-AI-like project assets/registry without requiring Gentle-AI itself;
+- Spec Kit-like spec/plan/tasks ownership;
+- OpenSpec-like specs/change artifacts;
+- generic custom SDD with project-native task ownership;
+- same-name project/user Skill collision with deterministic shadowing;
+- semantic governance/orchestration Skill overlap;
+- shared `AGENTS.md`/agent configuration containing third-party managed sections;
+- provider/version/path drift that invalidates a prior capability inventory entry.
+
+Fixtures model public integration shapes only. Tests must not depend on installing or calling the real external product unless a later isolated compatibility task explicitly requires it.
 
 ## Network policy
 
@@ -112,7 +136,7 @@ Environment provisioning may need network access to obtain the authorized Python
 
 ## Fixture policy
 
-Synthetic fixtures represent protocol states, never real business implementations. Minimum families are defined in `../docs/TESTING-AND-EVALUATION.md`.
+Synthetic fixtures represent protocol states and ecosystem boundaries, never real business implementations. Minimum families are defined in `../docs/TESTING-AND-EVALUATION.md` and the coexistence requirements above.
 
 No production credentials, production service calls, or real consumer business data may be required by this suite.
 

@@ -1,18 +1,18 @@
 # Pre-Implementation Governance Lifecycle
 
-Lifecycle-Version: 1.4.0
+Lifecycle-Version: 1.5.0
 
 This file is part of the reusable Governance Core. It defines the mandatory lifecycle that must complete before implementation work becomes READY.
 
 ## Principle
 
-Separate problem framing, viability, engineering strategy, Skill capability audit, atomic planning, readiness review, and implementation handoff. Decisions affecting future work are persisted as approved; final handoff is consolidation, not first persistence.
+Separate problem framing, viability, engineering strategy, ecosystem/capability reuse, Skill capability audit, atomic planning, readiness review, and implementation handoff. Decisions affecting future work are persisted as approved; final handoff is consolidation, not first persistence.
 
 ## Specification Quality Ownership
 
 The Strategy/Governance role owns the quality of the execution contract delivered to Implementation.
 
-A task MUST be designed and written so a competent Implementation Agent can complete it successfully using the task's disclosed context, exact approved Skills, repository evidence and normal technical judgment. The executor is responsible for implementation decisions, not for reconstructing missing strategy or guessing hidden requirements.
+A task MUST be designed and written so a competent Implementation Agent can complete it successfully using the task's disclosed context, exact approved Skills, referenced project-native artifacts, repository evidence and normal technical judgment. The executor is responsible for implementation decisions, not for reconstructing missing strategy or guessing hidden requirements.
 
 Before F5 may pass, Strategy MUST ensure each task provides enough information to determine:
 - the result that must exist when the task is complete;
@@ -21,6 +21,7 @@ Before F5 may pass, Strategy MUST ensure each task provides enough information t
 - verifiable acceptance criteria;
 - required approved Skills/capabilities;
 - material constraints, risks and references needed for execution;
+- which project-native SDD/spec artifacts are controlling for this task, when any;
 - which choices remain intentionally delegated to Implementation.
 
 Do not over-specify implementation mechanics. The goal is a complete execution contract, not a code recipe.
@@ -32,12 +33,16 @@ Question: what problem/result is being requested?
 
 Define problem/need, desired outcome, known constraints, out-of-scope boundaries and unresolved strategic questions. Do not design implementation.
 
-Gate F0 passes when the Human Owner and Strategy/Governance Agent share an unambiguous problem frame.
+When the repository already contains an SDD/specification/workflow system that materially defines the requested scope, identify the relevant native artifact/provider and load `COEXISTENCE.md` only as needed to decide whether Governance should `REUSE`, `ADAPT`, `COEXIST`, or flag `CONFLICT`. Do not regenerate equivalent specifications merely because Governance is present.
+
+Gate F0 passes when the Human Owner and Strategy/Governance Agent share an unambiguous problem frame and any material authority/source conflict for that frame is resolved.
 
 ## F1 — Viability
 Question: should/how can this problem reasonably be solved?
 
 Assess functional viability, compatibility, dependencies, major risks, high-level alternatives, required research and materially simpler solutions.
+
+Existing compatible project-native capabilities are part of viability evidence and SHOULD be preferred over introducing redundant tooling/workflows.
 
 Outcomes: `VIABLE`, `VIABLE_WITH_CONDITIONS`, `NEEDS_RESEARCH`, `NOT_RECOMMENDED`.
 
@@ -46,25 +51,30 @@ Question: what engineering principles and architectural boundaries should govern
 
 May define system boundaries, architectural/design patterns, ownership, failure model, idempotency/concurrency, security/observability, testing, deployment/rollback and compatibility constraints.
 
+For every material capability/provider decision, inspect project-native capabilities first under `COEXISTENCE.md`. Prefer `REUSE` or `ADAPT` over installing/replacing a capability that is already adequate. `CONFLICT` must be resolved strategically before planning proceeds.
+
 Remain implementation-agnostic: define constraints/patterns, not filenames, methods, class names or agent-product syntax unless strategically required.
 
 ## F3 — Skill Capability Audit
 Question: does the future Implementation Agent have exact approved expertise required to execute F2 correctly?
 
 1. derive required capabilities from strategy;
-2. inspect already-approved Skill artifacts first;
-3. identify gaps;
-4. discover external candidates under `SKILL-DISCOVERY.md` without installing them;
-5. resolve every candidate to its canonical owner/repository/path and reject candidates whose provenance cannot be resolved;
-6. apply `SKILL-SUPPLY-CHAIN.md` to the canonical artifact: pin an immutable revision/digest, quarantine, inspect all content/dependencies/permissions, and dynamically verify risky executable behavior when practical;
-7. persist an approval record only for the exact audited artifact;
-8. classify each mandatory capability `COVERED`, `MISSING`, or `NOT_REQUIRED`.
+2. inspect already-present project/user Skills, existing project Skill registries and already-approved Skill artifacts first;
+3. use `COEXISTENCE.md` to identify same-name/semantic overlap, host shadowing and whether an existing capability should be reused;
+4. identify gaps;
+5. discover external candidates under `SKILL-DISCOVERY.md` without installing them;
+6. resolve every candidate to its canonical owner/repository/path and reject candidates whose provenance cannot be resolved;
+7. apply `SKILL-SUPPLY-CHAIN.md` to the canonical artifact: pin an immutable revision/digest, quarantine, inspect all content/dependencies/permissions, and dynamically verify risky executable behavior when practical;
+8. persist an approval record only for the exact audited artifact;
+9. classify each mandatory capability `COVERED`, `MISSING`, or `NOT_REQUIRED`.
+
+Host/registry precedence tells Strategy which Skill artifact may activate; it does not establish trust. Material shadowing or semantic overlap that would select an unapproved/conflicting artifact blocks F3 until resolved.
 
 Directory ranking, install count, automated marketplace scan or listing by a vendor never establishes artifact approval. Discovery source and canonical provenance are separate facts.
 
 Skills are selected for capabilities, independent of which compatible agent product executes the tasks.
 
-F3 MUST NOT pass while a mandatory capability depends on an unresolved-provenance, unaudited or unapproved external Skill.
+F3 MUST NOT pass while a mandatory capability depends on an unresolved-provenance, unaudited, unapproved, shadow-conflicted or authority-conflicting external Skill.
 
 ## F4 — Atomic Work Planning
 Question: how should the approved solution be decomposed into independently verifiable work units?
@@ -72,6 +82,8 @@ Question: how should the approved solution be decomposed into independently veri
 Each task defines id, objective/result, scope/boundary, dependencies, acceptance criteria, required exact approved Skill IDs, material constraints/risks and execution-relevant references where needed.
 
 Additionally define a deterministic execution order/queue containing metadata only. Detailed task content remains in separate task records.
+
+When an existing SDD system already provides suitable task decomposition, Strategy MAY adopt/reference its current-task artifacts instead of duplicating the decomposition. The Governance task record still carries the minimal governance execution envelope required for ordering, authority, Skill IDs, disclosure and acceptance routing; detailed native content is referenced rather than mirrored.
 
 Task records MUST be agent-product neutral. Vendor-specific tool syntax/configuration belongs to adapters or approved Skills unless the Human Owner explicitly makes a product a requirement.
 
@@ -82,6 +94,7 @@ Atomicity/quality criteria:
 - no unrelated conceptual changes bundled together;
 - acceptance strong enough for Implementation to mark DONE without strategic review;
 - sufficient context to execute without hidden assumptions;
+- referenced native artifacts identify a single controlling source for their concern;
 - technical design freedom remains with Implementation unless a choice is strategically controlling.
 
 ## F5 — Readiness Review
@@ -92,15 +105,18 @@ Verify:
 - controlling strategy required for execution is represented or directly referenced;
 - acceptance criteria are unambiguous and evidentially verifiable;
 - required Skills refer to exact APPROVED canonical artifacts and their approved permission/dependency envelope is compatible with the task;
+- any relevant host Skill shadowing resolves to the exact approved artifact;
 - dependency graph and deterministic execution order are coherent;
 - material safety/production risks are bounded;
 - tasks are agent-product neutral;
 - future task content can remain undisclosed until the preceding task is DONE;
+- native SDD/spec artifacts required by the current task can be disclosed without preloading unrelated/future work;
+- no unresolved `CONFLICT` exists between Governance and existing SDD/Skill/tooling ownership/authority;
 - normal technical failures can be resolved inside Implementation responsibility;
 - no task requires the executor to invent missing requirements or strategic intent;
 - a cold-start compatible agent can determine exactly what is currently allowed and what success means.
 
-If any requirement fails, reopen the appropriate earlier phase. Do not use executor discretion to compensate for a defective task contract or unaudited Skill.
+If any requirement fails, reopen the appropriate earlier phase. Do not use executor discretion to compensate for a defective task contract, conflicting methodology boundary or unaudited Skill.
 
 Gate F5 passes with `READY_FOR_IMPLEMENTATION`.
 
@@ -110,6 +126,7 @@ Question: is the approved plan durably recorded and safe for autonomous sequenti
 F6 introduces no new strategy. It MUST:
 - persist controlling decisions and strategic records;
 - ensure WORKPLAN contains the execution metadata/order and task record pointers;
+- ensure each current task references only the native SDD/spec artifacts required for that task;
 - ensure required Skill approval records identify exact audited canonical artifacts;
 - refresh STATE;
 - ensure EXCHANGE contains required gate/decision events;
@@ -126,8 +143,8 @@ Persistence occurs throughout F0-F5. Approved decisions may later be superseded 
 
 ## Lifecycle Re-entry
 
-This lifecycle is gated, not a rigid waterfall. F3 may reopen F2; F4 may reopen F2; F5 may reopen any earlier phase. Re-entry is explicit and controlling decisions are persisted.
+This lifecycle is gated, not a rigid waterfall. F3 may reopen F2; F4 may reopen F2; F5 may reopen any earlier phase. Discovery of a new ecosystem/ownership conflict reopens the earliest phase whose assumptions it invalidates. Re-entry is explicit and controlling decisions are persisted.
 
 ## Core Invariant
 
-Implementation receives a complete, distilled execution contract one task at a time, not the full strategic debate or future task contents. Strategy owns correctness/completeness of that contract and canonical provenance/approval of every required Skill; Implementation owns how to realize the task technically within delegated boundaries.
+Implementation receives a complete, distilled execution contract one task at a time, not the full strategic debate, whole external SDD workspace or future task contents. Strategy owns correctness/completeness of that contract, ecosystem/provider boundaries and canonical provenance/approval of every required Skill; Implementation owns how to realize the task technically within delegated boundaries.

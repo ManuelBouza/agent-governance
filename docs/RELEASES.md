@@ -29,7 +29,7 @@ Mechanical invariants use deterministic code tests where practical. Probabilisti
 
 ## Stable release gate
 
-Do not publish `v1.0.0` until all of the following are true:
+`v1.0.0` eligibility requires all of the following:
 1. Governance Core modules are internally consistent and versioned;
 2. consumer Governance Skill activation/trigger contract is finalized;
 3. source-product Maintainer Skill activation/trigger contract is finalized sufficiently for supported maintenance/release workflows;
@@ -38,18 +38,20 @@ Do not publish `v1.0.0` until all of the following are true:
 6. configured property/state-machine release runs have zero unresolved counterexamples;
 7. mandatory agent-facing governance/Skill evals meet the thresholds in `docs/TESTING-AND-EVALUATION.md`;
 8. portability is demonstrated across at least two distinct supported agent adapters/fixtures;
-9. Skill discovery and supply-chain security checks are covered, including exact artifact identity/revocation/drift behavior;
-10. release-blocking adversarial/security fixtures are rejected or contained as expected;
-11. bootstrap/install/upgrade/uninstall behavior is documented and tested;
-12. public licensing, contribution, branch, testing, and security policies are present;
-13. release artifacts contain no consumer-project state or private data;
-14. consumer Governance operation does not require read/write access to the canonical source repository after installation;
-15. representative release eval transcripts/outcomes and all release-blocking failures have been reviewed before acceptance.
+9. Skill discovery and supply-chain security checks are covered, including exact artifact identity/revocation/drift and runtime-selected/shadowed artifact behavior;
+10. ecosystem coexistence coverage includes no-SDD, existing-SDD, overlapping-Skill and managed-file fixtures, with unresolved capability/authority collisions failing closed;
+11. Consumer Governance trigger evals include generic SDD/planning/orchestration near misses so the Skill does not become a replacement development methodology;
+12. release-blocking adversarial/security fixtures are rejected or contained as expected;
+13. bootstrap/install/upgrade/uninstall behavior is documented and tested, including non-destructive handling of pre-existing project/third-party managed instruction/config surfaces;
+14. public licensing, contribution, branch, testing, and security policies are present;
+15. release artifacts contain no consumer-project state or private data;
+16. consumer Governance operation does not require read/write access to the canonical source repository after installation;
+17. representative release eval transcripts/outcomes and all release-blocking failures have been reviewed before acceptance.
 
 ## Release artifacts
 
 A release may include:
-- canonical Governance Core;
+- canonical Governance Core, including `COEXISTENCE.md`;
 - consumer Governance Skill package;
 - bootstrap/templates and deterministic tooling;
 - checksums or equivalent artifact identity information;
@@ -63,6 +65,7 @@ A release must document:
 - protocol version;
 - supported installed-footprint version;
 - known adapter limitations;
+- known coexistence limitations with project-native SDD/Skills/tooling where material;
 - migration requirements;
 - security-relevant changes.
 
