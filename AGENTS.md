@@ -24,6 +24,7 @@ Do not create a live `.agent-governance/` / `.agent-coordination/` consumer foot
 - Consumer Skill design: `docs/GOVERNANCE-SKILL-CONTRACT.md` and `docs/GOVERNANCE-SKILL-PACKAGE.md`.
 - Maintainer Skill design: `docs/MAINTAINER-SKILL-CONTRACT.md`.
 - Testing/evaluation strategy: `docs/TESTING-AND-EVALUATION.md`.
+- Testing Skill/capability policy: `docs/TESTING-SKILL-CAPABILITIES.md`.
 - Source-product Task Contract policy: `docs/TASK-CONTRACTS.md`.
 - Executor handoff policy: `docs/EXECUTOR-HANDOFFS.md`.
 - Executable source-maintenance task records: `docs/tasks/`.
@@ -108,6 +109,17 @@ The executor does not normally open or merge the implementation PR unless the Ta
 - Before `DONE`, `BLOCKED`, or `PARTIAL`, the executor MUST persist, commit, and push the handoff/current task branch state.
 
 A reviewer must be able to reconstruct what was requested, what the executor reported, and what actually changed from the canonical Git remote alone.
+
+## Testing Skill/capability invariant
+
+D024 and `docs/TESTING-SKILL-CAPABILITIES.md` define the source-product testing Skill boundary.
+
+- the test/eval suite is executable repository code and MUST NOT require model-driven Agent Skill activation;
+- the Maintainer Skill, when available, is the only project-owned top-level Skill for source test/eval maintenance;
+- it routes progressively to deterministic, property/state-machine, Skill/eval, or security/supply-chain context rather than spawning generic overlapping pytest/testing/TDD Skills;
+- a cold executor can bootstrap from `AGENTS.md`, its persisted Task Contract, controlling references, and approved tooling before the Maintainer Skill exists;
+- external testing/authoring/security Skills are optional supplemental aids only after applicable supply-chain/coexistence approval and never replace repository-owned verification;
+- the Consumer Governance Skill MUST NOT activate for source-product test/eval maintenance.
 
 ## File ownership invariant
 
