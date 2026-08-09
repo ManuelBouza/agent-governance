@@ -11,9 +11,8 @@ This is a repository-maintenance workflow, not an installed `.agent-coordination
 ## Roles
 
 - Human Owner: final authority.
-- ChatGPT: Orchestrator, specification owner, architectural reviewer, and exclusive normal author of committed Markdown.
-- Implementation Executor: OpenCode or another compatible coding agent; owns non-test product implementation code/config/assets.
-- Codex: exclusive normal author/maintainer of tests/evals and owner of test/eval execution evidence.
+- ChatGPT: Orchestrator, strategy/specification owner, architectural reviewer, and exclusive normal author of committed Markdown.
+- Agente de IA Ejecutor: product-agnostic coding-agent role fulfilled by OpenCode, Codex, Claude Code, Antigravity, or another compatible agent; owns authorized non-Markdown implementation, tests/evals, and their execution.
 
 `AGENTS.md` is the normative repository adapter for these responsibilities.
 
@@ -35,20 +34,22 @@ ChatGPT persists the minimum Markdown needed to make the change unambiguous:
 - controlling architecture/invariants;
 - compatibility constraints;
 - acceptance criteria;
-- role ownership and handoff order.
+- executor handoff and verification requirements.
 
-For protocol/instruction changes, ChatGPT authors the canonical Markdown change itself. For executable changes, the specification must describe behavior without prescribing unnecessary implementation mechanics.
+For protocol/instruction changes, ChatGPT authors the canonical Markdown change itself. For executable changes, the specification describes required behavior without prescribing unnecessary implementation mechanics.
 
 ## PD2 — Establish Verification
 
-Codex derives the verification strategy from the approved specification.
+The Agente de IA Ejecutor derives the verification strategy from the approved ChatGPT contract before implementing behavior that requires executable verification.
 
-Depending on change type, Codex:
+Depending on change type, the executor:
 - adds/updates deterministic tests;
 - adds/updates agent-facing eval cases;
-- establishes a baseline result;
+- establishes a pre-change baseline when required;
 - identifies expected failing tests for intentional new behavior;
-- records the exact commands and relevant evidence.
+- records exact commands and relevant evidence.
+
+Tests/evals must test the approved contract, not redefine it. A test/eval change that materially changes required behavior or acceptance meaning requires ChatGPT review before proceeding.
 
 For behavior-preserving refactors, follow `REFACTORING-WORKFLOW.md`; the pre-change characterization baseline must be green before implementation begins.
 
@@ -56,42 +57,43 @@ Tests/evals assess this governance product, not the quality of application tasks
 
 ## PD3 — Implement
 
-For executable product changes, the Implementation Executor receives only the approved implementation contract and necessary read-only specification/test context.
+For executable product changes, the Agente de IA Ejecutor receives the approved contract and necessary read-only Markdown context.
 
 The executor:
-- edits implementation code/config/assets only;
+- edits authorized non-Markdown implementation code/config/assets;
+- authors/updates applicable non-Markdown tests/evals;
 - does not edit committed Markdown;
-- does not edit tests/evals;
-- does not weaken verification;
-- returns implementation evidence/diff to the Orchestrator.
+- does not change strategic scope or acceptance;
+- resolves normal technical implementation and test-design choices autonomously inside the contract.
 
-For Markdown-only product changes, this phase is performed by ChatGPT and no implementation executor is required.
+For Markdown-only product changes, this phase is performed by ChatGPT and no executor implementation is required, although executable verification may still be delegated to the Agente de IA Ejecutor.
 
-For test/eval-only work, Codex performs the authorized test/eval changes and no implementation executor is required.
+For test/eval-only work, the Agente de IA Ejecutor performs the authorized changes and execution.
 
-## PD4 — Independent Verification
+## PD4 — Verification
 
-Codex runs the applicable deterministic tests/evals against the implementation produced in PD3.
+The Agente de IA Ejecutor runs the applicable deterministic tests/evals against the resulting implementation and returns reproducible evidence.
 
 If verification fails:
-- implementation defect -> return to Implementation Executor;
-- test/eval defect demonstrably inconsistent with the approved contract -> Codex may correct the test/eval;
+- implementation or test implementation defect -> executor diagnoses and fixes within the approved contract;
 - specification/acceptance ambiguity -> stop and return to ChatGPT;
 - proposed behavior change discovered during a refactor -> stop refactor and re-enter PD0 as a behavior-changing change.
 
-The Implementation Executor must never resolve a failure by modifying tests/evals. Codex must never resolve a product implementation failure by modifying implementation code.
+The executor MUST NOT make tests green by weakening the ChatGPT-approved behavioral contract. If a previously established baseline must change, ChatGPT must explicitly authorize that change.
+
+For higher-risk changes ChatGPT MAY request a fresh executor session or a second compatible executor product to rerun verification, but this remains the same `Agente de IA Ejecutor` role and does not create a new governance role.
 
 ## PD5 — Orchestrator Review
 
 ChatGPT reviews:
-- diff against the approved objective;
+- implementation/test/eval diff against the approved objective;
 - architectural consistency;
 - role-boundary compliance;
-- Codex verification evidence;
+- executor verification evidence;
 - required Markdown/documentation/Decision Records;
 - public compatibility and supply-chain implications.
 
-A green suite is necessary when applicable but not sufficient if the change violates architecture or specification.
+A green suite is necessary when applicable but is not sufficient if the change violates architecture or specification.
 
 ## PD6 — Integrate
 
@@ -101,10 +103,9 @@ Prefer one coherent, reviewable change/PR at a time. Keep refactors separate fro
 
 ## Handoff Invariants
 
-- ChatGPT -> Codex before executable implementation when verification must be established first.
-- ChatGPT -> Implementation Executor only after the contract is sufficiently complete.
-- Implementation Executor -> Codex for independent verification.
-- Codex -> ChatGPT with verification evidence, not acceptance authority.
+- ChatGPT -> Agente de IA Ejecutor only after the contract is sufficiently complete.
+- Agente de IA Ejecutor -> ChatGPT with implementation/test/eval diff and reproducible verification evidence.
+- ChatGPT -> Agente de IA Ejecutor again when technical rework is required.
 - ChatGPT -> Human Owner when product scope/risk/public compatibility requires final authority.
 
-No agent silently assumes another role's write ownership.
+No executor product is privileged. Switching OpenCode -> Codex -> Claude Code -> another compatible executor does not change the role contract.
