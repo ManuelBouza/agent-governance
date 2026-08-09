@@ -1,12 +1,20 @@
-# Governance Skill Functional Contract
+# Consumer Governance Skill Functional Contract
 
 Status: DESIGN-APPROVED
 
 ## Purpose
 
-Define the reusable Agent Skill that operates the portable governance framework without becoming an authority source or storing project state.
+Define the reusable consumer-facing Agent Skill that installs and operates the portable governance framework inside adopting repositories without becoming an authority source or storing upstream product-maintenance state.
 
-The Skill must work across compatible agent products by targeting governance roles (`strategy`, `implementation`) rather than vendor identities.
+This Skill is distinct from the source-product Maintainer Skill defined in `MAINTAINER-SKILL-CONTRACT.md`.
+
+The Consumer Governance Skill must work across compatible agent products by targeting governance roles rather than vendor identities.
+
+## Source Independence Invariant
+
+After installation/bootstrap, a governed consumer repository MUST remain operable without read/write access to the canonical `agent-governance` source repository.
+
+Consumers SHOULD use an immutable release/tag/commit artifact. The Skill MUST NOT require a floating `main`/`develop` checkout, upstream mutation, or source-product PD/RF maintenance context during normal consumer operation.
 
 ## Non-Authority Invariant
 
@@ -87,7 +95,9 @@ The Skill MUST treat directory/platform scanning as supplemental evidence, never
 
 ## Explicitly Out of Scope
 
-The Skill MUST NOT:
+The Consumer Governance Skill MUST NOT:
+- develop, refactor, test, or release the canonical `agent-governance` source product merely because it is reachable;
+- load source-product maintainer decisions, `PD*`/`RF*` workflows, or branch-maintenance instructions during ordinary consumer operation;
 - decide project strategy without authority input;
 - generate/change business requirements autonomously;
 - implement application code merely because governance is active;
@@ -127,7 +137,7 @@ External Skill acquisition MUST occur in a quarantine/review location before act
 
 ## Functional Acceptance Criteria
 
-The Governance Skill is acceptable only if:
+The Consumer Governance Skill is acceptable only if:
 1. a clean unrelated repository can be bootstrapped without project knowledge;
 2. a stateless compatible agent reconstructs state without chat history;
 3. stale STATE is detected correctly;
@@ -140,8 +150,10 @@ The Governance Skill is acceptable only if:
 10. trigger tests include positive, negative and near-miss cases;
 11. one Implementation Agent can execute an authorized multi-task fixture one task at a time without reading future task records, stopping only on completion or a valid blocker;
 12. a directory result cannot become installation-valid until its canonical artifact is resolved and separately audited;
-13. an external Skill cannot become valid for installation without an exact provenance/revision audit record, and a changed artifact fails validation until re-audited.
+13. an external Skill cannot become valid for installation without an exact provenance/revision audit record, and a changed artifact fails validation until re-audited;
+14. normal operation succeeds without access to the canonical source repository after installation;
+15. maintainer-only triggers do not activate this Skill.
 
 ## Release Gate
 
-Do not author/release final `SKILL.md` until operation boundaries, package layout, exact trigger corpus, activation description, CLI contracts and template fields are finalized and validated against the current protocol, including sequential disclosure, Skill discovery resolution and supply-chain semantics.
+Do not author/release final `SKILL.md` until operation boundaries, package layout, exact consumer trigger corpus, activation description, CLI contracts and template fields are finalized and validated against the current protocol, including source independence, sequential disclosure, Skill discovery resolution and supply-chain semantics.
