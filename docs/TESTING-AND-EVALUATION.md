@@ -19,6 +19,16 @@ Use the least probabilistic verifier that can correctly prove the property under
 
 A model-based grader MUST NOT replace a deterministic check when the same property can be verified reliably by code.
 
+## Skill/capability execution rule
+
+`docs/TESTING-SKILL-CAPABILITIES.md` and D024 define the Skill boundary for this strategy.
+
+The repository test/eval suites MUST remain executable without any Agent Skill installed or activated. Skills may provide specialized routing and procedural context, but the suite itself is code and repository state remains authoritative.
+
+When available, the source-product Maintainer Skill is the only project-owned top-level Skill that should activate for source test/eval maintenance. It progressively routes to deterministic, property/state-machine, Skill/eval, or security/supply-chain capability context as needed.
+
+Do not create a generic pytest/testing/TDD Skill merely to run the approved stack. External authoring/evaluation/security Skills are supplemental only after the applicable supply-chain and coexistence approval and cannot replace repository-owned verification.
+
 ## External technical basis
 
 The following techniques are adopted from current specialized sources. The references below are normative research inputs for this testing strategy; Agent Governance may adapt them to its own protocol, but must not represent local adaptations as externally standardized techniques.
@@ -303,14 +313,16 @@ Per `AGENTS.md`:
 
 ## Implementation constraint
 
-Do not adopt heavy frameworks merely because they are referenced here.
+Do not adopt heavy frameworks or extra Skills merely because they are referenced here.
 
 Initial preference:
 - standard Python test tooling for deterministic checks;
 - Hypothesis only where generated/property/stateful coverage adds clear value;
+- the Maintainer Skill, when available, routes to task-specific testing/eval context rather than acting as a test runner;
+- no generic testing/pytest/TDD Skill is required for canonical execution;
 - a small repository-owned eval harness before adopting a hosted eval platform;
 - no OPA runtime solely to obtain policy tests;
-- security scanners/dynamic tools are supplemental and introduced only after supply-chain review and demonstrated need.
+- security scanners/dynamic tools and external Skills are supplemental and introduced only after supply-chain review and demonstrated need.
 
 ## Maintenance
 
