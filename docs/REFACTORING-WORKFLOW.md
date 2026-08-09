@@ -4,126 +4,156 @@ Status: ACTIVE
 
 ## Purpose
 
-Define the repository-specific workflow for restructuring `agent-governance` without changing its externally observable behavior or governance semantics.
+Define the repository-specific workflow for restructuring `agent-governance` without changing externally observable behavior or governance semantics.
 
-A change that intentionally changes behavior, protocol semantics, authority, compatibility, or acceptance outcomes is NOT a refactor and must use `DEVELOPMENT-WORKFLOW.md` as a behavior-changing product change.
+A change that intentionally changes behavior, protocol semantics, authority, compatibility, or acceptance outcomes is NOT a refactor and must use `docs/DEVELOPMENT-WORKFLOW.md` as a behavior-changing product change.
 
-All refactor mutation occurs inside the branch lifecycle defined by `docs/BRANCHING.md`.
+D022 and `docs/DEVELOPMENT-WORKFLOW.md` provide the common contract/branch/handoff rules. This document adds the stricter characterization-baseline requirements needed for refactoring.
 
 ## Why this workflow
 
-Safe refactoring depends on small behavior-preserving transformations and a known-good verification baseline. This repository uses ChatGPT to define/refine the semantic contract and an agent-product-neutral Agente de IA Ejecutor to implement and verify it.
+Safe refactoring depends on small behavior-preserving transformations and a known-good verification baseline. Martin Fowler describes refactoring as a sequence of small behavior-preserving transformations; Google Engineering Practices similarly recommends separating refactorings from feature/bug changes and establishing tests before refactoring when coverage is missing.
 
-## Branch precondition
+## Refactor contract precondition
 
-Normal refactors start from current `develop` on a short-lived `refactor/<slug>` branch and return to `develop` through PR after RF5 acceptance.
+Executable refactoring MUST NOT begin until ChatGPT has:
+1. classified the work as behavior-preserving;
+2. defined the invariants that must remain true;
+3. persisted the refactor Task Contract under `docs/tasks/`;
+4. integrated that contract/controlling decisions into `develop`;
+5. launched the executor from a `develop` revision containing the contract.
 
-Do not refactor directly on `main` or `develop`. A hotfix that requires structural work is exceptional and follows `docs/BRANCHING.md` without weakening the RF invariants below.
+The executor then creates the required `refactor/<slug>` topic branch from that revision.
 
-## RF0 — Classify and Define Invariants
+Markdown-only refactors are performed by ChatGPT on a topic branch, but executable characterization/verification may still be delegated through a Task Contract.
 
-ChatGPT determines that the proposed work is genuinely behavior-preserving and records the invariants that must remain true.
+## RF0 — Classify and define invariants
+
+ChatGPT determines that the work is genuinely behavior-preserving and records the invariants before structural mutation.
 
 Examples:
-- public protocol meaning is unchanged;
-- CLI/API behavior is unchanged;
-- installed footprint semantics are unchanged;
-- file/reference routing still resolves correctly;
-- Skill activation/operation semantics are unchanged;
-- no new permissions, dependencies, or external effects are introduced.
+- public protocol meaning unchanged;
+- CLI/API behavior unchanged;
+- installed footprint semantics unchanged;
+- file/reference routing still resolves;
+- Skill activation/operation semantics unchanged;
+- no new permissions, dependencies, external effects, or compatibility requirements.
 
-If intended behavior changes, stop and use the normal product-development flow.
+If changed behavior is desired or discovered as necessary, stop RF and use normal PD flow.
 
-## RF1 — Characterization Baseline
+## RF1 — Characterization baseline checkpoint
 
-The Agente de IA Ejecutor inspects the affected surface before implementation.
-
-The executor MUST:
+Before structural mutation, the Agente de IA Ejecutor inspects the affected surface and MUST:
 1. identify existing tests/evals that characterize the behavior;
 2. add focused characterization tests/evals when material behavior is insufficiently covered;
-3. execute the relevant suite against the pre-refactor revision;
-4. establish a green baseline before refactoring begins;
-5. return the baseline test/eval diff, commands, and evidence to ChatGPT when new characterization was added.
+3. execute the relevant suite against the pre-refactor state;
+4. establish a green or explicitly isolated baseline;
+5. persist the baseline evidence at the Task Contract-specified path, normally `handoffs/TNNN-rf1-baseline.json` when a separate checkpoint is required;
+6. commit and push the baseline checkpoint to the remote refactor branch;
+7. return only a minimal `PARTIAL` pointer to ChatGPT.
 
-Once ChatGPT accepts the baseline, it becomes frozen for that refactor unit. The executor MUST NOT weaken, remove, or reinterpret that baseline after RF3 begins unless ChatGPT explicitly authorizes a baseline correction.
+The baseline artifact must identify the task/refactor unit, branch, pushed HEAD/base, commands, results, relevant tests/evals, and any isolated pre-existing failures.
 
-If the baseline is already failing, the failure must be resolved or explicitly isolated before the refactor. Do not use a refactor to hide an unrelated defect.
+If the existing baseline is already complete and no test/eval files need to change, the Task Contract may allow the same refactor branch to persist only the baseline evidence before RF3.
 
-For Markdown/protocol structure refactors, characterization may include deterministic reference/layout/invariant tests and focused agent evals where semantics cannot be proven mechanically.
+### Baseline acceptance gate
 
-## RF2 — Atomic Refactor Contract
+ChatGPT reviews the pushed RF1 checkpoint through GitHub.
 
-ChatGPT decomposes the refactor into the smallest coherent, independently reviewable units practical.
+RF3 MUST NOT begin until ChatGPT accepts the characterization baseline. Once accepted, the baseline is frozen for that refactor unit.
+
+ChatGPT may persist an explicit baseline-acceptance/review note or Task Contract lifecycle metadata. The executor cannot weaken, remove, or reinterpret the accepted baseline after RF3 starts unless ChatGPT explicitly authorizes a correction.
+
+If baseline verification is failing:
+- resolve the failure as separate work; or
+- explicitly isolate a known unrelated failure before RF3.
+
+Never hide a defect inside the refactor.
+
+## RF2 — Atomic refactor contract
+
+The persisted Task Contract decomposes the refactor into the smallest coherent, independently reviewable units practical.
 
 Each unit states:
 - target structure/code smell;
-- behavior/invariants that must remain unchanged;
-- affected files/surface;
+- behavior/invariants that remain unchanged;
+- affected surface;
 - explicit exclusions;
-- frozen characterization baseline/reference;
-- verification required after the unit.
+- accepted RF1 baseline/reference;
+- verification required after mutation.
 
 Do not mix feature work, bug fixes, protocol behavior changes, dependency upgrades, or unrelated cleanup into the same refactor unit.
 
-## RF3 — Apply Refactor
+If decomposition changes materially after execution starts, ChatGPT persists an explicit Task Contract revision before work continues.
 
-Ownership depends on artifact type:
+## RF3 — Apply refactor
 
 ### Executable/configuration/test infrastructure refactor
-The Agente de IA Ejecutor performs the authorized non-Markdown refactor and may update test/eval implementation only when the refactor target itself is test/eval structure or when an RF1 baseline correction was explicitly approved before this phase.
+
+The Agente de IA Ejecutor performs the authorized non-Markdown refactor after RF1 acceptance.
 
 ### Markdown/instruction refactor
-ChatGPT performs the Markdown refactor because committed Markdown is ChatGPT-owned. The Agente de IA Ejecutor may then run the frozen tests/evals as verification.
 
-No named executor product has special ownership. OpenCode, Codex, Claude Code, Antigravity, or another compatible agent may fulfill the executor role.
+ChatGPT performs the committed Markdown refactor. The Agente de IA Ejecutor may execute the frozen deterministic/eval verification when delegated.
 
-## RF4 — Verification
+No named executor product has special authority.
 
-After each atomic refactor unit, the Agente de IA Ejecutor runs the frozen characterization/regression suite plus any additional non-contract-changing checks appropriate to the refactor.
+## RF4 — Verify and persist final handoff
 
-Required result: the same behavioral contract remains satisfied.
+After each atomic refactor unit, the executor runs:
+- the frozen RF1 characterization/regression baseline;
+- any additional non-contract-changing checks required by the Task Contract.
 
-If a test/eval fails:
-- implementation regression -> executor fixes the refactor within the approved contract;
-- genuine pre-existing test/eval defect -> stop and return to ChatGPT before changing the frozen baseline;
+Required result: the same behavior contract remains satisfied.
+
+Failure routing:
+- implementation regression -> executor fixes within the frozen contract;
+- genuine baseline/test defect -> stop and return to ChatGPT before changing the baseline;
 - ambiguity over intended behavior -> stop and return to ChatGPT;
-- discovered need for changed behavior -> terminate the refactor classification and re-enter normal product development.
+- discovered need for changed behavior -> terminate RF and return to PD0.
 
-Never change the frozen baseline merely because the refactored implementation prefers different behavior.
+After verification, the executor persists the final `handoffs/TNNN-executor-handoff.json`, commits, and pushes the final refactor branch according to `docs/EXECUTOR-HANDOFFS.md`.
 
-For higher-risk refactors ChatGPT MAY request verification from a fresh executor session or a second compatible executor product. This is additional independence of execution, not a distinct governance role.
+Never change the baseline merely because the new implementation prefers different behavior.
 
-## RF5 — Structural Review
+For higher-risk refactors ChatGPT MAY request rerun by a fresh executor session or a second compatible executor product. This remains the same logical executor role.
 
-ChatGPT reviews whether the refactor actually improved the intended structural property without increasing hidden complexity or coupling.
+## RF5 — Orchestrator remote structural review
+
+ChatGPT reviews the pushed branch, accepted baseline, final executor handoff, and actual diff.
 
 Check at minimum:
 - behavior remained stable;
+- accepted RF1 baseline remained intact;
 - architecture/progressive-context boundaries remain coherent;
-- duplication and indirection did not simply move elsewhere;
-- public compatibility was not changed accidentally;
+- duplication/indirection did not merely move;
+- public compatibility did not change accidentally;
+- complexity/coupling improved or stayed controlled;
 - Markdown/executor write boundaries were respected;
-- frozen baseline remained intact;
-- executor verification is green;
-- topic branch and PR target comply with `docs/BRANCHING.md`.
+- verification is green or all exceptions are explicitly understood;
+- branch/PR target complies with `docs/BRANCHING.md`.
 
-## RF6 — Integrate
+Green tests alone are not acceptance authority.
 
-Integrate the refactor only after RF5 acceptance.
+## RF6 — PR and integrate
 
-Normal integration is `refactor/<slug>` -> `develop` through PR, preferably squash merged as one coherent refactor unit. Each accepted unit must leave the repository in a working state so rollback and diagnosis remain straightforward.
+Only after RF5 acceptance does ChatGPT normally create/review the PR from `refactor/<slug>` to `develop`.
+
+Prefer squash merge for one coherent refactor unit. Each accepted unit must leave the repository working and reversible.
+
+Promotion to `main` remains a separate release action.
 
 ## Special rule: Core Markdown refactoring
 
-Because much of the Governance Core is Markdown, a refactor can be behaviorally significant even when no executable code changes.
+Because much of Governance Core is Markdown, structural wording moves can alter semantics even without code changes.
 
 For Core Markdown:
 - ChatGPT owns every wording/structure edit;
-- semantic invariants must be explicit before editing;
-- the Agente de IA Ejecutor owns structural/reference tests and relevant agent eval execution;
-- moving a normative rule between modules must preserve authority, routing, direct references, and progressive-loading behavior;
-- if wording changes interpretation rather than structure, treat it as a protocol change, not a refactor.
+- semantic invariants are explicit before editing;
+- deterministic reference/layout checks and focused agent evals are used where appropriate;
+- moving normative rules must preserve authority, routing, direct references, and progressive-loading behavior;
+- if wording changes interpretation, classify it as a protocol change rather than refactor.
 
 ## Core invariant
 
-Refactoring safety comes from an explicit ChatGPT-owned invariant contract plus a pre-change characterization baseline that the Agente de IA Ejecutor cannot silently move after implementation starts. Executor product identity is irrelevant.
+Refactor safety comes from a ChatGPT-owned invariant contract plus a remotely auditable pre-change characterization baseline that cannot be silently moved after structural mutation begins.
