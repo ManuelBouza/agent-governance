@@ -18,7 +18,9 @@ A chat/terminal prompt is only a pointer to a Task Contract. It is not the canon
 
 ## Location and naming
 
-Active and completed source-maintenance Task Contracts live under `docs/tasks/`.
+Active and completed source-maintenance Task Contracts live under:
+
+`docs/tasks/`
 
 Recommended naming:
 
@@ -26,7 +28,7 @@ Recommended naming:
 
 Task IDs are stable once assigned.
 
-Each task SHOULD also identify its expected persisted executor handoff path under `handoffs/`, normally:
+Each executable task SHOULD identify its expected persisted executor handoff path under `handoffs/`, normally:
 
 `handoffs/TNNN-executor-handoff.json`
 
@@ -36,7 +38,7 @@ Each task should contain:
 
 ### Identity
 - Task ID
-- Status: `READY`, `IN_PROGRESS`, `BLOCKED`, `DONE`, `ACCEPTED`, `CANCELLED`
+- Status: `DRAFT`, `BLOCKED`, `READY`, `IN_PROGRESS`, `DONE`, `ACCEPTED`, `CANCELLED`
 - Type: feature, fix, refactor, test/eval, release, infrastructure, or mixed
 - Base branch
 - Expected topic branch
@@ -69,40 +71,63 @@ Conditions requiring the executor to stop instead of guessing or expanding scope
 ### Expected handoff
 The executor MUST persist its result according to `docs/EXECUTOR-HANDOFFS.md` at the task's expected handoff path before claiming `DONE`, `BLOCKED`, or `PARTIAL`.
 
-The persisted handoff normally records:
-- branch and HEAD;
-- base branch and base SHA;
-- files changed;
-- concise implementation summary;
-- exact test/eval commands;
-- results and failures/skips;
-- dependencies/configuration changes;
-- git status;
-- unresolved ambiguity or risk;
-- recommended next incremental task, if any.
+## Contract integration gate
+
+An executable Task Contract is not ready for execution merely because it exists on a planning branch.
+
+Before launching an executor:
+1. ChatGPT creates/updates the Task Contract on a policy-compliant planning/Markdown topic branch;
+2. ChatGPT reviews the contract and controlling Markdown/Decision Records;
+3. the planning change is merged into `develop`;
+4. the task status is `READY` only when all known prerequisite decisions are resolved;
+5. the executor implementation branch is then created from a `develop` revision containing that exact contract.
+
+This creates two durable stages:
+
+`contract history -> implementation history`
+
+The executor MUST NOT begin executable work from a branch/revision that predates the controlling Task Contract.
+
+## Freeze and revision semantics
+
+The original objective, scope, exclusions, invariants, acceptance criteria, and verification meaning are the durable request.
+
+After implementation begins:
+- the executor cannot edit the Task Contract;
+- ChatGPT must not silently rewrite the original task semantics to match implementation;
+- a material change requires an explicit persisted revision before execution continues;
+- lifecycle metadata and explicit review/revision/acceptance notes may be updated/appended by ChatGPT as long as the original request remains auditable.
+
+A reviewer must be able to distinguish the original task from later authorized revisions.
 
 ## Lifecycle
 
-1. ChatGPT creates the Task Contract in a topic branch or other policy-compliant planning change.
-2. Once the contract is available on the branch/revision the executor will use, ChatGPT supplies only a minimal launch prompt pointing to it.
-3. The executor creates/uses the authorized implementation topic branch and executes against the persisted contract.
-4. Material changes to objective, scope, acceptance, or verification require ChatGPT to persist a revised Task Contract before execution continues.
-5. The executor does not modify the Task Contract to match its implementation.
-6. The executor runs required verification and persists its non-Markdown handoff artifact under `handoffs/`.
-7. The executor's visible response reports only status, handoff path, branch and HEAD.
-8. ChatGPT reads the Task Contract, persisted executor handoff, and actual Git diff/evidence before accepting or requesting rework.
+1. ChatGPT frames/researches the change.
+2. ChatGPT creates the Task Contract on a planning branch.
+3. The Task Contract is reviewed and integrated into `develop`.
+4. ChatGPT launches the executor with a minimal pointer to the Task Contract.
+5. The executor creates/uses the authorized implementation topic branch from the `develop` revision containing the contract.
+6. The executor performs only authorized non-Markdown work.
+7. Material task changes require a persisted ChatGPT revision before execution continues.
+8. The executor runs required verification and persists its non-Markdown handoff under `handoffs/`.
+9. The executor commits and pushes the implementation branch, including the current handoff artifact.
+10. The executor returns only status, handoff path, branch, and pushed HEAD.
+11. ChatGPT reads the Task Contract, handoff, and remote Git diff/evidence.
+12. Rework repeats on the same task branch using durable review/revision instructions.
+13. After ChatGPT acceptance, the implementation proceeds through PR to `develop`.
+14. ChatGPT may update lifecycle/acceptance metadata without rewriting original execution semantics.
 
 ## Minimal launch prompt pattern
 
 A product-specific launch prompt should be equivalent to:
 
-> Operate as the Agente de IA Ejecutor for `ManuelBouza/agent-governance`. Read `AGENTS.md`, then load and execute the Task Contract at `<path>` from the specified branch/revision. Follow all referenced repository policies. Do not edit Markdown. Persist the required executor handoff before returning.
+> Operate as the Agente de IA Ejecutor for `ManuelBouza/agent-governance`. Read `AGENTS.md`, then load and execute the Task Contract at `<path>` from current `develop`. Follow all referenced repository policies. Do not edit Markdown. Persist, commit and push the required executor handoff before returning.
 
 Additional task semantics should not be duplicated into the launch prompt.
 
 ## Minimal executor response pattern
 
-After persisting the required handoff, the executor should return only:
+After persisting/committing/pushing the required handoff, the executor should return only:
 
 `STATUS: DONE | BLOCKED | PARTIAL`
 
@@ -110,8 +135,14 @@ After persisting the required handoff, the executor should return only:
 
 `BRANCH: <topic-branch>`
 
-`HEAD: <commit-sha>`
+`HEAD: <pushed-commit-sha>`
 
 ## Audit invariant
 
-A reviewer must be able to reconstruct both the requested work and the executor-reported result from Git alone, without access to ChatGPT/OpenCode/Codex/Claude conversation history.
+A reviewer must be able to reconstruct from Git alone:
+- what was requested before implementation;
+- any explicit revisions/review directives;
+- what the executor reports it did;
+- what actually changed.
+
+Chat history must not be required for this reconstruction.
