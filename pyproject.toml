@@ -1,0 +1,62 @@
+[project]
+name = "agent-governance-harness"
+version = "0.0.0"
+description = "Deterministic test harness for the canonical agent-governance source product."
+requires-python = ">=3.13"
+readme = "README.md"
+
+[tool.uv]
+package = false
+required-version = ">=0.11.32,<0.12"
+
+[dependency-groups]
+dev = [
+    "pytest>=9,<10",
+    "ruff>=0.16,<0.17",
+]
+
+[tool.pytest.ini_options]
+minversion = "9.0"
+testpaths = ["tests"]
+addopts = [
+    "-ra",
+    "--strict-markers",
+    "--strict-config",
+]
+python_files = ["test_*.py"]
+python_functions = ["test_*"]
+python_classes = ["Test*"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py313"
+extend-exclude = [
+    "**/*.md",
+    "**/*.ipynb",
+    ".atl",
+    ".venv",
+    "handoffs",
+]
+
+[tool.ruff.lint]
+select = [
+    "E",
+    "F",
+    "W",
+    "I",
+    "B",
+    "UP",
+    "SIM",
+    "RUF",
+]
+ignore = [
+    "E501",
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["S101"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "lf"
