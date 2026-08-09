@@ -2,6 +2,7 @@
 
 Status: ACCEPTED
 Authority: Human Owner
+Refined by: D022 — Source product change procedure
 
 ## Decision
 
@@ -16,6 +17,8 @@ The normal handoff is:
 3. The external prompt to OpenCode, Codex, Claude Code, Antigravity, or another executor is intentionally minimal and points the executor to the repository instructions and exact Task Contract path.
 4. The executor loads the repository rules plus that Task Contract, performs only the authorized non-Markdown work, executes required verification, and reports evidence against the persisted contract.
 5. ChatGPT reviews the implementation and evidence against the same versioned contract.
+
+D022 further requires the executable Task Contract/controlling planning change to be integrated into `develop` before the executor implementation branch begins.
 
 ## Canonical task location
 
@@ -61,7 +64,8 @@ Completion evidence may be captured in the PR, commit, CI/test artifacts, or exe
 
 ## Consequences
 
-- `docs/DEVELOPMENT-WORKFLOW.md` must require a persisted Task Contract before executor work begins.
-- `AGENTS.md` must tell executors to load the exact assigned Task Contract and not infer scope from chat history.
-- product-specific launch prompts become small pointers rather than duplicated specifications.
+- `docs/DEVELOPMENT-WORKFLOW.md` requires a persisted Task Contract before executor work begins.
+- D022 tightens this to a contract-first planning stage integrated into `develop` before executable implementation.
+- `AGENTS.md` tells executors to load the exact assigned Task Contract and not infer scope from chat history.
+- product-specific launch prompts are small pointers rather than duplicated specifications.
 - switching executor products does not lose task intent because task semantics live in the repository.
