@@ -25,6 +25,7 @@ Do not create a live `.agent-governance/` / `.agent-coordination/` consumer foot
 - Maintainer Skill design: `docs/MAINTAINER-SKILL-CONTRACT.md`.
 - Testing/evaluation strategy: `docs/TESTING-AND-EVALUATION.md`.
 - Testing Skill/capability policy: `docs/TESTING-SKILL-CAPABILITIES.md`.
+- Source local toolchain: `docs/LOCAL-DEVELOPMENT-TOOLCHAIN.md`.
 - Source-product Task Contract policy: `docs/TASK-CONTRACTS.md`.
 - Executor handoff policy: `docs/EXECUTOR-HANDOFFS.md`.
 - Executable source-maintenance task records: `docs/tasks/`.
@@ -120,6 +121,19 @@ D024 and `docs/TESTING-SKILL-CAPABILITIES.md` define the source-product testing 
 - a cold executor can bootstrap from `AGENTS.md`, its persisted Task Contract, controlling references, and approved tooling before the Maintainer Skill exists;
 - external testing/authoring/security Skills are optional supplemental aids only after applicable supply-chain/coexistence approval and never replace repository-owned verification;
 - the Consumer Governance Skill MUST NOT activate for source-product test/eval maintenance.
+
+## Local development toolchain invariant
+
+D025 and `docs/LOCAL-DEVELOPMENT-TOOLCHAIN.md` define the source-maintainer toolchain.
+
+- Git is the canonical branch/commit/push mechanism.
+- uv is the canonical Python/version/environment/dependency/lock runner for repository-owned test/eval development.
+- after the executable harness exists, canonical verification runs in the locked environment using `uv run --locked`.
+- repository Python quality checks use Ruff; Ruff configuration MUST exclude committed Markdown so executor tooling cannot rewrite ChatGPT-owned `.md` files.
+- the project-local `.venv` is disposable and unversioned; dependency truth lives in `pyproject.toml` plus committed `uv.lock`.
+- GitHub CLI is a recommended workstation helper, not a harness dependency when Git authentication already works.
+- OpenCode/Codex/Claude Code/another executor host is not a source dependency and must not be encoded into correctness semantics.
+- this source-maintainer toolchain MUST NOT be copied automatically into consumer repositories; consumer projects retain/reuse their native toolchains unless a governed task explicitly authorizes a missing tool.
 
 ## File ownership invariant
 
