@@ -14,7 +14,8 @@ All source-product foundation decisions required before this task are now resolv
 - programming language/testing stack: `docs/decisions/D023-python-testing-stack.md`;
 - testing Skill/capability model: `docs/decisions/D024-testing-skill-capability-model.md` and `docs/TESTING-SKILL-CAPABILITIES.md`;
 - local development toolchain: `docs/decisions/D025-local-development-toolchain.md` and `docs/LOCAL-DEVELOPMENT-TOOLCHAIN.md`;
-- ecosystem/SDD/Skill coexistence: `docs/decisions/D026-ecosystem-coexistence-and-capability-reuse.md` and `governance-core/COEXISTENCE.md`.
+- ecosystem/SDD/Skill coexistence: `docs/decisions/D026-ecosystem-coexistence-and-capability-reuse.md` and `governance-core/COEXISTENCE.md`;
+- ChatGPT Orchestrator continuity/checkpointing: `docs/decisions/D027-orchestrator-chat-checkpoints.md` and `docs/ORCHESTRATOR-CHECKPOINTS.md`.
 
 T001 does **not** require a released Maintainer Skill, any external testing/pytest/TDD Skill, or any SDD framework. The executor can bootstrap from repository contracts and approved tooling.
 
@@ -34,6 +35,7 @@ Read and follow:
 - `docs/DEVELOPMENT-WORKFLOW.md`
 - `docs/TASK-CONTRACTS.md`
 - `docs/EXECUTOR-HANDOFFS.md`
+- `docs/ORCHESTRATOR-CHECKPOINTS.md`
 - `docs/TESTING-AND-EVALUATION.md`
 - `docs/TESTING-SKILL-CAPABILITIES.md`
 - `docs/LOCAL-DEVELOPMENT-TOOLCHAIN.md`
@@ -47,6 +49,7 @@ Read and follow:
 - `docs/decisions/D024-testing-skill-capability-model.md`
 - `docs/decisions/D025-local-development-toolchain.md`
 - `docs/decisions/D026-ecosystem-coexistence-and-capability-reuse.md`
+- `docs/decisions/D027-orchestrator-chat-checkpoints.md`
 - `governance-core/COEXISTENCE.md`
 - `tests/README.md`
 - `evals/README.md`
@@ -69,6 +72,8 @@ No Agent Skill is a T001 execution prerequisite. If the Maintainer Skill is avai
 
 No SDD system is a T001 prerequisite. If Gentle-AI, Spec Kit, OpenSpec, another SDD system, a Skill registry, or equivalent tooling exists in the executor's environment, D026 applies: do not modify, replace, duplicate or make T001 depend on those capabilities unless this contract explicitly requires them. T001 remains a repository-native test-harness task.
 
+D027 is source-orchestration state only. The executor does not update `docs/orchestrator/CHECKPOINT.md`; it may read the checkpoint/policy as specification but Markdown ownership remains with ChatGPT.
+
 ## Workstation precondition
 
 Before mutation the executor must verify that:
@@ -84,7 +89,7 @@ Existing global/user-level Skills, SDD tooling, registries or agent configuratio
 ## Checkout / branch precondition
 
 1. clone/fetch the canonical repository as needed;
-2. checkout current `develop` containing this READY Task Contract and D023-D026;
+2. checkout current `develop` containing this READY Task Contract and D023-D027;
 3. verify the working tree is clean;
 4. create `test/governance-harness` from that current `develop` before modifying files.
 
@@ -104,7 +109,7 @@ The executor may create or modify only the non-Markdown artifacts required for t
 
 The executor owns implementation, executable configuration, test execution, and persisted technical handoff under D016/D021/D022.
 
-The executor is not authorized to initialize, update, or rewrite Gentle-AI/Spec Kit/OpenSpec/other SDD assets, third-party Skill registries, user-level agent configuration, or third-party managed instruction blocks as part of T001.
+The executor is not authorized to initialize, update, or rewrite Gentle-AI/Spec Kit/OpenSpec/other SDD assets, third-party Skill registries, user-level agent configuration, third-party managed instruction blocks, or ChatGPT Orchestrator Markdown checkpoints as part of T001.
 
 ## Required configuration outcome
 
@@ -132,15 +137,18 @@ Prioritize:
    - required product directories exist;
    - required Governance Core modules exist, including `COEXISTENCE.md` under protocol 1.9.0;
    - Consumer and Maintainer Skill source boundaries are distinguishable;
+   - source-maintenance checkpoint policy/current paths exist: `docs/ORCHESTRATOR-CHECKPOINTS.md` and `docs/orchestrator/CHECKPOINT.md`;
    - repository root contains no live consumer `.agent-coordination/` instance.
 
 2. **Direct local reference integrity**
    - mechanically resolvable repository-internal references point to expected existing files/paths;
    - the Core/package references to `COEXISTENCE.md` resolve correctly;
-   - deterministic code does not attempt to judge prose semantics.
+   - source-maintenance references from `AGENTS.md` / workflow to the Orchestrator checkpoint paths resolve correctly;
+   - deterministic code does not attempt to judge prose semantics or whether the checkpoint summary is strategically correct.
 
 3. **Source-product / consumer separation**
    - fixtures/tests distinguish source-product artifacts from installed consumer footprints;
+   - the ChatGPT Orchestrator checkpoint is treated as source-product maintenance Markdown, not consumer `STATE.json`;
    - no real consumer/business repository or state is required;
    - source tests do not require Gentle-AI, Spec Kit, OpenSpec, another SDD, external Skill registry, or live third-party project state.
 
@@ -149,7 +157,7 @@ Prioritize:
    - tests require no production credential/service;
    - failures identify the violated invariant.
 
-D026 defines substantial future coexistence test/eval coverage, but T001 must not inflate into all coexistence or all D019 layers. T001 only needs to establish the harness and mechanically protect the current canonical layout/reference boundaries relevant to this increment.
+D026 defines substantial future coexistence test/eval coverage, and D027 defines source-chat continuity behavior, but T001 must not inflate into all coexistence/behavioral eval layers. T001 only needs to establish the harness and mechanically protect current canonical layout/reference boundaries relevant to this increment.
 
 ## Canonical final verification
 
@@ -178,6 +186,7 @@ Provisioning network and test-runtime network are distinct:
 
 Do NOT in T001:
 - edit/create/delete committed `*.md` as the executor;
+- update `docs/orchestrator/CHECKPOINT.md` or any other Orchestrator checkpoint Markdown;
 - use another primary language/test framework/environment manager without a persisted decision;
 - require or install a generic testing/pytest/TDD Agent Skill;
 - require the final Maintainer Skill to exist;
@@ -202,10 +211,12 @@ Do NOT in T001:
 - D024 controls the testing Skill/capability boundary.
 - D025 controls local source-development tooling.
 - D026 controls coexistence/non-overlap with existing SDD/Skills/tooling.
+- D027 controls ChatGPT source-session continuity and preserves the source/consumer state separation.
 - Tests remain executable without Agent Skill or SDD activation.
 - Source-maintainer uv/Python/Ruff choices do not become consumer-project requirements.
 - Ruff/tooling cannot rewrite ChatGPT-owned Markdown.
 - T001 cannot mutate or depend on unrelated third-party managed ecosystem surfaces.
+- The deterministic suite may verify checkpoint paths/references but must not encode strategic judgment about checkpoint prose.
 - Mechanical properties are verified by code, not LLM graders.
 - Tests validate Agent Governance, not generic coding ability.
 - Test implementation cannot redefine Markdown contracts.
@@ -217,7 +228,7 @@ Do NOT in T001:
 ## Acceptance criteria
 
 ChatGPT may accept T001 only if:
-1. execution started from this or a later explicitly READY Task Contract containing D023-D026;
+1. execution started from this or a later explicitly READY Task Contract containing D023-D027;
 2. work occurred on `test/governance-harness` from the correct current `develop`;
 3. no committed Markdown was modified by the executor;
 4. root non-Markdown environment/configuration artifacts satisfy D023/D025;
@@ -225,14 +236,15 @@ ChatGPT may accept T001 only if:
 6. Ruff `>=0.16,<0.17` is declared and configured to exclude Markdown;
 7. `uv.lock` is committed/current and final verification runs with `--locked`;
 8. no Agent Skill or SDD framework is required to make the suite run;
-9. tests cover meaningful current Governance invariants including the required Core/reference presence for `COEXISTENCE.md`;
+9. tests cover meaningful current Governance invariants including required Core/reference presence for `COEXISTENCE.md` and the source Orchestrator checkpoint paths;
 10. tests require no production service, credential, real business repository, or live third-party SDD installation;
 11. the full canonical final verification path was actually executed and reported honestly;
 12. no test was weakened merely to get green;
 13. dependencies/configuration comply with D023/D025 and no D026 capability collision was introduced;
-14. `handoffs/T001-executor-handoff.json` accurately describes the final pushed branch and verification evidence;
-15. the executor committed and pushed the reviewable branch before returning status;
-16. the visible response contains the required minimal pointer.
+14. source-maintenance checkpoint checks remain mechanical and do not turn tests into a second Strategy authority;
+15. `handoffs/T001-executor-handoff.json` accurately describes the final pushed branch and verification evidence;
+16. the executor committed and pushed the reviewable branch before returning status;
+17. the visible response contains the required minimal pointer.
 
 ## Verification requirements
 
@@ -259,6 +271,7 @@ Stop and persist `BLOCKED`/`PARTIAL` instead of guessing if:
 - implementing D023/D025 would require an unapproved substitution or global tool change;
 - the task would require a new mandatory Agent Skill contrary to D024;
 - an installed SDD/Skill/tooling surface creates a material conflict under D026 that cannot be avoided without modifying that external surface;
+- checkpoint semantics would require new strategic interpretation rather than mechanical structural validation;
 - testable behavior requires a new architectural decision;
 - implementation requires unauthorized production/external access;
 - a dependency creates an unapproved supply-chain/security decision;

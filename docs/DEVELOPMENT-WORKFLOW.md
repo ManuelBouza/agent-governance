@@ -8,15 +8,53 @@ Define how agents modify the canonical `agent-governance` source product without
 
 This is a repository-maintenance workflow, not an installed `.agent-coordination/` lifecycle. Real consumer-project governance is exercised only in separate repositories or synthetic disposable fixtures.
 
-All mutation follows `docs/BRANCHING.md`. Verification follows `docs/TESTING-AND-EVALUATION.md`. D022 defines the controlling staged-change decision.
+All mutation follows `docs/BRANCHING.md`. Verification follows `docs/TESTING-AND-EVALUATION.md`. D022 defines the controlling staged-change decision. D027 and `docs/ORCHESTRATOR-CHECKPOINTS.md` define ChatGPT source-maintenance continuity across conversations.
 
 ## Roles
 
 - **Human Owner** — final authority.
-- **ChatGPT Orchestrator** — research/specification/architecture owner, reviewer, Task Contract owner, and exclusive normal author of committed Markdown.
+- **ChatGPT Orchestrator** — research/specification/architecture owner, reviewer, Task Contract owner, source-maintenance checkpoint owner, and exclusive normal author of committed Markdown.
 - **Agente de IA Ejecutor** — product-agnostic coding-agent role fulfilled by OpenCode, Codex, Claude Code, Antigravity, or another compatible agent; owns authorized non-Markdown implementation, tests/evals, execution, and persisted executor handoffs.
 
 `AGENTS.md` is the normative repository adapter for these responsibilities.
+
+## ChatGPT session cold start and turnover
+
+Source-product orchestration must survive a ChatGPT chat change without requiring copied conversation history.
+
+### Cold start
+
+A fresh ChatGPT conversation SHALL:
+
+1. fetch current `develop` through GitHub;
+2. read `AGENTS.md`;
+3. read `docs/orchestrator/CHECKPOINT.md`;
+4. load only the checkpoint's `Next Chat Minimum Load` and directly controlling remote artifacts;
+5. verify active referenced Task Contracts, handoffs, branches, PRs, and pushed SHAs before acting;
+6. continue from the checkpoint's `Next Action` without asking the Human Owner to reconstruct completed work.
+
+If the checkpoint is stale or contradictory, reconstruct the smallest safe frontier from authoritative Git state and refresh the checkpoint before mutation continues.
+
+### Checkpoint refresh
+
+ChatGPT refreshes `docs/orchestrator/CHECKPOINT.md` when the durable source-maintenance frontier changes materially, including accepted decisions, Task Contract readiness/status, executor review/rework, material blockers, or the next permitted action.
+
+The checkpoint is a compact router/frontier, not a transcript. Reference controlling documents instead of copying them.
+
+When a checkpoint update belongs to the same coherent Markdown planning change, include it in that same topic branch/PR rather than creating a separate PR merely for bookkeeping.
+
+### Intentional chat closure
+
+ChatGPT may explicitly recommend closing the current chat and using a new one only when:
+
+- all material work/context is already persisted remotely;
+- the current checkpoint is sufficient to resume;
+- remote references required by the next action are available;
+- no requirement, blocker, acceptance change, or review directive exists only in chat.
+
+When closure is recommended, give the Human Owner the checkpoint path and a minimal new-chat prompt. Do not make the Human Owner paste a long summary.
+
+The source checkpoint is not consumer Governance state and MUST NOT create a live `.agent-coordination/` instance in this repository.
 
 ## Change classes
 
@@ -78,6 +116,8 @@ ChatGPT determines:
 - intended branch class/target.
 
 Research conclusions that materially control future work are persisted in Markdown/Decision Records. Do not rely on chat history as the only durable rationale.
+
+If the completed PD0 work changes the durable frontier or next action, refresh the Orchestrator checkpoint as part of the coherent Markdown change.
 
 Do not create consumer mission/workplan/state records for repository development.
 
@@ -183,6 +223,8 @@ ChatGPT uses GitHub to review:
 
 Green tests are necessary where applicable but are not sufficient for acceptance.
 
+When review changes the durable frontier — accepted, blocked, rework requested, or a new controlling issue is discovered — refresh the Orchestrator checkpoint so another ChatGPT chat can resume the review loop from Git alone.
+
 ### Rework loop
 
 If technical rework is required:
@@ -212,6 +254,8 @@ Merging to `develop` means accepted into the next unreleased state. It does not 
 
 Promotion `develop` -> `main` is a separate action governed by `docs/BRANCHING.md` and `docs/RELEASES.md`.
 
+Before intentionally closing the ChatGPT chat after integration, ensure `docs/orchestrator/CHECKPOINT.md` already describes a safe next frontier from which a fresh chat can resume.
+
 ## Handoff invariants
 
 - ChatGPT -> repository: persist research/decisions/contracts first.
@@ -221,10 +265,11 @@ Promotion `develop` -> `main` is a separate action governed by `docs/BRANCHING.m
 - Executor -> ChatGPT: visible response contains only status, handoff path, branch, and pushed HEAD.
 - ChatGPT -> executor rework: durable review directive/contract revision first when needed.
 - ChatGPT -> PR/integration: only after remote review acceptance.
+- ChatGPT -> next ChatGPT chat: `docs/orchestrator/CHECKPOINT.md` plus Git remote state are the source of continuity; prior chat history is optional.
 - ChatGPT -> Human Owner: escalate scope/risk/public compatibility/release decisions when final authority is required.
 
-No named executor product is privileged. Switching OpenCode -> Codex -> Claude Code -> another compatible executor does not change this procedure.
+No named executor product is privileged. Switching OpenCode -> Codex -> Claude Code -> another compatible executor does not change this procedure. Switching ChatGPT conversations does not change authority or require reconstructing source state from chat.
 
 ## Engineering rationale
 
-This workflow intentionally uses small coherent changes, tests coupled to behavior changes, separate refactoring, durable change rationale, and explicit review before integration. These principles are consistent with the research basis recorded in D022.
+This workflow intentionally uses small coherent changes, tests coupled to behavior changes, separate refactoring, durable change rationale, explicit review before integration, and compact cold-start checkpoints rather than ever-growing conversation context. These principles are consistent with the research basis recorded in D022 and the continuity decision in D027.

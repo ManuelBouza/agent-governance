@@ -28,6 +28,8 @@ Do not create a live `.agent-governance/` / `.agent-coordination/` consumer foot
 - Source local toolchain: `docs/LOCAL-DEVELOPMENT-TOOLCHAIN.md`.
 - Source-product Task Contract policy: `docs/TASK-CONTRACTS.md`.
 - Executor handoff policy: `docs/EXECUTOR-HANDOFFS.md`.
+- ChatGPT Orchestrator checkpoint policy: `docs/ORCHESTRATOR-CHECKPOINTS.md`.
+- Current ChatGPT Orchestrator checkpoint: `docs/orchestrator/CHECKPOINT.md`.
 - Executable source-maintenance task records: `docs/tasks/`.
 - Persisted executor handoffs: `handoffs/`.
 - Product decisions and operating instructions: `docs/`.
@@ -46,11 +48,13 @@ Final authority over product scope, priorities, risk, public distribution, relea
 
 ### ChatGPT — Orchestrator and Markdown Owner
 
-ChatGPT owns product strategy, research synthesis, architectural decisions, work decomposition, acceptance criteria, Task Contracts, agent handoffs, remote review, and all committed Markdown (`*.md`) authoring/editing.
+ChatGPT owns product strategy, research synthesis, architectural decisions, work decomposition, acceptance criteria, Task Contracts, agent handoffs, remote review, source-maintenance checkpointing, and all committed Markdown (`*.md`) authoring/editing.
 
-Only ChatGPT may create, rewrite, or persist Markdown instruction/design/decision/task files in normal agentic development. This includes `AGENTS.md`, `README.md`, `docs/**/*.md`, `governance-core/*.md`, Skill Markdown, and Markdown files inside test/eval fixtures.
+Only ChatGPT may create, rewrite, or persist Markdown instruction/design/decision/task/checkpoint files in normal agentic development. This includes `AGENTS.md`, `README.md`, `docs/**/*.md`, `governance-core/*.md`, Skill Markdown, and Markdown files inside test/eval fixtures.
 
 ChatGPT does not take over implementation merely because a task is difficult. Non-Markdown implementation and verification belong to the Agente de IA Ejecutor.
+
+A fresh ChatGPT conversation MUST be able to resume source-product orchestration from the canonical Git repository without requiring prior chat history. D027 and `docs/ORCHESTRATOR-CHECKPOINTS.md` define that cold-start/chat-turnover contract.
 
 ### Agente de IA Ejecutor — product agnostic
 
@@ -110,6 +114,20 @@ The executor does not normally open or merge the implementation PR unless the Ta
 - Before `DONE`, `BLOCKED`, or `PARTIAL`, the executor MUST persist, commit, and push the handoff/current task branch state.
 
 A reviewer must be able to reconstruct what was requested, what the executor reported, and what actually changed from the canonical Git remote alone.
+
+## Orchestrator chat continuity invariant
+
+D027 and `docs/ORCHESTRATOR-CHECKPOINTS.md` define how ChatGPT source-maintenance sessions survive chat turnover.
+
+- `docs/orchestrator/CHECKPOINT.md` is the single current ChatGPT Orchestrator frontier/checkpoint for this source repository.
+- a fresh ChatGPT chat starts from current `develop`, then reads `AGENTS.md` plus that checkpoint before loading deeper context;
+- the checkpoint references controlling decisions, Task Contracts, handoffs, branches, PRs, blockers, and the next permitted action instead of duplicating their content;
+- private prior chat history is never a required authority or execution dependency;
+- ChatGPT refreshes the checkpoint when the durable frontier changes materially and before intentionally recommending chat closure;
+- ChatGPT recommends a new chat only when all material context is already persisted remotely and the checkpoint is sufficient for cold-start reconstruction;
+- the checkpoint is source-maintenance state only and MUST NOT create or substitute a consumer `.agent-coordination/` instance.
+
+When chat closure is recommended, the minimal next-chat prompt should point only to the repository, `AGENTS.md`, and `docs/orchestrator/CHECKPOINT.md`.
 
 ## Testing Skill/capability invariant
 
