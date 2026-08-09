@@ -20,6 +20,7 @@ agent-governance/
 │   ├── CONTEXT.md
 │   ├── ADAPTERS.md
 │   ├── LIFECYCLE.md
+│   ├── COEXISTENCE.md
 │   ├── EXECUTION.md
 │   ├── PROTOCOL.md
 │   ├── HANDOFF.md
@@ -35,6 +36,7 @@ agent-governance/
 │   │   ├── WORKPLAN.template.md
 │   │   ├── TASK.template.md
 │   │   ├── SKILL-APPROVAL.template.json
+│   │   ├── CAPABILITIES.template.json
 │   │   ├── STATE.template.json
 │   │   └── EXCHANGE.template.jsonl
 │   └── scripts/
@@ -51,7 +53,7 @@ The Core modules are canonical. Neither Skill duplicates or overrides Core autho
 
 ## Consumer Governance Skill
 
-Purpose: install, bootstrap, validate, operate, recover, hand off, audit, and archive governance inside an adopting repository.
+Purpose: install, bootstrap, validate, operate, recover, hand off, audit, archive, and coexist safely with existing project SDD/Skill/tooling capabilities inside an adopting repository.
 
 Controlling contract: `GOVERNANCE-SKILL-CONTRACT.md`.
 
@@ -63,6 +65,7 @@ Controlling contract: `GOVERNANCE-SKILL-CONTRACT.md`.
 ├── CONTEXT.md
 ├── ADAPTERS.md
 ├── LIFECYCLE.md
+├── COEXISTENCE.md
 ├── EXECUTION.md
 ├── PROTOCOL.md
 ├── HANDOFF.md
@@ -73,6 +76,7 @@ Controlling contract: `GOVERNANCE-SKILL-CONTRACT.md`.
 .agent-coordination/
 ├── MISSION.md
 ├── WORKPLAN.md
+├── CAPABILITIES.json
 ├── STATE.json
 ├── EXCHANGE.jsonl
 ├── tasks/
@@ -80,16 +84,20 @@ Controlling contract: `GOVERNANCE-SKILL-CONTRACT.md`.
 └── decisions/
 ```
 
-Product adapters such as `AGENTS.md`, `opencode.json`, Codex/Claude/other native instructions remain project/tool-specific and are not task semantics.
+`CAPABILITIES.json` is a compact coexistence/routing inventory, not authority and not a duplicate SDD/Skill catalog. It records only material capability providers/classifications and references under `COEXISTENCE.md`/`PROTOCOL.md`.
+
+Product adapters such as `AGENTS.md`, `opencode.json`, Codex/Claude/other native instructions remain project/tool-specific and are not task semantics. Existing third-party managed files MUST be composed non-destructively or left untouched under `COEXISTENCE.md`.
 
 ### `governance-skill/SKILL.md`
 
-Purpose: consumer activation, operation routing, non-authority invariant, source-independence, mutation/read safety, and deterministic-tooling routing.
+Purpose: consumer activation, operation routing, non-authority invariant, source-independence, coexistence routing, mutation/read safety, and deterministic-tooling routing.
 
 Rules:
 - minimal frontmatter for compatible Agent Skill consumers;
 - reference canonical Core rather than restating it;
 - use governance roles, not vendor identities;
+- trigger for governance/coordination operations, not generic SDD/planning/testing;
+- route to `COEXISTENCE.md` only when existing project capabilities may overlap;
 - never embed source-product maintenance workflow, project state, or future task content;
 - target <2,500 tokens unless measured use proves more is required;
 - do not require read/write access to the canonical source repository after installation.
@@ -98,25 +106,28 @@ Rules:
 
 - `MISSION.template.md` — strategic objective/scope skeleton.
 - `WORKPLAN.template.md` — gates, deterministic execution-order metadata and task pointers only.
-- `TASK.template.md` — agent-neutral atomic task objective/scope/dependencies/acceptance/Skills/constraints.
+- `TASK.template.md` — agent-neutral atomic task objective/scope/dependencies/acceptance/Skills/constraints plus references to controlling native project artifacts when required.
 - `SKILL-APPROVAL.template.json` — discovery source + exact canonical artifact provenance/revision/digest/risk/permission/dependency approval record.
+- `CAPABILITIES.template.json` — compact capability/provider/coexistence classifications and decision references; never full external specs or Skill catalogs.
 - `STATE.template.json` — constant-size frontier.
 - `EXCHANGE.template.jsonl` — role-based event seed.
 
 Rules:
 - placeholders only; no domain/vendor defaults;
 - future task detail stays outside WORKPLAN;
+- native SDD/spec content is referenced instead of copied when it remains the project's source;
 - Skill approval records pin immutable audited artifacts;
-- bootstrap never silently overwrites existing state.
+- bootstrap never silently overwrites existing state or third-party managed files.
 
 ### `governance-skill/scripts/governance.py`
 
 Single deterministic consumer command surface. Initial subcommands:
-- `bootstrap` — safely create Core/instance/task/Skill-record structure;
-- `validate` — validate layout, references, context budgets, versions, adapters, STATE, WORKPLAN sequence, Skill approval records and EXCHANGE coherence;
+- `bootstrap` — safely create Core/instance/task/Skill-record/capability-inventory structure after coexistence preflight;
+- `validate` — validate layout, references, context budgets, versions, adapters, STATE, WORKPLAN sequence, coexistence inventory, Skill approval records and EXCHANGE coherence;
 - `state` — derive/check/refresh frontier checkpoint;
 - `event` — validate role actors, EXCHANGE events/state transitions and DONE dependency semantics;
-- `skill` — support candidate source resolution/inventory and validate canonical-source/approval-record/revision/digest/permission/dependency matching; MUST NOT decide strategic approval;
+- `skill` — support candidate source resolution/inventory and validate canonical-source/approval-record/revision/digest/permission/dependency/host-selection matching; MUST NOT decide strategic approval;
+- `ecosystem` — inspect mechanically detectable project capability evidence/collisions and maintain compact CAPABILITIES structure; MUST NOT choose semantic authority winners;
 - `archive` — validate/prepare mission archival without destroying history.
 
 Rules:
@@ -125,7 +136,8 @@ Rules:
 - standard library where practical;
 - no production/external services;
 - no strategic decisions in scripts;
-- directory install commands are never executed during discovery;
+- no blind replacement of third-party managed agent/SDD/Skill files;
+- directory/registry install commands are never executed during discovery;
 - candidate Skill acquisition/inspection uses quarantine before active installation.
 
 ## Maintainer Skill
@@ -156,7 +168,8 @@ Shared code does NOT imply shared `SKILL.md` instructions or trigger description
 At minimum maintain distinguishable coverage for:
 
 ### Core
-- deterministic protocol/layout/reference/state invariants.
+- deterministic protocol/layout/reference/state/capability-inventory invariants;
+- coexistence classifications and conflict fail-closed behavior.
 
 ### Consumer Skill
 - bootstrap/install/overwrite refusal;
@@ -165,8 +178,11 @@ At minimum maintain distinguishable coverage for:
 - context budgets;
 - sequential disclosure;
 - Skill discovery/supply-chain controls;
+- existing Skill host-selection/shadowing checks;
+- SDD/Skill/tool coexistence and managed-file preservation;
+- Gentle-AI-like, Spec Kit-like, OpenSpec-like, custom-SDD and no-SDD fixtures;
 - source-repository independence;
-- positive/negative/near-miss consumer activation.
+- positive/negative/near-miss consumer activation including generic SDD/planning Skills.
 
 ### Maintainer Skill
 - source-product activation vs consumer near misses;
@@ -182,9 +198,12 @@ No production/external services are required for release-only tests.
 
 Do not add without evidence:
 - one combined maintainer+consumer `SKILL.md`;
+- a replacement SDD methodology bundled into Governance;
+- a generic Skill registry/memory/testing ecosystem bundled merely for convenience;
 - duplicate prose reference layers;
 - multiple overlapping utility scripts;
 - MCP/network dependencies for governance itself;
+- destructive rewrite of project-native/third-party managed instruction files;
 - decorative assets;
 - domain-specific sample projects;
 - consumer dependence on a floating source checkout.
@@ -198,4 +217,4 @@ Before authoring/releasing either final `SKILL.md`, define and validate that Ski
 4. mutation/read boundary;
 5. focused tests/evals and near-miss separation from the other Skill.
 
-Additionally, before releasing the Consumer Governance Skill, finalize CLI contracts, template field sets, progressive-context checks, adapter neutrality, sequential disclosure, discovery resolution, supply-chain validation, and source-independence tests.
+Additionally, before releasing the Consumer Governance Skill, finalize CLI contracts, template field sets, progressive-context checks, adapter neutrality, sequential disclosure, discovery resolution, supply-chain validation, coexistence/capability inventory behavior, managed-file preservation, source-independence tests, and trigger near misses against existing SDD/orchestration Skills.
