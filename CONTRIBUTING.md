@@ -15,7 +15,11 @@ Application-specific business requirements and tests of an agent's general codin
 
 ## Maintainer agent workflow
 
-The repository maintainers use the role-separated workflow defined in `AGENTS.md`, `docs/DEVELOPMENT-WORKFLOW.md`, and `docs/REFACTORING-WORKFLOW.md`: ChatGPT orchestrates and owns committed Markdown, an Implementation Executor handles implementation artifacts, and Codex owns tests/evals and their execution.
+The repository maintainers use the role-separated workflow defined in `AGENTS.md`, `docs/DEVELOPMENT-WORKFLOW.md`, and `docs/REFACTORING-WORKFLOW.md`:
+- ChatGPT acts as Orchestrator and owns committed Markdown, strategy, contracts, and review;
+- an agent-product-neutral `Agente de IA Ejecutor` owns authorized non-Markdown implementation, tests/evals, and their execution.
+
+OpenCode, Codex, Claude Code, Antigravity, or another compatible coding agent may fulfill the executor role. No executor product has special governance authority.
 
 This is the project's internal agentic maintenance model. Human external contributors are not required to use those specific products. Contributions are evaluated by the resulting contract, architecture, tests/evals, security, and review quality rather than by which tools produced the patch.
 
