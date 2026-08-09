@@ -1,14 +1,14 @@
 # Governance / Skill Agent Evals
 
-This directory is for agent-facing evaluations of behavior intrinsic to the Governance product.
+This directory contains agent-facing evaluations of behavior intrinsic to the Governance product.
 
 ## Agent ownership
 
-Codex is the normal write owner of executable eval definitions, fixtures, harness inputs, and eval execution under `evals/`.
+The `Agente de IA Ejecutor` owns non-Markdown executable eval definitions, fixtures, harness inputs, eval execution, and verification evidence under `evals/`. The executor role is product agnostic: OpenCode, Codex, Claude Code, Antigravity, or another compatible coding agent may fulfill it.
 
-ChatGPT owns Markdown instructions/specifications in this directory and defines the product behavior/invariants that evals must measure. Implementation Executors may inspect evals read-only but must not modify them to accommodate implementation behavior.
+ChatGPT owns committed Markdown instructions/specifications and defines the product behavior/invariants that evals must measure. The executor must not modify evals to redefine the approved contract.
 
-Eval failure routing follows `docs/DEVELOPMENT-WORKFLOW.md` and `docs/REFACTORING-WORKFLOW.md`: implementation defects return to the Implementation Executor, test/eval defects to Codex, and product-contract ambiguity to ChatGPT.
+For behavior-preserving refactors, eval cases accepted as part of the RF1 characterization baseline are frozen for that refactor unit unless ChatGPT explicitly authorizes a correction.
 
 ## In scope
 
@@ -29,4 +29,4 @@ Eval failure routing follows `docs/DEVELOPMENT-WORKFLOW.md` and `docs/REFACTORIN
 
 Synthetic task records may be used only as minimal fixtures necessary to observe governance behavior.
 
-Eval results should record the exact Governance revision, Skill revision, agent product/model/configuration and fixture revision so behavioral changes are attributable.
+Eval results should record the exact Governance revision, Skill revision, executor product/model/configuration, and fixture revision so behavioral changes are attributable.
