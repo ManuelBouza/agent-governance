@@ -10,7 +10,7 @@ A change that intentionally changes behavior, protocol semantics, authority, com
 
 ## Why this workflow
 
-Safe refactoring depends on small behavior-preserving transformations and a known-good verification baseline. This repository strengthens that model by separating specification, implementation, and verification ownership across agents.
+Safe refactoring depends on small behavior-preserving transformations and a known-good verification baseline. This repository uses ChatGPT to define/refine the semantic contract and an agent-product-neutral Agente de IA Ejecutor to implement and verify it.
 
 ## RF0 — Classify and Define Invariants
 
@@ -28,13 +28,16 @@ If intended behavior changes, stop and use the normal product-development flow.
 
 ## RF1 — Characterization Baseline
 
-Codex inspects the affected surface before implementation.
+The Agente de IA Ejecutor inspects the affected surface before implementation.
 
-Codex MUST:
+The executor MUST:
 1. identify existing tests/evals that characterize the behavior;
 2. add focused characterization tests/evals when material behavior is insufficiently covered;
 3. execute the relevant suite against the pre-refactor revision;
-4. establish a green baseline before refactoring begins.
+4. establish a green baseline before refactoring begins;
+5. return the baseline test/eval diff, commands, and evidence to ChatGPT when new characterization was added.
+
+Once ChatGPT accepts the baseline, it becomes frozen for that refactor unit. The executor MUST NOT weaken, remove, or reinterpret that baseline after RF3 begins unless ChatGPT explicitly authorizes a baseline correction.
 
 If the baseline is already failing, the failure must be resolved or explicitly isolated before the refactor. Do not use a refactor to hide an unrelated defect.
 
@@ -49,7 +52,8 @@ Each unit states:
 - behavior/invariants that must remain unchanged;
 - affected files/surface;
 - explicit exclusions;
-- Codex verification required after the unit.
+- frozen characterization baseline/reference;
+- verification required after the unit.
 
 Do not mix feature work, bug fixes, protocol behavior changes, dependency upgrades, or unrelated cleanup into the same refactor unit.
 
@@ -57,30 +61,29 @@ Do not mix feature work, bug fixes, protocol behavior changes, dependency upgrad
 
 Ownership depends on artifact type:
 
-### Executable/configuration refactor
-The Implementation Executor performs the refactor and edits only its authorized non-test, non-Markdown surface.
+### Executable/configuration/test infrastructure refactor
+The Agente de IA Ejecutor performs the authorized non-Markdown refactor and may update test/eval implementation only when the refactor target itself is test/eval structure or when an RF1 baseline correction was explicitly approved before this phase.
 
 ### Markdown/instruction refactor
-ChatGPT performs the refactor because committed Markdown is ChatGPT-owned. The Implementation Executor is not inserted merely to satisfy a generic workflow.
+ChatGPT performs the Markdown refactor because committed Markdown is ChatGPT-owned. The Agente de IA Ejecutor may then run the frozen tests/evals as verification.
 
-### Test/eval refactor
-Codex performs the refactor when the change concerns test/eval structure only and does not alter what product behavior is required.
+No named executor product has special ownership. OpenCode, Codex, Claude Code, Antigravity, or another compatible agent may fulfill the executor role.
 
-No role may mutate another role's owned surface merely because the refactor spans multiple categories; split the work into ordered units instead.
+## RF4 — Verification
 
-## RF4 — Independent Verification
-
-After each atomic refactor unit, Codex runs the relevant characterization/regression suite.
+After each atomic refactor unit, the Agente de IA Ejecutor runs the frozen characterization/regression suite plus any additional non-contract-changing checks appropriate to the refactor.
 
 Required result: the same behavioral contract remains satisfied.
 
 If a test/eval fails:
-- implementation regression -> return the unit to the Implementation Executor or ChatGPT for Markdown-owned changes;
-- genuine test/eval defect -> Codex may repair it only when the pre-refactor behavior and approved invariant demonstrate the test was wrong;
+- implementation regression -> executor fixes the refactor within the approved contract;
+- genuine pre-existing test/eval defect -> stop and return to ChatGPT before changing the frozen baseline;
 - ambiguity over intended behavior -> stop and return to ChatGPT;
 - discovered need for changed behavior -> terminate the refactor classification and re-enter normal product development.
 
-Never change a test merely because the new implementation prefers different behavior.
+Never change the frozen baseline merely because the refactored implementation prefers different behavior.
+
+For higher-risk refactors ChatGPT MAY request verification from a fresh executor session or a second compatible executor product. This is additional independence of execution, not a distinct governance role.
 
 ## RF5 — Structural Review
 
@@ -91,8 +94,9 @@ Check at minimum:
 - architecture/progressive-context boundaries remain coherent;
 - duplication and indirection did not simply move elsewhere;
 - public compatibility was not changed accidentally;
-- role/write boundaries were respected;
-- Codex verification is green.
+- Markdown/executor write boundaries were respected;
+- frozen baseline remained intact;
+- executor verification is green.
 
 ## RF6 — Integrate
 
@@ -107,10 +111,10 @@ Because much of the Governance Core is Markdown, a refactor can be behaviorally 
 For Core Markdown:
 - ChatGPT owns every wording/structure edit;
 - semantic invariants must be explicit before editing;
-- Codex owns structural/reference tests and relevant agent evals;
+- the Agente de IA Ejecutor owns structural/reference tests and relevant agent eval execution;
 - moving a normative rule between modules must preserve authority, routing, direct references, and progressive-loading behavior;
 - if wording changes interpretation rather than structure, treat it as a protocol change, not a refactor.
 
 ## Core invariant
 
-The agent that performs a product refactor does not own the evidence that proves it safe, except when the changed artifact itself is in Codex's test/eval ownership surface. Verification remains an independent handoff before acceptance.
+Refactoring safety comes from an explicit ChatGPT-owned invariant contract plus a pre-change characterization baseline that the Agente de IA Ejecutor cannot silently move after implementation starts. Executor product identity is irrelevant.
