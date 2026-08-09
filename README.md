@@ -8,7 +8,8 @@ This repository is the **public source product and testbed** for the governance 
 
 Only the governance product lives here:
 - canonical governance instructions and protocol structure;
-- Governance Skill implementation/tooling;
+- consumer Governance Skill and source-product Maintainer Skill;
+- supporting implementation/tooling;
 - source-product operating instructions and architectural decisions;
 - deterministic tests and agent-facing governance/Skill evals;
 - minimal synthetic fixtures required to test those artifacts.
@@ -19,34 +20,45 @@ Real application implementation, consumer missions/tasks, consumer STATE/EXCHANG
 
 ```text
 governance-core/     Canonical reusable governance protocol modules
-governance-skill/    Reusable operational Agent Skill (under development)
-docs/                Product design, decisions, and development/operation rules
+governance-skill/    Consumer-facing Governance Skill (under development)
+maintainer-skill/    Source-product Maintainer Skill (under development)
+docs/                Product design, decisions, development and release rules
 tests/               Deterministic framework/Skill tests
-evals/               Agent-facing Skill/governance evaluations
+evals/               Agent-facing Governance/Skill evaluations
 ```
 
-## Separation of concerns
+## Two Skill surfaces
 
-- `governance-core/` is the normative, vendor-independent source of truth.
-- `governance-skill/` is an operational/distribution layer and MUST NOT become authority.
-- `tests/` and `evals/` validate the governance product itself, not application-task implementation quality.
-- A consumer project receives an installed footprint derived from this repository; consumer mission/task state never belongs in this source repository.
+Agent Governance deliberately separates two coherent operational Skills:
+
+- **Maintainer Skill** — used only to develop, refactor, test/evaluate, and release this canonical source product.
+- **Consumer Governance Skill** — used inside adopting repositories to install, bootstrap, validate, operate, recover, hand off, audit, and archive governance.
+
+The consumer Skill MUST operate without requiring read/write access to this canonical source repository after installation. Consumers should use immutable release/tag/commit artifacts rather than depend on a floating source branch.
+
+See `docs/decisions/D017-two-skill-architecture.md` and `docs/MAINTAINER-SKILL-CONTRACT.md`.
 
 ## Source-repository agent operation
 
-Development of this repository has its own agent workflow and does not self-install the consumer governance protocol.
+Development uses two agent roles plus the Human Owner:
 
-Normal write ownership:
-- **ChatGPT** — Orchestrator, architecture/specification, and committed Markdown (`*.md`).
-- **OpenCode or another compatible Implementation Executor** — approved non-test product implementation code/config/assets.
-- **Codex** — test/eval authoring and test/eval execution.
+- **ChatGPT Orchestrator** — strategy, research synthesis, architecture/specification, work contracts, handoffs, review, and all committed Markdown (`*.md`).
+- **Agente de IA Ejecutor** — product-agnostic technical executor; OpenCode, Codex, Claude Code, Antigravity, or another compatible coding agent may fill the role. It owns authorized non-Markdown implementation, tests/evals, fixtures, and verification execution.
 - **Human Owner** — final authority.
 
-See:
-- `AGENTS.md` — normative repository agent boundaries;
-- `docs/DEVELOPMENT-WORKFLOW.md` — normal product change lifecycle;
-- `docs/REFACTORING-WORKFLOW.md` — behavior-preserving refactor lifecycle with Codex characterization/verification;
-- `opencode.json` — OpenCode-specific mechanical executor restrictions.
+No named executor product has special governance status.
+
+See `AGENTS.md`, `docs/DEVELOPMENT-WORKFLOW.md`, and `docs/REFACTORING-WORKFLOW.md`.
+
+## Branch and release model
+
+- `main` — primary/default stable branch; latest accepted potentially releasable state.
+- `develop` — integration branch for the next unreleased state.
+- normal work — short-lived topic branches from `develop`, merged back by PR.
+- normal direct writes to `main` or `develop` are prohibited.
+- published releases/tags originate from `main` only.
+
+See `docs/BRANCHING.md` and `docs/RELEASES.md`.
 
 ## Public distribution
 
@@ -54,20 +66,21 @@ The project is deliberately public so compatible agent users, teams, and tool ve
 
 Agent Governance is licensed under **Apache-2.0**. See `LICENSE`.
 
-Public visibility does not weaken the framework's Skill supply-chain rules: third-party Skills, contributions, releases, and installed artifacts remain subject to provenance, review, exact-version verification, and the applicable governance controls.
+Public visibility does not weaken the framework's Skill supply-chain rules: third-party Skills, contributions, releases, and installed artifacts remain subject to provenance, review, exact-version verification, and applicable governance controls.
 
 Project policies:
 - `CONTRIBUTING.md` — contribution scope and pull-request expectations;
 - `SECURITY.md` — security-relevant defect scope and reporting guidance;
+- `docs/BRANCHING.md` — stable/integration/topic branch policy;
 - `docs/RELEASES.md` — stability model and stable-release gate.
 
 ## Current status
 
 Protocol source version: **1.8.0**.
 
-The Core architecture and Governance Skill functional/package design are established. The executable Governance Skill and its focused test/eval harness are the next product-development phase.
+The Core architecture, binary agent-role model, two-Skill architecture, development/refactoring workflows, and dual-branch release model are established. Both executable Skills and their focused test/eval harnesses remain under development.
 
-`main` is development state. Consumers should pin an immutable release or commit rather than treating the floating branch as an approved dependency.
+Consumers should pin an immutable release or commit. `develop` is explicitly unreleased integration state; `main` is stable but a release/tag remains the preferred dependency identity once releases exist.
 
 ## Historical origin
 
