@@ -2,13 +2,21 @@
 
 This directory contains agent-facing evaluations of behavior intrinsic to the Governance product.
 
-The normative eval architecture, external references, isolation rules, grader selection, fixture policy, repeated-trial requirements, and release thresholds live in `../docs/TESTING-AND-EVALUATION.md`. The repository-owned harness language decision is `../docs/decisions/D023-python-testing-stack.md`.
+The normative eval architecture, external references, isolation rules, grader selection, fixture policy, repeated-trial requirements, and release thresholds live in `../docs/TESTING-AND-EVALUATION.md`. The repository-owned harness language decision is `../docs/decisions/D023-python-testing-stack.md`. Skill/capability boundaries are defined by `../docs/TESTING-SKILL-CAPABILITIES.md` and D024.
 
 ## Harness language
 
 Repository-owned eval harness/orchestration code SHOULD use Python `>=3.13` by default so deterministic checks, fixture manipulation, subprocess/tool traces, and behavioral eval orchestration share one language.
 
-This decision does not select any model-provider SDK, hosted eval platform, executor CLI, environment manager, or required Skill. Those are separate toolchain/capability decisions. Language-specific adapter glue is allowed only when the target system cannot be exercised cleanly from the Python harness.
+This decision does not select any model-provider SDK, hosted eval platform, executor CLI, or environment manager. Those are separate toolchain decisions. Language-specific adapter glue is allowed only when the target system cannot be exercised cleanly from the Python harness.
+
+## Skill/capability boundary
+
+The eval harness itself does not require an Agent Skill to run.
+
+When the Maintainer Skill is available, it is the project-owned top-level Skill for source eval maintenance and should progressively route to Skill/eval or security testing context as needed. Do not create a separate generic eval/testing Skill merely to invoke the harness.
+
+External Skill-authoring/evaluation/security Skills may be supplemental only after approval. Their generated prompts, reports, or candidate assertions do not replace repository-owned eval cases, traces, graders, or ChatGPT review.
 
 ## Agent ownership
 
@@ -49,6 +57,7 @@ For behavior-preserving refactors, eval cases accepted as part of the RF1 charac
 - fixed train/validation trigger partitions;
 - repeated trigger trials;
 - correct routing to PD/RF, branch, release, Core, tests, and eval context;
+- correct routing to the smallest relevant testing capability area defined by D024;
 - correct ChatGPT Orchestrator / Agente de IA Ejecutor role interpretation;
 - refusal to treat ordinary consumer-project governance as source maintenance;
 - refusal to create a live consumer `.agent-coordination/` instance in this repository.
