@@ -23,6 +23,7 @@ Do not create a live `.agent-governance/` / `.agent-coordination/` consumer foot
 - Source-product Maintainer Skill: `maintainer-skill/` when its own gate permits it.
 - Consumer Skill design: `docs/GOVERNANCE-SKILL-CONTRACT.md` and `docs/GOVERNANCE-SKILL-PACKAGE.md`.
 - Maintainer Skill design: `docs/MAINTAINER-SKILL-CONTRACT.md`.
+- Testing/evaluation strategy: `docs/TESTING-AND-EVALUATION.md`.
 - Product decisions and operating instructions: `docs/`.
 - Deterministic product tests: `tests/`.
 - Agent-facing product evals: `evals/`.
@@ -97,11 +98,12 @@ Neither ChatGPT nor an Agente de IA Ejecutor may bypass this policy because of r
 - Both Skills are operational tooling, never authority over the Core.
 - Do not author final Skill packages until their documented release gates are satisfied.
 - Tests/evals validate Governance/Skill behavior, not application-task implementation quality.
+- `docs/TESTING-AND-EVALUATION.md` is normative for verification architecture, isolation, fixtures, grader selection, thresholds and external technical references.
 - External Skill research follows `governance-core/SKILL-DISCOVERY.md` and `governance-core/SKILL-SUPPLY-CHAIN.md`.
 
 ## Development workflow
 
-Use `docs/DEVELOPMENT-WORKFLOW.md` for normal product changes and `docs/REFACTORING-WORKFLOW.md` for behavior-preserving refactors. Both operate inside the branch lifecycle defined by `docs/BRANCHING.md`.
+Use `docs/DEVELOPMENT-WORKFLOW.md` for normal product changes and `docs/REFACTORING-WORKFLOW.md` for behavior-preserving refactors. Both operate inside the branch lifecycle defined by `docs/BRANCHING.md` and use the verification strategy in `docs/TESTING-AND-EVALUATION.md`.
 
 No executable task begins until ChatGPT has defined an unambiguous objective, scope, invariants/acceptance, and handoff. The Agente de IA Ejecutor implements and verifies against that contract. ChatGPT reviews the resulting diff and verification evidence before acceptance.
 

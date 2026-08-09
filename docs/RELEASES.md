@@ -21,6 +21,12 @@ Published tags/releases originate from `main` only.
 - `1.x` — first stable public contract; backward-compatible additions use minor versions and compatible clarifications/fixes use patch versions.
 - major version — incompatible protocol or installed-footprint behavior.
 
+## Verification policy
+
+`docs/TESTING-AND-EVALUATION.md` is normative for test/eval architecture, isolation, fixture policy, grader selection and release thresholds.
+
+Mechanical invariants use deterministic code tests where practical. Probabilistic agent behavior uses repeated isolated eval trials. Project-defined numeric thresholds are local release policy and are not represented as universal industry standards.
+
 ## Stable release gate
 
 Do not publish `v1.0.0` until all of the following are true:
@@ -28,14 +34,17 @@ Do not publish `v1.0.0` until all of the following are true:
 2. consumer Governance Skill activation/trigger contract is finalized;
 3. source-product Maintainer Skill activation/trigger contract is finalized sufficiently for supported maintenance/release workflows;
 4. `governance.py` CLI contracts and template field sets are finalized;
-5. deterministic governance/Skill tests pass;
-6. agent-facing governance/Skill evals meet documented thresholds;
-7. portability is demonstrated across at least two distinct agent adapters;
-8. Skill discovery and supply-chain security checks are covered;
-9. bootstrap/install/upgrade/uninstall behavior is documented and tested;
-10. public licensing, contribution, branch, and security policies are present;
-11. release artifacts contain no consumer-project state or private data;
-12. consumer Governance operation does not require read/write access to the canonical source repository after installation.
+5. deterministic governance/Skill regression tests pass 100%;
+6. configured property/state-machine release runs have zero unresolved counterexamples;
+7. mandatory agent-facing governance/Skill evals meet the thresholds in `docs/TESTING-AND-EVALUATION.md`;
+8. portability is demonstrated across at least two distinct supported agent adapters/fixtures;
+9. Skill discovery and supply-chain security checks are covered, including exact artifact identity/revocation/drift behavior;
+10. release-blocking adversarial/security fixtures are rejected or contained as expected;
+11. bootstrap/install/upgrade/uninstall behavior is documented and tested;
+12. public licensing, contribution, branch, testing, and security policies are present;
+13. release artifacts contain no consumer-project state or private data;
+14. consumer Governance operation does not require read/write access to the canonical source repository after installation;
+15. representative release eval transcripts/outcomes and all release-blocking failures have been reviewed before acceptance.
 
 ## Release artifacts
 
