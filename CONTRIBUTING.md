@@ -13,6 +13,14 @@ Good contributions improve one or more of:
 
 Application-specific business requirements and tests of an agent's general coding ability are out of scope for this repository.
 
+## Maintainer agent workflow
+
+The repository maintainers use the role-separated workflow defined in `AGENTS.md`, `docs/DEVELOPMENT-WORKFLOW.md`, and `docs/REFACTORING-WORKFLOW.md`: ChatGPT orchestrates and owns committed Markdown, an Implementation Executor handles implementation artifacts, and Codex owns tests/evals and their execution.
+
+This is the project's internal agentic maintenance model. Human external contributors are not required to use those specific products. Contributions are evaluated by the resulting contract, architecture, tests/evals, security, and review quality rather than by which tools produced the patch.
+
+Coding agents working directly in this repository should follow `AGENTS.md` and any applicable repository-native adapter restrictions.
+
 ## Before changing normative behavior
 
 Changes that alter authority, lifecycle gates, execution states, disclosure semantics, Skill trust, persistence, or other protocol behavior should:
@@ -30,6 +38,8 @@ Keep pull requests focused and independently reviewable. Include:
 - compatibility or migration impact;
 - tests/evals performed;
 - any security or supply-chain implications.
+
+Behavior-preserving refactors should be separated from intentional behavior changes where practical and should demonstrate a pre-change characterization baseline when relevant coverage was missing.
 
 Do not include secrets, credentials, proprietary consumer-project data, or copied project-specific mission/task state.
 
