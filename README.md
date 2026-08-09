@@ -46,13 +46,15 @@ See `docs/decisions/D017-two-skill-architecture.md`, `docs/decisions/D026-ecosys
 
 Development uses two agent roles plus the Human Owner:
 
-- **ChatGPT Orchestrator** — strategy, research synthesis, architecture/specification, work contracts, handoffs, review, and all committed Markdown (`*.md`).
+- **ChatGPT Orchestrator** — strategy, research synthesis, architecture/specification, work contracts, handoffs, review, source-maintenance checkpoints, and all committed Markdown (`*.md`).
 - **Agente de IA Ejecutor** — product-agnostic technical executor; OpenCode, Codex, Claude Code, Antigravity, or another compatible coding agent may fill the role. It owns authorized non-Markdown implementation, tests/evals, fixtures, and verification execution.
 - **Human Owner** — final authority.
 
 No named executor product has special governance status.
 
-See `AGENTS.md`, `docs/DEVELOPMENT-WORKFLOW.md`, and `docs/REFACTORING-WORKFLOW.md`.
+ChatGPT source-maintenance sessions are designed to survive conversation turnover. The current orchestration frontier is persisted in `docs/orchestrator/CHECKPOINT.md`; a new ChatGPT chat can resume from current `develop` by loading `AGENTS.md`, that checkpoint, and only the minimum controlling files it references. Prior chat history is not required.
+
+See `AGENTS.md`, `docs/DEVELOPMENT-WORKFLOW.md`, `docs/ORCHESTRATOR-CHECKPOINTS.md`, and `docs/REFACTORING-WORKFLOW.md`.
 
 ## Branch and release model
 
@@ -82,7 +84,7 @@ Project policies:
 
 Protocol source version: **1.9.0**.
 
-The Core architecture, binary agent-role model, two-Skill architecture, source change procedure, Python testing stack, testing-capability model, local development toolchain, ecosystem coexistence policy, development/refactoring workflows, and dual-branch release model are established. The first deterministic harness task (`T001`) is now READY, while both final executable Skills and the broader test/eval implementation remain under development.
+The Core architecture, binary agent-role model, two-Skill architecture, source change procedure, Python testing stack, testing-capability model, local development toolchain, ecosystem coexistence policy, ChatGPT Orchestrator checkpoint/chat-turnover mechanism, development/refactoring workflows, and dual-branch release model are established. The first deterministic harness task (`T001`) is READY but not yet executed, while both final executable Skills and the broader test/eval implementation remain under development.
 
 Consumers should pin an immutable release or commit. `develop` is explicitly unreleased integration state; `main` is stable but a release/tag remains the preferred dependency identity once releases exist.
 
