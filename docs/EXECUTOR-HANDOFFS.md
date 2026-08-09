@@ -8,6 +8,8 @@ Define how an `Agente de IA Ejecutor` returns implementation status and verifica
 
 The executor's chat/terminal response is transport only. The authoritative execution result MUST be persisted in Git and pushed to the canonical remote before the executor reports completion, blocking, or partial progress.
 
+D029 defines the non-self-referential Git identity model used by this contract.
+
 ## Canonical location
 
 Executor handoffs live under:
@@ -31,7 +33,7 @@ Each final handoff MUST record at least:
 - `status`: `DONE`, `BLOCKED`, or `PARTIAL`
 - `task_contract_path`
 - `branch`
-- `head_sha`
+- `implementation_head_sha`
 - `base_branch`
 - `base_sha`
 - `files_changed`
@@ -46,7 +48,11 @@ Each final handoff MUST record at least:
 - `recommended_next_task`
 - `chatgpt_read_path`
 
-The handoff SHOULD make clear whether `head_sha` is the pushed remote HEAD reviewed by ChatGPT. A local-only SHA is not sufficient for normal handoff acceptance.
+`implementation_head_sha` identifies the committed implementation/test/eval state described by the evidence. It MUST be reachable as an ancestor of the final pushed topic-branch HEAD reported after handoff finalization.
+
+The handoff JSON MUST NOT be required to contain the SHA of the commit that contains that same JSON. Such a requirement is self-referential and impossible to satisfy.
+
+For backward compatibility, an existing `head_sha` field MAY be interpreted as the implementation/review anchor when the handoff explicitly states that meaning.
 
 ## Lifecycle
 
@@ -54,12 +60,14 @@ The handoff SHOULD make clear whether `head_sha` is the pushed remote HEAD revie
 2. The executor creates/uses the task branch from the `develop` revision containing that contract.
 3. The executor performs the authorized work.
 4. The executor runs required verification.
-5. The executor writes/updates the task handoff artifact under `handoffs/` on the same task branch.
-6. The executor commits the authorized implementation/test/eval/handoff state.
-7. The executor pushes the topic branch to the canonical remote.
-8. The handoff's `head_sha` must describe the pushed branch state; if the commit changed after writing the file, update/recommit so the handoff and pushed state remain coherent.
-9. The executor's visible response contains only status, handoff path, branch, and pushed HEAD.
-10. ChatGPT fetches the remote handoff and branch/diff through GitHub before accepting or requesting rework.
+5. The executor commits the final implementation/test/eval state that the verification evidence describes.
+6. The executor records that commit as `implementation_head_sha` in the task handoff artifact under `handoffs/`.
+7. The executor commits the handoff artifact; this may create a handoff-only successor commit.
+8. The executor pushes the topic branch to the canonical remote.
+9. The executor's visible response contains only status, handoff path, branch, and the actual pushed branch HEAD.
+10. ChatGPT fetches the remote branch at that visible HEAD, reads the handoff there, verifies that `implementation_head_sha` is an ancestor, and reviews the implementation diff/evidence before accepting or requesting rework.
+
+If implementation changes after the handoff was generated, the executor MUST rerun affected verification as required, create a new implementation commit, update `implementation_head_sha`, and regenerate the handoff. A handoff-only metadata/finalization commit does not require a new implementation anchor.
 
 ## Commit/push invariant
 
@@ -69,7 +77,9 @@ Before returning status, the executor MUST ensure:
 - all in-scope implementation/test/eval changes intended for review are committed;
 - the handoff artifact is committed;
 - the topic branch is pushed to the canonical remote;
-- the reported HEAD is reachable from that remote topic branch;
+- the visible reported `HEAD` equals the pushed topic-branch HEAD;
+- `implementation_head_sha` is an ancestor of that visible HEAD;
+- the handoff file is readable at that visible HEAD;
 - the working tree contains no unreported in-scope changes that would make the handoff misleading.
 
 If pushing is impossible because of credentials/connectivity/permissions, persist a `BLOCKED` handoff locally if possible and report the inability to create a remotely auditable state. ChatGPT cannot accept a normal implementation from chat-only evidence.
@@ -95,7 +105,9 @@ The executor's terminal/chat response SHOULD be equivalent to:
 
 `BRANCH: <topic-branch>`
 
-`HEAD: <pushed-commit-sha>`
+`HEAD: <pushed-final-branch-head-sha>`
+
+The visible `HEAD` is intentionally outside the handoff JSON because it may identify the commit that contains the final handoff itself.
 
 For an intermediate RF1 checkpoint, the handoff path may be the baseline artifact specified by the Task Contract.
 
@@ -105,14 +117,19 @@ Additional narrative should be minimal. The repository handoff is authoritative.
 
 The executor MUST persist the handoff after running the required verification and before claiming the task is DONE/BLOCKED/PARTIAL.
 
-If implementation changes after a handoff was written, update the handoff and pushed commit so its SHA, file list, and verification evidence describe the actual review state.
+The normal sequence is:
+
+`implementation commit -> handoff JSON referencing implementation commit -> handoff/finalization commit -> push -> visible final HEAD`
+
+Additional handoff-only correction commits are allowed when they do not change implementation/test/eval state and the JSON continues to identify the correct implementation anchor.
 
 ## Audit invariant
 
 A reviewer must be able to reconstruct from the canonical Git remote:
 
-- what ChatGPT requested: `docs/tasks/<task>.md`
-- what the executor reports it did: `handoffs/<task>-executor-handoff.json`
-- what actually changed: pushed commits/diff and test/eval artifacts
+- what ChatGPT requested: `docs/tasks/<task>.md` plus any persisted task revision/review directive;
+- what implementation state the executor attests to: `implementation_head_sha` in `handoffs/<task>-executor-handoff.json`;
+- what exact pushed branch state contains that handoff: the visible `HEAD` verified against the remote branch;
+- what actually changed: pushed commits/diff and test/eval artifacts.
 
 Chat history and an executor's unpushed local filesystem MUST NOT be required for this reconstruction.
