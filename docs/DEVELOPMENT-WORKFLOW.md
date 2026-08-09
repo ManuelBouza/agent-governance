@@ -13,10 +13,22 @@ All repository mutation occurs inside the branch lifecycle defined by `docs/BRAN
 ## Roles
 
 - Human Owner: final authority.
-- ChatGPT: Orchestrator, strategy/specification owner, architectural reviewer, and exclusive normal author of committed Markdown.
+- ChatGPT: Orchestrator, strategy/specification owner, architectural reviewer, exclusive normal author of committed Markdown, and Task Contract owner.
 - Agente de IA Ejecutor: product-agnostic coding-agent role fulfilled by OpenCode, Codex, Claude Code, Antigravity, or another compatible agent; owns authorized non-Markdown implementation, tests/evals, and their execution.
 
 `AGENTS.md` is the normative repository adapter for these responsibilities.
+
+## Persisted task precondition
+
+Executable work MUST have a repository-persisted Task Contract before an Agente de IA Ejecutor begins implementation.
+
+`docs/TASK-CONTRACTS.md` defines the format and lifecycle. Active source-maintenance contracts live under `docs/tasks/`.
+
+The external agent-launch prompt is transport only. It SHOULD contain the minimum repository/branch context plus the exact Task Contract path and MUST NOT become the sole source of objective, scope, acceptance, or verification semantics.
+
+The executor reads `AGENTS.md`, the assigned Task Contract, and only the controlling references required by that contract. It MUST NOT depend on prior chat history to reconstruct missing task intent.
+
+Material changes to objective, scope, acceptance, or required verification require ChatGPT to persist a Task Contract revision before implementation continues.
 
 ## Branch precondition
 
@@ -42,20 +54,28 @@ ChatGPT determines:
 
 Do not create consumer mission/workplan/state records for repository development.
 
-## PD1 — Specify Contract
+## PD1 — Persist Task Contract
 
-ChatGPT persists the minimum Markdown needed to make the change unambiguous:
+For every executable handoff, ChatGPT creates or updates the exact Task Contract under `docs/tasks/` before implementation begins.
+
+The contract defines the minimum durable execution semantics:
 - objective/result;
-- controlling architecture/invariants;
-- compatibility constraints;
+- controlling references;
+- authorized scope and explicit exclusions;
+- architecture/invariants/compatibility constraints;
+- branch/base requirements;
 - acceptance criteria;
-- executor handoff and verification requirements.
+- verification/evidence requirements;
+- stop/escalation conditions;
+- expected executor handoff.
 
-For protocol/instruction changes, ChatGPT authors the canonical Markdown change itself. For executable changes, the specification describes required behavior without prescribing unnecessary implementation mechanics.
+For protocol/instruction changes, ChatGPT also authors the canonical Markdown changes itself. For executable changes, the contract states required outcomes without prescribing unnecessary implementation mechanics.
+
+The Task Contract is the audit record of what was requested. It is not rewritten after implementation starts merely to match the resulting implementation.
 
 ## PD2 — Establish Verification
 
-The Agente de IA Ejecutor derives the verification strategy from the approved ChatGPT contract before implementing behavior that requires executable verification.
+The Agente de IA Ejecutor derives the verification strategy from the persisted Task Contract before implementing behavior that requires executable verification.
 
 Depending on change type, the executor:
 - adds/updates deterministic tests;
@@ -64,7 +84,7 @@ Depending on change type, the executor:
 - identifies expected failing tests for intentional new behavior;
 - records exact commands and relevant evidence.
 
-Tests/evals must test the approved contract, not redefine it. A test/eval change that materially changes required behavior or acceptance meaning requires ChatGPT review before proceeding.
+Tests/evals must test the approved contract, not redefine it. A test/eval change that materially changes required behavior or acceptance meaning requires ChatGPT review and, when material, a persisted Task Contract revision before proceeding.
 
 For behavior-preserving refactors, follow `REFACTORING-WORKFLOW.md`; the pre-change characterization baseline must be green before implementation begins.
 
@@ -72,7 +92,7 @@ Tests/evals assess this governance product, not the quality of application tasks
 
 ## PD3 — Implement
 
-For executable product changes, the Agente de IA Ejecutor receives the approved contract and necessary read-only Markdown context.
+For executable product changes, the Agente de IA Ejecutor receives the Task Contract path and necessary read-only repository context.
 
 The executor:
 - edits authorized non-Markdown implementation code/config/assets;
@@ -81,27 +101,27 @@ The executor:
 - does not change strategic scope or acceptance;
 - resolves normal technical implementation and test-design choices autonomously inside the contract.
 
-For Markdown-only product changes, this phase is performed by ChatGPT and no executor implementation is required, although executable verification may still be delegated to the Agente de IA Ejecutor.
+For Markdown-only product changes, this phase is performed by ChatGPT and no executor implementation is required, although executable verification may still be delegated through a Task Contract.
 
 For test/eval-only work, the Agente de IA Ejecutor performs the authorized changes and execution.
 
 ## PD4 — Verification
 
-The Agente de IA Ejecutor runs the applicable deterministic tests/evals against the resulting implementation and returns reproducible evidence.
+The Agente de IA Ejecutor runs the applicable deterministic tests/evals against the resulting implementation and returns reproducible evidence required by the Task Contract.
 
 If verification fails:
 - implementation or test implementation defect -> executor diagnoses and fixes within the approved contract;
 - specification/acceptance ambiguity -> stop and return to ChatGPT;
 - proposed behavior change discovered during a refactor -> stop refactor and re-enter PD0 as a behavior-changing change.
 
-The executor MUST NOT make tests green by weakening the ChatGPT-approved behavioral contract. If a previously established baseline must change, ChatGPT must explicitly authorize that change.
+The executor MUST NOT make tests green by weakening the ChatGPT-approved behavioral contract. If a previously established baseline must change, ChatGPT must explicitly authorize that change and persist any material contract revision first.
 
 For higher-risk changes ChatGPT MAY request a fresh executor session or a second compatible executor product to rerun verification, but this remains the same `Agente de IA Ejecutor` role and does not create a new governance role.
 
 ## PD5 — Orchestrator Review
 
 ChatGPT reviews:
-- implementation/test/eval diff against the approved objective;
+- implementation/test/eval diff against the persisted Task Contract;
 - architectural consistency;
 - role-boundary compliance;
 - executor verification evidence;
@@ -121,9 +141,9 @@ Promotion of `develop` to `main` is a separate release/stability action governed
 
 ## Handoff Invariants
 
-- ChatGPT -> Agente de IA Ejecutor only after the contract is sufficiently complete.
-- Agente de IA Ejecutor -> ChatGPT with implementation/test/eval diff and reproducible verification evidence.
-- ChatGPT -> Agente de IA Ejecutor again when technical rework is required.
+- ChatGPT -> Agente de IA Ejecutor: minimal launch prompt pointing to the persisted Task Contract only after the contract is sufficiently complete.
+- Agente de IA Ejecutor -> ChatGPT: implementation/test/eval diff and reproducible verification evidence required by that contract.
+- ChatGPT -> Agente de IA Ejecutor again when technical rework is required, with a persisted contract revision first if objective/scope/acceptance materially changes.
 - ChatGPT -> Human Owner when product scope/risk/public compatibility requires final authority.
 
-No executor product is privileged. Switching OpenCode -> Codex -> Claude Code -> another compatible executor does not change the role contract.
+No executor product is privileged. Switching OpenCode -> Codex -> Claude Code -> another compatible executor does not change the role contract or task semantics.
