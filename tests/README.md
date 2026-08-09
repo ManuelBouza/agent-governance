@@ -2,7 +2,7 @@
 
 This directory contains code-driven tests of the Governance Core and deterministic portions of both Agent Skills.
 
-The normative testing architecture, external references, isolation rules, fixture policy, property-testing guidance, and release thresholds live in `../docs/TESTING-AND-EVALUATION.md`. The concrete language/framework decision is `../docs/decisions/D023-python-testing-stack.md`.
+The normative testing architecture, external references, isolation rules, fixture policy, property-testing guidance, and release thresholds live in `../docs/TESTING-AND-EVALUATION.md`. The concrete language/framework decision is `../docs/decisions/D023-python-testing-stack.md`. Testing Skill/capability boundaries are defined by `../docs/TESTING-SKILL-CAPABILITIES.md` and D024.
 
 ## Canonical test stack
 
@@ -14,6 +14,14 @@ Repository-owned deterministic tests use:
 - Hypothesis `>=6,<7` only for tasks that genuinely require property/state-machine coverage.
 
 T001's first deterministic harness should require pytest only unless its approved scope is revised to include stateful/property testing. The local environment manager, dependency installation CLI, and lock strategy are defined separately by the development-toolchain decision.
+
+## Skill boundary
+
+No Agent Skill is required to execute this suite.
+
+When available, the Maintainer Skill may route a source-maintenance task to the relevant testing context, but test correctness, CI execution, and release verification must remain possible from repository contracts plus approved tooling alone.
+
+Do not create or require generic pytest/testing/TDD Skills solely to run these tests. External testing/security Skills are supplemental only after applicable governance approval and cannot replace repository-owned assertions.
 
 ## Agent ownership
 
