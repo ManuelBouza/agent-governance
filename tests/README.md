@@ -2,7 +2,18 @@
 
 This directory contains code-driven tests of the Governance Core and deterministic portions of both Agent Skills.
 
-The normative testing architecture, external references, isolation rules, fixture policy, property-testing guidance, and release thresholds live in `../docs/TESTING-AND-EVALUATION.md`.
+The normative testing architecture, external references, isolation rules, fixture policy, property-testing guidance, and release thresholds live in `../docs/TESTING-AND-EVALUATION.md`. The concrete language/framework decision is `../docs/decisions/D023-python-testing-stack.md`.
+
+## Canonical test stack
+
+Repository-owned deterministic tests use:
+- Python `>=3.13`;
+- pytest `>=9,<10` as the canonical runner/framework;
+- `python -m pytest` as the canonical framework-level invocation;
+- Python standard-library facilities first for filesystem, JSON/JSONL, subprocess, digest, and fixture manipulation;
+- Hypothesis `>=6,<7` only for tasks that genuinely require property/state-machine coverage.
+
+T001's first deterministic harness should require pytest only unless its approved scope is revised to include stateful/property testing. The local environment manager, dependency installation CLI, and lock strategy are defined separately by the development-toolchain decision.
 
 ## Agent ownership
 
@@ -11,6 +22,15 @@ The `Agente de IA Ejecutor` owns non-Markdown test implementation, synthetic tes
 ChatGPT owns committed Markdown instructions/specifications and defines the product contract that tests must verify. The executor must not weaken or reinterpret tests in a way that contradicts that contract.
 
 For behavior-preserving refactors, characterization tests accepted during RF1 become a frozen baseline for the refactor unit. Changing that baseline after implementation begins requires explicit ChatGPT authorization.
+
+## Test style
+
+- Prefer pytest functions with plain `assert`.
+- Use pytest fixtures for reusable setup instead of mutable global state.
+- Use `tmp_path` / `tmp_path_factory` plus `pathlib.Path` for disposable repository/filesystem fixtures.
+- Use pytest parametrization for input -> expected-decision policy matrices.
+- Keep protocol data as data files (for example JSON/JSONL) where that is clearer than embedding it in Python source.
+- Use `hypothesis.stateful.RuleBasedStateMachine` only when generated action sequences materially improve coverage.
 
 ## Test layers
 
@@ -28,7 +48,7 @@ Release-blocking deterministic regression tests must pass 100%.
 
 ### Property/state-machine tests
 
-Use Hypothesis or an equivalent property-based engine only where generated state/action sequences add material coverage.
+Use Hypothesis only where generated state/action sequences add material coverage.
 
 Candidate invariant families include:
 - monotonic sequence/event identifiers;
