@@ -1,75 +1,78 @@
 # Current ChatGPT Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O003  
+Checkpoint-Sequence: O004  
 Canonical-Branch: `develop`  
-Chat-Closure: NEW_CHAT_RECOMMENDED
+Chat-Closure: CONTINUE_ALLOWED
 
 ## Current Work Unit
 
-The dedicated ChatGPT Project bootstrap is configured by the Human Owner. Source-product foundation/readiness decisions are complete through D028. The first executable deterministic harness task is ready but has not been launched.
+T001 has completed its first executor pass and returned `PARTIAL`. The implementation is largely complete and verified, but PD5 review found one procedural noncompliance, two focused technical rework items, and one defect in the executor-handoff SHA contract that is being corrected before rework continues.
 
 ## Completed
 
-- D022 established contract-first, remote-first source-product change procedure.
-- D023 selected Python >=3.13, pytest 9.x, and Hypothesis 6.x for applicable stateful layers.
-- D024 established the testing Skill/capability model: no generic testing Skill is required; Maintainer Skill is optional routing when available.
-- D025 selected the local source-maintenance toolchain: Git + uv + Python + pytest + Ruff, with locked reproducible commands.
-- D026 established capability-first/reuse-before-install coexistence with existing SDD systems, Skills, registries, permissions, and project tooling; protocol source is 1.9.0.
-- D027 established the ChatGPT Orchestrator checkpoint/cold-start/chat-closure mechanism.
-- D028 established ChatGPT Project Instructions as a stable Git bootstrap adapter rather than a dynamic source of project state.
-- The Human Owner created the dedicated ChatGPT Project, configured the canonical Project Instructions from `docs/CHATGPT-PROJECT-SETUP.md`, and moved the current chat into that Project.
-- `docs/tasks/T001-deterministic-test-harness-foundation.md` is `READY` and has not been executed.
+- Source-product foundation decisions D022-D028 remain accepted.
+- T001 executor branch exists remotely: `test/governance-harness`.
+- First visible executor HEAD reviewed: `a31b87f32b8004347e58521b01e3de4a7e55570b`.
+- Reviewed implementation anchor: `e89e60cf1edd97975565870013229b1949f499f8`.
+- First handoff reports 61 pytest tests passing plus Ruff/locked verification, but status is `PARTIAL`.
+- PD5 review identified:
+  - unauthorized workstation `uv self update 0.11.33` after discovering an out-of-range uv;
+  - overly broad `.gitignore` boilerplate outside T001 scope;
+  - reference-integrity logic that incorrectly skips all dot-prefixed paths;
+  - an impossible self-referential handoff requirement requiring a JSON file to embed the SHA of the commit containing itself.
+- D029 defines a non-self-referential executor handoff identity model.
+- `docs/reviews/T001-R1.md` contains the durable first rework directive.
 
 ## Controlling References
 
-For the next work unit:
+For the immediate next action:
 
 - `AGENTS.md`
 - `docs/tasks/T001-deterministic-test-harness-foundation.md`
-- `docs/LOCAL-DEVELOPMENT-TOOLCHAIN.md`
-- `docs/ORCHESTRATOR-CHECKPOINTS.md`
+- `docs/reviews/T001-R1.md`
+- `docs/EXECUTOR-HANDOFFS.md`
+- `docs/decisions/D029-non-self-referential-executor-handoff-identity.md`
 
-Do not preload the full decision history unless a concrete conflict requires it.
+Do not reload the earlier decision history unless a concrete conflict requires it.
 
 ## Active Remote Artifacts
 
-- ChatGPT Project setup contract: `docs/CHATGPT-PROJECT-SETUP.md`
-- Ready Task Contract: `docs/tasks/T001-deterministic-test-harness-foundation.md`
-- Expected executor branch when launched: `test/governance-harness`
-- Expected executor handoff: `handoffs/T001-executor-handoff.json`
-- No executor implementation branch/handoff is active yet.
+- Executor branch: `test/governance-harness`
+- Current reviewed executor HEAD: `a31b87f32b8004347e58521b01e3de4a7e55570b`
+- Persisted handoff: `handoffs/T001-executor-handoff.json`
+- Review directive: `docs/reviews/T001-R1.md`
+- T001 remains under active PD5 review/rework and is not accepted or merged.
 
 ## Open Questions or Blockers
 
-None for T001 readiness.
+No architecture decision blocker remains once D029/review R1 is integrated into `develop`.
 
-The local workstation/bootstrap for T001 has not yet been performed in this workflow and OpenCode has not yet been launched against T001.
+The original `uv self update` remains a recorded procedural noncompliance. R1 does not retroactively authorize it; it permits remediation on the now-compliant workstation without requiring a second clean workstation.
 
 ## Next Action
 
-Start a **new chat inside the dedicated ChatGPT Project** with only:
+1. Integrate the D029 + T001 R1 review-policy change into `develop`.
+2. Ask the Agente de IA Ejecutor to fetch current `develop`, read `docs/reviews/T001-R1.md` and the revised handoff policy, and apply only the R1 rework on `test/governance-harness`.
+3. Executor reruns the canonical locked verification, updates the handoff using `implementation_head_sha`, commits/pushes, and returns the minimal four-line pointer.
+4. ChatGPT performs PD5 review again before any PR is opened.
 
-`Continue.`
-
-The new chat must use GitHub, read current `develop`, `AGENTS.md`, and this checkpoint before acting. It then guides the Human Owner through the minimal local workstation/bootstrap sequence required by D025 and provides the minimal OpenCode launch prompt pointing to `AGENTS.md` and T001.
-
-Do not execute T001 from ChatGPT; execution belongs to the Agente de IA Ejecutor.
+Do not open or merge the T001 implementation PR yet.
 
 ## Next Chat Minimum Load
 
 After `AGENTS.md` and this checkpoint, load only:
 
 1. `docs/tasks/T001-deterministic-test-harness-foundation.md`;
-2. `docs/LOCAL-DEVELOPMENT-TOOLCHAIN.md`.
+2. `docs/reviews/T001-R1.md`;
+3. `docs/EXECUTOR-HANDOFFS.md`.
 
-Load other controlling references only if T001/toolchain routing requires them.
+Load D029 directly only if the handoff identity rationale is needed.
 
 ## Do Not Load or Do
 
-- Do not require the previous ChatGPT conversation.
-- Do not reconstruct operational state from Project Memory or prior chats.
-- Do not summarize/replay D001-D028 wholesale.
-- Do not start a consumer `.agent-coordination/` instance in this source repository.
-- Do not implement T001 as ChatGPT.
-- Do not ask OpenCode to infer task semantics from chat; point it to the persisted Task Contract.
+- Do not accept T001 from green tests alone.
+- Do not erase or relabel the unauthorized workstation uv update as originally permitted.
+- Do not require the handoff JSON to contain the SHA of its own containing commit.
+- Do not open/merge the T001 PR before R1 rework is reviewed.
+- Do not implement T001 rework as ChatGPT; non-Markdown rework belongs to the Agente de IA Ejecutor.
