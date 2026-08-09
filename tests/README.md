@@ -1,14 +1,14 @@
 # Deterministic Governance Tests
 
-This directory is for code-driven tests of the Governance Core and deterministic portions of the Governance Skill.
+This directory contains code-driven tests of the Governance Core and deterministic portions of the Governance Skill.
 
 ## Agent ownership
 
-Codex is the normal write owner of test implementation and synthetic test fixtures under `tests/`, and is responsible for executing the deterministic test suite and reporting verification evidence.
+The `Agente de IA Ejecutor` owns non-Markdown test implementation, synthetic test fixtures, test execution, and verification evidence under `tests/`. The executor role is product agnostic: OpenCode, Codex, Claude Code, Antigravity, or another compatible coding agent may fulfill it.
 
-ChatGPT owns Markdown instructions/specifications in this directory. Implementation Executors may inspect tests read-only but must not create, rewrite, weaken, delete, or skip them to make implementation pass.
+ChatGPT owns committed Markdown instructions/specifications and defines the product contract that tests must verify. The executor must not weaken or reinterpret tests in a way that contradicts that contract.
 
-A failing test caused by product implementation is returned to the Implementation Executor. A genuine test defect may be corrected by Codex only when the approved product contract or pre-change characterization proves the test is wrong. Specification ambiguity is returned to ChatGPT.
+For behavior-preserving refactors, characterization tests accepted during RF1 become a frozen baseline for the refactor unit. Changing that baseline after implementation begins requires explicit ChatGPT authorization.
 
 ## In scope
 
