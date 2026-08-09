@@ -15,6 +15,7 @@ expected to be absent from the source repository root.
 
 from __future__ import annotations
 
+import re
 from collections.abc import Iterable
 from pathlib import Path
 
@@ -57,16 +58,27 @@ def is_glob_or_branch_pattern(target: str) -> bool:
     return any(token in target for token in GLOB_TOKENS)
 
 
+_EXTENSION_ONLY_TOKEN_RE = re.compile(r"^\.[A-Za-z][A-Za-z0-9]+$")
+
+
 def is_directory_or_extension_only(target: str) -> bool:
     """Return True when `target` describes a directory or a file
     extension rather than a concrete file path. These are valid
     prose references that cannot be resolved mechanically to a
     single file.
+
+    A target is treated as an extension-only token only when it
+    matches the form ``.ext`` (one dot followed by a bare
+    identifier with no path separator). Anything containing a
+    separator or another component — including dot-prefixed
+    concrete paths such as ``./docs/file.md`` or
+    ``.github/workflows/check.yml`` — is treated as a concrete
+    file path and remains eligible for mechanical resolution.
     """
 
     if target.endswith("/"):
         return True
-    return bool(target.startswith("."))
+    return bool(_EXTENSION_ONLY_TOKEN_RE.match(target))
 
 
 def _resolve(reference: Reference, repo_root: Path) -> tuple[Path, bool]:
@@ -219,3 +231,106 @@ def test_checkpoint_files_are_markdown_not_json(
         assert path.suffix == ".md", f"{relative} must remain Markdown"
         text = path.read_text(encoding="utf-8")
         assert text.startswith("#"), f"{relative} must be a Markdown file"
+
+
+# --- R1-REF regression coverage -----------------------------------------
+#
+# `is_directory_or_extension_only` previously returned True for every
+# target beginning with ``.``, which incorrectly exempted concrete
+# dot-prefixed paths (``.github/workflows/check.yml``,
+# ``./docs/ORCHESTRATOR-CHECKPOINTS.md``) from mechanical resolution.
+# The focused coverage below pins the corrected, narrow behaviour.
+
+
+@pytest.mark.parametrize(
+    "extension_token",
+    [".md", ".py", ".toml", ".json", ".lock", ".yaml", ".yml"],
+)
+def test_extension_only_token_is_treated_as_prose(extension_token: str) -> None:
+    """Genuine extension-only tokens are valid prose that cannot be
+    resolved to a single file and must remain exempted from
+    mechanical reference resolution.
+    """
+
+    assert is_directory_or_extension_only(extension_token) is True
+
+
+@pytest.mark.parametrize(
+    "concrete_path",
+    [
+        "./docs/ORCHESTRATOR-CHECKPOINTS.md",
+        ".github/workflows/check.yml",
+        "./tests/test_reference_integrity.py",
+        ".python-version",
+        "./pyproject.toml",
+    ],
+)
+def test_concrete_dot_prefixed_path_is_not_exempted(concrete_path: str) -> None:
+    """Concrete dot-prefixed paths must remain eligible for
+    mechanical resolution. They contain a path separator or a
+    bare filename component and are not extension-only tokens.
+    """
+
+    assert is_directory_or_extension_only(concrete_path) is False, (
+        f"Concrete path {concrete_path!r} must not be exempted from mechanical reference resolution"
+    )
+
+
+def test_directory_only_token_is_treated_as_prose() -> None:
+    """A trailing-slash target is a directory reference, not a
+    concrete file path, and must remain exempted.
+    """
+
+    assert is_directory_or_extension_only("handoffs/") is True
+    assert is_directory_or_extension_only("./handoffs/") is True
+
+
+def test_concrete_dot_prefixed_path_resolves_when_present(
+    repo_root: Path,
+) -> None:
+    """A concrete dot-prefixed reference that points at an existing
+    file must resolve through the same machinery as any other
+    concrete path.
+    """
+
+    target = "./docs/ORCHESTRATOR-CHECKPOINTS.md"
+    assert is_directory_or_extension_only(target) is False
+    assert looks_like_path(target)
+    resolved = repo_root / target.lstrip("./")
+    assert resolved.is_file(), f"Expected {target} to resolve to an existing file"
+
+
+def test_missing_concrete_dot_prefixed_path_is_classified_as_unresolved(
+    tmp_path: Path,
+) -> None:
+    """A concrete dot-prefixed reference that points at a file the
+    repository does not contain must be classified as unresolved by
+    the resolution helper, not silently ignored as 'extension only'.
+    """
+
+    target = "./does-not-exist/check.yml"
+    assert is_directory_or_extension_only(target) is False
+    assert looks_like_path(target)
+    resolved = tmp_path / target.lstrip("./")
+    assert not resolved.exists()
+    assert is_glob_or_branch_pattern(target) is False
+    assert is_consumer_side_reference(target) is False
+
+
+def test_reference_resolution_flags_concrete_dot_prefixed_paths(
+    repo_root: Path,
+) -> None:
+    """The per-reference resolution helper must report ``exists=False``
+    for a missing concrete dot-prefixed path rather than classifying
+    it as an exempt extension token.
+    """
+
+    fake_reference = Reference(
+        source=repo_root / "AGENTS.md",
+        line_no=1,
+        raw="./does-not-exist/check.yml",
+        target="./does-not-exist/check.yml",
+    )
+    resolved, exists = _resolve(fake_reference, repo_root)
+    assert not exists
+    assert resolved == repo_root / "does-not-exist" / "check.yml"
