@@ -1,15 +1,20 @@
-# Governance Skill Minimal Package Design
+# Agent Governance Skill Package Design
 
 Status: DESIGN-APPROVED
 
 ## Goal
 
-Define the smallest reusable package that operates the modular Governance Core without duplicating authority, project state or unnecessary context, while remaining agent-product neutral.
+Define two small, coherent Agent Skill packages over one canonical Governance Core:
+
+1. a **Consumer Governance Skill** for installing/operating governance in adopting repositories;
+2. a **Maintainer Skill** for developing/refactoring/testing/releasing the canonical source product.
+
+The Skills MUST remain distinct in activation, context, permissions, tests/evals, and distribution expectations even when they share underlying code.
 
 ## Reusable Product Source
 
 ```text
-governance-product/
+agent-governance/
 ├── governance-core/
 │   ├── GOVERNANCE.md
 │   ├── CONTEXT.md
@@ -21,8 +26,8 @@ governance-product/
 │   ├── SKILLS.md
 │   ├── SKILL-DISCOVERY.md
 │   └── SKILL-SUPPLY-CHAIN.md
-├── governance-skill/
-│   ├── SKILL.md
+├── governance-skill/                 # consumer-facing
+│   ├── SKILL.md                      # release-gated
 │   ├── agents/
 │   │   └── openai.yaml
 │   ├── assets/
@@ -34,14 +39,23 @@ governance-product/
 │   │   └── EXCHANGE.template.jsonl
 │   └── scripts/
 │       └── governance.py
-└── tests/
-    ├── trigger-cases.jsonl
-    └── test-governance.py
+├── maintainer-skill/                 # source-product only
+│   ├── SKILL.md                      # release-gated
+│   └── optional maintainer routing/assets
+├── src/                              # optional shared implementation when justified
+├── tests/
+└── evals/
 ```
 
-The Core modules are canonical. `GOVERNANCE.md` is the small entrypoint/router; `ADAPTERS.md` maps product-specific integrations to stable governance roles; `SKILL-DISCOVERY.md` owns candidate-source/resolution semantics; `SKILL-SUPPLY-CHAIN.md` owns artifact provenance/audit/install semantics.
+The Core modules are canonical. Neither Skill duplicates or overrides Core authority.
 
-## Installed Project Footprint
+## Consumer Governance Skill
+
+Purpose: install, bootstrap, validate, operate, recover, hand off, audit, and archive governance inside an adopting repository.
+
+Controlling contract: `GOVERNANCE-SKILL-CONTRACT.md`.
+
+### Installed Project Footprint
 
 ```text
 .agent-governance/
@@ -68,20 +82,17 @@ The Core modules are canonical. `GOVERNANCE.md` is the small entrypoint/router; 
 
 Product adapters such as `AGENTS.md`, `opencode.json`, Codex/Claude/other native instructions remain project/tool-specific and are not task semantics.
 
-## Required Skill Files
-
 ### `governance-skill/SKILL.md`
-Purpose: activation, operation routing, non-authority invariant, mutation/read safety and deterministic-tooling routing.
+
+Purpose: consumer activation, operation routing, non-authority invariant, source-independence, mutation/read safety, and deterministic-tooling routing.
 
 Rules:
-- minimal frontmatter for OpenAI/Codex compatibility;
+- minimal frontmatter for compatible Agent Skill consumers;
 - reference canonical Core rather than restating it;
-- use role terms `strategy`/`implementation`, not a vendor as executor;
-- never embed project state or future task content;
-- target <2,500 tokens unless measured use proves more is required.
-
-### `governance-skill/agents/openai.yaml`
-OpenAI distribution metadata only. No governance authority or duplicated workflow rules.
+- use governance roles, not vendor identities;
+- never embed source-product maintenance workflow, project state, or future task content;
+- target <2,500 tokens unless measured use proves more is required;
+- do not require read/write access to the canonical source repository after installation.
 
 ### Bootstrap assets
 
@@ -95,12 +106,12 @@ OpenAI distribution metadata only. No governance authority or duplicated workflo
 Rules:
 - placeholders only; no domain/vendor defaults;
 - future task detail stays outside WORKPLAN;
-- Skill approval records must pin immutable audited artifacts and stay outside WORKPLAN detail;
+- Skill approval records pin immutable audited artifacts;
 - bootstrap never silently overwrites existing state.
 
 ### `governance-skill/scripts/governance.py`
 
-Single deterministic command surface. Initial subcommands:
+Single deterministic consumer command surface. Initial subcommands:
 - `bootstrap` — safely create Core/instance/task/Skill-record structure;
 - `validate` — validate layout, references, context budgets, versions, adapters, STATE, WORKPLAN sequence, Skill approval records and EXCHANGE coherence;
 - `state` — derive/check/refresh frontier checkpoint;
@@ -115,78 +126,76 @@ Rules:
 - no production/external services;
 - no strategic decisions in scripts;
 - directory install commands are never executed during discovery;
-- candidate Skill acquisition/inspection uses quarantine before active installation;
-- detect unresolved canonical sources, unknown references, project contamination, vendor-coupled task records, invalid sequential-disclosure metadata and Skill artifacts that differ from their approval record.
+- candidate Skill acquisition/inspection uses quarantine before active installation.
 
-## Release-Only Tests
+## Maintainer Skill
 
-### `tests/trigger-cases.jsonl`
-Positive, negative and near-miss activation cases for install/bootstrap, cold-start/recovery, validation, handoff, checkpoint repair, sequential execution validation, Skill discovery/source resolution, Skill supply-chain audit and archive, plus negative generic planning/coding/Git cases.
+Purpose: develop, refactor, test/evaluate, and release this canonical source repository only.
 
-### `tests/test-governance.py`
-Must cover:
-- clean bootstrap and overwrite refusal;
-- role-based actor validation plus legacy aliases;
-- valid/invalid EXCHANGE transitions;
-- stale STATE/checkpoint derivation;
-- context-budget/reference validation;
-- deterministic WORKPLAN order/dependency validation;
-- one-task-at-a-time disclosure fixture;
-- autonomous A->B->C continuation on DONE without ACCEPTED gates;
-- blocker stops sequence before future task disclosure;
-- agent-product neutrality/contamination checks;
-- cold-start using at least two distinct adapter fixtures;
-- discovery result resolves to canonical owner/repository/path before acquisition;
-- unresolved or lookalike provenance is rejected before audit;
-- marketplace rank/install/security badge cannot satisfy approval validation;
-- external Skill quarantine/inventory fixture;
-- approval succeeds only for the exact audited canonical revision/digest;
-- changed Skill content, dependency or permission envelope fails until re-audited;
-- revoked/superseded Skill cannot validate for installation;
-- archival safety.
+Controlling contract: `MAINTAINER-SKILL-CONTRACT.md`.
 
-No production/external services.
+The Maintainer Skill MAY route to source-specific paths/workflows such as `AGENTS.md`, `docs/DEVELOPMENT-WORKFLOW.md`, `docs/REFACTORING-WORKFLOW.md`, `docs/BRANCHING.md`, `docs/RELEASES.md`, Decision Records, product source, tests, and evals.
+
+It MUST NOT:
+- install a live consumer `.agent-coordination/` instance here;
+- broaden into ordinary consumer governance;
+- duplicate consumer operation instructions;
+- redefine ChatGPT Orchestrator / Agente de IA Ejecutor authority;
+- bypass topic-branch/PR or release rules.
+
+The Maintainer Skill may call shared deterministic source tooling where useful, but its activation/context surface remains separate from the consumer Skill.
+
+## Shared Implementation Rule
+
+If both Skills require the same deterministic implementation, prefer a shared source module with thin Skill-specific routing rather than duplicated code.
+
+Shared code does NOT imply shared `SKILL.md` instructions or trigger descriptions.
+
+## Test/Eval Separation
+
+At minimum maintain distinguishable coverage for:
+
+### Core
+- deterministic protocol/layout/reference/state invariants.
+
+### Consumer Skill
+- bootstrap/install/overwrite refusal;
+- cold-start/recovery;
+- state/event validation;
+- context budgets;
+- sequential disclosure;
+- Skill discovery/supply-chain controls;
+- source-repository independence;
+- positive/negative/near-miss consumer activation.
+
+### Maintainer Skill
+- source-product activation vs consumer near misses;
+- ChatGPT Orchestrator / Agente de IA Ejecutor role routing;
+- PD/RF workflow routing;
+- branch-policy routing;
+- release preparation;
+- refusal to create a live consumer instance in the source repository.
+
+No production/external services are required for release-only tests.
 
 ## Deliberately Excluded from v1
 
 Do not add without evidence:
-- duplicate prose reference layer;
-- separate schema files when validator owns checks;
-- multiple utility scripts;
+- one combined maintainer+consumer `SKILL.md`;
+- duplicate prose reference layers;
+- multiple overlapping utility scripts;
 - MCP/network dependencies for governance itself;
 - decorative assets;
-- Skill-local README/changelog/quick-reference files;
-- copied product adapters;
-- domain-specific sample projects.
-
-## Operation Mapping
-
-- bootstrap -> SKILL + Core + assets + `governance.py bootstrap`
-- installation/context/adapter validation -> `governance.py validate`
-- cold start -> STATE + GOVERNANCE router, then routed context
-- execution validation -> EXECUTION + WORKPLAN metadata + current task only
-- external Skill discovery -> SKILLS + SKILL-DISCOVERY + `governance.py skill`
-- external Skill audit/approval matching -> SKILLS + SKILL-SUPPLY-CHAIN + `governance.py skill`
-- state validation/refresh -> `governance.py state`
-- handoff -> SKILL + HANDOFF + EXCHANGE delta/evidence
-- event validation -> `governance.py event`
-- archive -> `governance.py archive`
-- portability -> multi-adapter tests + contamination/reference checks
-
-## Activation Boundary
-
-Trigger specifically for installing, operating, validating, recovering, handing off, checkpointing, sequentially executing/validating, discovering/auditing external Skills under this governance framework, or archiving a governed project.
-
-Do not trigger merely for generic planning, project management, code writing/review, Git operations, architecture selection or AI discussion.
+- domain-specific sample projects;
+- consumer dependence on a floating source checkout.
 
 ## Release Gate
 
-Before authoring/releasing final `SKILL.md`, define and validate:
+Before authoring/releasing either final `SKILL.md`, define and validate that Skill's:
 1. exact trigger corpus;
 2. exact activation description;
-3. CLI contract for each `governance.py` subcommand including `skill`;
-4. exact template field sets including TASK, sequence metadata and Skill approval record;
-5. progressive-context budget/reference checks;
-6. agent-adapter neutrality and sequential-disclosure tests;
-7. Skill discovery canonical-resolution tests;
-8. Skill supply-chain provenance/revision/revocation validation tests.
+3. context-routing contract;
+4. mutation/read boundary;
+5. focused tests/evals and near-miss separation from the other Skill.
+
+Additionally, before releasing the Consumer Governance Skill, finalize CLI contracts, template field sets, progressive-context checks, adapter neutrality, sequential disclosure, discovery resolution, supply-chain validation, and source-independence tests.
