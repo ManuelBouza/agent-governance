@@ -44,7 +44,7 @@ Final authority over product scope, priorities, risk, public distribution, relea
 
 ### ChatGPT — Orchestrator and Markdown Owner
 
-ChatGPT owns product strategy, research synthesis, architectural decisions, work decomposition, acceptance criteria, Task Contracts, agent handoffs, review, and all committed Markdown (`*.md`) authoring/editing.
+ChatGPT owns product strategy, research synthesis, architectural decisions, work decomposition, acceptance criteria, Task Contracts, agent handoffs, remote review, and all committed Markdown (`*.md`) authoring/editing.
 
 Only ChatGPT may create, rewrite, or persist Markdown instruction/design/decision/task files in normal agentic development. This includes `AGENTS.md`, `README.md`, `docs/**/*.md`, `governance-core/*.md`, Skill Markdown, and Markdown files inside test/eval fixtures.
 
@@ -66,25 +66,48 @@ The executor MUST NOT:
 - create or edit committed `*.md` files;
 - change product scope, architecture, acceptance criteria, or strategic intent;
 - weaken or reinterpret tests/evals in a way that contradicts the ChatGPT-approved contract;
-- alter an established refactor characterization baseline after implementation begins unless ChatGPT explicitly authorizes the baseline change;
-- claim acceptance authority merely because tests are green.
+- alter an accepted refactor characterization baseline after structural mutation begins unless ChatGPT explicitly authorizes a correction;
+- claim acceptance authority merely because tests are green;
+- treat local-only/unpushed state as a completed normal handoff.
 
 The executor MAY inspect all Markdown and existing tests/evals as read-only specification/context.
 
-## Persisted task handoff invariant
+## Source-change procedure invariant
 
-Executable work for an Agente de IA Ejecutor MUST be defined by a repository-persisted Task Contract under `docs/tasks/` before implementation begins.
+D022, `docs/DEVELOPMENT-WORKFLOW.md`, and `docs/REFACTORING-WORKFLOW.md` define how this source product is changed.
 
-- `docs/TASK-CONTRACTS.md` defines the Task Contract format and lifecycle.
-- Chat/terminal prompts are transport only and SHOULD contain only the repository/branch context plus the exact Task Contract path.
-- The executor MUST read `AGENTS.md` and the assigned Task Contract before mutation and follow the contract's controlling references.
+This repository does not install its consumer F0–F6 lifecycle to govern itself.
+
+### Markdown-only changes
+
+ChatGPT performs committed Markdown-only work on a short-lived topic branch from `develop`, reviews the resulting diff, and returns the change to `develop` through PR.
+
+### Executable changes
+
+Executable work uses a contract-first sequence:
+
+1. ChatGPT persists the Task Contract and controlling Markdown/decisions.
+2. That planning change is reviewed and integrated into `develop`.
+3. Only then may an executor create the implementation topic branch from a `develop` revision containing the exact Task Contract.
+4. The executor implements/tests, persists its handoff, commits, and pushes the topic branch.
+5. The executor returns only status, handoff path, branch, and pushed HEAD.
+6. ChatGPT reviews the remote Task Contract, handoff, base/head identities, complete diff, and evidence through GitHub.
+7. Rework uses durable Git/contract revision history rather than chat-only requirements.
+8. Only after ChatGPT acceptance does the implementation proceed through PR to `develop`.
+
+The executor does not normally open or merge the implementation PR unless the Task Contract explicitly delegates that mechanical action.
+
+## Persisted task/handoff invariant
+
+- `docs/TASK-CONTRACTS.md` defines the Task Contract format/lifecycle.
+- `docs/EXECUTOR-HANDOFFS.md` defines executor return evidence.
+- Chat/terminal prompts are transport only and SHOULD contain only repository/branch context plus the exact Task Contract path.
 - The executor MUST NOT infer missing task semantics from prior chat history.
-- If a prompt conflicts with the persisted Task Contract, the persisted contract controls unless ChatGPT/Human Owner first persists an explicit revision/supersession.
-- Material objective/scope/acceptance changes require a persisted Task Contract revision before execution continues.
+- If a prompt conflicts with the persisted Task Contract, the persisted contract controls unless ChatGPT/Human Owner persists an explicit revision/supersession.
+- Material objective/scope/acceptance/verification changes require a persisted Task Contract revision before execution continues.
+- Before `DONE`, `BLOCKED`, or `PARTIAL`, the executor MUST persist, commit, and push the handoff/current task branch state.
 
-Before claiming `DONE`, `BLOCKED`, or `PARTIAL`, the executor MUST persist its result under `handoffs/` according to `docs/EXECUTOR-HANDOFFS.md`. The visible executor response SHOULD only report status, handoff path, branch, and HEAD.
-
-A reviewer must be able to reconstruct both what was requested and what the executor reports from Git alone.
+A reviewer must be able to reconstruct what was requested, what the executor reported, and what actually changed from the canonical Git remote alone.
 
 ## File ownership invariant
 
@@ -95,7 +118,7 @@ Normal agentic write ownership is:
 
 `LICENSE` and repository control files may be additionally protected by product-specific adapters. When a file category genuinely crosses responsibilities, ChatGPT defines the exception explicitly before mutation.
 
-No named executor product gains special authority. OpenCode-specific, Codex-specific, Claude-specific, or other adapter configuration may enforce these rules mechanically but MUST NOT redefine them.
+No named executor product gains special authority. Product-specific adapter configuration may enforce these rules mechanically but MUST NOT redefine them.
 
 ## Branching invariant
 
@@ -104,7 +127,7 @@ No named executor product gains special authority. OpenCode-specific, Codex-spec
 - `main` is stable/default and is not a normal development target.
 - `develop` integrates the next unreleased state.
 - normal work starts on a short-lived topic branch from `develop` and returns to `develop` through PR.
-- normal direct writes to `main` or `develop` are prohibited.
+- direct development writes to `main` or `develop` are prohibited.
 - normal topic branches MUST NOT target `main`.
 - release promotion uses `develop` -> `main`; optional `release/*` and exceptional `hotfix/*` follow the branching policy.
 - branch names describe product work, never agent identity.
@@ -118,19 +141,15 @@ Neither ChatGPT nor an Agente de IA Ejecutor may bypass this policy because of r
 - Both Skills are operational tooling, never authority over the Core.
 - Do not author final Skill packages until their documented release gates are satisfied.
 - Tests/evals validate Governance/Skill behavior, not application-task implementation quality.
-- `docs/TESTING-AND-EVALUATION.md` is normative for verification architecture, isolation, fixtures, grader selection, thresholds and external technical references.
+- `docs/TESTING-AND-EVALUATION.md` is normative for verification architecture, isolation, fixtures, grader selection, thresholds, and external technical references.
 - External Skill research follows `governance-core/SKILL-DISCOVERY.md` and `governance-core/SKILL-SUPPLY-CHAIN.md`.
-
-## Development workflow
-
-Use `docs/DEVELOPMENT-WORKFLOW.md` for normal product changes and `docs/REFACTORING-WORKFLOW.md` for behavior-preserving refactors. Both operate inside the branch lifecycle defined by `docs/BRANCHING.md` and use the verification strategy in `docs/TESTING-AND-EVALUATION.md`.
-
-No executable task begins until ChatGPT has persisted an unambiguous Task Contract defining objective, scope, invariants/acceptance, verification, and handoff. The Agente de IA Ejecutor implements and verifies against that persisted contract, persists its executor handoff, and returns only the pointer/status. ChatGPT reviews the Task Contract, executor handoff, actual diff, and verification evidence before acceptance.
 
 ## Change discipline
 
-Prefer one coherent change at a time. Separate behavior-preserving refactors from feature/protocol behavior changes unless ChatGPT explicitly determines that separation is impractical and records why.
+Prefer one coherent, independently reviewable change at a time. Separate behavior-preserving refactors from feature/protocol behavior changes, bug fixes, dependency upgrades, and unrelated cleanup.
 
-When changing protocol behavior, ChatGPT updates the smallest relevant Core Markdown module and applicable product decision/design documentation; the Agente de IA Ejecutor updates implementation plus focused tests/evals and runs verification.
+For refactors, the RF1 characterization baseline is a remotely auditable checkpoint accepted by ChatGPT before structural mutation.
+
+When changing protocol behavior, ChatGPT updates the smallest relevant Core Markdown module and applicable decisions/design documentation; the Agente de IA Ejecutor updates authorized implementation plus focused tests/evals and runs verification.
 
 Preserve progressive context loading and avoid duplicating normative rules.
