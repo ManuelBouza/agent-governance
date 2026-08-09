@@ -26,6 +26,34 @@ Human external contributors are not required to use those tools. Contributions a
 
 Coding agents working directly in this repository should follow `AGENTS.md` and any applicable repository-native adapter restrictions.
 
+## Local development toolchain
+
+D025 and `docs/LOCAL-DEVELOPMENT-TOOLCHAIN.md` define the canonical source-maintainer toolchain.
+
+Baseline workstation requirements:
+- Git;
+- a compatible uv version as enforced by repository configuration once the executable harness is present;
+- working GitHub authentication for the repository when push access is required.
+
+The repository uses uv to provision/manage Python, `.venv`, development dependencies, and the lockfile. A globally installed Python is therefore not a mandatory prerequisite when uv can provision the required runtime.
+
+The first executable test-harness task is responsible for materializing the approved non-Markdown configuration (`pyproject.toml`, `.python-version`, `uv.lock`, appropriate `.gitignore` entries, pytest/Ruff configuration). Until that task is integrated, the policy is authoritative even though those executable configuration files do not yet exist on `develop`.
+
+After that configuration exists, the canonical local bootstrap/verification path is:
+
+```text
+uv sync --locked
+uv run --locked ruff check .
+uv run --locked ruff format --check .
+uv run --locked python -m pytest
+```
+
+Ruff must be configured to exclude committed Markdown so executor tooling cannot modify ChatGPT-owned `.md` files.
+
+GitHub CLI (`gh`) is recommended for authentication and diagnostics but is not required when Git over SSH/HTTPS is already configured correctly.
+
+Do not install source-maintainer tools into consumer projects merely because this repository uses them; consumer repositories retain their native development toolchains unless their own governed task explicitly authorizes a change.
+
 ## Branching
 
 Normal contributions follow `docs/BRANCHING.md`.

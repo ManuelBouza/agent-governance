@@ -19,24 +19,30 @@ The implementation SHOULD remain compatible with the current latest stable Pytho
 
 ## Dependency minimization
 
-`pytest` is the only third-party dependency required by the first deterministic harness increment unless a later accepted task requires more.
+`pytest` is the only third-party **testing framework dependency** required by the first deterministic harness increment unless a later accepted task requires more.
+
+D025 additionally approves Ruff as a source-development quality tool; Ruff is not part of the test semantics and does not replace pytest.
 
 Hypothesis is approved for property/state-machine work but MUST NOT be added to a simple deterministic task merely because it is part of the project testing stack. It becomes required only for task scope that actually exercises generated properties/state transitions where it adds material coverage.
 
-Other libraries, including JSON Schema validators, coverage tools, hosted eval SDKs, security scanners, or model-provider SDKs, are NOT implicitly approved by this decision. They require a concrete need and the applicable later toolchain/task decision.
+Other libraries, including JSON Schema validators, coverage tools, hosted eval SDKs, security scanners, model-provider SDKs, or static type checkers, are NOT implicitly approved by this decision. They require a concrete need and the applicable later toolchain/task decision.
 
 ## Configuration direction
 
-Python test configuration and development-only dependency declarations SHOULD converge on repository-root `pyproject.toml` using standardized/tool-native sections where supported:
+Python test configuration and development-only dependency declarations converge on repository-root `pyproject.toml` using standardized/tool-native sections where supported:
 
 - pytest native TOML configuration under `[tool.pytest]` for pytest 9.x;
-- PEP 735 dependency groups for development-only test dependencies rather than making test dependencies runtime product dependencies.
+- PEP 735 dependency groups for development-only dependencies rather than making test dependencies runtime product dependencies.
 
-The exact local environment manager/installer CLI and lock strategy are intentionally NOT decided here; those belong to the local development-toolchain decision.
+D025 resolves the previously deferred local environment/installer/lock policy:
+- uv is the source-repository environment/dependency manager;
+- `uv.lock` is committed once the executable harness exists;
+- `.python-version` requests the minimum supported Python minor series;
+- canonical test execution is wrapped by `uv run --locked` while preserving `python -m pytest` as the pytest invocation contract.
 
 ## Why Python
 
-The repository currently contains no implementation-language code and GitHub reports no detected language, so there is no existing application-language constraint to preserve.
+The repository had no implementation-language code when this decision was made, so there was no existing application-language constraint to preserve.
 
 Python fits the Governance verification surface particularly well:
 
@@ -67,7 +73,7 @@ The standard library remains usable for isolated cases, and pytest can run unitt
 - Normal development/release verification SHOULD include the minimum supported series and the current latest stable series when the toolchain/CI implementation is defined.
 - pytest compatibility line: `>=9,<10` until a deliberate major-version review changes it.
 - Hypothesis compatibility line: `>=6,<7` until a deliberate major-version review changes it.
-- Dependency resolution/lock files may pin concrete transitive versions for reproducibility once the local toolchain policy is defined.
+- Dependency resolution/lock files may pin concrete transitive versions for reproducibility under D025.
 
 ## Canonical test style
 
@@ -78,7 +84,7 @@ The standard library remains usable for isolated cases, and pytest can run unitt
 - stateful protocol models use `hypothesis.stateful.RuleBasedStateMachine` only where the state-space warrants it;
 - fixtures that are fundamentally protocol data SHOULD remain data files (for example JSON/JSONL) rather than being encoded unnecessarily as Python source;
 - subprocess/tool behavior is verified using controlled local subprocess execution and observable exit/output/filesystem results;
-- network access remains excluded unless a specific later task explicitly authorizes it.
+- network access remains excluded from deterministic test runtime unless a specific later task explicitly authorizes it.
 
 ## Evaluation harness consequence
 
@@ -89,30 +95,21 @@ Repository-owned agent-eval harness code SHOULD also be Python unless a target a
 Primary references used for this decision:
 
 - Python active releases: https://www.python.org/downloads/
-  - Python 3.13 and 3.14 are in bugfix support; 3.12 is security-fixes-only at decision time.
 - pytest documentation: https://docs.pytest.org/en/stable/
-  - assertion introspection, auto-discovery, fixtures, and Python 3.10+ support.
 - pytest temporary paths: https://docs.pytest.org/en/stable/how-to/tmp_path.html
-  - `tmp_path` provides a unique `pathlib.Path` temporary directory per test.
 - pytest parametrization: https://docs.pytest.org/en/stable/how-to/parametrize.html
-  - built-in parameterized test/fixture support.
 - pytest configuration: https://docs.pytest.org/en/stable/reference/customize.html
-  - pytest 9 supports native TOML configuration under `[tool.pytest]` in `pyproject.toml`.
 - pytest invocation: https://docs.pytest.org/en/stable/how-to/usage.html
-  - supports `python -m pytest` as an official invocation mode.
 - Hypothesis stateful testing: https://hypothesis.readthedocs.io/en/latest/stateful.html
-  - generates sequences of primitive actions and supports rule-based state machines/invariants.
 - Hypothesis compatibility: https://hypothesis.readthedocs.io/en/latest/compatibility.html
-  - current supported CPython/PyPy series and compatibility policy.
 - Python Packaging dependency groups (PEP 735): https://packaging.python.org/en/latest/specifications/dependency-groups/
-  - standardized development-only dependency groups suitable for testing.
 - Python `pathlib`: https://docs.python.org/3.13/library/pathlib.html
 - Python `json`: https://docs.python.org/3.13/library/json.html
 - Python `subprocess`: https://docs.python.org/3.13/library/subprocess.html
 
 ## Consequences
 
-- D019's generic reference to "standard Python test tooling" is now concretized by this decision.
-- T001 may assume Python >=3.13 and pytest 9.x once its remaining readiness blockers are resolved.
+- D019's generic reference to "standard Python test tooling" is concretized by this decision.
+- D025 concretizes the source-repository environment manager, lockfile, local quality CLI, and locked command wrapper without changing pytest/Hypothesis semantics.
+- T001 may assume Python >=3.13, pytest 9.x, uv, and Ruff once its final coexistence blocker is resolved.
 - T001 SHOULD NOT add Hypothesis unless its actual first-increment scope expands to genuine stateful/property testing through an approved Task Contract revision.
-- The next foundation decisions remain separate: required Skills/capabilities, local CLI/development toolchain, and SDD/Skill coexistence.

@@ -30,8 +30,11 @@ The Skill MAY route to source-specific context including:
 - `docs/BRANCHING.md`;
 - `docs/RELEASES.md`;
 - `docs/TESTING-AND-EVALUATION.md`;
+- `docs/TESTING-SKILL-CAPABILITIES.md`;
+- `docs/LOCAL-DEVELOPMENT-TOOLCHAIN.md`;
 - `docs/decisions/D023-python-testing-stack.md`;
 - `docs/decisions/D024-testing-skill-capability-model.md`;
+- `docs/decisions/D025-local-development-toolchain.md`;
 - assigned `docs/tasks/` Task Contracts and `handoffs/` policy;
 - product Decision Records;
 - `governance-core/`;
@@ -56,6 +59,19 @@ These capability areas SHOULD be represented through on-demand references/resour
 
 The Maintainer Skill MUST NOT require an external generic pytest/testing/TDD Skill to perform normal source-product testing. External Skills may be supplemental only after approval under the applicable discovery/supply-chain and coexistence policies.
 
+## Local toolchain routing
+
+When executable source work requires local setup/verification, the Maintainer Skill SHOULD route to `docs/LOCAL-DEVELOPMENT-TOOLCHAIN.md` instead of embedding product-specific installation recipes in its top-level activation instructions.
+
+The Maintainer Skill must preserve these boundaries:
+- Git/uv/Python/pytest/Ruff are source-maintainer tooling defined by D023/D025;
+- the executor host itself remains product-neutral and external to the repository dependency graph;
+- GitHub CLI is optional when normal Git authentication already works;
+- Ruff must not be allowed to rewrite ChatGPT-owned Markdown;
+- source-maintainer tool choices must not be projected automatically into consumer repositories.
+
+Detailed tool commands should be loaded only for tasks that actually execute/verify code.
+
 ## Bootstrap / no-Skill operation
 
 The Maintainer Skill is operational assistance, not canonical authority and not a prerequisite for test correctness.
@@ -72,7 +88,7 @@ This bootstrap path is required so the repository can test and develop the Maint
 
 The Skill follows the repository operating model:
 - ChatGPT Orchestrator owns strategy, architecture, task contracts, review, handoffs, and committed Markdown;
-- the product-agnostic Agente de IA Ejecutor owns authorized non-Markdown implementation, tests/evals, fixtures, and verification execution;
+- the product-agnostic Agente de IA Ejecutor owns authorized non-Markdown implementation, tests/evals, fixtures, executable configuration, and verification execution;
 - Human Owner retains final authority.
 
 No executor product receives special governance status.
@@ -95,8 +111,9 @@ The Maintainer Skill MUST NOT:
 - implement application/business features for unrelated consumer projects;
 - redefine Governance Core authority inside Skill-local instructions;
 - become a mandatory runtime dependency for deterministic source tests;
-- duplicate generic pytest/Hypothesis/tool documentation when task-specific repository guidance is sufficient;
-- bypass release, branch, supply-chain, or role ownership rules.
+- duplicate generic pytest/Hypothesis/uv/Ruff documentation when task-specific repository guidance is sufficient;
+- impose the source repository's uv/Python/Ruff stack on consumer projects;
+- bypass release, branch, supply-chain, toolchain, or role ownership rules.
 
 ## Acceptance
 
@@ -106,6 +123,7 @@ The Maintainer Skill is acceptable only if:
 3. it follows PD/RF and branch policy correctly;
 4. it can guide a cold maintainer session without requiring chat history;
 5. it routes testing/evaluation work to the smallest relevant capability/context without requiring generic overlapping testing Skills;
-6. source-product deterministic tests remain executable when the Maintainer Skill is absent/disabled;
-7. it never creates a live consumer instance in the source repository;
-8. removing the Maintainer Skill does not alter the canonical product itself.
+6. it routes executable source work to the repository-declared local toolchain without making the Skill itself a tool installer;
+7. source-product deterministic tests remain executable when the Maintainer Skill is absent/disabled;
+8. it never creates a live consumer instance in the source repository;
+9. removing the Maintainer Skill does not alter the canonical product itself.
