@@ -25,7 +25,9 @@ Do not create a live `.agent-governance/` / `.agent-coordination/` consumer foot
 - Maintainer Skill design: `docs/MAINTAINER-SKILL-CONTRACT.md`.
 - Testing/evaluation strategy: `docs/TESTING-AND-EVALUATION.md`.
 - Source-product Task Contract policy: `docs/TASK-CONTRACTS.md`.
+- Executor handoff policy: `docs/EXECUTOR-HANDOFFS.md`.
 - Executable source-maintenance task records: `docs/tasks/`.
+- Persisted executor handoffs: `handoffs/`.
 - Product decisions and operating instructions: `docs/`.
 - Deterministic product tests: `tests/`.
 - Agent-facing product evals: `evals/`.
@@ -57,6 +59,7 @@ The Agente de IA Ejecutor owns all authorized non-Markdown technical work, inclu
 - deterministic test code and test fixtures;
 - agent-facing eval code/data/fixtures except committed Markdown;
 - execution of tests/evals and collection of verification evidence;
+- persisted non-Markdown executor handoffs under `handoffs/`;
 - in-scope technical refactoring.
 
 The executor MUST NOT:
@@ -79,14 +82,16 @@ Executable work for an Agente de IA Ejecutor MUST be defined by a repository-per
 - If a prompt conflicts with the persisted Task Contract, the persisted contract controls unless ChatGPT/Human Owner first persists an explicit revision/supersession.
 - Material objective/scope/acceptance changes require a persisted Task Contract revision before execution continues.
 
-A reviewer must be able to reconstruct what the executor was asked to do from Git alone.
+Before claiming `DONE`, `BLOCKED`, or `PARTIAL`, the executor MUST persist its result under `handoffs/` according to `docs/EXECUTOR-HANDOFFS.md`. The visible executor response SHOULD only report status, handoff path, branch, and HEAD.
+
+A reviewer must be able to reconstruct both what was requested and what the executor reports from Git alone.
 
 ## File ownership invariant
 
 Normal agentic write ownership is:
 
 - committed `*.md` -> ChatGPT Orchestrator
-- all authorized non-Markdown implementation/test/eval/config/assets -> Agente de IA Ejecutor
+- all authorized non-Markdown implementation/test/eval/config/assets/handoffs -> Agente de IA Ejecutor
 
 `LICENSE` and repository control files may be additionally protected by product-specific adapters. When a file category genuinely crosses responsibilities, ChatGPT defines the exception explicitly before mutation.
 
@@ -120,7 +125,7 @@ Neither ChatGPT nor an Agente de IA Ejecutor may bypass this policy because of r
 
 Use `docs/DEVELOPMENT-WORKFLOW.md` for normal product changes and `docs/REFACTORING-WORKFLOW.md` for behavior-preserving refactors. Both operate inside the branch lifecycle defined by `docs/BRANCHING.md` and use the verification strategy in `docs/TESTING-AND-EVALUATION.md`.
 
-No executable task begins until ChatGPT has persisted an unambiguous Task Contract defining objective, scope, invariants/acceptance, verification, and handoff. The Agente de IA Ejecutor implements and verifies against that persisted contract. ChatGPT reviews the resulting diff and verification evidence before acceptance.
+No executable task begins until ChatGPT has persisted an unambiguous Task Contract defining objective, scope, invariants/acceptance, verification, and handoff. The Agente de IA Ejecutor implements and verifies against that persisted contract, persists its executor handoff, and returns only the pointer/status. ChatGPT reviews the Task Contract, executor handoff, actual diff, and verification evidence before acceptance.
 
 ## Change discipline
 
