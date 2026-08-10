@@ -87,8 +87,8 @@
   },
   "external_overlay_facts": {
     "rdd_clone_local": "Known disabled/unmanaged state under D030 retained; no RDD mode, review, recover, or delivery command ran during T002.",
-    "rdd_global": "Not inspected or mutated; no global RDD command ran.",
-    "rdd_proof": "All work used ordinary Git/uv commands; no RDD command appears in execution evidence.",
+    "rdd_global": "Unset; parent final read-only audit reported global empty/unset. No global RDD state mutation occurred.",
+    "rdd_proof": "Parent final audit ran only `gentle-ai review mode status --cwd . --json`; it reported clone_local/effective off from clone_local, global unset, revision sha256:3cf2ae551b4e617537fc50ba40444551fd4dc0cbee8b470678a7f1e62f85aa5f. No RDD state mutation occurred.",
     "sdd": "No sdd-init, SDD migration, openspec artifact, or root consumer coordination footprint was created.",
     "external_ecosystem_repository_assets_modified": false
   },
