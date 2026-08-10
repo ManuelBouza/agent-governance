@@ -3,10 +3,14 @@
   "status": "DONE",
   "task_contract_path": "docs/tasks/T002-synthetic-coexistence-fixtures-reference-corpus.md",
   "review_directive_path": "docs/reviews/T002-R0.md",
+  "review_directive_paths": [
+    "docs/reviews/T002-R0.md",
+    "docs/reviews/T002-R1.md"
+  ],
   "branch": "test/coexistence-fixtures",
   "base_branch": "develop",
   "base_sha": "e4677be42b05a02286bd9695caa5fb061a31e686",
-  "implementation_head_sha": "eccf3e9116af7e788862ed14de37b2acc8052dd2",
+  "implementation_head_sha": "9e99b205fa5b5ccb60a416ce1b0cdb07c209729f",
   "implementation_head_sha_note": "D029 implementation anchor. This handoff is committed in a handoff-only successor; visible executor response reports final pushed branch HEAD.",
   "files_changed": [
     ".gitignore",
@@ -14,7 +18,15 @@
     "tests/test_coexistence_classification.py",
     "handoffs/T002-executor-handoff.json"
   ],
-  "implementation_summary": "Added one JSON synthetic coexistence corpus and data-driven deterministic tests. Classifier operates only on required capabilities, ownership surfaces, adapter need, managed-surface composition, and exact selected/approved Skill identities.",
+  "implementation_summary": "Added one JSON synthetic coexistence corpus and data-driven deterministic tests. R1 corrects the test-local fallback so providers that do not cover the required capability classify as MISSING. Classifier operates only on required capabilities, ownership surfaces, adapter need, managed-surface composition, and exact selected/approved Skill identities.",
+  "r1_rework": {
+    "source": "origin/develop@71f511c58813b586275d4fe0a66ad9e93c2e15a5:docs/reviews/T002-R1.md",
+    "finding": "A non-empty provider list with no provider covering required capability fell through to COEXIST.",
+    "fix": "After explicit conflict and adapter handling, return MISSING when no provider covers required capability before selecting COEXIST or REUSE.",
+    "regression_fixture": "irrelevant-provider-missing",
+    "scope": "Only tests/fixtures/coexistence/cases.json and tests/test_coexistence_classification.py changed in implementation commit 9e99b205fa5b5ccb60a416ce1b0cdb07c209729f.",
+    "ordering": "Existing explicit ADAPT conditions remain before coverage because T002 requires bounded adapter/reference cases to preserve accepted ADAPT behavior; no D026/T002 ambiguity was introduced."
+  },
   "fixture_families": [
     "no-SDD/no-third-party-Skill",
     "Spec-Kit-like REUSE",
@@ -29,7 +41,7 @@
     "REUSE": ["spec-kit-like-reuse", "generic-label-control"],
     "ADAPT": ["openspec-like-adapt", "managed-surface-composed"],
     "COEXIST": ["gentle-ai-like-coexist", "same-name-skill-precedence"],
-    "MISSING": ["no-sdd-missing"],
+    "MISSING": ["no-sdd-missing", "irrelevant-provider-missing"],
     "CONFLICT": ["custom-sdd-overlap", "same-name-skill-unapproved", "managed-surface-blocked"]
   },
   "classification_invariants": {
@@ -53,12 +65,12 @@
       "uv run --locked python -m pytest"
     ],
     "results": {
-      "focused_pytest": "16 passed in 0.02s; 16 collected",
+      "focused_pytest": "17 passed in 0.02s; 17 collected",
       "uv_sync_locked": "Resolved 8 packages; Checked 6 packages",
-      "ruff_format_mutating": "1 file reformatted; 6 files left unchanged",
+      "ruff_format_mutating": "7 files left unchanged",
       "ruff_check": "All checks passed!",
       "ruff_format_check": "7 files already formatted",
-      "pytest": "98 passed in 0.82s; 98 collected, 0 failed, 0 skipped"
+      "pytest": "99 passed in 0.55s; 99 collected, 0 failed, 0 skipped"
     },
     "runtime": {
       "python": "Python 3.13.14",
@@ -86,21 +98,22 @@
     "test_dependency": false
   },
   "external_overlay_facts": {
-    "rdd_clone_local": "Known disabled/unmanaged state under D030 retained; no RDD mode, review, recover, or delivery command ran during T002.",
-    "rdd_global": "Unset; parent final read-only audit reported global empty/unset. No global RDD state mutation occurred.",
-    "rdd_proof": "Parent final audit ran only `gentle-ai review mode status --cwd . --json`; it reported clone_local/effective off from clone_local, global unset, revision sha256:3cf2ae551b4e617537fc50ba40444551fd4dc0cbee8b470678a7f1e62f85aa5f. No RDD state mutation occurred.",
+    "rdd_clone_local": "Disabled/unmanaged under D030; final read-only status reports clone_local/effective off from clone_local. No RDD mode, review, recover, or delivery command ran during R1.",
+    "rdd_global": "Unset; final read-only status reports global empty/unset. No global RDD state mutation occurred.",
+    "rdd_proof": "Final audit ran only `gentle-ai review mode status --cwd . --json`; it reported clone_local/effective off from clone_local, global unset, revision sha256:3cf2ae551b4e617537fc50ba40444551fd4dc0cbee8b470678a7f1e62f85aa5f. No RDD state mutation occurred.",
     "sdd": "No sdd-init, SDD migration, openspec artifact, or root consumer coordination footprint was created.",
     "external_ecosystem_repository_assets_modified": false
   },
   "git_status": {
     "branch_created_from": "origin/develop@e4677be42b05a02286bd9695caa5fb061a31e686",
-    "implementation_commit": "eccf3e9116af7e788862ed14de37b2acc8052dd2 test: add coexistence fixture corpus",
+    "initial_implementation_commit": "eccf3e9116af7e788862ed14de37b2acc8052dd2 test: add coexistence fixture corpus",
+    "r1_implementation_commit": "9e99b205fa5b5ccb60a416ce1b0cdb07c209729f test: classify irrelevant providers as missing",
     "implementation_pushed": true,
-    "implementation_remote_sha": "eccf3e9116af7e788862ed14de37b2acc8052dd2",
+    "implementation_remote_sha": "9e99b205fa5b5ccb60a416ce1b0cdb07c209729f",
     "pre_handoff_tracked_state": "clean",
     "markdown_changed": false
   },
-  "rollback": "Revert implementation commit eccf3e9116af7e788862ed14de37b2acc8052dd2 to remove corpus, tests, and D031 .atl/ ignore; revert this handoff-only successor separately if needed.",
+  "rollback": "Revert R1 implementation commit 9e99b205fa5b5ccb60a416ce1b0cdb07c209729f to remove only required-capability coverage correction and regression fixture; prior T002 corpus/D031 .atl/ ignore remain. Revert this handoff-only successor separately if needed.",
   "unresolved_issues": [],
   "recommended_next_task": "ChatGPT remote review and acceptance of T002.",
   "chatgpt_read_path": "handoffs/T002-executor-handoff.json"
