@@ -1,12 +1,13 @@
 {
   "task_id": "T001",
   "status": "DONE",
-  "status_rationale": "All R1 findings (R1-PROC, R1-REF, R1-SCOPE) are corrected and complete canonical verification passed under the currently installed compliant uv 0.11.33 (77 passed, 0 failed, 0 skipped). The R1 implementation is committed at bb62624044d48861fcd8a73855c5dfc23a06b7b8. The R1 review records the prior unauthorized uv self update as historical procedural noncompliance, requires no clean-workstation rerun/remediation, and permits status DONE when findings are otherwise contract-compliant. This handoff is finalized in a handoff-only successor commit and pushed under ordinary repository policy after the authorized clone-local RDD opt-out.",
+  "status_rationale": "All T001, R1, and R2 findings are corrected and complete canonical verification passed under uv 0.11.33 (81 passed, 0 failed, 0 skipped). The R2 implementation is committed at 5bee541e02ac0f940f07a349e0485d430dd2d985. The original unauthorized uv self update remains historical procedural noncompliance; D030's authorized clone-local RDD opt-out remains off, so ordinary repository policy applies without native receipt review or approval claim. This handoff is finalized in a handoff-only successor commit.",
   "task_contract_path": "docs/tasks/T001-deterministic-test-harness-foundation.md",
-  "review_directive_path": "docs/reviews/T001-R1.md",
+  "review_directive_path": "docs/reviews/T001-R2.md",
+  "review_directive_ref": "origin/develop@7aa22dd815e0b0671a2ee608f02c0516fa292454",
   "branch": "test/governance-harness",
-  "implementation_head_sha": "bb62624044d48861fcd8a73855c5dfc23a06b7b8",
-  "implementation_head_sha_note": "Full SHA of the committed R1 implementation commit. Per D029 and the revised docs/EXECUTOR-HANDOFFS.md contract, this file identifies the committed implementation/test/eval state described by the evidence and is reachable as an ancestor of the final pushed topic-branch HEAD. The handoff file is persisted in a handoff-only successor commit that does not change implementation/test/eval state; the JSON continues to identify bb62624 as the implementation anchor. The visible executor response reports the actual final pushed branch HEAD.",
+  "implementation_head_sha": "5bee541e02ac0f940f07a349e0485d430dd2d985",
+  "implementation_head_sha_note": "Full SHA of the committed R2 implementation commit. Per D029 and docs/EXECUTOR-HANDOFFS.md, this file identifies the committed implementation/test/eval state described by the evidence and is reachable as an ancestor of the final pushed topic-branch HEAD. This handoff is persisted in a handoff-only successor commit; the visible executor response reports the actual final pushed branch HEAD.",
   "base_branch": "develop",
   "base_sha": "c54f2bee00b96ce19328f2b55ef3803f209930a2",
   "files_changed": [
@@ -36,31 +37,51 @@
       "fix": "Reduced `.gitignore` to a 30-line file justified by T001: Python bytecode/extension artifacts (`__pycache__/`, `*.py[cod]`, `*$py.class`, `*.so`), the uv-managed project environment (`.venv/`, `uv.lock.bak`), tool caches produced by the approved test/lint toolchain (`.pytest_cache/`, `.ruff_cache/`), the never-committed local secrets (`.env`), and ordinary OS/editor detritus (`.DS_Store`, `Thumbs.db`, `*.swp`, `*.swo`, `*~`, `.idea/`, `.vscode/`). A header comment records the policy: do not add framework/ecosystem boilerplate without a Task Contract revision that actually introduces that surface. The retained set is auditable: every entry corresponds to state actually produced by the T001 toolchain or to standard OS/editor detritus."
     }
   },
-  "implementation_summary": "R1 re-applies the authorized rework from `docs/reviews/T001-R1.md` on top of the original T001 deterministic test harness (commit e89e60c) and the prior PARTIAL handoff (commit a31b87f). R1-REF narrows the `is_directory_or_extension_only` heuristic in `tests/test_reference_integrity.py` and pins the corrected behaviour with focused regression coverage (6 regression test functions / 16 parametrized scenarios). R1-SCOPE reduces `.gitignore` from a 135-line generic Python template to a 30-line minimal set justified by the T001 toolchain. The complete canonical verification (uv sync --locked, uv run --locked ruff check ., uv run --locked ruff format --check ., uv run --locked python -m pytest) was re-executed end-to-end after source-mutating normalization (`ruff format .`) and passed cleanly with the compliant uv 0.11.33 currently installed. No Markdown was edited. No new dependencies, no lockfile changes, no configuration changes beyond the two test/source artefacts explicitly authorized.",
-  "implementation_rationale": "The R1-REF fix replaces the boolean `target.startswith('.')` check with a regex `^\\.[A-Za-z][A-Za-z0-9]+$` that matches only genuine extension tokens. Concrete dot-prefixed paths always contain a path separator or a bare filename component and therefore fail the regex, leaving them eligible for mechanical resolution through the existing `_resolve()` helper. The consumer-footprint exemptions for `.agent-coordination/` and `.agent-governance/` are handled separately in `is_consumer_side_reference()` and were never routed through the extension-only check, so no regression is possible there. The R1-SCOPE fix removes every ignore line that does not correspond to state actually produced by the T001 toolchain.",
+  "r2_rework_summary": {
+    "R2-REF-DOTFILE": {
+      "fix": "Replaced the broad bare-dotfile regex with an explicit allowlist of extension-only prose tokens used by canonical documentation. Other dot-prefixed tokens remain concrete path candidates.",
+      "regression_coverage_added": [
+        "`.md` remains extension-only prose.",
+        "`.gitignore` is concrete and resolves when present.",
+        "`.missingconfig` is concrete and unresolved when absent."
+      ]
+    },
+    "R2-SCOPE-GITIGNORE": {
+      "fix": "Reduced `.gitignore` to `.venv/`, `__pycache__/`, `*.py[cod]`, `.pytest_cache/`, and `.ruff_cache/`; no additional T001-generated state is retained."
+    },
+    "R2-REF-CONTAINMENT": {
+      "fix": "Canonicalized concrete targets with `Path.resolve(strict=False)` and compares canonical candidate/root paths before accepting containment.",
+      "regression_coverage_added": "`../outside.md` from a repository-root candidate is classified outside the repository without requiring an external file."
+    }
+  },
+  "implementation_summary": "R2 applies only the authorized reference-integrity and ignore-scope corrections on top of original T001 and R1. `tests/test_reference_integrity.py` uses explicit extension-only prose tokens, canonical candidate resolution, and focused dotfile/traversal regressions. `.gitignore` contains only five T001-authorized environment/cache patterns. No Markdown, dependencies, lockfile, external SDD/Skill assets, or global tools were changed.",
+  "implementation_rationale": "Explicitly allowing only extension tokens used in canonical prose fails closed for dotfiles such as `.gitignore` and `.missingconfig`. Canonical `Path.resolve(strict=False)` makes parent traversal detectable even for missing paths. Consumer-footprint and directory exemptions remain separate. The retained ignore entries map directly to T001's local uv/Python/pytest/Ruff state.",
   "verification": {
     "commands": [
       "uv sync --locked",
-      "uv run --locked ruff format .",
       "uv run --locked ruff check .",
       "uv run --locked ruff format --check .",
       "uv run --locked python -m pytest"
     ],
+    "focused_commands": [
+      "uv run --locked python -m pytest tests/test_reference_integrity.py"
+    ],
     "normalization_commands": [
-      "uv run --locked ruff format ."
+      "uv run --locked ruff format tests/test_reference_integrity.py"
     ],
     "results": {
-      "uv_sync_locked": "Resolved 8 packages in 1ms; Checked 6 packages in 0.17ms; environment reproducible from committed lockfile.",
-      "ruff_format_mutating": "1 file reformatted, 5 files left unchanged (R1 normalization on the test_reference_integrity.py edit).",
+      "focused_pytest": "36 passed in 0.08s (collected 36 items from tests/test_reference_integrity.py)",
+      "uv_sync_locked": "Resolved 8 packages in 0.68ms; Checked 6 packages in 0.08ms; environment reproducible from committed lockfile.",
+      "ruff_format_mutating": "1 file left unchanged (R2 normalization on tests/test_reference_integrity.py).",
       "ruff_check": "All checks passed!",
       "ruff_format_check": "6 files already formatted",
-      "pytest": "77 passed in 0.72s (collected 77 items across 4 test modules)"
+      "pytest": "81 passed in 0.53s (collected 81 items across 4 test modules)"
     },
-    "pytest_pass_count": 77,
+    "pytest_pass_count": 81,
     "pytest_fail_count": 0,
     "pytest_skip_count": 0,
-    "pytest_collected_count": 77,
-    "test_count_delta_vs_original_t001": "+16 (16 new R1-REF regression scenarios added to test_reference_integrity.py)",
+    "pytest_collected_count": 81,
+    "test_count_delta_vs_original_t001": "+20 (16 R1 and 4 R2 reference-integrity regression scenarios)",
     "runtime": {
       "python_under_venv": "Python 3.13.14 (provisioned by uv into the project-local .venv; this is the Python used for verification)",
       "uv": "uv 0.11.33 (x86_64-unknown-linux-gnu)",
@@ -92,9 +113,9 @@
   "dependencies_or_config_changes": {
     "added_packages": [],
     "transitive_packages_added": [],
-    "config_files_changed_for_r1": [
-      ".gitignore (reduced to a minimal, T001-justified set; no new surface area introduced)",
-      "tests/test_reference_integrity.py (narrowed is_directory_or_extension_only heuristic and added 6 focused regression test functions / 16 parametrized scenarios)"
+    "config_files_changed_for_r1_r2": [
+        ".gitignore (R2 retains only five T001-authorized environment/cache patterns)",
+        "tests/test_reference_integrity.py (R1 regression coverage plus R2 dotfile and parent-traversal protections)"
     ],
     "config_files_unchanged": [
       "pyproject.toml (no dependency, version, or tool configuration changes for R1)",
@@ -116,34 +137,36 @@
   "unresolved_issues": [],
   "git_status": {
     "branch": "test/governance-harness",
-    "current_head_sha": "bb62624044d48861fcd8a73855c5dfc23a06b7b8",
-    "current_head_subject": "test(harness): apply T001 R1 rework",
-    "implementation_head_sha": "bb62624044d48861fcd8a73855c5dfc23a06b7b8",
-    "implementation_head_sha_kind": "committed-r1-implementation-state",
+    "current_head_sha": "5bee541e02ac0f940f07a349e0485d430dd2d985",
+    "current_head_subject": "test(harness): fix R2 reference integrity",
+    "implementation_head_sha": "5bee541e02ac0f940f07a349e0485d430dd2d985",
+    "implementation_head_sha_kind": "committed-r2-implementation-state",
     "base_branch": "develop",
     "base_sha": "c54f2bee00b96ce19328f2b55ef3803f209930a2",
     "merge_base": "c54f2bee00b96ce19328f2b55ef3803f209930a2",
     "r1_implementation_committed": true,
-    "r1_modified_files_at_implementation_commit": [
+    "r2_implementation_committed": true,
+    "r2_modified_files_at_implementation_commit": [
       ".gitignore",
       "tests/test_reference_integrity.py",
-      "handoffs/T001-executor-handoff.json (intermediate PARTIAL snapshot superseded by this final DONE handoff)"
+      "handoffs/T001-executor-handoff.json (updated in a handoff-only successor commit)"
     ],
-    "commits_on_branch_before_handoff_finalization": 3,
+    "commits_on_branch_before_handoff_finalization": 4,
     "commit_list": [
       {"sha": "e89e60cf1edd97975565870013229b1949f499f8", "subject": "test(harness): establish deterministic foundation"},
       {"sha": "a31b87f32b8004347e58521b01e3de4a7e55570b", "subject": "chore(handoff): record T001 partial state"},
-      {"sha": "bb62624044d48861fcd8a73855c5dfc23a06b7b8", "subject": "test(harness): apply T001 R1 rework"}
+      {"sha": "bb62624044d48861fcd8a73855c5dfc23a06b7b8", "subject": "test(harness): apply T001 R1 rework"},
+      {"sha": "5bee541e02ac0f940f07a349e0485d430dd2d985", "subject": "test(harness): fix R2 reference integrity"}
     ],
-    "handoff_finalization": "This JSON is the only tracked change in the handoff-only successor commit. After that commit, the final tracked worktree is clean; pre-existing out-of-scope untracked workstation state remains unreported and uncommitted.",
+    "handoff_finalization": "This JSON is the only tracked change in the R2 handoff-only successor commit. After push, tracked/index state is clean; pre-existing out-of-scope untracked `.atl/` paths remain untouched and uncommitted.",
     "pushed": true
   },
   "finalization_metadata": {
     "state": "handoff-only finalization committed and pushed",
-    "work_unit": "The handoff-only successor persists this final DONE JSON in place of the intermediate PARTIAL snapshot. It does not change implementation/test/eval state.",
-    "implementation_anchor_stability": "implementation_head_sha remains bb62624044d48861fcd8a73855c5dfc23a06b7b8 across the handoff-only finalization commit. Per docs/EXECUTOR-HANDOFFS.md, a handoff-only metadata/finalization commit does not require a new implementation anchor.",
+    "work_unit": "The handoff-only successor persists R2 evidence. It does not change implementation/test/eval state.",
+    "implementation_anchor_stability": "implementation_head_sha remains 5bee541e02ac0f940f07a349e0485d430dd2d985 across the handoff-only finalization commit. Per docs/EXECUTOR-HANDOFFS.md, a handoff-only metadata/finalization commit does not require a new implementation anchor.",
     "self_referential_sha_policy": "This file cannot truthfully contain the SHA of the commit that contains this same file. The visible executor response will report the actual pushed branch HEAD after commit and push complete; that report is the authoritative transport for the final SHA, not this JSON.",
-    "verification_reproducibility": "The verification evidence recorded under `verification` was executed against the implementation committed at bb62624. Re-running the same commands against the locked environment is expected to reproduce the recorded pass/fail counts without code changes."
+    "verification_reproducibility": "The verification evidence recorded under `verification` was executed against the implementation committed at 5bee541e02ac0f940f07a349e0485d430dd2d985. Re-running the same commands against the locked environment is expected to reproduce the recorded pass/fail counts without code changes."
   },
   "recommended_next_task": {
     "title": "T002 — Synthetic coexistence fixtures and reference-target corpus",
