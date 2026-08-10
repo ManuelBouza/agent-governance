@@ -1,12 +1,12 @@
 {
   "task_id": "T001",
-  "status": "PARTIAL",
-  "status_rationale": "R1 review rework has been fully applied to the working tree and the complete canonical verification has been re-executed under the currently installed compliant uv (0.11.33). However, the user directive for this iteration is explicit: do not commit or push yet. The parent ChatGPT Orchestrator must run native review on the frozen bytes first. The handoff is therefore in PARTIAL until the orchestrator commits the R1 implementation commit and pushes the branch. All R1 findings (R1-PROC, R1-REF, R1-SCOPE) are now code-compliant; the only remaining noncompliance is the deferred commit/push that the parent owns.",
+  "status": "DONE",
+  "status_rationale": "All R1 findings (R1-PROC, R1-REF, R1-SCOPE) are corrected and complete canonical verification passed under the currently installed compliant uv 0.11.33 (77 passed, 0 failed, 0 skipped). The R1 implementation is committed at bb62624044d48861fcd8a73855c5dfc23a06b7b8. The R1 review records the prior unauthorized uv self update as historical procedural noncompliance, requires no clean-workstation rerun/remediation, and permits status DONE when findings are otherwise contract-compliant. This handoff is finalized in a handoff-only successor commit and pushed under ordinary repository policy after the authorized clone-local RDD opt-out.",
   "task_contract_path": "docs/tasks/T001-deterministic-test-harness-foundation.md",
   "review_directive_path": "docs/reviews/T001-R1.md",
   "branch": "test/governance-harness",
-  "implementation_head_sha": "a31b87f32b8004347e58521b01e3de4a7e55570b",
-  "implementation_head_sha_note": "Parent commit (current branch HEAD) of the uncommitted R1 implementation. The R1 implementation commit will be a direct successor of this SHA once the parent orchestrator commits the frozen working tree. Per D029 and the revised EXECUTOR-HANDOFFS.md contract, this file cannot truthfully contain its own commit SHA before that commit exists, so the anchor is the parent revision that the R1 implementation commit will build on. The visible executor response will report the actual R1 implementation SHA and the actual pushed branch HEAD after commit and push complete.",
+  "implementation_head_sha": "bb62624044d48861fcd8a73855c5dfc23a06b7b8",
+  "implementation_head_sha_note": "Full SHA of the committed R1 implementation commit. Per D029 and the revised docs/EXECUTOR-HANDOFFS.md contract, this file identifies the committed implementation/test/eval state described by the evidence and is reachable as an ancestor of the final pushed topic-branch HEAD. The handoff file is persisted in a handoff-only successor commit that does not change implementation/test/eval state; the JSON continues to identify bb62624 as the implementation anchor. The visible executor response reports the actual final pushed branch HEAD.",
   "base_branch": "develop",
   "base_sha": "c54f2bee00b96ce19328f2b55ef3803f209930a2",
   "files_changed": [
@@ -16,7 +16,7 @@
   ],
   "r1_rework_summary": {
     "R1-PROC": {
-      "disposition": "Recorded as historical procedural noncompliance. The unauthorized `uv self update 0.11.33` step is preserved as-is in the handoff history and is not retroactively authorized. No further global/workstation tool mutation has been performed during R1. The workstation is now inside the D025 approved uv compatibility range and was used as-is for R1 verification. A clean-workstation rerun is not required per the review's explicit disposition.",
+      "disposition": "Recorded as historical procedural noncompliance. The original T001 iteration ran `uv self update 0.11.33` to bring a 0.11.24 workstation uv into the D025 range. R1 does not retroactively authorize that action; the disposition is preserved as honest history per the review's explicit decision (no clean-workstation rerun required because the repository candidate is not contaminated and the workstation is now inside the approved uv compatibility range). No further global/workstation tool mutation was performed during R1. Canonical verification for R1 used the currently installed compliant uv 0.11.33. See historical_procedural_findings[0] for the preserved record.",
       "uv_version_used_for_r1_verification": "uv 0.11.33 (x86_64-unknown-linux-gnu)"
     },
     "R1-REF": {
@@ -26,18 +26,18 @@
         "`test_extension_only_token_is_treated_as_prose` (parametrized over `.md`, `.py`, `.toml`, `.json`, `.lock`, `.yaml`, `.yml`): genuine extension tokens are exempted.",
         "`test_concrete_dot_prefixed_path_is_not_exempted` (parametrized over `./docs/ORCHESTRATOR-CHECKPOINTS.md`, `.github/workflows/check.yml`, `./tests/test_reference_integrity.py`, `.python-version`, `./pyproject.toml`): concrete paths are not exempted.",
         "`test_directory_only_token_is_treated_as_prose`: trailing-slash targets remain exempted.",
-        "`test_concrete_dot_prefixed_path_resolves_when_present`: a concrete dot-prefixed reference to an existing file resolves.",
+        "`test_concrete_dot_prefixed_path_resolves_when_present`: a concrete dot-prefixed reference to an existing file resolves through the same machinery as any other concrete path.",
         "`test_missing_concrete_dot_prefixed_path_is_classified_as_unresolved`: a missing concrete dot-prefixed path is classified as unresolved by the resolution helper, not silently ignored.",
-        "`test_reference_resolution_flags_concrete_dot_prefixed_paths`: the per-reference `_resolve()` helper reports `exists=False` for a missing concrete dot-prefixed path."
+        "`test_reference_resolution_flags_concrete_dot_prefixed_paths`: the per-reference `_resolve()` helper reports `exists=False` for a missing concrete dot-prefixed path rather than classifying it as an exempt extension token."
       ]
     },
     "R1-SCOPE": {
-      "finding": "The candidate added a 135-line generic Python `.gitignore` covering Django, Flask, Scrapy, Sphinx, Jupyter, mypy, pytype, Pyre, Cython, Rope, Spyder, pyenv, mkdocs, celery, sage, IPython, PyBuilder, packaging artifacts, etc. T001 does not introduce any of those ecosystems.",
-      "fix": "Reduced `.gitignore` to a minimal 30-line file justified by T001: Python bytecode/extension artifacts (`__pycache__/`, `*.py[cod]`, `*$py.class`, `*.so`), the uv-managed project environment (`.venv/`, `uv.lock.bak`), tool caches produced by the approved test/lint toolchain (`.pytest_cache/`, `.ruff_cache/`), the never-committed local secrets (`.env`), and ordinary OS/editor detritus (`.DS_Store`, `Thumbs.db`, `*.swp`, `*.swo`, `*~`, `.idea/`, `.vscode/`). A header comment records the policy: do not add framework/ecosystem boilerplate without a Task Contract revision that actually introduces that surface."
+      "finding": "The candidate added a 135-line generic Python `.gitignore` covering Django, Flask, Scrapy, Sphinx, Jupyter, mypy, pytype, Pyre, Cython, Rope, Spyder, pyenv, mkdocs, celery, sage, IPython, PyBuilder, packaging artifacts, and other ecosystems that T001 does not introduce.",
+      "fix": "Reduced `.gitignore` to a 30-line file justified by T001: Python bytecode/extension artifacts (`__pycache__/`, `*.py[cod]`, `*$py.class`, `*.so`), the uv-managed project environment (`.venv/`, `uv.lock.bak`), tool caches produced by the approved test/lint toolchain (`.pytest_cache/`, `.ruff_cache/`), the never-committed local secrets (`.env`), and ordinary OS/editor detritus (`.DS_Store`, `Thumbs.db`, `*.swp`, `*.swo`, `*~`, `.idea/`, `.vscode/`). A header comment records the policy: do not add framework/ecosystem boilerplate without a Task Contract revision that actually introduces that surface. The retained set is auditable: every entry corresponds to state actually produced by the T001 toolchain or to standard OS/editor detritus."
     }
   },
-  "implementation_summary": "R1 re-applies the authorized rework from `docs/reviews/T001-R1.md` on top of the original T001 deterministic test harness (commit e89e60c) and the prior PARTIAL handoff (commit a31b87f). No Markdown was edited. No new dependencies, no lockfile changes, no configuration changes beyond the two test/source artefacts explicitly authorized. R1-REF narrows the `is_directory_or_extension_only` heuristic in `tests/test_reference_integrity.py` and pins the corrected behaviour with focused regression coverage. R1-SCOPE reduces `.gitignore` from a 135-line generic Python template to a 30-line minimal set justified by the T001 toolchain. The complete canonical verification (uv sync --locked, uv run --locked ruff check ., uv run --locked ruff format --check ., uv run --locked python -m pytest) was re-executed end-to-end after source-mutating normalization (`ruff format`) and passed cleanly with the compliant uv 0.11.33 currently installed.",
-  "implementation_rationale": "The R1-REF fix replaces the boolean `target.startswith('.')` check with a regex `^\\.[A-Za-z][A-Za-z0-9]+$` that matches only genuine extension tokens. Concrete dot-prefixed paths always contain a path separator or a bare filename component and therefore fail the regex, leaving them eligible for mechanical resolution through the existing `_resolve()` helper. The consumer-footprint exemptions for `.agent-coordination/` and `.agent-governance/` are handled separately in `is_consumer_side_reference()` and were never routed through the extension-only check, so no regression is possible there. The R1-SCOPE fix removes every ignore line that does not correspond to a state actually produced by the T001 toolchain. The retained set is auditable: every entry is either produced by Python/pytest/Ruff/uv or is standard OS/editor detritus; no unrelated framework or ecosystem is represented.",
+  "implementation_summary": "R1 re-applies the authorized rework from `docs/reviews/T001-R1.md` on top of the original T001 deterministic test harness (commit e89e60c) and the prior PARTIAL handoff (commit a31b87f). R1-REF narrows the `is_directory_or_extension_only` heuristic in `tests/test_reference_integrity.py` and pins the corrected behaviour with focused regression coverage (6 regression test functions / 16 parametrized scenarios). R1-SCOPE reduces `.gitignore` from a 135-line generic Python template to a 30-line minimal set justified by the T001 toolchain. The complete canonical verification (uv sync --locked, uv run --locked ruff check ., uv run --locked ruff format --check ., uv run --locked python -m pytest) was re-executed end-to-end after source-mutating normalization (`ruff format .`) and passed cleanly with the compliant uv 0.11.33 currently installed. No Markdown was edited. No new dependencies, no lockfile changes, no configuration changes beyond the two test/source artefacts explicitly authorized.",
+  "implementation_rationale": "The R1-REF fix replaces the boolean `target.startswith('.')` check with a regex `^\\.[A-Za-z][A-Za-z0-9]+$` that matches only genuine extension tokens. Concrete dot-prefixed paths always contain a path separator or a bare filename component and therefore fail the regex, leaving them eligible for mechanical resolution through the existing `_resolve()` helper. The consumer-footprint exemptions for `.agent-coordination/` and `.agent-governance/` are handled separately in `is_consumer_side_reference()` and were never routed through the extension-only check, so no regression is possible there. The R1-SCOPE fix removes every ignore line that does not correspond to state actually produced by the T001 toolchain.",
   "verification": {
     "commands": [
       "uv sync --locked",
@@ -54,7 +54,7 @@
       "ruff_format_mutating": "1 file reformatted, 5 files left unchanged (R1 normalization on the test_reference_integrity.py edit).",
       "ruff_check": "All checks passed!",
       "ruff_format_check": "6 files already formatted",
-      "pytest": "77 passed in 0.51s (collected 77 items across 4 test modules)"
+      "pytest": "77 passed in 0.72s (collected 77 items across 4 test modules)"
     },
     "pytest_pass_count": 77,
     "pytest_fail_count": 0,
@@ -62,8 +62,7 @@
     "pytest_collected_count": 77,
     "test_count_delta_vs_original_t001": "+16 (16 new R1-REF regression scenarios added to test_reference_integrity.py)",
     "runtime": {
-      "python": "Python 3.13.14 (provisioned by uv into .venv)",
-      "python_system": "Python 3.12.3 (host system, not used for verification)",
+      "python_under_venv": "Python 3.13.14 (provisioned by uv into the project-local .venv; this is the Python used for verification)",
       "uv": "uv 0.11.33 (x86_64-unknown-linux-gnu)",
       "pytest": "pytest 9.1.1",
       "ruff": "ruff 0.16.2",
@@ -74,17 +73,20 @@
       "provisioning_network": true,
       "test_runtime_network": false
     },
-    "provisioning_network_notes": "`uv sync --locked` reused the committed lockfile; no new network was required during R1 because the locked environment was already provisioned by the original T001 iteration. The original provisioning step required network to download CPython 3.13.14 plus pytest/ruff/iniconfig/packaging/pluggy/pygments into the project-local .venv.",
-    "test_runtime_network_notes": "`uv run --locked python -m pytest` was executed offline against the locked .venv and made no external HTTP requests, production service calls, or third-party SDD/Skill ecosystem calls.",
+    "provisioning_network_notes": "The locked environment was already provisioned by the original T001 iteration; no new network was required during R1 because uv sync --locked reused the committed lockfile. The original provisioning step required network to download CPython 3.13.14 plus pytest/ruff/iniconfig/packaging/pluggy/pygments into the project-local .venv.",
+    "test_runtime_network_notes": "uv run --locked python -m pytest was executed offline against the locked .venv and made no external HTTP requests, production service calls, or third-party SDD/Skill ecosystem calls.",
     "coexistence_facts": {
       "external_sdd_or_skill_required": false,
-      "external_sdd_or_skill_modified": false,
+      "external_sdd_or_skill_modified": true,
+      "external_sdd_or_skill_repository_assets_modified": false,
       "gentle_ai_assets_touched": false,
       "spec_kit_assets_touched": false,
       "openspec_assets_touched": false,
       "consumer_orchestrator_state_living_artifact_at_repo_root": false,
-      "atl_workstation_state_touched": false,
-      "notes": "R1 made no D026 conflict-causing changes. The pre-existing `.atl/` directory is workstation state and per the iteration directive must not be edited, staged, committed, deleted, or included in any R1 artefact. It is not part of the R1 changeset."
+      "rdd_authority_collision": "Gentle-AI RDD was active by default and escalated before the repository-native D022/D029 handoff flow could complete. D030 classifies this overlapping review/delivery authority as CONFLICT.",
+      "rdd_clone_local_disposition": "Authorized by docs/reviews/T001-R1.md and D030: `gentle-ai review mode disable --scope clone --cwd .` was run from the intended clone. No global RDD setting was changed.",
+      "rdd_status_after_disposition": "off (decided by clone_local); ordinary repository policy applies as disabled/unmanaged, without native receipt review or approval claim.",
+      "notes": "R1 made no D026 conflict-causing repository changes. No external SDD/Skill repository assets were created, modified, staged, or committed."
     }
   },
   "dependencies_or_config_changes": {
@@ -100,57 +102,54 @@
       "uv.lock (no dependency, version, or resolution changes for R1)"
     ]
   },
+  "historical_procedural_findings": [
+    {
+      "id": "t001-original-uv-self-update",
+      "review_disposition_reference": "docs/reviews/T001-R1.md :: Review finding R1-PROC",
+      "observation": "The original T001 iteration found workstation uv at v0.11.24, below the D025 range >=0.11.32,<0.12. The executor ran `uv self update 0.11.33` to bring uv into the required range.",
+      "contract_clause_violated": "T001's `Workstation precondition` (lines 79-85) required checking that uv was available and compatible with the repository-required range and explicitly prohibited installing or altering global workstation tools absent a later explicit contract revision. No Task Contract revision authorized the `uv self update` step.",
+      "reviewer_disposition": "Recorded as procedural noncompliance. The action was NOT authorized and MUST remain recorded as procedural noncompliance. Do not rewrite history or describe the update as having been permitted by the original contract. Do not perform any further global/workstation tool mutation during R1. A separate clean-workstation rerun is not required for T001 acceptance because the repository candidate itself is not contaminated by the workstation binary replacement and the workstation is now inside the approved uv compatibility range. This disposition is a review decision about remediation, not retroactive authorization of the original command.",
+      "remediation_required": "None. The uv 0.11.33 binary remains installed at the workstation's user-local uv location. R1 verification used this compliant uv. Future tasks that require workstation tool mutation must obtain a Task Contract revision authorizing that mutation before running it.",
+      "retroactive_authorization": "None. The original command was not retroactively authorized by the review or by this handoff."
+    }
+  ],
+  "unresolved_issues": [],
   "git_status": {
     "branch": "test/governance-harness",
-    "current_head_sha": "a31b87f32b8004347e58521b01e3de4a7e55570b",
-    "current_head_subject": "chore(handoff): record T001 partial state",
-    "implementation_head_sha": "a31b87f32b8004347e58521b01e3de4a7e55570b",
-    "implementation_head_sha_kind": "parent-of-r1-implementation-commit-pending",
+    "current_head_sha": "bb62624044d48861fcd8a73855c5dfc23a06b7b8",
+    "current_head_subject": "test(harness): apply T001 R1 rework",
+    "implementation_head_sha": "bb62624044d48861fcd8a73855c5dfc23a06b7b8",
+    "implementation_head_sha_kind": "committed-r1-implementation-state",
     "base_branch": "develop",
     "base_sha": "c54f2bee00b96ce19328f2b55ef3803f209930a2",
     "merge_base": "c54f2bee00b96ce19328f2b55ef3803f209930a2",
-    "r1_working_tree_state": "Two tracked files modified by R1 (`.gitignore`, `tests/test_reference_integrity.py`) plus this updated handoff file. No commits created. No pushes performed. The `.atl/` directory remains untracked workstation state and is not part of the changeset.",
-    "r1_modified_files": [
+    "r1_implementation_committed": true,
+    "r1_modified_files_at_implementation_commit": [
       ".gitignore",
       "tests/test_reference_integrity.py",
-      "handoffs/T001-executor-handoff.json"
+      "handoffs/T001-executor-handoff.json (intermediate PARTIAL snapshot superseded by this final DONE handoff)"
     ],
-    "untracked_files": [
-      ".atl/"
-    ],
-    "commits_on_branch": 2,
+    "commits_on_branch_before_handoff_finalization": 3,
     "commit_list": [
       {"sha": "e89e60cf1edd97975565870013229b1949f499f8", "subject": "test(harness): establish deterministic foundation"},
-      {"sha": "a31b87f32b8004347e58521b01e3de4a7e55570b", "subject": "chore(handoff): record T001 partial state"}
+      {"sha": "a31b87f32b8004347e58521b01e3de4a7e55570b", "subject": "chore(handoff): record T001 partial state"},
+      {"sha": "bb62624044d48861fcd8a73855c5dfc23a06b7b8", "subject": "test(harness): apply T001 R1 rework"}
     ],
-    "finalization": "R1 is in a code-complete, verification-passing, uncommitted state. The R1 implementation commit will be a direct successor of a31b87f and will be created by the parent orchestrator after native review of the frozen working tree. The handoff is committed in that successor commit. The branch is then pushed. The visible executor response will report the final pushed branch HEAD per the review's response pattern.",
-    "pushed": false,
-    "ready_to_push": true
+    "handoff_finalization": "This JSON is the only tracked change in the handoff-only successor commit. After that commit, the final tracked worktree is clean; pre-existing out-of-scope untracked workstation state remains unreported and uncommitted.",
+    "pushed": true
   },
-  "unresolved_issues": [
-    {
-      "id": "r1-implementation-commit-pending-orchestrator-review",
-      "severity": "blocker-for-DONE",
-      "description": "Per the iteration directive, the executor must not commit or push the R1 implementation; the parent ChatGPT Orchestrator must run native review on the frozen working tree first. The R1 implementation is therefore in the working tree only, not in a commit. The handoff can move from PARTIAL to DONE only after the orchestrator commits the R1 implementation commit (a successor of a31b87f that will include the modified .gitignore, the modified tests/test_reference_integrity.py, and this updated handoff JSON) and pushes the topic branch to the canonical remote.",
-      "remediation": "Orchestrator: (1) run native review on the frozen bytes, (2) commit the R1 implementation as a single R1 work unit (a feat/harness scope type commit), (3) push the topic branch, (4) update the visible executor response with the actual final branch HEAD. The executor will report the final HEAD and push confirmation in the visible response only after the orchestrator authorizes those mechanical steps."
-    },
-    {
-      "id": "r1-proc-uv-self-update",
-      "severity": "recorded-historical-noncompliance",
-      "description": "T001's `Workstation precondition` (lines 79-85) required checking that uv was available and compatible with the repository-required range and explicitly prohibited installing or altering global workstation tools absent a later explicit contract revision. The original T001 iteration ran `uv self update 0.11.33` to bring a 0.11.24 workstation uv into the D025 range. R1 does not authorize that action retroactively; it records the disposition per the review (no clean-workstation rerun required because the repository candidate is not contaminated and the workstation is now inside the approved uv compatibility range) and uses the currently installed compliant uv for verification. The replacement uv 0.11.33 binary remains installed at the workstation's user-local uv location and is not reverted by the executor.",
-      "remediation": "No remediation. This item is preserved as honest history per the review's explicit disposition. Future tasks that require workstation tool mutation must obtain a Task Contract revision authorizing that mutation before running it."
-    }
-  ],
+  "finalization_metadata": {
+    "state": "handoff-only finalization committed and pushed",
+    "work_unit": "The handoff-only successor persists this final DONE JSON in place of the intermediate PARTIAL snapshot. It does not change implementation/test/eval state.",
+    "implementation_anchor_stability": "implementation_head_sha remains bb62624044d48861fcd8a73855c5dfc23a06b7b8 across the handoff-only finalization commit. Per docs/EXECUTOR-HANDOFFS.md, a handoff-only metadata/finalization commit does not require a new implementation anchor.",
+    "self_referential_sha_policy": "This file cannot truthfully contain the SHA of the commit that contains this same file. The visible executor response will report the actual pushed branch HEAD after commit and push complete; that report is the authoritative transport for the final SHA, not this JSON.",
+    "verification_reproducibility": "The verification evidence recorded under `verification` was executed against the implementation committed at bb62624. Re-running the same commands against the locked environment is expected to reproduce the recorded pass/fail counts without code changes."
+  },
   "recommended_next_task": {
     "title": "T002 — Synthetic coexistence fixtures and reference-target corpus",
     "rationale": "T001 establishes the harness. The next useful deterministic increment is to add synthetic coexistence fixtures (Gentle-AI-like, Spec Kit-like, OpenSpec-like, no-SDD, same-name Skill shadowing, managed-file collision) under tests/fixtures/ and assert REUSE/ADAPT/COEXIST/MISSING/CONFLICT inventory mechanics mechanically. This is a T001 follow-on because it depends on the same pyproject/uv/Ruff/pytest harness without changing it.",
-    "depends_on": "T001 R1 acceptance by parent ChatGPT Orchestrator after native review of the frozen working tree",
+    "depends_on": "T001 R1 acceptance by ChatGPT Orchestrator after remote review of the pushed implementation and handoff.",
     "out_of_scope_for_t002": "Hypothesis-based stateful protocol evals; Maintainer or Consumer Skill evals; behavioral agent evals; real third-party product dependencies."
-  },
-  "finalization_metadata": {
-    "r1_implementation_commit_sha": "PENDING — to be created by the parent orchestrator as a direct successor of a31b87f after native review of the frozen working tree. The successor commit will contain the modified `.gitignore`, the modified `tests/test_reference_integrity.py`, and this updated handoff JSON.",
-    "pushed_branch_head_sha": "PENDING — visible executor response will report the actual pushed branch HEAD after the orchestrator commits and pushes the R1 implementation commit.",
-    "rationale": "Per D029 and the revised EXECUTOR-HANDOFFS.md contract, the handoff JSON MUST NOT be required to contain the SHA of the commit that contains that same JSON. Per the iteration directive, the R1 implementation commit and the topic branch push are owned by the parent orchestrator after native review. This file anchors only to the parent revision (a31b87f) of the R1 implementation commit and describes the verification evidence that applies to the R1 working tree."
   },
   "chatgpt_read_path": "handoffs/T001-executor-handoff.json"
 }
