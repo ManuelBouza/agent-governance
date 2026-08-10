@@ -36,11 +36,11 @@ def classify(case: dict[str, object]) -> str:
         return "MISSING"
     if case.get("adapter_needed") or managed:
         return "ADAPT"
+    if not any(case["required"] in provider["capabilities"] for provider in providers):
+        return "MISSING"
     if len(providers) > 1:
         return "COEXIST"
-    if any(case["required"] in provider["capabilities"] for provider in providers):
-        return "REUSE"
-    return "COEXIST"
+    return "REUSE"
 
 
 @pytest.fixture(scope="module")

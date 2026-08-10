@@ -7,6 +7,12 @@
     "expected": "MISSING"
   },
   {
+    "id": "irrelevant-provider-missing",
+    "required": "tasks",
+    "providers": [{"label": "skill-registry", "capabilities": ["skill-discovery"], "write_surfaces": ["skill-index"]}],
+    "expected": "MISSING"
+  },
+  {
     "id": "spec-kit-like-reuse",
     "required": "tasks",
     "providers": [{"label": "spec-kit-like", "capabilities": ["specs", "plans", "tasks"], "write_surfaces": ["native-tasks"]}],
