@@ -15,7 +15,6 @@ expected to be absent from the source repository root.
 
 from __future__ import annotations
 
-import re
 from collections.abc import Iterable
 from pathlib import Path
 
@@ -58,7 +57,9 @@ def is_glob_or_branch_pattern(target: str) -> bool:
     return any(token in target for token in GLOB_TOKENS)
 
 
-_EXTENSION_ONLY_TOKEN_RE = re.compile(r"^\.[A-Za-z][A-Za-z0-9]+$")
+EXTENSION_ONLY_PROSE_TOKENS: frozenset[str] = frozenset(
+    {".md", ".py", ".toml", ".json", ".lock", ".yaml", ".yml"}
+)
 
 
 def is_directory_or_extension_only(target: str) -> bool:
@@ -67,25 +68,32 @@ def is_directory_or_extension_only(target: str) -> bool:
     prose references that cannot be resolved mechanically to a
     single file.
 
-    A target is treated as an extension-only token only when it
-    matches the form ``.ext`` (one dot followed by a bare
-    identifier with no path separator). Anything containing a
-    separator or another component — including dot-prefixed
-    concrete paths such as ``./docs/file.md`` or
-    ``.github/workflows/check.yml`` — is treated as a concrete
-    file path and remains eligible for mechanical resolution.
+    Extension-only prose tokens are explicitly allowlisted. Other
+    dot-prefixed tokens are concrete path candidates so repository
+    dotfiles remain eligible for mechanical resolution.
     """
 
     if target.endswith("/"):
         return True
-    return bool(_EXTENSION_ONLY_TOKEN_RE.match(target))
+    return target in EXTENSION_ONLY_PROSE_TOKENS
 
 
 def _resolve(reference: Reference, repo_root: Path) -> tuple[Path, bool]:
     target = reference.target_path
     if not looks_like_path(target):
         return Path(target), False
-    return repo_root / target, (repo_root / target).exists()
+    resolved = (repo_root / target).resolve(strict=False)
+    return resolved, resolved.exists()
+
+
+def is_inside_repository(candidate: Path, repo_root: Path) -> bool:
+    """Return whether a canonical candidate remains below repository root."""
+
+    try:
+        candidate.resolve(strict=False).relative_to(repo_root.resolve(strict=False))
+    except ValueError:
+        return False
+    return True
 
 
 def _references_to_paths(
@@ -177,9 +185,7 @@ def test_no_internal_reference_inside_core_points_outside_repo(
                 continue
             if is_glob_or_branch_pattern(ref.target_path):
                 continue
-            try:
-                resolved.relative_to(repo_root)
-            except ValueError:
+            if not is_inside_repository(resolved, repo_root):
                 pytest.fail(
                     f"{path.relative_to(repo_root)}:{ref.line_no} "
                     f"references path outside repository: {ref.target_path}"
@@ -235,11 +241,8 @@ def test_checkpoint_files_are_markdown_not_json(
 
 # --- R1-REF regression coverage -----------------------------------------
 #
-# `is_directory_or_extension_only` previously returned True for every
-# target beginning with ``.``, which incorrectly exempted concrete
-# dot-prefixed paths (``.github/workflows/check.yml``,
-# ``./docs/ORCHESTRATOR-CHECKPOINTS.md``) from mechanical resolution.
-# The focused coverage below pins the corrected, narrow behaviour.
+# R2 keeps only known extension prose tokens exempted. Dotfiles must
+# remain concrete candidates, and canonical resolution must reject `..` escapes.
 
 
 @pytest.mark.parametrize(
@@ -274,6 +277,12 @@ def test_concrete_dot_prefixed_path_is_not_exempted(concrete_path: str) -> None:
     assert is_directory_or_extension_only(concrete_path) is False, (
         f"Concrete path {concrete_path!r} must not be exempted from mechanical reference resolution"
     )
+
+
+def test_dotfile_is_treated_as_a_concrete_path() -> None:
+    """A root dotfile is not extension-only prose."""
+
+    assert is_directory_or_extension_only(".gitignore") is False
 
 
 def test_directory_only_token_is_treated_as_prose() -> None:
@@ -317,6 +326,35 @@ def test_missing_concrete_dot_prefixed_path_is_classified_as_unresolved(
     assert is_consumer_side_reference(target) is False
 
 
+def test_existing_dotfile_resolves(repo_root: Path) -> None:
+    """Existing root dotfiles resolve as concrete paths."""
+
+    reference = Reference(
+        source=repo_root / "AGENTS.md",
+        line_no=1,
+        raw=".gitignore",
+        target=".gitignore",
+    )
+    resolved, exists = _resolve(reference, repo_root)
+    assert exists
+    assert resolved == repo_root / ".gitignore"
+
+
+def test_missing_dotfile_is_unresolved(repo_root: Path) -> None:
+    """Missing dotfiles are not exempted as extension-only prose."""
+
+    reference = Reference(
+        source=repo_root / "AGENTS.md",
+        line_no=1,
+        raw=".missingconfig",
+        target=".missingconfig",
+    )
+    resolved, exists = _resolve(reference, repo_root)
+    assert is_directory_or_extension_only(reference.target_path) is False
+    assert not exists
+    assert resolved == repo_root / ".missingconfig"
+
+
 def test_reference_resolution_flags_concrete_dot_prefixed_paths(
     repo_root: Path,
 ) -> None:
@@ -334,3 +372,18 @@ def test_reference_resolution_flags_concrete_dot_prefixed_paths(
     resolved, exists = _resolve(fake_reference, repo_root)
     assert not exists
     assert resolved == repo_root / "does-not-exist" / "check.yml"
+
+
+def test_parent_traversal_reference_is_outside_repository(tmp_path: Path) -> None:
+    """Canonical resolution rejects lexical parent traversal outside root."""
+
+    repo_root = tmp_path / "repository"
+    repo_root.mkdir()
+    reference = Reference(
+        source=repo_root / "governance-core" / "GOVERNANCE.md",
+        line_no=1,
+        raw="../outside.md",
+        target="../outside.md",
+    )
+    resolved, _ = _resolve(reference, repo_root)
+    assert is_inside_repository(resolved, repo_root) is False

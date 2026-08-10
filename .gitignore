@@ -1,34 +1,5 @@
-# Minimal ignore set justified by the T001 deterministic test harness.
-#
-# T001 introduces the Python/pytest/Ruff/uv toolchain described in
-# D023/D025 plus ordinary editor/OS detritus. Nothing else is in scope.
-#
-# Do NOT add framework/ecosystem boilerplate (Django, Flask, Scrapy,
-# Sphinx, Jupyter, mypy, pytype, Pyre, Cython, etc.) without a Task
-# Contract revision that actually introduces that surface.
-
-# Python bytecode / extension artifacts
+.venv/
 __pycache__/
 *.py[cod]
-*$py.class
-*.so
-
-# uv-managed project environment
-.venv/
-uv.lock.bak
-
-# Tool caches produced by the approved test/lint toolchain
 .pytest_cache/
 .ruff_cache/
-
-# Local secrets; never committed (per repository policy)
-.env
-
-# OS / editor detritus
-.DS_Store
-Thumbs.db
-*.swp
-*.swo
-*~
-.idea/
-.vscode/
