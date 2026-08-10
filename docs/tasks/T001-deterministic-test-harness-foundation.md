@@ -1,6 +1,7 @@
 # T001 — Deterministic test harness foundation
 
-Status: READY
+Status: ACCEPTED
+Lifecycle note: Accepted by ChatGPT Orchestrator on 2026-08-10 after PD5 reviews R1-R3. The original readiness and execution semantics below are retained unchanged for auditability.
 Type: test/eval infrastructure
 Base branch: `develop`
 Expected topic branch: `test/governance-harness`
@@ -313,3 +314,20 @@ After the handoff and final state are committed and pushed, return only:
 `HEAD: <pushed-final-commit-sha>`
 
 Do not open or merge a PR unless the Task Contract explicitly delegates that action after ChatGPT review.
+
+## Acceptance record
+
+Accepted by ChatGPT Orchestrator on 2026-08-10 after remote review of the persisted executor handoff and pushed branch through PD5 revisions R1, R2, and R3.
+
+- Reviewed executor branch: `test/governance-harness`.
+- Final reviewed executor HEAD: `3b01e5cd67966011b47d62544feede0c352467b9`.
+- Final implementation anchor: `89644eebe425f691ca3cf119902acffb4b77b6d8`.
+- Persisted handoff: `handoffs/T001-executor-handoff.json`.
+- Final canonical gate: 82 passed, 0 failed, 0 skipped under Python 3.13.14 / uv 0.11.33 / pytest 9.1.1 / Ruff 0.16.2.
+- Implementation PR: `#17`.
+- Squash-merged `develop` commit: `80f7a4d5735bdc47539768eb844c55b7cc4dacdb`.
+- R1-R3 findings are resolved; no unresolved implementation issue remains.
+- The original unauthorized workstation `uv self update 0.11.33` remains recorded as historical procedural noncompliance and was not retroactively authorized.
+- The D030 Gentle-AI RDD disposition is accepted as a bounded clone-local coexistence adaptation; no Gentle-AI/SDD repository asset was committed and source correctness does not depend on that overlay.
+
+T001 is complete and accepted. Any later expansion of coexistence/security/behavioral coverage requires a new Task Contract.
