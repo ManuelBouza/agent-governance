@@ -1,0 +1,87 @@
+[
+  {
+    "id": "no-sdd-missing",
+    "required": "tasks",
+    "providers": [],
+    "no_sdd_valid": true,
+    "expected": "MISSING"
+  },
+  {
+    "id": "irrelevant-provider-missing",
+    "required": "tasks",
+    "providers": [{"label": "skill-registry", "capabilities": ["skill-discovery"], "write_surfaces": ["skill-index"]}],
+    "expected": "MISSING"
+  },
+  {
+    "id": "spec-kit-like-reuse",
+    "required": "tasks",
+    "providers": [{"label": "spec-kit-like", "capabilities": ["specs", "plans", "tasks"], "write_surfaces": ["native-tasks"]}],
+    "expected": "REUSE",
+    "outcome": {"duplicate_artifacts": [], "native_owner": "spec-kit-like"}
+  },
+  {
+    "id": "openspec-like-adapt",
+    "required": "plans",
+    "adapter_needed": true,
+    "providers": [{"label": "openspec-like", "capabilities": ["specs", "plans", "tasks"], "write_surfaces": ["change-plans"]}],
+    "expected": "ADAPT",
+    "outcome": {"native_owner": "openspec-like", "governance_reference": "change-plan"}
+  },
+  {
+    "id": "gentle-ai-like-coexist",
+    "required": "governance-metadata",
+    "providers": [
+      {"label": "gentle-ai-like", "capabilities": ["skill-discovery"], "write_surfaces": ["skill-index"]},
+      {"label": "governance", "capabilities": ["governance-metadata"], "write_surfaces": ["governance-record"]}
+    ],
+    "expected": "COEXIST"
+  },
+  {
+    "id": "custom-sdd-overlap",
+    "required": "plans",
+    "providers": [
+      {"label": "custom-sdd", "capabilities": ["plans"], "write_surfaces": ["plans"]},
+      {"label": "governance-writer", "capabilities": ["plans"], "authority_surfaces": ["plans"]}
+    ],
+    "expected": "CONFLICT"
+  },
+  {
+    "id": "same-name-skill-precedence",
+    "required": "governance-metadata",
+    "providers": [
+      {"label": "host-registry", "capabilities": ["skill-discovery"], "write_surfaces": ["skill-index"]},
+      {"label": "governance", "capabilities": ["governance-metadata"], "write_surfaces": ["governance-record"]}
+    ],
+    "selected_skill": {"name": "review", "candidates": [{"identity": "user/review-v1", "host": "user"}, {"identity": "project/review-v2", "host": "project"}], "selected": "project/review-v2", "approved": null, "trusted": false},
+    "expected": "COEXIST"
+  },
+  {
+    "id": "same-name-skill-unapproved",
+    "required": "governance-metadata",
+    "providers": [{"label": "host-registry", "capabilities": ["skill-discovery"], "write_surfaces": ["skill-index"]}],
+    "selected_skill": {"name": "review", "selected": "project/review-v2", "approved": "user/review-v1", "trusted": false},
+    "expected": "CONFLICT"
+  },
+  {
+    "id": "managed-surface-composed",
+    "required": "governance-metadata",
+    "adapter_needed": true,
+    "managed_collision": {"owner": "external", "safe_composition": true},
+    "providers": [{"label": "external", "capabilities": ["instructions"], "write_surfaces": ["managed-instructions"]}],
+    "expected": "ADAPT",
+    "outcome": {"preserved_owner": "external", "governance_reference": "include"}
+  },
+  {
+    "id": "managed-surface-blocked",
+    "required": "governance-metadata",
+    "managed_collision": {"owner": "external", "safe_composition": false},
+    "providers": [{"label": "external", "capabilities": ["instructions"], "write_surfaces": ["managed-instructions"]}],
+    "expected": "CONFLICT"
+  },
+  {
+    "id": "generic-label-control",
+    "required": "tasks",
+    "providers": [{"label": "custom-provider", "capabilities": ["specs", "plans", "tasks"], "write_surfaces": ["native-tasks"]}],
+    "expected": "REUSE"
+  }
+]
