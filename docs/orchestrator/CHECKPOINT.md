@@ -1,92 +1,80 @@
 # Current ChatGPT Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O007  
+Checkpoint-Sequence: O008  
 Canonical-Branch: `develop`  
 Chat-Closure: CONTINUE_ALLOWED
 
 ## Current Work Unit
 
-T001 remains under PD5 review. Executor R2 returned `DONE` at visible HEAD `87a16f4ee4564a57e62e0dc323b6bbeafc72d718` with implementation anchor `5bee541e02ac0f940f07a349e0485d430dd2d985`. All R2 technical findings are closed and canonical verification reports 81 passing tests. Final acceptance review found one remaining source-toolchain coupling cleanup plus one stale handoff metadata string. `docs/reviews/T001-R3.md` is now the only active execution directive.
+T001 — deterministic test harness foundation — is accepted and integrated into `develop`. There is no active executor task. The next work unit is source-product planning for the next deterministic testing increment; the executor handoff recommends a T002 coexistence-fixture/reference-corpus increment, but that recommendation is non-authoritative until ChatGPT frames and persists a new Task Contract.
 
 ## Completed
 
 - Source-product foundation decisions D022-D030 remain accepted.
-- T001 executor branch exists remotely: `test/governance-harness`.
-- R1 resolved D029 handoff identity, preserved the unauthorized original uv update as historical noncompliance, and applied the D030 clone-local Gentle-AI RDD disposition.
-- R2 implementation anchor: `5bee541e02ac0f940f07a349e0485d430dd2d985`.
-- R2 visible pushed HEAD: `87a16f4ee4564a57e62e0dc323b6bbeafc72d718`.
-- R2 handoff correctly uses D029 and its successor commit is handoff-only.
-- R2 closes all three prior findings:
-  - dotfiles remain concrete path candidates while known extension-only prose tokens are explicitly allowlisted;
-  - `.gitignore` contains exactly `.venv/`, `__pycache__/`, `*.py[cod]`, `.pytest_cache/`, `.ruff_cache/`;
-  - concrete reference paths are canonicalized and `..` traversal escaping the repository is rejected.
-- R2 canonical verification reports 81 passed, 0 failed, 0 skipped under Python 3.13.14 / uv 0.11.33 / pytest 9.1.1 / Ruff 0.16.2.
-- No executor Markdown changes are present in the T001 branch.
-- Final acceptance cross-check found:
-  - `pyproject.toml` still names `.atl`, `**/*.ipynb`, and `handoffs` as Ruff exclusions; `.atl` is a Gentle-AI project-local surface and must not be encoded into the canonical source toolchain under T001/D025/D030;
-  - `recommended_next_task.depends_on` in the handoff still says `T001 R1 acceptance`, which is stale metadata.
-- `docs/reviews/T001-R3.md` persists the final focused remediation.
-- R2 is superseded for active execution by R3; accepted R1/R2 outcomes remain controlling review history.
+- T001 passed PD5 reviews R1, R2, and R3 and is now `ACCEPTED`.
+- Final reviewed executor branch: `test/governance-harness`.
+- Final reviewed executor HEAD: `3b01e5cd67966011b47d62544feede0c352467b9`.
+- Final implementation anchor: `89644eebe425f691ca3cf119902acffb4b77b6d8`.
+- Final executor handoff: `handoffs/T001-executor-handoff.json`.
+- Final canonical gate reported 82 passed, 0 failed, 0 skipped under Python 3.13.14 / uv 0.11.33 / pytest 9.1.1 / Ruff 0.16.2.
+- T001 implementation PR #17 was squash-merged to `develop` as `80f7a4d5735bdc47539768eb844c55b7cc4dacdb`.
+- The accepted harness now provides repository-owned locked uv/pytest/Ruff verification for canonical layout, direct local references, source/consumer separation, and harness-foundation invariants.
+- R1-R3 review directives are resolved; no T001 rework remains active.
+- The original unauthorized workstation `uv self update 0.11.33` remains recorded as historical procedural noncompliance and was not retroactively authorized.
+- Gentle-AI RDD remains disabled only for the current clone under D030; no Gentle-AI/SDD repository asset is part of T001 and the canonical source toolchain no longer names `.atl` or another external overlay.
 
 ## Controlling References
 
 For the immediate next action:
 
 - `AGENTS.md`
-- `docs/tasks/T001-deterministic-test-harness-foundation.md`
-- `docs/reviews/T001-R3.md`
-- `docs/EXECUTOR-HANDOFFS.md`
-- `docs/decisions/D029-non-self-referential-executor-handoff-identity.md`
-- `docs/decisions/D030-source-maintainer-external-workflow-overlay-precedence.md`
+- `docs/TESTING-AND-EVALUATION.md`
+- `docs/decisions/D026-ecosystem-coexistence-and-capability-reuse.md`
+- `governance-core/COEXISTENCE.md`
+- `docs/LOCAL-DEVELOPMENT-TOOLCHAIN.md`
 
-Load R1/R2 only when historical disposition details are needed.
+T001 acceptance details are available in `docs/tasks/T001-deterministic-test-harness-foundation.md` and `handoffs/T001-executor-handoff.json` but do not need to be reloaded unless the next planning step depends on exact prior evidence.
 
 ## Active Remote Artifacts
 
-- Executor branch: `test/governance-harness`
-- Current reviewed/pushed executor HEAD: `87a16f4ee4564a57e62e0dc323b6bbeafc72d718`
-- Current reviewed implementation anchor: `5bee541e02ac0f940f07a349e0485d430dd2d985`
-- Persisted handoff: `handoffs/T001-executor-handoff.json`
-- Active review directive: `docs/reviews/T001-R3.md`
-- Prior review directives: R1/R2 (superseded for active execution; accepted dispositions preserved)
-- T001 is not yet accepted and no implementation PR may be opened yet.
+- Canonical integration branch: `develop`.
+- T001 accepted integration commit: `80f7a4d5735bdc47539768eb844c55b7cc4dacdb`.
+- Historical executor branch: `test/governance-harness` at `3b01e5cd67966011b47d62544feede0c352467b9`.
+- Persisted T001 handoff: `handoffs/T001-executor-handoff.json`.
+- No active READY/IN_PROGRESS executor Task Contract exists after T001.
 
 ## Open Questions or Blockers
 
-No architecture, workstation, testing, or coexistence blocker remains.
+No active architecture, workstation, test-harness, or coexistence blocker remains from T001.
 
-T001 acceptance is blocked only by the two bounded R3 cleanup items persisted in `docs/reviews/T001-R3.md`.
-
-Gentle-AI RDD remains disabled only for this clone under D030. Pre-existing untracked `.atl/` state is external clone/workstation state and must remain uncommitted/unmodified by T001 R3.
+The repository is not declared stable/release-ready merely because T001 is accepted. Stable-version readiness remains a broader product milestone and must be established by the remaining roadmap/work units rather than inferred from one harness increment.
 
 ## Next Action
 
-1. Integrate `docs/reviews/T001-R3.md`, the R2 status update, and this checkpoint into `develop`.
-2. Ask the Agente de IA Ejecutor on existing branch `test/governance-harness` to fetch current `develop`, read R3 plus the current handoff policy, and apply only R3.
-3. Executor removes unrelated/external Ruff exclusions while preserving explicit Markdown protection and may keep `.venv` exclusion.
-4. Executor corrects the stale recommended-next-task dependency text in the handoff.
-5. Executor reruns the canonical locked gate; `uv.lock` must remain unchanged.
-6. Executor commits/pushes a new implementation anchor plus D029 handoff finalization and returns only STATUS/HANDOFF/BRANCH/HEAD.
-7. ChatGPT performs final PD5 review. If R3 is closed with no regression, accept T001 and proceed to implementation PR -> `develop`.
+1. Review the next deterministic testing need against D019/D026 and the now-integrated T001 harness.
+2. Treat the handoff recommendation “T002 — Synthetic coexistence fixtures and reference-target corpus” as a candidate, not as authority.
+3. If that candidate is still the correct next increment, ChatGPT authors a new T002 Task Contract on a Markdown topic branch with focused synthetic coexistence/reference mechanics and explicit exclusions for real third-party dependencies, behavioral/model evals, and unnecessary toolchain expansion.
+4. Review and merge the T002 contract into `develop` with status `READY` before launching any Agente de IA Ejecutor.
+5. Only after that integration, launch an executor with a minimal pointer to the new Task Contract.
 
 ## Next Chat Minimum Load
 
 After `AGENTS.md` and this checkpoint, load only:
 
-1. `docs/tasks/T001-deterministic-test-harness-foundation.md`;
-2. `docs/reviews/T001-R3.md`;
-3. `docs/EXECUTOR-HANDOFFS.md`.
+1. `docs/TESTING-AND-EVALUATION.md`;
+2. `docs/decisions/D026-ecosystem-coexistence-and-capability-reuse.md`;
+3. `governance-core/COEXISTENCE.md`;
+4. `docs/LOCAL-DEVELOPMENT-TOOLCHAIN.md`.
 
-Load D029/D030 or prior reviews only if their accepted historical dispositions need verification.
+Load the T001 task/handoff or R1-R3 review history only if a concrete T002 scope question requires exact prior evidence.
 
 ## Do Not Load or Do
 
-- Do not reopen resolved R1/R2 test findings absent a new regression.
-- Do not erase or retroactively authorize the original uv update.
-- Do not re-enable or globally alter Gentle-AI RDD.
-- Do not modify/delete pre-existing untracked `.atl/` state as part of T001.
-- Do not encode `.atl` or another named external executor ecosystem into canonical source toolchain configuration without a separate authorized adapter decision.
-- Do not add unrelated notebook/Jupyter policy in T001.
-- Do not open/merge the T001 implementation PR before R3 is remotely reviewed and accepted.
-- Do not implement T001 rework as ChatGPT; non-Markdown rework belongs to the Agente de IA Ejecutor.
+- Do not reopen T001 or its resolved R1-R3 findings absent a concrete regression.
+- Do not erase or retroactively authorize the historical uv workstation mutation.
+- Do not re-enable or globally alter Gentle-AI RDD for this repository clone.
+- Do not modify/delete external untracked `.atl/` state as source-product work.
+- Do not treat an executor-proposed next task as authoritative strategy.
+- Do not launch T002 or any executor work before a new Task Contract is persisted and `READY` on `develop`.
+- Do not declare the source product stable/release-ready solely from T001 acceptance.
