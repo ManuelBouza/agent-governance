@@ -150,37 +150,37 @@
   "unresolved_issues": [],
   "git_status": {
     "branch": "test/governance-harness",
-    "current_head_sha": "89644eebe425f691ca3cf119902acffb4b77b6d8",
-    "current_head_subject": "test(harness): narrow Ruff exclusions",
     "implementation_head_sha": "89644eebe425f691ca3cf119902acffb4b77b6d8",
     "implementation_head_sha_kind": "committed-r3-implementation-configuration-state",
+    "implementation_head_subject": "test(harness): narrow Ruff exclusions",
     "base_branch": "develop",
     "base_sha": "c54f2bee00b96ce19328f2b55ef3803f209930a2",
     "merge_base": "c54f2bee00b96ce19328f2b55ef3803f209930a2",
     "r1_implementation_committed": true,
     "r2_implementation_committed": true,
     "r3_implementation_committed": true,
-    "r2_modified_files_at_implementation_commit": [
-      ".gitignore",
-      "tests/test_reference_integrity.py",
-      "handoffs/T001-executor-handoff.json (updated in a handoff-only successor commit)"
+    "r3_modified_files_at_implementation_commit": [
+      "pyproject.toml",
+      "tests/test_harness_foundation.py"
     ],
-    "commits_on_branch_before_handoff_finalization": 7,
-    "commit_list": [
+    "commits_before_handoff_correction": 8,
+    "commit_list_before_handoff_correction": [
       {"sha": "e89e60cf1edd97975565870013229b1949f499f8", "subject": "test(harness): establish deterministic foundation"},
       {"sha": "a31b87f32b8004347e58521b01e3de4a7e55570b", "subject": "chore(handoff): record T001 partial state"},
       {"sha": "bb62624044d48861fcd8a73855c5dfc23a06b7b8", "subject": "test(harness): apply T001 R1 rework"},
+      {"sha": "5857bdfe7f78dbd96852c51975bf746bb5f98ac3", "subject": "chore(handoff): finalize T001 R1 evidence"},
       {"sha": "5bee541e02ac0f940f07a349e0485d430dd2d985", "subject": "test(harness): fix R2 reference integrity"},
       {"sha": "87a16f4ee4564a57e62e0dc323b6bbeafc72d718", "subject": "chore(handoff): record T001 R2 evidence"},
-      {"sha": "89644eebe425f691ca3cf119902acffb4b77b6d8", "subject": "test(harness): narrow Ruff exclusions"}
+      {"sha": "89644eebe425f691ca3cf119902acffb4b77b6d8", "subject": "test(harness): narrow Ruff exclusions"},
+      {"sha": "a768dfcc73eb1ae9fe75cb0f21d4f0c2d88240e4", "subject": "chore(handoff): record T001 R3 evidence"}
     ],
-    "handoff_finalization": "This JSON is the only tracked change in the R2 handoff-only successor commit. After push, tracked/index state is clean; pre-existing out-of-scope untracked `.atl/` paths remain untouched and uncommitted.",
+    "handoff_finalization": "This JSON is the only tracked change in the R3 handoff-metadata correction successor commit. It does not change implementation/test/eval state. After push, tracked/index state is clean; pre-existing out-of-scope untracked `.atl/` paths remain untouched and uncommitted.",
     "pushed": true
   },
   "finalization_metadata": {
-    "state": "handoff-only finalization committed and pushed",
-    "work_unit": "The handoff-only successor persists R2 evidence. It does not change implementation/test/eval state.",
-    "implementation_anchor_stability": "implementation_head_sha identifies 89644eebe425f691ca3cf119902acffb4b77b6d8, the R3 implementation/configuration commit, across this handoff-only finalization commit. Per docs/EXECUTOR-HANDOFFS.md, a handoff-only metadata/finalization commit does not require a new implementation anchor.",
+    "state": "R3 handoff-metadata correction committed and pushed in a handoff-only successor",
+    "work_unit": "The handoff-only successor corrects T001 R3 evidence metadata. It does not change implementation/test/eval state.",
+    "implementation_anchor_stability": "implementation_head_sha identifies 89644eebe425f691ca3cf119902acffb4b77b6d8, the R3 implementation/configuration commit, across this handoff-only metadata correction commit. Per docs/EXECUTOR-HANDOFFS.md, a handoff-only metadata/finalization commit does not require a new implementation anchor.",
     "self_referential_sha_policy": "This file cannot truthfully contain the SHA of the commit that contains this same file. The visible executor response will report the actual pushed branch HEAD after commit and push complete; that report is the authoritative transport for the final SHA, not this JSON.",
     "verification_reproducibility": "The verification evidence recorded under `verification` was executed against the implementation committed at 89644eebe425f691ca3cf119902acffb4b77b6d8. Re-running the same commands against the locked environment is expected to reproduce the recorded pass/fail counts without code changes."
   },
