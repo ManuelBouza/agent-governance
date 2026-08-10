@@ -1,17 +1,19 @@
 {
   "task_id": "T001",
   "status": "DONE",
-  "status_rationale": "All T001, R1, and R2 findings are corrected and complete canonical verification passed under uv 0.11.33 (81 passed, 0 failed, 0 skipped). The R2 implementation is committed at 5bee541e02ac0f940f07a349e0485d430dd2d985. The original unauthorized uv self update remains historical procedural noncompliance; D030's authorized clone-local RDD opt-out remains off, so ordinary repository policy applies without native receipt review or approval claim. This handoff is finalized in a handoff-only successor commit.",
+  "status_rationale": "All T001, R1, R2, and R3 findings are corrected and complete canonical verification passed under uv 0.11.33 (82 passed, 0 failed, 0 skipped). The R3 implementation is committed at 89644eebe425f691ca3cf119902acffb4b77b6d8. The original unauthorized uv self update remains historical procedural noncompliance; D030's authorized clone-local RDD opt-out remains off, so ordinary repository policy applies without native receipt review or approval claim. This handoff is finalized in a handoff-only successor commit.",
   "task_contract_path": "docs/tasks/T001-deterministic-test-harness-foundation.md",
-  "review_directive_path": "docs/reviews/T001-R2.md",
-  "review_directive_ref": "origin/develop@7aa22dd815e0b0671a2ee608f02c0516fa292454",
+  "review_directive_path": "docs/reviews/T001-R3.md",
+  "review_directive_ref": "origin/develop@9fee1d44592ecb49d95bec5d7fde1b0f73d8d5fa",
   "branch": "test/governance-harness",
-  "implementation_head_sha": "5bee541e02ac0f940f07a349e0485d430dd2d985",
-  "implementation_head_sha_note": "Full SHA of the committed R2 implementation commit. Per D029 and docs/EXECUTOR-HANDOFFS.md, this file identifies the committed implementation/test/eval state described by the evidence and is reachable as an ancestor of the final pushed topic-branch HEAD. This handoff is persisted in a handoff-only successor commit; the visible executor response reports the actual final pushed branch HEAD.",
+  "implementation_head_sha": "89644eebe425f691ca3cf119902acffb4b77b6d8",
+  "implementation_head_sha_note": "Full SHA of the committed R3 implementation/configuration commit. Per D029 and docs/EXECUTOR-HANDOFFS.md, this file identifies the committed implementation/test/eval state described by the evidence and is reachable as an ancestor of the final pushed topic-branch HEAD. This handoff is persisted in a handoff-only successor commit; the visible executor response reports the actual final pushed branch HEAD.",
   "base_branch": "develop",
   "base_sha": "c54f2bee00b96ce19328f2b55ef3803f209930a2",
   "files_changed": [
     ".gitignore",
+    "pyproject.toml",
+    "tests/test_harness_foundation.py",
     "tests/test_reference_integrity.py",
     "handoffs/T001-executor-handoff.json"
   ],
@@ -54,8 +56,18 @@
       "regression_coverage_added": "`../outside.md` from a repository-root candidate is classified outside the repository without requiring an external file."
     }
   },
-  "implementation_summary": "R2 applies only the authorized reference-integrity and ignore-scope corrections on top of original T001 and R1. `tests/test_reference_integrity.py` uses explicit extension-only prose tokens, canonical candidate resolution, and focused dotfile/traversal regressions. `.gitignore` contains only five T001-authorized environment/cache patterns. No Markdown, dependencies, lockfile, external SDD/Skill assets, or global tools were changed.",
-  "implementation_rationale": "Explicitly allowing only extension tokens used in canonical prose fails closed for dotfiles such as `.gitignore` and `.missingconfig`. Canonical `Path.resolve(strict=False)` makes parent traversal detectable even for missing paths. Consumer-footprint and directory exemptions remain separate. The retained ignore entries map directly to T001's local uv/Python/pytest/Ruff state.",
+  "r3_rework_summary": {
+    "R3-TOOLCHAIN-COUPLING": {
+      "fix": "Reduced Ruff `extend-exclude` to explicit committed-Markdown protection (`**/*.md`) plus the generated repository-local `.venv` environment.",
+      "removed_unrelated_exclusions": ["**/*.ipynb", ".atl", "handoffs"],
+      "regression_coverage_added": "`test_ruff_exclusions_protect_markdown_without_external_surfaces` verifies the exact minimal exclusion list."
+    },
+    "R3-HANDOFF-METADATA": {
+      "fix": "Corrected `recommended_next_task.depends_on` to require final T001 acceptance after remote review without naming an obsolete review revision."
+    }
+  },
+  "implementation_summary": "R3 applies only the authorized Ruff configuration cleanup on top of accepted T001/R1/R2 behavior. `pyproject.toml` retains Markdown and generated `.venv` exclusions while removing unrelated notebook, external-host, and handoff surfaces. `tests/test_harness_foundation.py` mechanically protects that minimal configuration. No Markdown, dependencies, lockfile, external SDD/Skill assets, or global tools were changed.",
+  "implementation_rationale": "D025 requires explicit protection of committed Markdown and allows repository-local generated environment state. Keeping only those two exclusions prevents the source toolchain from encoding unrelated notebook, host-overlay, or handoff policy.",
   "verification": {
     "commands": [
       "uv sync --locked",
@@ -64,24 +76,24 @@
       "uv run --locked python -m pytest"
     ],
     "focused_commands": [
-      "uv run --locked python -m pytest tests/test_reference_integrity.py"
+      "uv run --locked python -m pytest tests/test_harness_foundation.py"
     ],
     "normalization_commands": [
-      "uv run --locked ruff format tests/test_reference_integrity.py"
+      "uv run --locked ruff format pyproject.toml tests/test_harness_foundation.py"
     ],
     "results": {
-      "focused_pytest": "36 passed in 0.08s (collected 36 items from tests/test_reference_integrity.py)",
-      "uv_sync_locked": "Resolved 8 packages in 0.68ms; Checked 6 packages in 0.08ms; environment reproducible from committed lockfile.",
-      "ruff_format_mutating": "1 file left unchanged (R2 normalization on tests/test_reference_integrity.py).",
+      "focused_pytest": "7 passed in 0.40s (collected 7 items from tests/test_harness_foundation.py)",
+      "uv_sync_locked": "Resolved 8 packages in 0.69ms; Checked 6 packages in 0.07ms; environment reproducible from committed lockfile.",
+      "ruff_format_mutating": "1 file left unchanged (R3 normalization on pyproject.toml and tests/test_harness_foundation.py).",
       "ruff_check": "All checks passed!",
       "ruff_format_check": "6 files already formatted",
-      "pytest": "81 passed in 0.53s (collected 81 items across 4 test modules)"
+      "pytest": "82 passed in 0.49s (collected 82 items across 4 test modules)"
     },
-    "pytest_pass_count": 81,
+    "pytest_pass_count": 82,
     "pytest_fail_count": 0,
     "pytest_skip_count": 0,
-    "pytest_collected_count": 81,
-    "test_count_delta_vs_original_t001": "+20 (16 R1 and 4 R2 reference-integrity regression scenarios)",
+    "pytest_collected_count": 82,
+    "test_count_delta_vs_original_t001": "+21 (16 R1, 4 R2 reference-integrity scenarios, and 1 R3 Ruff configuration scenario)",
     "runtime": {
       "python_under_venv": "Python 3.13.14 (provisioned by uv into the project-local .venv; this is the Python used for verification)",
       "uv": "uv 0.11.33 (x86_64-unknown-linux-gnu)",
@@ -113,14 +125,15 @@
   "dependencies_or_config_changes": {
     "added_packages": [],
     "transitive_packages_added": [],
-    "config_files_changed_for_r1_r2": [
+    "config_files_changed_for_r1_r2_r3": [
         ".gitignore (R2 retains only five T001-authorized environment/cache patterns)",
-        "tests/test_reference_integrity.py (R1 regression coverage plus R2 dotfile and parent-traversal protections)"
+        "tests/test_reference_integrity.py (R1 regression coverage plus R2 dotfile and parent-traversal protections)",
+        "pyproject.toml (R3 retains only committed-Markdown and generated `.venv` Ruff exclusions)",
+        "tests/test_harness_foundation.py (R3 regression coverage for the minimal Ruff exclusion list)"
     ],
     "config_files_unchanged": [
-      "pyproject.toml (no dependency, version, or tool configuration changes for R1)",
       ".python-version (3.13, unchanged)",
-      "uv.lock (no dependency, version, or resolution changes for R1)"
+      "uv.lock (no dependency, version, or resolution changes for R1/R2/R3)"
     ]
   },
   "historical_procedural_findings": [
@@ -137,26 +150,29 @@
   "unresolved_issues": [],
   "git_status": {
     "branch": "test/governance-harness",
-    "current_head_sha": "5bee541e02ac0f940f07a349e0485d430dd2d985",
-    "current_head_subject": "test(harness): fix R2 reference integrity",
-    "implementation_head_sha": "5bee541e02ac0f940f07a349e0485d430dd2d985",
-    "implementation_head_sha_kind": "committed-r2-implementation-state",
+    "current_head_sha": "89644eebe425f691ca3cf119902acffb4b77b6d8",
+    "current_head_subject": "test(harness): narrow Ruff exclusions",
+    "implementation_head_sha": "89644eebe425f691ca3cf119902acffb4b77b6d8",
+    "implementation_head_sha_kind": "committed-r3-implementation-configuration-state",
     "base_branch": "develop",
     "base_sha": "c54f2bee00b96ce19328f2b55ef3803f209930a2",
     "merge_base": "c54f2bee00b96ce19328f2b55ef3803f209930a2",
     "r1_implementation_committed": true,
     "r2_implementation_committed": true,
+    "r3_implementation_committed": true,
     "r2_modified_files_at_implementation_commit": [
       ".gitignore",
       "tests/test_reference_integrity.py",
       "handoffs/T001-executor-handoff.json (updated in a handoff-only successor commit)"
     ],
-    "commits_on_branch_before_handoff_finalization": 4,
+    "commits_on_branch_before_handoff_finalization": 7,
     "commit_list": [
       {"sha": "e89e60cf1edd97975565870013229b1949f499f8", "subject": "test(harness): establish deterministic foundation"},
       {"sha": "a31b87f32b8004347e58521b01e3de4a7e55570b", "subject": "chore(handoff): record T001 partial state"},
       {"sha": "bb62624044d48861fcd8a73855c5dfc23a06b7b8", "subject": "test(harness): apply T001 R1 rework"},
-      {"sha": "5bee541e02ac0f940f07a349e0485d430dd2d985", "subject": "test(harness): fix R2 reference integrity"}
+      {"sha": "5bee541e02ac0f940f07a349e0485d430dd2d985", "subject": "test(harness): fix R2 reference integrity"},
+      {"sha": "87a16f4ee4564a57e62e0dc323b6bbeafc72d718", "subject": "chore(handoff): record T001 R2 evidence"},
+      {"sha": "89644eebe425f691ca3cf119902acffb4b77b6d8", "subject": "test(harness): narrow Ruff exclusions"}
     ],
     "handoff_finalization": "This JSON is the only tracked change in the R2 handoff-only successor commit. After push, tracked/index state is clean; pre-existing out-of-scope untracked `.atl/` paths remain untouched and uncommitted.",
     "pushed": true
@@ -164,14 +180,14 @@
   "finalization_metadata": {
     "state": "handoff-only finalization committed and pushed",
     "work_unit": "The handoff-only successor persists R2 evidence. It does not change implementation/test/eval state.",
-    "implementation_anchor_stability": "implementation_head_sha remains 5bee541e02ac0f940f07a349e0485d430dd2d985 across the handoff-only finalization commit. Per docs/EXECUTOR-HANDOFFS.md, a handoff-only metadata/finalization commit does not require a new implementation anchor.",
+    "implementation_anchor_stability": "implementation_head_sha identifies 89644eebe425f691ca3cf119902acffb4b77b6d8, the R3 implementation/configuration commit, across this handoff-only finalization commit. Per docs/EXECUTOR-HANDOFFS.md, a handoff-only metadata/finalization commit does not require a new implementation anchor.",
     "self_referential_sha_policy": "This file cannot truthfully contain the SHA of the commit that contains this same file. The visible executor response will report the actual pushed branch HEAD after commit and push complete; that report is the authoritative transport for the final SHA, not this JSON.",
-    "verification_reproducibility": "The verification evidence recorded under `verification` was executed against the implementation committed at 5bee541e02ac0f940f07a349e0485d430dd2d985. Re-running the same commands against the locked environment is expected to reproduce the recorded pass/fail counts without code changes."
+    "verification_reproducibility": "The verification evidence recorded under `verification` was executed against the implementation committed at 89644eebe425f691ca3cf119902acffb4b77b6d8. Re-running the same commands against the locked environment is expected to reproduce the recorded pass/fail counts without code changes."
   },
   "recommended_next_task": {
     "title": "T002 — Synthetic coexistence fixtures and reference-target corpus",
     "rationale": "T001 establishes the harness. The next useful deterministic increment is to add synthetic coexistence fixtures (Gentle-AI-like, Spec Kit-like, OpenSpec-like, no-SDD, same-name Skill shadowing, managed-file collision) under tests/fixtures/ and assert REUSE/ADAPT/COEXIST/MISSING/CONFLICT inventory mechanics mechanically. This is a T001 follow-on because it depends on the same pyproject/uv/Ruff/pytest harness without changing it.",
-    "depends_on": "T001 R1 acceptance by ChatGPT Orchestrator after remote review of the pushed implementation and handoff.",
+    "depends_on": "Final T001 acceptance by ChatGPT Orchestrator after remote review of the current pushed implementation and handoff.",
     "out_of_scope_for_t002": "Hypothesis-based stateful protocol evals; Maintainer or Consumer Skill evals; behavioral agent evals; real third-party product dependencies."
   },
   "chatgpt_read_path": "handoffs/T001-executor-handoff.json"
