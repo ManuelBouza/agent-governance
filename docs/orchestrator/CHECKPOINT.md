@@ -1,7 +1,7 @@
 # Current ChatGPT Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O019  
+Checkpoint-Sequence: O020  
 Canonical-Branch: `develop`  
 Chat-Closure: CONTINUE_ALLOWED
 
@@ -9,231 +9,237 @@ Chat-Closure: CONTINUE_ALLOWED
 
 T001, T002 and T003 remain `ACCEPTED` and integrated.
 
-D032 deterministic verification is established by T003. The next authorized work unit is now planned as:
+T004 — D032 agent-facing capability eval foundation — is `READY` on `develop` and has been launched to the Agente de IA Ejecutor. No final T004 executor handoff has been received yet.
 
-**T004 — D032 agent-facing capability eval foundation**
-
-Task Contract:
+T004 Task Contract:
 
 `docs/tasks/T004-d032-agent-facing-capability-eval.md`
 
-Planning branch:
+Expected T004 executor branch:
 
-`docs/t004-d032-agent-eval`
+`eval/d032-agent-capability`
 
-T004 is `READY` only after this Markdown planning branch is reviewed and merged into `develop`.
+Expected T004 handoff:
 
-No executor may begin from a `develop` revision that predates the T004 contract.
+`handoffs/T004-executor-handoff.json`
 
-## T004 Verification Decision
+T004 remains governed by its existing contract. Later architecture work MUST NOT retroactively broaden or alter its running execution semantics.
 
-T004 covers model-dependent D032 behavior that T003 intentionally cannot prove mechanically.
+## Newly Accepted Architecture — D033
 
-The first baseline will:
+The Human Owner identified a product requirement for AI-controlled terminal/system access with strict authorization over what the AI may and may not do locally or remotely.
 
-- use realistic natural/technical/code-native user prompts;
-- run repeated isolated agent sessions;
-- preserve natural model responses rather than forcing JSON response schemas;
-- use deterministic graders only for mechanical facts such as session isolation, zero tool calls, exact supplied-token preservation and record completeness;
-- persist semantic-grading status as `PENDING_CHATGPT`;
-- leave register fit, engineering-rigor equivalence, material-quality recognition/disclosure, diagram appropriateness/refresh and authority invariance to ChatGPT PD5 over persisted transcripts.
+ChatGPT researched and persisted:
 
-This is a capability baseline, not yet a stable-release numeric regression gate.
+- `docs/decisions/D033-execution-access-control-plane.md`;
+- `docs/ARCHITECTURE-EXECUTION-ACCESS-CONTROL.md`.
 
-## T004 Primary Solution Diagram
+D033 is `ACCEPTED` architecture but is not yet integrated into the Governance Core protocol.
 
-Dominant design question: runtime interaction among corpus, eval harness, execution adapter, model and graders.
+The central invariant is:
 
 ```text
-T004 case corpus
-     │
-     ▼
-Python eval harness
-     │  creates clean trial + exact D032 system context
-     ▼
-Adapter boundary
-     │
-     ├─ OpenCode adapter (first execution adapter only)
-     │    ├─ temporary config
-     │    ├─ all agent tools DENY
-     │    └─ explicit model + JSON event output
-     │
-     ▼
-Fresh agent session ────────────────┐
-     │                              │ multi-turn case only
-     ▼                              │
-User scenario                       │
-     │                              │
-     ▼                              │
-Natural model response              │
-     │                              │
-     └──────── material redesign ───┘
-                    │
+transport or credential possession != execution authority
+```
+
+An open terminal, shell, SSH connection, authenticated CLI, cloud token, private key or privilege mechanism is only a transport/capability mechanism. It does not authorize effects beyond the current **Execution Capability Envelope**.
+
+## D033 Execution Capability Envelope
+
+For material terminal/process/system access, authorization is defined by the applicable subset of:
+
+- actor/execution role;
+- exact target identity/environment/account/resource;
+- effect classes;
+- resource scope;
+- privilege ceiling;
+- credential source/use;
+- network destinations/path;
+- task/time/operation lifetime;
+- rollback/recovery expectation;
+- approval mode;
+- audit/evidence requirement.
+
+Authorization is effect-oriented rather than executable-name-oriented. Shells, scripts, `ssh`, cloud/database/cluster CLIs and child processes must not become routes to expand authority.
+
+Child/nested execution may inherit only a subset of the parent envelope.
+
+## D033 Approval Modes
+
+### `ALLOW_TASK`
+
+Routine local effects already inside the approved task boundary, such as repository inspection, task-owned branch mutation, repository-native verification and disposable synthetic state.
+
+### `ALLOW_EXPLICIT`
+
+Non-baseline effects that a persisted task/decision explicitly bounds by target, effect and privilege. The AI may choose technical commands autonomously inside that envelope.
+
+### `REQUIRE_HUMAN`
+
+Human approval is required by default for bounded operations materially involving:
+
+- production mutation/deployment;
+- root/administrator or equivalent high-impact privilege;
+- workstation/system-global configuration;
+- firewall/SSH/IAM/security-control changes;
+- credential creation/rotation/revocation or broadened scope;
+- destructive/irreversible actions;
+- material production data/schema migrations;
+- uncertain target/effect.
+
+Approval is normally for a coherent bounded operation rather than every shell line. After approval, the AI still owns execution inside the approved envelope.
+
+### `DENY`
+
+Fail closed under the current authorization for conditions such as:
+
+- unknown/mismatched target identity;
+- bypassing host/service identity verification for convenience;
+- unbounded privilege when only narrow privilege is justified;
+- credential discovery/exfiltration/persistence outside approved sources;
+- disabling security/audit/access controls merely to unblock execution;
+- clone/project-local authority expanding into global workstation mutation;
+- unapproved forwarding/pivot/multi-hop access;
+- dynamically obtained executable content whose effects cannot be bounded;
+- hiding required execution evidence.
+
+## D033 Primary Solution Diagram
+
+Dominant question: security-sensitive execution/control flow across local and remote trust boundaries.
+
+Preferred primary view: DFD with trust boundaries.
+
+```text
+Human Owner
+   │ approves scope/risk
+   ▼
+Strategy / Task Contract
+   │
+   │  Execution Capability Envelope
+   ▼
+┌──────── POLICY / AUTHORIZATION BOUNDARY ────────┐
+│ target identity + effect + privilege + auth     │
+│ ALLOW_TASK / ALLOW_EXPLICIT / HUMAN / DENY     │
+└───────────────────┬─────────────────────────────┘
+                    │ allowed
                     ▼
-         normalized trial record
-         transcript + model/config
-                    │
-          ┌─────────┴─────────┐
-          ▼                   ▼
- mechanical graders    ChatGPT semantic PD5
- tokens/schema/tools   register/rigor/quality/
- session isolation     diagram/refresh/authority
+            Executor / Terminal
+         ┌──────────┼───────────┐
+         ▼          ▼           ▼
+    local process   ssh/API    privileged op
+         │          │           │
+         └──────────┴─────┬─────┘
+                          ▼
+             OS/native enforcement
+      sandbox · privilege · SSH/IAM controls
+                          │
+                          ▼
+                 Local/Remote Resource
+                          │
+                          ▼
+               sanitized audit evidence
+                          │
+                          ▼
+                    Handoff/review
 ```
 
-OpenCode is only the first execution adapter. Case expectations and normalized records remain adapter-neutral.
+## D033 Security / Research Basis
 
-## T004 Security Boundary
+D033 was informed by primary technical/security sources including:
 
-Security is `MATERIAL` because the eval invokes an external model through an authenticated agent host.
+- NIST SP 800-207 Zero Trust Architecture — no implicit trust based only on network location; authentication/authorization before resource access;
+- NIST least-privilege and privileged-command definitions / SP 800-53 lineage;
+- NIST Audit and Accountability concepts;
+- OpenSSH native restrictions such as forced commands, user/principal restrictions, forwarding/destination restrictions and host-key verification;
+- Linux `no_new_privs`;
+- Linux seccomp filtering, with the explicit boundary that seccomp alone is not a complete sandbox.
 
-```text
-                  TRUSTED SOURCE REPO
-        D032 Core + T004 corpus (read-only input)
-                         │
-                         ▼
-                Python eval harness
-                         │
-              copies only required text
-                         ▼
-┌──────────── DISPOSABLE TRIAL BOUNDARY ────────────┐
-│ temp config + synthetic prompt                    │
-│ OpenCode agent: all tools denied                  │
-│ no repo writes · no shell · no web tools · no    │
-│ Skills/plugins · no external-directory access     │
-└───────────────────────┬───────────────────────────┘
-                        │ model request
-                        ▼
-              EXTERNAL MODEL PROVIDER
-              only synthetic eval content
-                        │
-                        ▼
-                 response/events
-                        │
-                        ▼
-              normalized JSONL evidence
-                        │
-                        ▼
-                 source repo artifact
-```
+D033 remains platform-neutral. It does not make OpenSSH, Linux, sudo, systemd, one cloud IAM system or one executor host a Governance dependency.
 
-Child eval sessions must run outside the source worktree with deny-all agent tools and temporary configuration. Model-provider auth may be used only for model invocation; credentials/hidden reasoning must never be persisted.
+## D033 Native Enforcement Principle
 
-## T004 Capability Corpus
+For material risk, prefer platform-native enforcement over prompt-only trust when available.
 
-Required families are persisted in the Task Contract:
+Possible enforcement adapters include:
 
-- **A interaction-register invariance:** one avatar-upload scenario expressed as plain/domain, expert/architecture and code-native, with equivalent engineering controls/acceptance;
-- **B silent baseline:** local draft-validation flow where non-material quality dimensions remain implicit instead of becoming checklist noise;
-- **C material privacy/security:** sensitive customer CSV export crossing the platform boundary, expected to surface material implications and use a DFD with trust boundaries;
-- **D diagram selection/refresh:** payment confirmation flow initially using dynamic/sequence, followed by a material redesign adding queue/worker that must invalidate stale readiness and refresh the diagram.
+- restricted OS users/service accounts;
+- narrow privilege policies;
+- SSH forced/restricted commands/principals/forwarding;
+- container/user-namespace/mount/network restrictions;
+- `no_new_privs`/seccomp or other OS sandbox components;
+- scoped cloud IAM roles;
+- scoped database/cluster/deployment identities.
 
-Run count: 3 independent trials per case/session, 18 independent sessions total and 21 user turns because D is multi-turn.
+Governance defines authorization semantics; native systems enforce those semantics where practical.
 
-Semantic failures are evidence and must not be retried away.
+## D033 Core-Integration Boundary
 
-## OpenCode Adapter Boundary
+D033 deliberately does **not** modify `governance-core/` or the current protocol version while T004 is already running.
 
-Current OpenCode documentation was checked during planning and supports the required shape: non-interactive `run`, JSON event output, explicit model/agent/directory/session options, custom agent prompts and deny permissions.
+After T004 is reviewed, the leading planned architecture integration is a separate increment, tentatively T005, which should diagram and contract the smallest coherent change to add:
 
-The executor must still preflight the installed version with read-only CLI help/version commands before implementation.
+- `governance-core/EXECUTION-CONTROL.md`;
+- progressive routing from `GOVERNANCE.md`;
+- linkage from `EXECUTION.md` so READY does not imply unlimited terminal/system authority;
+- Task Contract support for Execution Capability Envelopes;
+- handoff evidence for material remote/privileged/system execution;
+- deterministic policy/version/module tests;
+- later adapter/dynamic security enforcement tests.
 
-If current local OpenCode cannot provide explicit-model, clean-session, JSON-event, tool-denied execution without persistent global mutation, T004 stops `PARTIAL`; it must not update OpenCode or weaken isolation.
+That task is not READY yet and must not be launched before T004 PD5 and its own D032 graphical/quality readiness work.
 
-No OpenCode-specific behavior is part of D032 correctness semantics.
+## T004 State
 
-## Expected Committed T004 Surfaces
+T004 remains the current executable frontier.
 
-Only the minimum non-Markdown subset is authorized, expected to include:
+Its existing security boundary already provides a concrete narrow example of the D033 concept: child eval sessions run with tools denied, outside the source worktree, with synthetic prompts and bounded external model access. This is useful evidence but does not substitute for the general D033 Core integration.
 
-- `evals/d032/cases.json`;
-- small Python harness/record helpers under `evals/d032/`;
-- one isolated OpenCode adapter under `evals/d032/`;
-- `evals/results/d032/T004-baseline.jsonl`;
-- `tests/test_d032_agent_eval_harness.py`;
-- `handoffs/T004-executor-handoff.json`.
+T004 semantic grading remains `PENDING_CHATGPT` until its final handoff/transcripts are remotely reviewed.
 
-No new package dependency, production runtime, model-provider SDK, hosted eval platform, Docker, Node, Hypothesis, external SDD runtime or executor-authored Markdown is authorized.
+## Active Remote Artifacts
 
-## Quality-Envelope Summary
-
-Material for T004:
-
-- functional/measurement fidelity;
-- adapter architecture/coexistence;
-- security/isolation;
-- reliability/repeated clean trials;
-- bounded model-call resource use;
-- observability/evidence;
-- verification;
-- maintainability/change isolation;
-- portability;
-- dependency/supply-chain discipline.
-
-Privacy is baseline because prompts are synthetic. No production/business data may enter model trials.
-
-## Completed State Entering T004
-
-- canonical `develop` at T004 planning start: `ed148902c9b1285bd3e92278b3a50b6e69e1a469`;
-- T003 implementation integration: `f52d3fb2bd148c37f6a0c6896b2c20fdaabbaba1`;
-- T003 post-integration checkpoint: `ed148902c9b1285bd3e92278b3a50b6e69e1a469`;
-- deterministic full-suite evidence from T003: `114 passed, 0 failed, 0 skipped`;
-- D030 controls clone-local Gentle-AI RDD opt-out;
-- D031 controls normal `.atl/` Skill Registry coexistence;
-- D032 controls adaptive interaction, invariant engineering quality and Primary Solution Diagram readiness.
+- canonical `develop` at D033 planning start: `f7182fe06d0324be424617fc4764528704f51e4c`;
+- T004 Task Contract: `docs/tasks/T004-d032-agent-facing-capability-eval.md`;
+- D032 decision: `docs/decisions/D032-adaptive-intent-engineering-proxy-and-quality-envelope.md`;
+- D033 decision branch: `docs/d033-execution-access-control`;
+- D033 decision: `docs/decisions/D033-execution-access-control-plane.md`;
+- D033 architecture overview: `docs/ARCHITECTURE-EXECUTION-ACCESS-CONTROL.md`.
 
 ## Open Questions or Blockers
 
-No known design blocker remains for T004.
+No D033 architecture blocker is currently known.
 
-Actual execution depends on an already-authenticated model being available through the local OpenCode adapter. Lack of model/provider auth is an execution blocker and must produce `PARTIAL`/`BLOCKED`, not a mock transcript.
+T004 still requires its executor result and PD5 before integration/semantic conclusions.
 
-The source product remains not stable/release-ready. T004 is the first D032 model-behavior baseline; broader Governance/Skill behavioral, state-machine, trigger, security and multi-adapter release gates remain incomplete.
+The source product remains not stable/release-ready. D033 Core integration, broader behavioral/security evals, property/state-machine coverage, Skill gates and release gates remain incomplete.
 
 ## Next Action
 
-1. Review `docs/t004-d032-agent-eval` against current `develop`.
-2. Confirm the planning diff contains only `docs/tasks/T004-d032-agent-facing-capability-eval.md` and this checkpoint.
-3. Merge the planning PR into `develop` if clean.
-4. Verify T004 is `READY` on resulting `develop`.
-5. Launch the executor on `eval/d032-agent-capability` with only the Task Contract pointer and normal D030/D031 source-maintainer constraints.
-6. On handoff, perform remote PD5 over code, results JSONL and **actual persisted user-visible transcripts** before any implementation PR.
-7. During PD5 distinguish:
-   - acceptance of the eval harness/evidence package;
-   - semantic pass/fail findings for D032 product behavior.
+1. Review the D033 Markdown branch against current `develop`.
+2. Confirm it changes only D033/architecture/checkpoint Markdown.
+3. Merge the D033 Markdown PR into `develop` if clean.
+4. Do not alter the running T004 contract.
+5. When T004 returns, perform remote PD5 over its branch/handoff/results/transcripts.
+6. After T004 is resolved, design the separate D033 Core-integration increment with a fresh Primary Solution Diagram, quality/security triage and Task Contract.
 
 ## Next Chat Minimum Load
 
-After `AGENTS.md` and this checkpoint, load only:
+After `AGENTS.md` and this checkpoint:
 
-1. `docs/tasks/T004-d032-agent-facing-capability-eval.md`;
-2. `docs/decisions/D032-adaptive-intent-engineering-proxy-and-quality-envelope.md`;
-3. `governance-core/INTERACTION.md`;
-4. `governance-core/QUALITY.md`;
-5. agent-eval/release-gate portions of `docs/TESTING-AND-EVALUATION.md`;
-6. `evals/README.md`.
-
-Load T003 history only if a concrete deterministic-regression question requires it.
-
-## Orchestrator Branching Incidents
-
-Two prior accidental direct Markdown writes remain audit history and are not policy-compliant precedent:
-
-1. T002-R1 placeholder: `6a3bff4f12850bd701fea624815e955231082afa`, corrected by `67d8dc6de9679f833f3136c6a66ee7ad05283cb3`.
-2. Architecture-overview placeholder: `a0e063344043fda53f55b8fcb5b03742a33a7185`, corrected by `09fa91f6b3c829e6edc0719fcd636cf3cba8f879`.
-
-No placeholder remains. T004 planning correctly created its topic branch before Markdown mutation.
+1. if T004 is still active/returned, load `docs/tasks/T004-d032-agent-facing-capability-eval.md` and its handoff/results as needed;
+2. load `docs/decisions/D033-execution-access-control-plane.md` when terminal/local/remote execution control or the next Core-integration task is in scope;
+3. load `docs/ARCHITECTURE-EXECUTION-ACCESS-CONTROL.md` only when a consolidated explanatory view is useful;
+4. load D032/`QUALITY.md` only as needed for graphical/quality readiness or semantic T004 review.
 
 ## Do Not Load or Do
 
 - Do not reopen T001/T002/T003 absent a concrete regression.
-- Do not treat T004 capability execution as self-accepting semantic evidence.
-- Do not add a model-as-judge dependency inside T004.
-- Do not force the evaluated model to emit JSON instead of natural user-facing responses.
-- Do not permit evaluated child sessions to use file/shell/web/Skill/subagent tools.
-- Do not execute child trials inside the source worktree.
-- Do not commit hidden reasoning, credentials or real customer/business data.
-- Do not update or globally reconfigure OpenCode/Gentle-AI/provider tooling.
-- Do not commit `.atl/` contents or treat Skill registry selection as Governance trust/approval.
-- Do not re-enable or globally alter Gentle-AI RDD.
-- Do not erase recorded branching incidents.
-- Do not declare the source product stable/release-ready from T004 alone.
+- Do not retroactively broaden or rewrite T004 because D033 was accepted while it was running.
+- Do not interpret terminal/credential availability as authorization.
+- Do not treat local execution as inherently trusted compared with remote execution.
+- Do not authorize by executable name alone when target/effect/privilege changes meaning.
+- Do not let child processes/scripts/SSH/CLIs expand beyond the parent capability envelope.
+- Do not weaken project-native IAM/SSH/privilege/security/audit controls to simplify automation.
+- Do not commit credentials, private keys, tokens, raw secret-bearing environment dumps or hidden reasoning.
+- Do not update Core/protocol for D033 until a separate integrated Task Contract can also align deterministic verification.
+- Do not declare the source product stable/release-ready from D033 or T004 alone.
