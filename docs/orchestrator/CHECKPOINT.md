@@ -1,77 +1,218 @@
 # Current ChatGPT Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O018  
+Checkpoint-Sequence: O019  
 Canonical-Branch: `develop`  
 Chat-Closure: CONTINUE_ALLOWED
 
 ## Current Work Unit
 
-T003 — D032 deterministic policy-contract foundation — is `ACCEPTED` and integrated into `develop`.
+T001, T002 and T003 remain `ACCEPTED` and integrated.
 
-No executor Task Contract is currently active.
+D032 deterministic verification is established by T003. The next authorized work unit is now planned as:
 
-The next planning frontier is a separately diagrammed D032 agent-facing eval increment. It must verify model-dependent behavior that deterministic T003 intentionally does not claim.
+**T004 — D032 agent-facing capability eval foundation**
 
-## Completed
+Task Contract:
 
-- T001 remains `ACCEPTED` and integrated.
-- T002 remains `ACCEPTED` and integrated.
-- T003 PD5 R1 acceptance is persisted at `docs/reviews/T003-R1.md`.
-- T003 accepted executor final HEAD: `829273cbc19a3aa79299ef227546f8eb11d7066b`.
-- T003 accepted implementation anchor: `7000e0dbca4be27f574614b76a3eb5ea0ca9dee6`.
-- T003 acceptance Markdown PR #28 was squash-merged as `f173f04551554681b42a15467a5d1285ed4b3a5d`.
-- T003 implementation PR #29 was reviewed as exactly four paths and squash-merged as `f52d3fb2bd148c37f6a0c6896b2c20fdaabbaba1`.
-- Integrated T003 paths are:
-  - `tests/_helpers.py`;
-  - `tests/fixtures/d032/policy_cases.json`;
-  - `tests/test_d032_policy_contract.py`;
-  - `handoffs/T003-executor-handoff.json`.
-- The deterministic harness now expects Core protocol `1.10.0` and mechanically requires `INTERACTION.md` and `QUALITY.md`.
-- T003 deterministic coverage includes interaction-register engineering invariance, code-native token preservation, quality routing, mandatory security triage, privacy independence, all eight Primary Solution Diagram mappings, product-label neutrality, and diagram refresh invalidation.
-- Final executor evidence reported focused D032 `13 passed`, focused T001/T002 regression subset `52 passed`, and full suite `114 passed, 0 failed, 0 skipped`.
-- No executor-authored Markdown, dependency expansion, `pyproject.toml`, `uv.lock`, Python-version change, production runtime, external SDD runtime, committed `.atl/` content, test-runtime network, or credentials were introduced.
-- D030 remains controlling for clone-local Gentle-AI RDD opt-out.
-- D031 remains controlling for normal local Gentle-AI Skill Registry `.atl/` coexistence.
-- D032 remains controlling for the Human-intent ↔ engineering proxy, invariant engineering quality, implicit quality routing and Primary Solution Diagram readiness.
+`docs/tasks/T004-d032-agent-facing-capability-eval.md`
 
-## D032 Verification Boundary After T003
+Planning branch:
 
-T003 verifies only properties reducible to deterministic explicit fixture facts.
+`docs/t004-d032-agent-eval`
 
-The remaining D032 behavior requires isolated agent-facing evals, including:
+T004 is `READY` only after this Markdown planning branch is reviewed and merged into `develop`.
 
-- semantically equivalent requests expressed in plain/domain, technical/expert and code-native registers while preserving engineering rigor and acceptance meaning;
-- actual preservation of supplied code/config/schema semantics in model responses;
-- recognition of material security/privacy/reliability/compatibility/etc. concerns from realistic user requests;
-- selective disclosure: material concerns surfaced at the current user register while non-material checklist noise remains implicit;
-- appropriate Primary Solution Diagram choice and presentation in an actual planning interaction;
-- readiness invalidation and diagram refresh after a material agent-driven design change;
-- confirmation that interaction-register adaptation never changes authority, acceptance or engineering standards.
+No executor may begin from a `develop` revision that predates the T004 contract.
 
-`docs/TESTING-AND-EVALUATION.md` controls verifier selection. Deterministic checks must not be replaced by model graders, and agent evals must use isolated sessions, observable outcomes/traces and deterministic graders where possible.
+## T004 Verification Decision
 
-## Required Graphical Readiness for Next Task
+T004 covers model-dependent D032 behavior that T003 intentionally cannot prove mechanically.
 
-No next executor task is READY yet.
+The first baseline will:
 
-Before authorizing the next implementation/eval increment, ChatGPT must:
+- use realistic natural/technical/code-native user prompts;
+- run repeated isolated agent sessions;
+- preserve natural model responses rather than forcing JSON response schemas;
+- use deterministic graders only for mechanical facts such as session isolation, zero tool calls, exact supplied-token preservation and record completeness;
+- persist semantic-grading status as `PENDING_CHATGPT`;
+- leave register fit, engineering-rigor equivalence, material-quality recognition/disclosure, diagram appropriateness/refresh and authority invariance to ChatGPT PD5 over persisted transcripts.
 
-1. select the bounded agent-eval scope;
-2. present and persist its Primary Solution Diagram under D032;
-3. perform the implicit quality/security/privacy triage;
-4. decide whether one task can coherently cover the model-dependent D032 behaviors or whether further decomposition is required;
-5. persist the resulting Task Contract to `develop` before executor launch.
+This is a capability baseline, not yet a stable-release numeric regression gate.
 
-## Active Remote Artifacts
+## T004 Primary Solution Diagram
 
-- canonical implementation state before this checkpoint PR: `f52d3fb2bd148c37f6a0c6896b2c20fdaabbaba1`;
-- T003 Task Contract: `docs/tasks/T003-d032-deterministic-policy-contract.md`;
-- T003 acceptance: `docs/reviews/T003-R1.md`;
-- T003 integrated handoff: `handoffs/T003-executor-handoff.json`;
-- D032 decision: `docs/decisions/D032-adaptive-intent-engineering-proxy-and-quality-envelope.md`;
-- D032 overview: `docs/ARCHITECTURE-INTENT-ENGINEERING-PROXY.md`;
-- D032 Core modules: `governance-core/INTERACTION.md`, `governance-core/QUALITY.md`.
+Dominant design question: runtime interaction among corpus, eval harness, execution adapter, model and graders.
+
+```text
+T004 case corpus
+     │
+     ▼
+Python eval harness
+     │  creates clean trial + exact D032 system context
+     ▼
+Adapter boundary
+     │
+     ├─ OpenCode adapter (first execution adapter only)
+     │    ├─ temporary config
+     │    ├─ all agent tools DENY
+     │    └─ explicit model + JSON event output
+     │
+     ▼
+Fresh agent session ────────────────┐
+     │                              │ multi-turn case only
+     ▼                              │
+User scenario                       │
+     │                              │
+     ▼                              │
+Natural model response              │
+     │                              │
+     └──────── material redesign ───┘
+                    │
+                    ▼
+         normalized trial record
+         transcript + model/config
+                    │
+          ┌─────────┴─────────┐
+          ▼                   ▼
+ mechanical graders    ChatGPT semantic PD5
+ tokens/schema/tools   register/rigor/quality/
+ session isolation     diagram/refresh/authority
+```
+
+OpenCode is only the first execution adapter. Case expectations and normalized records remain adapter-neutral.
+
+## T004 Security Boundary
+
+Security is `MATERIAL` because the eval invokes an external model through an authenticated agent host.
+
+```text
+                  TRUSTED SOURCE REPO
+        D032 Core + T004 corpus (read-only input)
+                         │
+                         ▼
+                Python eval harness
+                         │
+              copies only required text
+                         ▼
+┌──────────── DISPOSABLE TRIAL BOUNDARY ────────────┐
+│ temp config + synthetic prompt                    │
+│ OpenCode agent: all tools denied                  │
+│ no repo writes · no shell · no web tools · no    │
+│ Skills/plugins · no external-directory access     │
+└───────────────────────┬───────────────────────────┘
+                        │ model request
+                        ▼
+              EXTERNAL MODEL PROVIDER
+              only synthetic eval content
+                        │
+                        ▼
+                 response/events
+                        │
+                        ▼
+              normalized JSONL evidence
+                        │
+                        ▼
+                 source repo artifact
+```
+
+Child eval sessions must run outside the source worktree with deny-all agent tools and temporary configuration. Model-provider auth may be used only for model invocation; credentials/hidden reasoning must never be persisted.
+
+## T004 Capability Corpus
+
+Required families are persisted in the Task Contract:
+
+- **A interaction-register invariance:** one avatar-upload scenario expressed as plain/domain, expert/architecture and code-native, with equivalent engineering controls/acceptance;
+- **B silent baseline:** local draft-validation flow where non-material quality dimensions remain implicit instead of becoming checklist noise;
+- **C material privacy/security:** sensitive customer CSV export crossing the platform boundary, expected to surface material implications and use a DFD with trust boundaries;
+- **D diagram selection/refresh:** payment confirmation flow initially using dynamic/sequence, followed by a material redesign adding queue/worker that must invalidate stale readiness and refresh the diagram.
+
+Run count: 3 independent trials per case/session, 18 independent sessions total and 21 user turns because D is multi-turn.
+
+Semantic failures are evidence and must not be retried away.
+
+## OpenCode Adapter Boundary
+
+Current OpenCode documentation was checked during planning and supports the required shape: non-interactive `run`, JSON event output, explicit model/agent/directory/session options, custom agent prompts and deny permissions.
+
+The executor must still preflight the installed version with read-only CLI help/version commands before implementation.
+
+If current local OpenCode cannot provide explicit-model, clean-session, JSON-event, tool-denied execution without persistent global mutation, T004 stops `PARTIAL`; it must not update OpenCode or weaken isolation.
+
+No OpenCode-specific behavior is part of D032 correctness semantics.
+
+## Expected Committed T004 Surfaces
+
+Only the minimum non-Markdown subset is authorized, expected to include:
+
+- `evals/d032/cases.json`;
+- small Python harness/record helpers under `evals/d032/`;
+- one isolated OpenCode adapter under `evals/d032/`;
+- `evals/results/d032/T004-baseline.jsonl`;
+- `tests/test_d032_agent_eval_harness.py`;
+- `handoffs/T004-executor-handoff.json`.
+
+No new package dependency, production runtime, model-provider SDK, hosted eval platform, Docker, Node, Hypothesis, external SDD runtime or executor-authored Markdown is authorized.
+
+## Quality-Envelope Summary
+
+Material for T004:
+
+- functional/measurement fidelity;
+- adapter architecture/coexistence;
+- security/isolation;
+- reliability/repeated clean trials;
+- bounded model-call resource use;
+- observability/evidence;
+- verification;
+- maintainability/change isolation;
+- portability;
+- dependency/supply-chain discipline.
+
+Privacy is baseline because prompts are synthetic. No production/business data may enter model trials.
+
+## Completed State Entering T004
+
+- canonical `develop` at T004 planning start: `ed148902c9b1285bd3e92278b3a50b6e69e1a469`;
+- T003 implementation integration: `f52d3fb2bd148c37f6a0c6896b2c20fdaabbaba1`;
+- T003 post-integration checkpoint: `ed148902c9b1285bd3e92278b3a50b6e69e1a469`;
+- deterministic full-suite evidence from T003: `114 passed, 0 failed, 0 skipped`;
+- D030 controls clone-local Gentle-AI RDD opt-out;
+- D031 controls normal `.atl/` Skill Registry coexistence;
+- D032 controls adaptive interaction, invariant engineering quality and Primary Solution Diagram readiness.
+
+## Open Questions or Blockers
+
+No known design blocker remains for T004.
+
+Actual execution depends on an already-authenticated model being available through the local OpenCode adapter. Lack of model/provider auth is an execution blocker and must produce `PARTIAL`/`BLOCKED`, not a mock transcript.
+
+The source product remains not stable/release-ready. T004 is the first D032 model-behavior baseline; broader Governance/Skill behavioral, state-machine, trigger, security and multi-adapter release gates remain incomplete.
+
+## Next Action
+
+1. Review `docs/t004-d032-agent-eval` against current `develop`.
+2. Confirm the planning diff contains only `docs/tasks/T004-d032-agent-facing-capability-eval.md` and this checkpoint.
+3. Merge the planning PR into `develop` if clean.
+4. Verify T004 is `READY` on resulting `develop`.
+5. Launch the executor on `eval/d032-agent-capability` with only the Task Contract pointer and normal D030/D031 source-maintainer constraints.
+6. On handoff, perform remote PD5 over code, results JSONL and **actual persisted user-visible transcripts** before any implementation PR.
+7. During PD5 distinguish:
+   - acceptance of the eval harness/evidence package;
+   - semantic pass/fail findings for D032 product behavior.
+
+## Next Chat Minimum Load
+
+After `AGENTS.md` and this checkpoint, load only:
+
+1. `docs/tasks/T004-d032-agent-facing-capability-eval.md`;
+2. `docs/decisions/D032-adaptive-intent-engineering-proxy-and-quality-envelope.md`;
+3. `governance-core/INTERACTION.md`;
+4. `governance-core/QUALITY.md`;
+5. agent-eval/release-gate portions of `docs/TESTING-AND-EVALUATION.md`;
+6. `evals/README.md`.
+
+Load T003 history only if a concrete deterministic-regression question requires it.
 
 ## Orchestrator Branching Incidents
 
@@ -80,40 +221,19 @@ Two prior accidental direct Markdown writes remain audit history and are not pol
 1. T002-R1 placeholder: `6a3bff4f12850bd701fea624815e955231082afa`, corrected by `67d8dc6de9679f833f3136c6a66ee7ad05283cb3`.
 2. Architecture-overview placeholder: `a0e063344043fda53f55b8fcb5b03742a33a7185`, corrected by `09fa91f6b3c829e6edc0719fcd636cf3cba8f879`.
 
-No placeholder content remains. Current Markdown work uses topic branches before mutation.
-
-## Open Questions or Blockers
-
-No T001/T002/T003 implementation blocker remains.
-
-The source product is still not stable/release-ready. D032 agent-facing verification and other release gates in `docs/TESTING-AND-EVALUATION.md` remain incomplete.
-
-## Next Action
-
-1. Plan the first D032 agent-facing eval increment from current `develop`.
-2. Use the T003 corpus as reusable deterministic expectation data only where appropriate; do not treat it as proof of model behavior.
-3. Define a Primary Solution Diagram before marking the next Task Contract READY.
-4. Keep model-eval infrastructure isolated from consumer repositories and external production state.
-5. Do not launch an executor until the next Task Contract is persisted and integrated into `develop`.
-
-## Next Chat Minimum Load
-
-After `AGENTS.md` and this checkpoint, load only:
-
-1. `docs/decisions/D032-adaptive-intent-engineering-proxy-and-quality-envelope.md`;
-2. `governance-core/INTERACTION.md`;
-3. `governance-core/QUALITY.md`;
-4. the agent-eval/release-gate portions of `docs/TESTING-AND-EVALUATION.md`;
-5. `tests/fixtures/d032/policy_cases.json` only when designing reuse between deterministic expectations and agent eval cases.
-
-Load T001/T002/T003 history only if a concrete regression or acceptance question requires it.
+No placeholder remains. T004 planning correctly created its topic branch before Markdown mutation.
 
 ## Do Not Load or Do
 
 - Do not reopen T001/T002/T003 absent a concrete regression.
-- Do not interpret T003 deterministic fixture invariance as proof of actual model/agent behavior.
+- Do not treat T004 capability execution as self-accepting semantic evidence.
+- Do not add a model-as-judge dependency inside T004.
+- Do not force the evaluated model to emit JSON instead of natural user-facing responses.
+- Do not permit evaluated child sessions to use file/shell/web/Skill/subagent tools.
+- Do not execute child trials inside the source worktree.
+- Do not commit hidden reasoning, credentials or real customer/business data.
+- Do not update or globally reconfigure OpenCode/Gentle-AI/provider tooling.
 - Do not commit `.atl/` contents or treat Skill registry selection as Governance trust/approval.
 - Do not re-enable or globally alter Gentle-AI RDD.
-- Do not erase or normalize away recorded direct-write incidents.
-- Do not launch the next executor task before its D032 diagram/quality/readiness evidence and Task Contract are persisted.
-- Do not declare the source product stable/release-ready from T001/T002/T003/D032 alone.
+- Do not erase recorded branching incidents.
+- Do not declare the source product stable/release-ready from T004 alone.
