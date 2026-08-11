@@ -1,7 +1,7 @@
 # Current ChatGPT Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O022  
+Checkpoint-Sequence: O023  
 Canonical-Branch: `develop`  
 Chat-Closure: CONTINUE_ALLOWED
 
@@ -23,32 +23,59 @@ Expected T004 handoff:
 
 `handoffs/T004-executor-handoff.json`
 
-T004 remains governed by its existing contract. D033/D034/D035 architecture work MUST NOT retroactively broaden or alter its running execution semantics.
+T004 remains governed by its existing contract. D033–D036 architecture work MUST NOT retroactively broaden or alter its running execution semantics.
 
 ## Accepted Architecture Frontier
 
-Three complementary execution/security decisions are now accepted architecture:
+Four complementary decisions are accepted architecture and not yet integrated into Governance Core/protocol:
 
 - `docs/decisions/D033-execution-access-control-plane.md` — authorization by actor/target/effect/privilege/credential/resource scope;
 - `docs/decisions/D034-runbook-first-terminal-neutral-execution.md` — reusable runbook procedures and terminal/platform-neutral execution adapters;
-- `docs/decisions/D035-security-authority-freshness-and-independent-verification.md` — current security authority, freshness, known-bad anti-regression and independent verification.
+- `docs/decisions/D035-security-authority-freshness-and-independent-verification.md` — current security authority, freshness, known-bad anti-regression and independent verification;
+- `docs/decisions/D036-existing-system-assurance-audit-mode.md` — evidence-based assessment/audit of existing systems covering engineering quality, best practices, security, configuration and process maturity where applicable.
 
 Consolidated overviews:
 
 - `docs/ARCHITECTURE-EXECUTION-ACCESS-CONTROL.md`;
-- `docs/ARCHITECTURE-SECURITY-VERIFICATION.md`.
+- `docs/ARCHITECTURE-SECURITY-VERIFICATION.md`;
+- `docs/ARCHITECTURE-ASSURANCE-AUDIT.md`.
 
-D033/D034/D035 are architecture decisions only and are not yet integrated into Governance Core/protocol.
+## Combined Assurance / Execution Model
 
-## D033 — Execution Authorization
+```text
+D032 quality intent and engineering envelope
+        ↓
+D035 current/versioned security authority
+        ↓
+D036 assessment / independent verification
+        ↕
+D033 execution authorization
+        ↓
+D034 runbook + terminal-neutral adapter
+        ↓
+local/remote implementation or assessment effect
+        ↓
+observed evidence / retest / posture
+```
 
-Core invariant:
+Core invariants across the four decisions:
 
 ```text
 transport or credential possession != execution authority
+procedure semantics != terminal syntax
+approved runbook != approved invocation
+model output != security authority
+security acceptance = applicable current controls + independent evidence
+past task acceptance != permanent security posture
+model opinion != audit evidence
+reported audit completeness != proof of no undiscovered defect
+finding severity != finding confidence
+audit finding != remediation authorization
 ```
 
-Execution Capability Envelopes bound the applicable subset of:
+## D033 — Execution Authorization
+
+Execution Capability Envelopes bind the applicable subset of:
 
 - actor/role;
 - exact target/environment/account/resource;
@@ -56,7 +83,7 @@ Execution Capability Envelopes bound the applicable subset of:
 - resource scope;
 - privilege ceiling;
 - credential source/use;
-- network path/destinations;
+- network destinations/path;
 - task/time/operation lifetime;
 - rollback/recovery expectation;
 - approval mode;
@@ -73,16 +100,11 @@ Child/nested execution cannot expand authority.
 
 ## D034 — Runbook-First Terminal-Neutral Procedure
 
-Core invariants:
+Runbooks are preferred durable procedures for repeatable/material operational work.
 
-```text
-procedure semantics != terminal syntax
-approved runbook != approved invocation
-```
+A runbook describes the applicable subset of:
 
-Runbooks are preferred durable procedures for repeatable/material operational changes and describe the applicable subset of:
-
-- outcome;
+- purpose/outcome;
 - applicability/exclusions;
 - capability/target/privilege class;
 - non-secret inputs;
@@ -91,316 +113,281 @@ Runbooks are preferred durable procedures for repeatable/material operational ch
 - checkpoints/Human gates;
 - postconditions;
 - rollback/recovery;
-- evidence.
+- evidence requirements.
 
 Reuse adequate project-native runbooks/workflows before creating Governance-owned procedures.
 
-Terminal, shell, CLI, API, SDK, remote transport, CI/CD and orchestration products are execution adapters, not Governance authority.
+Terminal, shell, CLI, API, SDK, remote transport, CI/CD and orchestration products are replaceable execution adapters, not Governance authority.
 
 ## D035 — Security Authority, Freshness and Independent Verification
 
-The Human Owner identified a specific AI-security risk: a probabilistic model may choose a historically common implementation/configuration that has since been found vulnerable, especially when the secure replacement is newer or less represented in model training data.
-
-D035 addresses this structurally rather than through stronger prompting.
-
-Core invariants:
+Security-sensitive work follows:
 
 ```text
-model output != security authority
-security guidance freshness != model training freshness
-security acceptance = applicable current controls + independent evidence
-past task acceptance != permanent security posture
+GROUND BEFORE GENERATION
+  resolve current applicable security controls
+        ↓
+AI implementation/configuration proposal
+        ↓
+VERIFY AFTER GENERATION
+  independent technical/deterministic evidence
+        ↓
+PASS / BLOCK / HUMAN_EXCEPTION
+        ↓
+INVALIDATE AFTER DEPLOYMENT
+  new advisory/KEV/baseline/system drift can revoke current posture
 ```
 
-Security-sensitive work follows three stages:
+Security source classes include:
 
-```text
-1. GROUND BEFORE GENERATION
-   resolve/load applicable current security controls
-
-2. VERIFY AFTER GENERATION
-   independent deterministic/technical evidence decides acceptance
-
-3. INVALIDATE AFTER DEPLOYMENT
-   advisories/vulnerabilities/drift can revoke current posture
-```
-
-Grounding lowers probability of insecure output. Independent verification is the acceptance authority.
-
-## D035 Security Source Classes
-
-Applicable security requirements may come from:
-
-1. project-authoritative security decisions/threat model/exceptions;
-2. exact product/vendor current security documentation/advisories;
-3. current vulnerability/threat intelligence, including applicable CISA KEV as prioritization input;
-4. versioned verification/security standards such as applicable OWASP ASVS, CIS Benchmarks and NIST security configuration checklists;
+1. project-authoritative security decisions/exceptions;
+2. exact product/vendor current security guidance/advisories;
+3. current vulnerability/threat intelligence including applicable CISA KEV;
+4. versioned verification/security standards/baselines;
 5. model/internal knowledge only as non-authoritative discovery/implementation assistance.
 
-Current external/project sources override unsupported model recollection when applicable.
+Confirmed vulnerabilities/obsolete insecure patterns should become known-bad regression controls where practical so a later probabilistic model cannot silently reintroduce them.
 
-Material source conflicts fail closed until resolved.
+## D036 — Existing-System Assurance Audit Mode
 
-## Versioned Security Control Set
+The Human Owner requires Agent Governance to support auditing/evaluating an already-built system, not only creating new implementations.
 
-A later Core implementation should make the applicable subset of these fields determinable:
+D036 defines an evidence-first, scope-bounded audit mode that can assess the applicable subset of:
 
-- control identity;
-- component/target/version applicability;
-- source class/reference/version/revision;
-- source freshness/check timestamp;
-- required state;
-- forbidden/known-bad state;
-- independent verifier/evidence;
-- freshness class;
-- priority/severity where relevant;
-- Human exception reference/expiry;
-- regression verifier reference;
-- status: current/stale/conflict/violated/exception/superseded.
+- functional implementation fidelity;
+- architecture/responsibility/coexistence;
+- application/software security;
+- dependency/software-supply-chain posture;
+- infrastructure/system configuration;
+- identity/privilege/secrets;
+- network/trust-boundary exposure;
+- data security/privacy;
+- reliability/resilience/recovery;
+- observability/detection/incident readiness;
+- deployment/configuration/release safety;
+- maintainability/testing/engineering practice;
+- usability/accessibility where applicable;
+- secure-development/process maturity;
+- requested compliance/control mappings.
 
-D035 defines semantics, not one serialization.
+The audit uses D032 `QUALITY.md` for the broad engineering envelope and D035 for current security authority/freshness.
 
-## Security Freshness
+## D036 Assessment Profiles
 
-Do not use one arbitrary global TTL.
+Use the least intrusive method that can establish required evidence:
 
-Conceptual freshness classes:
+### `EVIDENCE_REVIEW`
 
-- `THREAT_LIVE` — KEV/active advisories/affected-version data; recheck at relevant security-sensitive execution/release/operation points;
-- `PRODUCT_VERSION` — vendor/product hardening; bind exact version/context and recheck on material product/target/context change;
-- `STANDARD_PINNED` — stable ASVS/CIS/NIST baseline version pinned to the current contract; newer releases trigger explicit review rather than silently changing in-flight work;
-- `PROJECT_DECISION` — persists until superseded; weakening exceptions must be time/review bounded.
+Static/offline artifacts only: source, architecture, dependencies, IaC/configuration, CI/CD, tests, runbooks and previously exported state.
 
-Freshness outcomes:
+### `AUTHENTICATED_OBSERVE`
 
-- `CURRENT`;
-- `STALE`;
-- `UNKNOWN`;
-- `CONFLICT`;
-- `SUPERSEDED`.
+Live read-only queries of versions, configuration, IAM, network/resource/deployment/runtime/security state through authorized project/platform-native interfaces.
 
-High-impact security acceptance blocks on stale/unknown/conflicting current-security state unless the Human explicitly accepts bounded risk.
+### `SAFE_ACTIVE`
 
-## Known-Bad Security Pattern Registry
+Bounded non-destructive active tests such as safe vulnerability/security scans, protocol/header/API tests, controlled negative requests or suitable bounded fuzzing.
 
-Confirmed vulnerabilities and obsolete insecure patterns should become durable negative knowledge when applicable.
+Does not imply exploitation, destructive effects, persistence, credential attacks, denial-of-service or uncontrolled load.
 
-Examples:
+### `INTRUSIVE_AUTHORIZED`
 
-- vulnerable dependency/version range;
-- deprecated insecure API/algorithm/configuration;
-- vendor setting invalidated by advisory;
-- previous project exploit/bug pattern;
-- configuration forbidden by selected baseline;
-- superseded insecure workaround.
+Penetration/exploitation/high-impact testing that may mutate state, cross privilege boundaries, expose sensitive data or affect availability.
 
-Records are scoped/versioned and may be `ACTIVE`, `MITIGATED`, `SUPERSEDED`, `NOT_APPLICABLE` or `EXCEPTION`.
+Never implied by a generic request to audit security. Requires explicit Human authorization under D033, exact targets/technique limits/stop conditions and appropriate D034 runbooks.
 
-Only relevant active records enter implementation context.
+## D036 Evidence / Finding Model
 
-## Security-Fix Regression Invariant
+A material finding/claim should preserve the applicable subset of:
 
-When technically practical, remediation is not complete until:
+- subject/resource identity;
+- assessed domain/control/question;
+- expected state/requirement;
+- observed state;
+- assessment method;
+- evidence pointer/result;
+- authoritative source/version/freshness;
+- finding status;
+- severity/impact;
+- confidence/evidence strength;
+- exploitability/current threat context when material;
+- affected scope;
+- remediation recommendation;
+- retest method;
+- exception/residual-risk reference.
 
-1. corrected required behavior is defined;
-2. former vulnerable state is forbidden/superseded;
-3. deterministic regression rule/test/check detects the former defect;
-4. the fix makes that verifier pass;
-5. the verifier remains in regression coverage.
+Finding states:
 
-This is the primary defense against a later model statistically preferring the old vulnerable pattern.
+- `PASS`;
+- `FAIL`;
+- `PARTIAL`;
+- `NOT_APPLICABLE`;
+- `NOT_ASSESSED`;
+- `INCONCLUSIVE`;
+- `ACCEPTED_EXCEPTION`.
 
-## Independent Security Verification
+Missing/unavailable evidence does not become `PASS`.
 
-Model self-review is not sufficient where independent verification is possible.
+Severity and confidence remain independent.
 
-Software-development verification may include the applicable subset of:
+## D036 Coverage Truth
 
-- threat modeling/abuse cases;
-- automated regression tests;
-- static analysis;
-- secret checks;
-- dependency/software-composition vulnerability checks;
-- negative/black-box/structural tests;
-- historical security regressions;
-- fuzzing;
-- web/API dynamic security tests;
-- included-library/service verification;
-- independent architecture/security review for non-mechanical properties.
+Every comprehensive audit exposes gaps.
 
-No single scanner constitutes complete proof.
+Coverage accounts for relevant domain/resource/method combinations and marks assessed/pass/fail/partial, not applicable, not assessed, inconclusive or blocked-by-access/evidence.
 
-For material system/configuration work:
+Preferred bounded conclusion:
 
 ```text
-Security Control Set
- -> Execution Capability Envelope (D033)
- -> Runbook (D034)
- -> bind exact target/version/principal
- -> preflight actual state
- -> execute through terminal-neutral adapter
- -> query actual resulting state
- -> configuration/compliance/vulnerability verification
- -> PASS / BLOCK / HUMAN_EXCEPTION
+No material finding was identified within the declared scope,
+using the declared methods and security-source versions,
+as of the assessment time, subject to the listed coverage gaps.
 ```
 
-Command/runbook success is not security proof. Resulting target state is verified independently.
+Do not claim the system has no undiscovered vulnerabilities.
 
-## Machine-Readable Security Verification
+## D036 Audit Report Shape
 
-Where a security property is deterministic, prefer a machine-evaluable assertion.
+A comprehensive report should include the applicable subset of:
 
-Examples:
+1. executive summary;
+2. scope/authorization/exclusions;
+3. assessment timestamp/source freshness;
+4. system/architecture summary;
+5. methodology/intrusiveness profiles;
+6. coverage matrix/gaps;
+7. verified strengths/good practices;
+8. prioritized evidence-backed findings;
+9. security posture;
+10. engineering/implementation quality;
+11. privacy/data findings;
+12. process/maturity findings where included;
+13. exceptions/residual risk;
+14. remediation roadmap;
+15. retest plan;
+16. sanitized evidence references.
 
-- required secure setting/value;
-- forbidden feature absent;
-- dependency outside vulnerable range;
-- required access rule present;
-- forbidden network exposure absent;
-- known vulnerable code/API absent;
-- exploit/regression no longer succeeds;
-- target configuration matches selected baseline.
+Verified strengths are recorded as evidence-backed assurance, not generic praise.
 
-Potential providers include project-native policy-as-code/configuration tooling, NIST SCAP/OVAL ecosystems, NIST checklist content, CIS assessment tooling and equivalent platform-native mechanisms.
+## Audit Versus Remediation
 
-No single provider is a Core dependency.
-
-## Security Posture Is Temporal
-
-Historical task acceptance and current security posture are separate.
+Finding a defect does not authorize changing it.
 
 ```text
-T123 ACCEPTED at time A
-        +
-new advisory/KEV/vulnerability at time B
-        -> T123 remains historically ACCEPTED
-        -> affected current control becomes STALE/VIOLATED
-        -> create remediation task/runbook
+ASSESS
+  ↓
+REPORT FINDING
+  ↓
+PRIORITIZE / EXCEPTION / AUTHORIZE REMEDIATION
+  ↓
+D033 envelope
+  ↓
+D034 runbook
+  ↓
+IMPLEMENT
+  ↓
+RETEST via D035/D036
 ```
 
-New vulnerability intelligence does not silently authorize remediation; it routes through D032 quality/design, D033 authorization and D034 runbook controls.
+A combined audit-and-remediation engagement may be explicitly authorized, but assessment evidence and mutation authorization remain distinguishable.
 
-## Human Security Exceptions
+## Assessment Reference Posture
 
-Only Human/Strategy authority may accept an exception.
+External frameworks are selected by applicability rather than all applied universally.
 
-A bounded exception records the applicable subset of:
+Current useful reference families include:
 
-- violated/deferred control;
-- exact scope/target/version;
-- rationale/risk;
-- compensating controls;
-- verification of compensation;
-- owner;
-- expiration/review condition;
-- remediation trigger.
+- NIST CSF 2.0;
+- NIST SP 800-53 / SP 800-53A;
+- NIST SP 800-115;
+- NIST SSDF;
+- NIST security configuration/SCAP/OSCAL resources;
+- CIS Controls / Controls Assessment Specification / Benchmarks;
+- OWASP ASVS;
+- OWASP Web Security Testing Guide;
+- OWASP SAMM;
+- CISA KEV and vendor advisories;
+- project/domain/regulatory controls already governing the system.
 
-The model cannot invent an exception because the secure solution is inconvenient.
-
-## Security-Control Supply Chain
-
-Security baselines/rules/checklists are security-sensitive inputs.
-
-Retain appropriate provenance:
-
-- canonical publisher/source;
-- stable/draft/deprecated status;
-- exact revision/version;
-- retrieval/check time;
-- digest/signature when supplied;
-- local approved adaptation delta.
-
-Reuse project-native security systems/baselines before duplicating them.
-
-## D035 Research Baseline — August 2026
-
-Current authoritative sources reviewed:
-
-- NIST SP 800-218 SSDF 1.1 — current final SSDF; SSDF 1.2 remains initial public draft;
-- NIST IR 8397 — developer verification techniques including threat modeling, automated testing, static analysis, secret detection, historical tests, fuzzing, web scanners and included-component monitoring;
-- OWASP ASVS 5.0.0 — current stable ASVS and explicit version-qualified requirement references;
-- NIST SP 800-70 Rev. 5 — final May 2026 security configuration checklists including machine-readable/executable content, verification and unauthorized-change detection;
-- SCAP 1.4 — current final June 2026 security configuration/vulnerability/compliance automation framework;
-- OSCAL — machine-readable security-control/baseline/implementation/assessment formats;
-- CIS Benchmarks — consensus secure configuration recommendations;
-- CISA KEV — living catalog of vulnerabilities exploited in the wild;
-- NIST AI RMF — ongoing testing/monitoring and Human intervention where AI cannot detect/correct errors.
-
-Empirical AI-code-security studies reviewed show context-dependent/mixed security outcomes rather than deterministic reliability. D035 therefore does not depend on a particular failure rate; independent verification is required by architecture.
+Framework mappings do not imply certification Agent Governance is not authorized to issue.
 
 ## T004 State
 
-T004 remains the current executable frontier and is unchanged by D033/D034/D035.
+T004 remains the current executable frontier and is unchanged by D033–D036.
 
-T004 semantic grading remains `PENDING_CHATGPT` until its final handoff/results/transcripts are remotely reviewed.
+T004 semantic grading remains `PENDING_CHATGPT` until final executor handoff/results/transcripts are remotely reviewed.
 
 ## Planned Core-Integration Frontier
 
-After T004 PD5, the leading architecture integration must consider **D033 + D034 + D035 together**, though implementation may be decomposed into multiple Task Contracts after graphical/quality readiness.
+After T004 PD5, the next architecture planning must treat D033–D036 as a coherent stack, but may decompose implementation into multiple Task Contracts after a fresh D032 diagram/quality review.
 
-The smallest coherent future design should include the applicable subset of:
+The first deterministic Core layer should cover the applicable subset of:
 
-- execution-control Core routing;
-- Execution Capability Envelope semantics;
-- runbook selection/binding/preflight/Human gates;
-- terminal-neutral adapter contract;
-- Security Source Resolver;
-- Versioned Security Control Set;
-- Known-Bad Security Pattern Registry;
-- security freshness/invalidation;
-- independent verifier/evidence requirements;
-- handoff evidence keyed by runbook/security control;
-- deterministic synthetic tests for obsolete vulnerable patterns, stale security guidance, vendor advisory override, dependency vulnerability, actual configuration drift and Human exceptions;
-- materially different adapter/platform fixtures so security semantics remain terminal-neutral.
+- execution authorization outcomes and envelope semantics;
+- runbook reference/binding/preflight/Human-gate semantics;
+- terminal-neutral execution adapter contract;
+- security source/control/freshness/known-bad semantics;
+- independent security-verifier evidence;
+- audit assessment profiles;
+- finding/evidence/coverage states;
+- severity/confidence separation;
+- audit/remediation separation;
+- deterministic synthetic cases where a common-but-insecure model proposal is blocked by a current control/verifier;
+- representative platform-neutral measurement/execution adapter fixtures.
 
-Do not start this Core integration until T004 is resolved and a fresh D032 Primary Solution Diagram/quality triage has been presented.
+Broad real-system scanner/provider adapters should follow only after the semantic Core is mechanically stable.
 
 ## Active Remote Artifacts
 
-- current T004 Task Contract: `docs/tasks/T004-d032-agent-facing-capability-eval.md`;
+- T004 Task Contract: `docs/tasks/T004-d032-agent-facing-capability-eval.md`;
 - D033: `docs/decisions/D033-execution-access-control-plane.md`;
 - D034: `docs/decisions/D034-runbook-first-terminal-neutral-execution.md`;
 - D035: `docs/decisions/D035-security-authority-freshness-and-independent-verification.md`;
-- execution-control overview: `docs/ARCHITECTURE-EXECUTION-ACCESS-CONTROL.md`;
-- security-verification overview: `docs/ARCHITECTURE-SECURITY-VERIFICATION.md`.
+- D036: `docs/decisions/D036-existing-system-assurance-audit-mode.md`;
+- execution overview: `docs/ARCHITECTURE-EXECUTION-ACCESS-CONTROL.md`;
+- security overview: `docs/ARCHITECTURE-SECURITY-VERIFICATION.md`;
+- audit overview: `docs/ARCHITECTURE-ASSURANCE-AUDIT.md`.
 
 ## Open Questions or Blockers
 
-No known D035 architecture blocker remains.
+No known D033–D036 architecture blocker remains.
 
 T004 still requires executor return and PD5.
 
-The source product remains not stable/release-ready. D033/D034/D035 Core integration, broader security/behavioral evals, property/state-machine coverage, Skill gates and other release gates remain incomplete.
+The source product remains not stable/release-ready. D033–D036 Core integration, broader security/behavioral evals, property/state-machine coverage, Skill gates and release gates remain incomplete.
 
 ## Next Action
 
-1. review/integrate the D035 Markdown branch if limited to D035 + security architecture overview + this checkpoint;
+1. review/integrate the D036 Markdown branch if limited to D036 + audit overview + this checkpoint;
 2. do not alter T004;
 3. when T004 returns, perform remote PD5 over harness/results/transcripts;
-4. after T004 is resolved, design the combined D033+D034+D035 Core frontier graphically before implementation;
-5. use deterministic security verifiers wherever the security property is mechanically checkable.
+4. after T004 is resolved, design the D033–D036 Core-integration frontier graphically before implementation;
+5. prefer deterministic independent verifiers for mechanically checkable audit/security claims;
+6. keep intrusive assessment techniques explicitly Human-authorized and target-bounded.
 
 ## Next Chat Minimum Load
 
 After `AGENTS.md` and this checkpoint:
 
 1. if T004 is active/returned, load `docs/tasks/T004-d032-agent-facing-capability-eval.md` and handoff/results as needed;
-2. for execution/security-control planning, load D033 + D034 + D035;
-3. load `docs/ARCHITECTURE-EXECUTION-ACCESS-CONTROL.md` and/or `docs/ARCHITECTURE-SECURITY-VERIFICATION.md` only when consolidated views are useful;
-4. load D032/`QUALITY.md` only when diagram/quality readiness or T004 semantic review requires it.
+2. for execution/security/audit planning, load only the relevant subset of D033–D036;
+3. load consolidated architecture overviews only when useful;
+4. load D032/`QUALITY.md` for graphical/quality readiness or comprehensive audit-domain interpretation.
 
 ## Do Not Load or Do
 
 - Do not reopen T001/T002/T003 absent a concrete regression.
-- Do not retroactively broaden/rewrite T004 because D033/D034/D035 were accepted while it was running.
-- Do not treat model output/self-confidence/self-review as security authority.
-- Do not rely on model training freshness for a security-sensitive current fact when an authoritative source can establish it.
-- Do not treat past task acceptance as permanent security posture.
-- Do not accept a successful command/runbook as proof of secure resulting state.
-- Do not let stale/unknown/conflicting security-source state silently pass high-impact security acceptance.
+- Do not retroactively broaden/rewrite T004 because D033–D036 were accepted while it was running.
+- Do not treat model output/self-review as security or audit authority.
+- Do not report unassessed/missing evidence as passing.
+- Do not claim exhaustive security from a bounded audit.
+- Do not conflate finding severity with confidence.
+- Do not perform intrusive security testing from a generic audit request.
+- Do not treat an audit finding as authorization to remediate.
+- Do not treat past task/audit acceptance as permanent security posture.
+- Do not let stale/unknown/conflicting current security sources silently pass high-impact security conclusions.
 - Do not let a model invent a security exception.
-- Do not remove historical vulnerability regression checks merely because newer code appears different.
-- Do not make ASVS/CIS/SCAP/OSCAL or another external security product a universal Core dependency.
-- Do not duplicate adequate project-native security baselines/runbooks/tooling.
-- Do not modify Core/protocol until a separate integrated Task Contract aligns code, protocol and deterministic verification.
-- Do not declare the source product stable/release-ready from D035 or T004 alone.
+- Do not make one shell/OS/scanner/framework/provider a universal Core dependency.
+- Do not duplicate adequate project-native security/runbook/audit tooling.
+- Do not modify Core/protocol until a separate integrated Task Contract aligns semantics, code and deterministic verification.
+- Do not declare the source product stable/release-ready from D033–D036 or T004 alone.
