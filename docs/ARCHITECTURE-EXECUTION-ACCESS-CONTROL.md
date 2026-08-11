@@ -1,20 +1,24 @@
 # Execution Access Control Architecture
 
 Status: ARCHITECTURE OVERVIEW  
-Normative decision: `docs/decisions/D033-execution-access-control-plane.md`
+Normative decisions:
+
+- `docs/decisions/D033-execution-access-control-plane.md`
+- `docs/decisions/D034-runbook-first-terminal-neutral-execution.md`
 
 ## Purpose
 
-Agent Governance aims to let AI control the technical development cycle end-to-end without turning an open terminal, SSH key, cloud login or administrator-capable workstation into unlimited authority.
+Agent Governance aims to let AI control the technical development cycle end-to-end without turning an open terminal, authenticated session, remote connection, cloud login, administrator-capable workstation or automation system into unlimited authority.
 
 The model separates:
 
 - **what the Human Owner authorizes**;
-- **how the AI chooses to implement that authorized operation**;
-- **what the operating system/platform actually permits**;
-- **what evidence is retained for review**.
+- **what reusable procedure defines safe execution**;
+- **how the AI/platform adapter realizes that procedure**;
+- **what the target platform actually permits**;
+- **what evidence is retained for review/recovery**.
 
-The Human approves meaningful effect/risk boundaries. The AI remains free to choose routine commands inside those boundaries.
+The Human approves meaningful effect/risk boundaries. The AI remains free to choose routine technical realization inside those boundaries.
 
 ## Core model
 
@@ -25,72 +29,42 @@ Human intent / approved task
 Execution Capability Envelope
           │
           ▼
-preflight authorization decision
+       Runbook
+   semantic operation
           │
-    ┌─────┼───────────┐
-    ▼     ▼           ▼
- allow   ask Human    deny
-    │
-    ▼
-AI executes terminal/API/SSH/CLI operations
-    │
-    ▼
-platform-native least-privilege enforcement
-    │
-    ▼
-resource changes + sanitized evidence
-    │
-    ▼
-review / acceptance
+          ▼
+   Execution Adapter
+  ┌───────┼─────────┬────────────┐
+  ▼       ▼         ▼            ▼
+ shell   native    API/SDK     remote/
+        CLI/runner             automation
+  └───────┴─────────┴──────┬─────┘
+                           ▼
+                   target resource
+                           │
+                           ▼
+                 sanitized evidence
+                           │
+                           ▼
+              continue / rollback / review
 ```
 
-The important distinction is:
+Two distinctions are fundamental:
 
 ```text
 mechanism != authority
+procedure semantics != terminal syntax
 ```
 
-Having `ssh`, `sudo`, a cloud CLI or an authenticated token available does not authorize all effects those mechanisms can produce.
+Having a shell, CLI, remote session, API credential or privileged identity available does not authorize every effect those mechanisms can produce.
 
-## Why command allowlists are insufficient
+Likewise, a runbook does not become Bash, PowerShell, `cmd`, SSH syntax or a provider-specific CLI transcript. Those are possible adapter realizations.
 
-A command string does not fully describe its effect.
+## D033: authorization by effect
 
-For example:
+D033 authorizes **target + effect + privilege + resource scope**, not executable names.
 
-```text
-git status
-```
-
-is normally local observation, while:
-
-```text
-git push
-```
-
-mutates a remote repository.
-
-Likewise:
-
-```text
-ssh server systemctl status app
-```
-
-and:
-
-```text
-ssh server systemctl restart app
-```
-
-use the same transport but have very different operational effects.
-
-A cloud CLI can switch accounts/projects/regions without changing the executable name. A script or package-manager hook can spawn child processes that perform effects absent from its top-level name.
-
-Agent Governance therefore authorizes **target + effect + privilege + resource scope**, not just executable names.
-
-## Execution Capability Envelope
-
-For material system access, the authorization boundary can be understood as:
+For material system access the Execution Capability Envelope can be understood as:
 
 ```text
 WHO       actor/principal
@@ -104,70 +78,192 @@ RECOVERY  rollback/recovery expectation
 PROOF     evidence required afterward
 ```
 
-The complete normative fields and rules are in D033.
+### Approval modes
 
-## Approval model
+`ALLOW_TASK`
 
-### ALLOW_TASK
+Routine effects already contained by an approved task, such as project inspection, task-owned source mutation, project-native verification and disposable synthetic state.
 
-Routine effects already contained by an approved task.
+`ALLOW_EXPLICIT`
 
-Examples:
+An operation is outside the routine baseline but a persisted contract/decision explicitly bounds target, effect and privilege. The AI may choose technical realization inside that boundary.
 
-- inspect project files/status;
-- execute project-native tests;
-- edit executor-owned files in the authorized branch;
-- create disposable synthetic test state.
+`REQUIRE_HUMAN`
 
-No additional Human prompt is needed.
+Human approval is required for a coherent bounded high-impact operation. Default examples include production mutation, administrator/high-impact privilege, global system configuration, security/identity control changes, credential lifecycle changes, destructive actions, material migrations and uncertain targets/effects.
 
-### ALLOW_EXPLICIT
+The approval is normally attached to the **operation/runbook stage**, not each mechanically required command.
 
-The effect is outside the routine baseline but explicitly described by the controlling task/decision.
+`DENY`
 
-Examples:
+Fail closed when target identity is unknown/mismatched, privilege is unbounded, credentials/security controls would be bypassed, access pivots outside the approved path, dynamically obtained execution cannot be bounded, or required evidence would be hidden.
 
-- connect to a named staging server;
-- use an existing credential for one approved account/project;
-- restart one named non-production service;
-- modify one explicitly authorized workstation/project setting.
+## D034: runbook-first procedure orchestration
 
-The AI can autonomously choose commands inside that explicit boundary.
+D034 adds the reusable procedure layer between authorization and platform syntax.
 
-### REQUIRE_HUMAN
+A runbook describes:
 
-The Human Owner must approve the bounded operation before execution.
+```text
+purpose / outcome
+        +
+applicability / exclusions
+        +
+required capabilities / target class
+        +
+inputs (non-secret references)
+        +
+preconditions
+        +
+ordered semantic steps
+        +
+checkpoints / Human gates
+        +
+postconditions
+        +
+rollback / recovery
+        +
+evidence
+```
 
-Default cases include:
+The canonical runbook step describes the **required effect/state transition**, not one command interpreter.
 
-- production mutation/deployment;
-- root/administrator privilege;
-- workstation/system-global changes;
-- firewall/SSH/IAM/security-control changes;
-- credential creation/rotation/revocation;
-- destructive or difficult-to-reverse operations;
-- production/schema/data migrations with material risk;
-- uncertain target/effect.
+For example, a semantic step may be:
 
-The approval is normally for a coherent operation rather than every command line.
+```text
+STEP: restart application service
+PRE: target identity and health snapshot verified
+EFFECT: service lifecycle mutation on named service only
+POST: new process generation healthy + dependency checks pass
+FAILURE: restore prior service state / stop and escalate
+```
 
-### DENY
+An adapter may implement that operation differently on different platforms without changing the runbook semantics.
 
-Fail closed under the current authorization.
+## Runbook applicability
 
-Examples:
+Runbooks are preferred for repeatable/material operational work and normally required for:
 
-- target identity mismatch;
-- disabling host verification just to connect;
-- arbitrary/unbounded root shell when only one narrow privileged action is required;
-- searching/copying/persisting credentials outside the approved source;
-- disabling audit/security controls for convenience;
-- jumping through unapproved remote hosts/forwarding paths;
-- executing dynamically acquired content whose effects cannot be bounded.
+- production deploy/service changes;
+- privileged operations;
+- remote persistent system mutations;
+- infrastructure/IAM/network/security-control work;
+- credential lifecycle operations;
+- persistent schema/data migrations;
+- destructive/recovery-sensitive actions;
+- multi-system sequencing;
+- recurring maintenance with meaningful failure modes;
+- recovery/failover/restore procedures.
 
-## Local boundaries
+A runbook is not required merely to execute every ordinary local development command. Source inspection, tests, linting or bounded task-local edits may remain directly governed by the Task Contract when no durable procedure is useful.
 
-“Local” does not mean “safe by default”. Distinguish at least:
+## Runbook reuse before creation
+
+Agent Governance does not automatically create its own runbooks if the project already owns an adequate procedure.
+
+```text
+existing project-native runbook/workflow
+          │
+          ├─ adequate ──────────────► REUSE
+          │
+          ├─ needs Governance gate ─► ADAPT by reference
+          │
+          └─ conflicting ownership ─► CONFLICT / fail closed
+```
+
+Native procedures may live in repository documentation, deployment platforms, infrastructure workflows, operations systems, CI/CD pipelines or other project-owned tooling.
+
+Do not copy/mirror them into duplicate Governance truth merely to call them runbooks.
+
+## Runbook approval versus invocation authorization
+
+These are different decisions.
+
+```text
+runbook is valid procedure
+          ≠
+this invocation is authorized now
+```
+
+Each material invocation binds actual inputs/target/context and then re-evaluates D033.
+
+A production deployment runbook can be trusted as a procedure while every production invocation still requires Human approval.
+
+A migration runbook can be valid but blocked because the connected database/account is not the authorized target.
+
+## Terminal neutrality
+
+Agent Governance treats the terminal/platform stack as replaceable adapters.
+
+Distinguish:
+
+```text
+terminal / UI host
+        ↓
+command environment / shell
+        ↓
+native CLI / task runner
+        ↓
+remote transport / API / automation surface
+        ↓
+target system
+```
+
+Possible adapter families include, without preference or dependency:
+
+- PowerShell and other Windows command environments;
+- POSIX-style shells and other Unix-like command environments;
+- `cmd`, Nushell or other interpreters;
+- project-native task runners;
+- cloud/database/cluster/deployment CLIs;
+- APIs/SDKs;
+- remote-management protocols/transports;
+- CI/CD or orchestration systems;
+- graphical/admin control surfaces when they are the project-native safe mechanism.
+
+No terminal application, shell, OS, remote protocol, provider or executor product becomes Governance authority.
+
+## Execution Adapter contract
+
+The adapter translates a semantic runbook step into the available mechanism while preserving:
+
+- exact target/resource identity;
+- effect boundary;
+- privilege/credential boundary;
+- ordering and state transitions;
+- preconditions/checkpoints;
+- Human gates;
+- success/failure semantics;
+- rollback/recovery behavior;
+- required audit evidence.
+
+Different syntax is acceptable. Different semantics are not.
+
+If an adapter cannot implement or verify a required semantic step safely, execution blocks rather than approximating it.
+
+## Adapter selection
+
+Prefer project-native capability rather than an Agent Governance OS/shell preference.
+
+```text
+existing project-native operation/workflow
+        ↓
+existing safe automation/runbook provider
+        ↓
+native CLI/API/management interface
+        ↓
+compatible command environment
+        ↓
+custom adapter only when justified
+```
+
+Choose among available adapters using material criteria such as least privilege, deterministic target selection, structured/verifiable output, idempotency, preview support, rollback, auditability and existing project ownership.
+
+This does **not** imply that APIs are always superior to shells or that shells are always more portable than native automation. Capability and safety control selection.
+
+## Local and remote boundaries
+
+“Local” does not mean inherently trusted.
 
 ```text
 repository worktree
@@ -176,18 +272,14 @@ disposable test/eval state
       ↓
 workstation user configuration
       ↓
-local services/containers/VMs
+local services/VMs/containers
       ↓
-workstation system/global configuration
+system/global configuration
       ↓
-root/administrator/security controls
+administrator/security controls
 ```
 
-An ordinary source task normally authorizes only the upper, narrow project boundaries. It does not automatically authorize package-manager/global shell/profile/service/system changes.
-
-## Remote boundaries
-
-A remote target should be identified by the dimensions that matter to the platform:
+Remote resources should be identified by the dimensions material to their platform:
 
 ```text
 environment (dev/stage/prod)
@@ -201,175 +293,199 @@ namespace/database/resource
 principal/role
 ```
 
-A convenient alias such as `prod`, `server1` or a current cloud context is not sufficient when a mistake could target another resource.
-
-For SSH-like access, remote identity/host-key verification and forwarding/pivot behavior are part of authorization, not connectivity details to bypass.
+Aliases/current-context names are convenience, not sufficient identity evidence when a targeting error is material.
 
 ## Privilege and credentials
 
-Two independent questions must be answered:
+Two independent questions remain:
 
 ```text
 Can this identity authenticate?
               ≠
-Is this effect authorized?
+Is this runbook effect authorized?
 ```
 
-A valid SSH key/token proves that an authentication mechanism works. It does not prove Governance permission for the operation.
+Credentials remain external operational state. Runbooks reference the expected credential/identity class and target but do not contain secret values.
 
-Similarly:
+Privilege escalation is a distinct capability. Prefer the narrowest privilege that can perform the semantic runbook step rather than unrestricted elevated sessions.
+
+## Child-process and adapter non-expansion
+
+Authority may only narrow through execution indirection.
 
 ```text
-normal user → sudo/root
+Execution Capability Envelope
+      └── Runbook
+            └── Adapter
+                  └── shell/CLI/API/remote operation
+                        └── child/server-side effect
 ```
 
-is an authorization boundary. The preferred design grants the smallest privileged capability necessary rather than an unrestricted privileged shell.
+Every layer remains a subset of the original envelope.
 
-Credentials remain external operational state. They must not become repository artifacts, handoff content or ordinary transcript/log material.
+A runbook or adapter cannot launder additional authority merely because its parent operation was allowed.
 
-## Child-process non-expansion
+## Runbook lifecycle
 
-Authority may be inherited only downward as a subset:
+A material invocation follows the conceptual sequence:
 
 ```text
-approved command
-   └── child/script/shell
-         └── nested command
-               └── remote operation
+SELECT RUNBOOK
+   ↓
+BIND INPUTS / TARGET
+   ↓
+PREFLIGHT CURRENT STATE
+   ↓
+AUTHORIZE AGAINST D033
+   ↓
+HUMAN GATE (only when required)
+   ↓
+EXECUTE SEMANTIC STEP THROUGH ADAPTER
+   ↓
+VERIFY CHECKPOINT
+   ↓
+next step ...
+   ↓
+VERIFY POSTCONDITIONS
+   ↓
+DONE
 ```
 
-Every descendant operation remains inside the original envelope.
+Failure routes:
 
-A parent command cannot “launder” new authority merely because it was allowed to start.
+```text
+identity/authorization mismatch → BLOCKED
+checkpoint failure              → STOP → rollback/recover or BLOCKED
+material context/tool drift     → STALE → revalidate
+Human denial                    → CANCEL/BLOCK under controlling lifecycle
+```
 
-This is especially relevant to:
+## Idempotency and retries
 
-- shell interpolation/substitution;
-- scripts;
-- build/package hooks;
-- plugin systems;
-- remote shell commands;
-- infrastructure/cloud/database CLIs;
-- tools that download and execute code.
+Runbooks must not assume repeatability.
+
+When material, each semantic step should define:
+
+- whether repetition is safe;
+- retry conditions/limits;
+- partial-completion detection;
+- concurrency constraints;
+- server/target state checks before retry;
+- compensation/rollback if the previous request may have succeeded despite client-side failure.
+
+Postcondition inspection is generally more reliable than assuming a client exit code fully represents remote state.
+
+## Preview/dry-run
+
+When a platform offers a trustworthy plan/preview/dry-run that reduces risk, the runbook should use it where material.
+
+A preview is evidence, not authorization, and does not eliminate the need to revalidate identity/context before the real mutation.
 
 ## Enforcement layers
 
-Agent Governance should not depend exclusively on prompt compliance when a native security boundary is available.
+For material risk, prefer real platform controls over prompt-only trust.
 
 ```text
-Governance authorization
+Governance authorization + runbook
           │
           ▼
-executor-host permissions/sandbox
+executor/automation permissions
           │
           ▼
-OS / IAM / SSH / database / cluster restrictions
+platform-native identity / privilege / network / resource controls
           │
           ▼
 actual resource
 ```
 
-Possible mechanisms include restricted users/service accounts, narrow privilege rules, SSH forced/restricted commands, IAM roles, database roles, container/user-namespace controls and OS sandbox components.
-
-These mechanisms are adapters/enforcement providers; none is universal Governance authority.
-
-## Remote SSH example
-
-A broad design:
-
-```text
-AI
- │ unrestricted SSH key
- ▼
-remote shell as admin
-```
-
-has an unnecessarily large capability surface.
-
-A narrower design may be:
-
-```text
-AI
- │ approved key/principal
- ▼
-SSH identity restriction
- │
- ├─ forwarding disabled
- ├─ only expected account
- └─ bounded command/privilege
-        │
-        ▼
-   target service/resource
-```
-
-OpenSSH provides mechanisms such as forced commands, user/principal restrictions and forwarding/destination restrictions that can implement parts of this pattern. Other platforms use their native equivalents.
-
-## Approval lifecycle
-
-```text
-1. Strategy determines required effect
-2. identify exact target and privilege
-3. classify approval mode
-4. show material risk/rollback at user's register
-5. Human approves only when required
-6. persist authorization effect
-7. executor preflights actual context
-8. native controls enforce where possible
-9. executor operates autonomously inside envelope
-10. capture sanitized evidence
-11. review verifies actual effects vs envelope
-```
-
-If target, privilege, destructive scope or architecture changes materially after approval, the envelope is stale and must be refreshed.
+Possible adapters/enforcement providers vary by platform. Linux, Windows, SSH, IAM, database roles, orchestration platforms and other mechanisms are examples, not Governance dependencies.
 
 ## Audit model
 
-For material operations retain enough evidence to answer:
+Evidence is keyed to the **runbook invocation**, not merely a raw terminal transcript.
+
+For material operations retain enough sanitized evidence to answer:
 
 ```text
-What task authorized this?
-What target was actually used?
-Which principal/role acted?
-What class of effect occurred?
-What changed?
-Did it succeed?
+What task/envelope authorized this?
+Which runbook revision/procedure was used?
+Which adapter/platform mechanism realized it?
+What target/principal was actually bound?
+Which semantic steps/checkpoints completed?
+What final postconditions were observed?
 Was rollback/recovery needed?
-Did any unexpected prompt/escalation occur?
+Did any unexpected gate/context deviation occur?
 ```
 
-Do not solve auditability by recording secrets, raw credential-bearing environments or hidden model reasoning.
+Raw shell/terminal logs may supplement evidence when useful and safe, but they are not the canonical operational record.
+
+Do not persist credentials, raw secret-bearing environments or hidden reasoning.
 
 ## Relation to D032
 
-D032 requires the quality/security layers to be applied silently by default and surfaced only when material.
+Interaction complexity remains separate from engineering rigor.
 
-Execution control follows the same interaction principle.
-
-A non-technical user might see:
+A non-technical Human Owner can approve:
 
 ```text
-This change needs administrator access to the production server and will restart the service. I can execute it after you approve that production operation; rollback is X.
+Deploy the tested release to production. The procedure verifies the target first,
+creates a recovery point, rolls out the new version, checks service health and
+returns to the previous version if validation fails.
 ```
 
-An expert user might see the exact target identity, role, service, migration/rollback sequence and privilege boundary.
+An operations expert may instead inspect target/principal identifiers, runbook revision, adapter, exact checkpoints, rollout strategy and recovery semantics.
 
-The underlying execution safety is the same in both cases.
+Both represent the same governed execution procedure.
+
+## Primary Solution Diagram
+
+```text
+Human intent / Task Contract
+            │
+            ▼
+Execution Capability Envelope
+            │
+            ▼
+        RUNBOOK
+   ┌───────────────────────┐
+   │ outcome / preconditions│
+   │ target / capabilities  │
+   │ semantic steps         │
+   │ checkpoints / gates    │
+   │ rollback / evidence    │
+   └───────────┬───────────┘
+               │
+               ▼
+       Execution Adapter
+   ┌───────────┼───────────────┐
+   ▼           ▼               ▼
+command env  native runner  CLI/API/remote
+   │           │               │
+   └───────────┴──────┬────────┘
+                      ▼
+             Local/Remote System
+                      │
+                      ▼
+             observable evidence
+                      │
+                      └──► continue / rollback / handoff
+```
 
 ## Planned Core integration
 
-D033 deliberately does not modify the current Core protocol while T004 is already executing.
+D033 and D034 deliberately remain architecture decisions while T004 is already running.
 
-A later dedicated increment should integrate the architecture through a focused Core module tentatively named:
+The next dedicated execution-control increment after T004 should integrate them together through the smallest coherent Core change, including:
 
-`governance-core/EXECUTION-CONTROL.md`
+- `governance-core/EXECUTION-CONTROL.md` or the final focused equivalent;
+- progressive routing from `GOVERNANCE.md`;
+- linkage from `EXECUTION.md`;
+- Task Contract support for Execution Capability Envelopes and material runbook references;
+- runbook invocation/preflight/Human-gate rules;
+- terminal-neutral Execution Adapter semantics;
+- handoff evidence keyed to invocation/runbook rather than command transcripts;
+- deterministic authorization/runbook tests;
+- synthetic tests spanning materially different adapter families;
+- later dynamic security/adapter evals where deterministic evidence is insufficient.
 
-and connect it to:
-
-- `GOVERNANCE.md` routing;
-- `EXECUTION.md` eligibility/blockers;
-- Task Contract authorization fields;
-- handoff execution evidence;
-- deterministic policy tests;
-- later adapter/security tests.
-
-Until that integration is implemented and accepted, D033 is the durable architecture decision and future-work constraint; it does not retroactively rewrite T004.
+Until that integration is accepted, D033 + D034 are durable architecture constraints and future-work requirements; they do not retroactively rewrite T004.
