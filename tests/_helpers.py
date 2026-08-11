@@ -26,7 +26,7 @@ REPO_ROOT_MARKERS: tuple[str, ...] = (
 CONSUMER_FOOTPRINT_DIR: str = ".agent-coordination"
 CONSUMER_FOOTPRINT_ALIAS_DIR: str = ".agent-governance"
 
-SOURCE_PROTOCOL_VERSION: str = "1.9.0"
+SOURCE_PROTOCOL_VERSION: str = "1.10.0"
 
 CORE_REQUIRED_MODULES: tuple[str, ...] = (
     "ADAPTERS.md",
@@ -35,8 +35,10 @@ CORE_REQUIRED_MODULES: tuple[str, ...] = (
     "EXECUTION.md",
     "GOVERNANCE.md",
     "HANDOFF.md",
+    "INTERACTION.md",
     "LIFECYCLE.md",
     "PROTOCOL.md",
+    "QUALITY.md",
     "SKILL-DISCOVERY.md",
     "SKILL-SUPPLY-CHAIN.md",
     "SKILLS.md",
