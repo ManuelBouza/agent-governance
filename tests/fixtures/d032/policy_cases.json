@@ -1,0 +1,27 @@
+{
+  "register_cases": [
+    {"id": "deploy-plain", "register": "plain/domain", "engineering_id": "safe-deploy", "controls": ["rollback", "locked-verification"], "acceptance": "reversible verified release"},
+    {"id": "deploy-expert", "register": "expert/architecture", "engineering_id": "safe-deploy", "controls": ["rollback", "locked-verification"], "acceptance": "reversible verified release"},
+    {"id": "deploy-code", "register": "code-native", "engineering_id": "safe-deploy", "controls": ["rollback", "locked-verification"], "acceptance": "reversible verified release", "supplied_tokens": ["deploy_release", "--locked", "release_id"], "preserved_tokens": ["deploy_release", "--locked", "release_id"]}
+  ],
+  "quality_cases": [
+    {"id": "local-test", "controls": [], "visible": [], "concerns": [{"dimension": "security", "outcome": "BASELINE", "human_impact": false}, {"dimension": "performance", "outcome": "NOT_APPLICABLE", "human_impact": false}]},
+    {"id": "migration", "controls": ["rollback-plan"], "visible": [], "concerns": [{"dimension": "security", "outcome": "BASELINE", "human_impact": false}, {"dimension": "compatibility", "outcome": "MATERIAL", "human_impact": false, "control": "rollback-plan"}]},
+    {"id": "sensitive-export", "controls": ["retention-limit"], "visible": ["privacy"], "concerns": [{"dimension": "security", "outcome": "BASELINE", "human_impact": false}, {"dimension": "privacy", "outcome": "MATERIAL", "human_impact": true, "control": "retention-limit"}]}
+  ],
+  "diagram_cases": [
+    {"id": "system", "dominant_question": "system-boundary", "product_label": "portal", "expected": "C4 System Context"},
+    {"id": "container", "dominant_question": "service-data-store-boundary", "product_label": "portal", "expected": "C4 Container"},
+    {"id": "component", "dominant_question": "component-dependency-boundary", "product_label": "portal", "expected": "C4 Component"},
+    {"id": "sequence", "dominant_question": "temporal-collaboration", "product_label": "portal", "expected": "dynamic/sequence"},
+    {"id": "state", "dominant_question": "lifecycle-transition", "product_label": "portal", "expected": "state diagram"},
+    {"id": "dfd", "dominant_question": "trust-boundary-data-flow", "product_label": "portal", "expected": "DFD with trust boundaries"},
+    {"id": "data", "dominant_question": "persistent-relationship", "product_label": "portal", "expected": "ER/data model"},
+    {"id": "flow", "dominant_question": "local-workflow-dependency", "product_label": "portal", "expected": "compact flow/dependency diagram"}
+  ],
+  "refresh_cases": [
+    {"id": "none", "changes": [], "refresh_required": false},
+    {"id": "cosmetic", "changes": ["local-detail"], "refresh_required": false},
+    {"id": "material", "changes": ["architecture", "data-flow", "state", "responsibility"], "refresh_required": true}
+  ]
+}
