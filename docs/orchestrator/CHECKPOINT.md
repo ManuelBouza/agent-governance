@@ -1,7 +1,7 @@
 # Current ChatGPT Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O020  
+Checkpoint-Sequence: O021  
 Canonical-Branch: `develop`  
 Chat-Closure: CONTINUE_ALLOWED
 
@@ -23,33 +23,66 @@ Expected T004 handoff:
 
 `handoffs/T004-executor-handoff.json`
 
-T004 remains governed by its existing contract. Later architecture work MUST NOT retroactively broaden or alter its running execution semantics.
+T004 remains governed by its existing contract. D033/D034 architecture work MUST NOT retroactively broaden or alter its running execution semantics.
 
-## Newly Accepted Architecture — D033
+## Accepted Execution-Control Architecture
 
-The Human Owner identified a product requirement for AI-controlled terminal/system access with strict authorization over what the AI may and may not do locally or remotely.
+The Human Owner requires the AI to control the technical development/operations cycle while strict policy determines what local/remote effects are authorized.
 
-ChatGPT researched and persisted:
+The accepted architecture is now split deliberately into two complementary decisions:
 
-- `docs/decisions/D033-execution-access-control-plane.md`;
-- `docs/ARCHITECTURE-EXECUTION-ACCESS-CONTROL.md`.
+- `docs/decisions/D033-execution-access-control-plane.md` — authorization by actor/target/effect/privilege/credential/resource scope;
+- `docs/decisions/D034-runbook-first-terminal-neutral-execution.md` — reusable runbook procedures and terminal/platform-neutral execution adapters.
 
-D033 is `ACCEPTED` architecture but is not yet integrated into the Governance Core protocol.
+Consolidated overview:
 
-The central invariant is:
+`docs/ARCHITECTURE-EXECUTION-ACCESS-CONTROL.md`
+
+D033/D034 are `ACCEPTED` architecture but are not yet integrated into Governance Core/protocol.
+
+## Core Execution-Control Model
+
+```text
+Human intent / approved task
+          │
+          ▼
+Execution Capability Envelope
+          │
+          ▼
+       Runbook
+ semantic procedure
+          │
+          ▼
+   Execution Adapter
+  ┌───────┼─────────┬────────────┐
+  ▼       ▼         ▼            ▼
+ shell   native    API/SDK     remote/
+        CLI/runner             automation
+  └───────┴─────────┴──────┬─────┘
+                           ▼
+                   target resource
+                           │
+                           ▼
+                 sanitized evidence
+                           │
+                           ▼
+              continue / rollback / review
+```
+
+Normative invariants:
 
 ```text
 transport or credential possession != execution authority
+procedure semantics != terminal syntax
+approved runbook != approved invocation
 ```
 
-An open terminal, shell, SSH connection, authenticated CLI, cloud token, private key or privilege mechanism is only a transport/capability mechanism. It does not authorize effects beyond the current **Execution Capability Envelope**.
+## D033 — Execution Capability Envelope
 
-## D033 Execution Capability Envelope
-
-For material terminal/process/system access, authorization is defined by the applicable subset of:
+For material process/system access, authorization is defined by the applicable subset of:
 
 - actor/execution role;
-- exact target identity/environment/account/resource;
+- exact target/environment/account/resource identity;
 - effect classes;
 - resource scope;
 - privilege ceiling;
@@ -60,186 +93,223 @@ For material terminal/process/system access, authorization is defined by the app
 - approval mode;
 - audit/evidence requirement.
 
-Authorization is effect-oriented rather than executable-name-oriented. Shells, scripts, `ssh`, cloud/database/cluster CLIs and child processes must not become routes to expand authority.
+Authorization is effect-oriented rather than executable-name-oriented.
+
+### Approval modes
+
+- `ALLOW_TASK` — routine effects already inside the approved task boundary.
+- `ALLOW_EXPLICIT` — a persisted decision/contract explicitly bounds the non-baseline effect.
+- `REQUIRE_HUMAN` — Human approval required for a bounded high-impact operation/stage.
+- `DENY` — fail closed under the current authority.
+
+Human approval normally applies to a coherent bounded operation/runbook stage rather than every terminal command.
 
 Child/nested execution may inherit only a subset of the parent envelope.
 
-## D033 Approval Modes
+## D034 — Runbook-first Procedure Layer
 
-### `ALLOW_TASK`
+Runbooks become the preferred durable operational procedure for repeatable/material execution.
 
-Routine local effects already inside the approved task boundary, such as repository inspection, task-owned branch mutation, repository-native verification and disposable synthetic state.
+A runbook describes the applicable subset of:
 
-### `ALLOW_EXPLICIT`
+- purpose/outcome;
+- applicability/exclusions;
+- required capability/target/privilege class;
+- non-secret inputs;
+- preconditions;
+- ordered **semantic steps**;
+- checkpoints and Human gates;
+- postconditions;
+- rollback/recovery;
+- evidence requirements.
 
-Non-baseline effects that a persisted task/decision explicitly bounds by target, effect and privilege. The AI may choose technical commands autonomously inside that envelope.
+The canonical semantic step states the required effect/state transition, not a Bash/PowerShell/provider-specific command.
 
-### `REQUIRE_HUMAN`
+A durable runbook is required by default for material operations such as:
 
-Human approval is required by default for bounded operations materially involving:
+- production deploy/service mutation;
+- privileged execution;
+- remote persistent system mutation;
+- infrastructure/IAM/network/security-control changes;
+- credential lifecycle operations;
+- persistent schema/data migrations;
+- destructive/recovery-sensitive actions;
+- multi-system sequencing;
+- recurring material maintenance;
+- recovery/failover/restore procedures.
 
-- production mutation/deployment;
-- root/administrator or equivalent high-impact privilege;
-- workstation/system-global configuration;
-- firewall/SSH/IAM/security-control changes;
-- credential creation/rotation/revocation or broadened scope;
-- destructive/irreversible actions;
-- material production data/schema migrations;
-- uncertain target/effect.
+Ordinary low-risk local development commands do not require a dedicated runbook when the Task Contract already bounds them adequately.
 
-Approval is normally for a coherent bounded operation rather than every shell line. After approval, the AI still owns execution inside the approved envelope.
+## Runbook Reuse / Coexistence
 
-### `DENY`
-
-Fail closed under the current authorization for conditions such as:
-
-- unknown/mismatched target identity;
-- bypassing host/service identity verification for convenience;
-- unbounded privilege when only narrow privilege is justified;
-- credential discovery/exfiltration/persistence outside approved sources;
-- disabling security/audit/access controls merely to unblock execution;
-- clone/project-local authority expanding into global workstation mutation;
-- unapproved forwarding/pivot/multi-hop access;
-- dynamically obtained executable content whose effects cannot be bounded;
-- hiding required execution evidence.
-
-## D033 Primary Solution Diagram
-
-Dominant question: security-sensitive execution/control flow across local and remote trust boundaries.
-
-Preferred primary view: DFD with trust boundaries.
+Reuse project-native operational procedures before creating Governance-owned runbooks.
 
 ```text
-Human Owner
-   │ approves scope/risk
-   ▼
-Strategy / Task Contract
-   │
-   │  Execution Capability Envelope
-   ▼
-┌──────── POLICY / AUTHORIZATION BOUNDARY ────────┐
-│ target identity + effect + privilege + auth     │
-│ ALLOW_TASK / ALLOW_EXPLICIT / HUMAN / DENY     │
-└───────────────────┬─────────────────────────────┘
-                    │ allowed
-                    ▼
-            Executor / Terminal
-         ┌──────────┼───────────┐
-         ▼          ▼           ▼
-    local process   ssh/API    privileged op
-         │          │           │
-         └──────────┴─────┬─────┘
-                          ▼
-             OS/native enforcement
-      sandbox · privilege · SSH/IAM controls
-                          │
-                          ▼
-                 Local/Remote Resource
-                          │
-                          ▼
-               sanitized audit evidence
-                          │
-                          ▼
-                    Handoff/review
+native runbook/workflow
+   ├─ adequate             -> REUSE
+   ├─ needs Governance gate -> ADAPT by reference
+   └─ conflicting ownership -> CONFLICT / fail closed
 ```
 
-## D033 Security / Research Basis
+Do not copy/mirror native runbooks into duplicate Governance truth merely to rename them.
 
-D033 was informed by primary technical/security sources including:
+Runbook procedural validity does not authorize an invocation. Before each material invocation, bind the real target/context/inputs and re-evaluate D033.
 
-- NIST SP 800-207 Zero Trust Architecture — no implicit trust based only on network location; authentication/authorization before resource access;
-- NIST least-privilege and privileged-command definitions / SP 800-53 lineage;
-- NIST Audit and Accountability concepts;
-- OpenSSH native restrictions such as forced commands, user/principal restrictions, forwarding/destination restrictions and host-key verification;
-- Linux `no_new_privs`;
-- Linux seccomp filtering, with the explicit boundary that seccomp alone is not a complete sandbox.
+## Terminal / Platform Neutrality
 
-D033 remains platform-neutral. It does not make OpenSSH, Linux, sudo, systemd, one cloud IAM system or one executor host a Governance dependency.
+Agent Governance MUST NOT center execution methodology on Linux, POSIX shells, PowerShell, Windows, SSH or any other terminal/platform family.
 
-## D033 Native Enforcement Principle
+These are replaceable adapter layers:
 
-For material risk, prefer platform-native enforcement over prompt-only trust when available.
+- terminal/UI host;
+- command environment/shell;
+- native CLI/task runner;
+- remote transport;
+- API/SDK;
+- automation/orchestration system;
+- executor host.
 
-Possible enforcement adapters include:
+Possible adapters include PowerShell, POSIX-style shells, `cmd`, Nushell, project task runners, cloud/database/cluster/deployment CLIs, APIs, remote-management systems, CI/CD/orchestration providers and safe graphical/admin surfaces.
 
-- restricted OS users/service accounts;
-- narrow privilege policies;
-- SSH forced/restricted commands/principals/forwarding;
-- container/user-namespace/mount/network restrictions;
-- `no_new_privs`/seccomp or other OS sandbox components;
-- scoped cloud IAM roles;
-- scoped database/cluster/deployment identities.
+None is Governance authority or a required Core dependency.
 
-Governance defines authorization semantics; native systems enforce those semantics where practical.
+An Execution Adapter must preserve:
 
-## D033 Core-Integration Boundary
+- target/effect/privilege boundaries;
+- semantic ordering/state transitions;
+- checkpoints/Human gates;
+- success/failure semantics;
+- rollback/recovery;
+- audit evidence.
 
-D033 deliberately does **not** modify `governance-core/` or the current protocol version while T004 is already running.
+Different command syntax is acceptable. Different semantic effects are not.
 
-After T004 is reviewed, the leading planned architecture integration is a separate increment, tentatively T005, which should diagram and contract the smallest coherent change to add:
+## Runbook Invocation Lifecycle
 
-- `governance-core/EXECUTION-CONTROL.md`;
-- progressive routing from `GOVERNANCE.md`;
-- linkage from `EXECUTION.md` so READY does not imply unlimited terminal/system authority;
-- Task Contract support for Execution Capability Envelopes;
-- handoff evidence for material remote/privileged/system execution;
-- deterministic policy/version/module tests;
-- later adapter/dynamic security enforcement tests.
+Conceptual sequence:
 
-That task is not READY yet and must not be launched before T004 PD5 and its own D032 graphical/quality readiness work.
+```text
+SELECT RUNBOOK
+ -> BIND INPUTS/TARGET
+ -> PREFLIGHT CURRENT STATE
+ -> AUTHORIZE AGAINST D033
+ -> HUMAN GATE if required
+ -> EXECUTE semantic step through adapter
+ -> VERIFY checkpoint
+ -> ...
+ -> VERIFY postconditions
+ -> DONE
+```
+
+Failure behavior:
+
+- identity/authorization mismatch -> `BLOCKED`;
+- checkpoint failure -> stop and rollback/recover or block;
+- material tool/platform/context drift -> stale/revalidate;
+- Human denial -> cancel/block under the controlling lifecycle.
+
+Material runbooks must address idempotency/retries/concurrency where repeated/partial execution could cause harm.
+
+## Execution Evidence
+
+Material evidence should be keyed to the **runbook invocation**, not only raw command transcripts.
+
+Capture the applicable subset of:
+
+- task/envelope authorization reference;
+- runbook identity/revision;
+- adapter identity/version when material;
+- bound non-secret inputs;
+- actual target/principal/environment;
+- semantic steps/checkpoints completed;
+- postcondition result;
+- rollback/recovery result;
+- unexpected gate/context deviation.
+
+Raw terminal logs are optional supplemental evidence and must not become the canonical record or persist credentials/hidden reasoning.
+
+## Native Enforcement
+
+For material risk, prefer actual platform controls over prompt-only trust.
+
+Governance defines authorization/procedure semantics; project/platform-native IAM, privilege, network, resource, sandbox, remote-management and audit controls enforce them where practical.
+
+No single OS/security/terminal mechanism is universal.
 
 ## T004 State
 
-T004 remains the current executable frontier.
+T004 remains the current executable frontier and is unchanged by D033/D034.
 
-Its existing security boundary already provides a concrete narrow example of the D033 concept: child eval sessions run with tools denied, outside the source worktree, with synthetic prompts and bounded external model access. This is useful evidence but does not substitute for the general D033 Core integration.
+Its child-eval isolation is one narrow example of capability bounding but does not constitute general execution-control implementation.
 
-T004 semantic grading remains `PENDING_CHATGPT` until its final handoff/transcripts are remotely reviewed.
+T004 semantic grading remains `PENDING_CHATGPT` until its final handoff/results/transcripts are remotely reviewed.
+
+## Planned Core-Integration Frontier
+
+After T004 PD5, the leading planned architecture increment is the smallest coherent integration of **D033 + D034 together**, tentatively T005.
+
+It should be diagrammed/contracted before execution and should cover the applicable subset of:
+
+- focused execution-control Core module;
+- progressive routing from `GOVERNANCE.md`;
+- linkage from `EXECUTION.md` so READY does not mean unlimited system authority;
+- Task Contract support for Execution Capability Envelopes;
+- Task Contract/native-artifact support for material runbook references;
+- runbook selection/binding/preflight/Human-gate semantics;
+- terminal-neutral Execution Adapter contract;
+- handoff evidence keyed by runbook invocation;
+- deterministic authorization/runbook/version/module tests;
+- synthetic adapter fixtures spanning materially different terminal/platform families;
+- dynamic security/adapter tests only where deterministic verification is insufficient.
+
+Do not implement a POSIX/Linux-only execution-control model.
 
 ## Active Remote Artifacts
 
-- canonical `develop` at D033 planning start: `f7182fe06d0324be424617fc4764528704f51e4c`;
+- canonical `develop` before D034 planning: `c431ce4f475521f54224b99806ec25bb49b8c153`;
 - T004 Task Contract: `docs/tasks/T004-d032-agent-facing-capability-eval.md`;
 - D032 decision: `docs/decisions/D032-adaptive-intent-engineering-proxy-and-quality-envelope.md`;
-- D033 decision branch: `docs/d033-execution-access-control`;
 - D033 decision: `docs/decisions/D033-execution-access-control-plane.md`;
-- D033 architecture overview: `docs/ARCHITECTURE-EXECUTION-ACCESS-CONTROL.md`.
+- D034 decision: `docs/decisions/D034-runbook-first-terminal-neutral-execution.md`;
+- execution-control overview: `docs/ARCHITECTURE-EXECUTION-ACCESS-CONTROL.md`.
 
 ## Open Questions or Blockers
 
-No D033 architecture blocker is currently known.
+No known D033/D034 architecture blocker remains.
 
-T004 still requires its executor result and PD5 before integration/semantic conclusions.
+T004 still requires executor return and PD5.
 
-The source product remains not stable/release-ready. D033 Core integration, broader behavioral/security evals, property/state-machine coverage, Skill gates and release gates remain incomplete.
+The source product remains not stable/release-ready. D033/D034 Core integration, broader behavioral/security evals, property/state-machine coverage, Skill gates and other release gates remain incomplete.
 
 ## Next Action
 
-1. Review the D033 Markdown branch against current `develop`.
-2. Confirm it changes only D033/architecture/checkpoint Markdown.
-3. Merge the D033 Markdown PR into `develop` if clean.
-4. Do not alter the running T004 contract.
-5. When T004 returns, perform remote PD5 over its branch/handoff/results/transcripts.
-6. After T004 is resolved, design the separate D033 Core-integration increment with a fresh Primary Solution Diagram, quality/security triage and Task Contract.
+1. Review and integrate the D034 Markdown planning change if its diff is limited to D034 + execution overview + this checkpoint.
+2. Do not alter the running T004 contract.
+3. When T004 returns, perform remote PD5 over its branch/handoff/results/transcripts.
+4. After T004 is resolved, design the D033+D034 Core-integration increment with a fresh Primary Solution Diagram and quality/security triage.
+5. Ensure that increment includes materially different synthetic adapter families so terminal neutrality becomes mechanically testable rather than documentation-only.
 
 ## Next Chat Minimum Load
 
 After `AGENTS.md` and this checkpoint:
 
-1. if T004 is still active/returned, load `docs/tasks/T004-d032-agent-facing-capability-eval.md` and its handoff/results as needed;
-2. load `docs/decisions/D033-execution-access-control-plane.md` when terminal/local/remote execution control or the next Core-integration task is in scope;
-3. load `docs/ARCHITECTURE-EXECUTION-ACCESS-CONTROL.md` only when a consolidated explanatory view is useful;
-4. load D032/`QUALITY.md` only as needed for graphical/quality readiness or semantic T004 review.
+1. if T004 is active/returned, load `docs/tasks/T004-d032-agent-facing-capability-eval.md` and its handoff/results as needed;
+2. for execution-control work, load D033 + D034;
+3. load `docs/ARCHITECTURE-EXECUTION-ACCESS-CONTROL.md` when a consolidated view is useful;
+4. load D032/`QUALITY.md` only as needed for diagram/quality readiness or T004 semantic review.
 
 ## Do Not Load or Do
 
 - Do not reopen T001/T002/T003 absent a concrete regression.
-- Do not retroactively broaden or rewrite T004 because D033 was accepted while it was running.
+- Do not retroactively broaden/rewrite T004 because D033/D034 were accepted while it was running.
 - Do not interpret terminal/credential availability as authorization.
 - Do not treat local execution as inherently trusted compared with remote execution.
 - Do not authorize by executable name alone when target/effect/privilege changes meaning.
-- Do not let child processes/scripts/SSH/CLIs expand beyond the parent capability envelope.
-- Do not weaken project-native IAM/SSH/privilege/security/audit controls to simplify automation.
-- Do not commit credentials, private keys, tokens, raw secret-bearing environment dumps or hidden reasoning.
-- Do not update Core/protocol for D033 until a separate integrated Task Contract can also align deterministic verification.
-- Do not declare the source product stable/release-ready from D033 or T004 alone.
+- Do not treat runbook approval as invocation authorization.
+- Do not let runbooks/adapters/child processes expand the parent capability envelope.
+- Do not make Bash/POSIX/Linux, PowerShell/Windows, SSH, a cloud provider or another execution mechanism a Governance Core dependency.
+- Do not duplicate adequate project-native runbooks/workflows.
+- Do not weaken native IAM/privilege/security/audit controls to simplify automation.
+- Do not commit credentials, secret values, raw secret-bearing environments or hidden reasoning.
+- Do not update Core/protocol for D033/D034 until a separate integrated Task Contract can align deterministic verification.
+- Do not declare the source product stable/release-ready from D033/D034 or T004 alone.
