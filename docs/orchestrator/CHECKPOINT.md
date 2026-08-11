@@ -1,7 +1,7 @@
 # Current ChatGPT Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O021  
+Checkpoint-Sequence: O022  
 Canonical-Branch: `develop`  
 Chat-Closure: CONTINUE_ALLOWED
 
@@ -23,293 +23,384 @@ Expected T004 handoff:
 
 `handoffs/T004-executor-handoff.json`
 
-T004 remains governed by its existing contract. D033/D034 architecture work MUST NOT retroactively broaden or alter its running execution semantics.
+T004 remains governed by its existing contract. D033/D034/D035 architecture work MUST NOT retroactively broaden or alter its running execution semantics.
 
-## Accepted Execution-Control Architecture
+## Accepted Architecture Frontier
 
-The Human Owner requires the AI to control the technical development/operations cycle while strict policy determines what local/remote effects are authorized.
-
-The accepted architecture is now split deliberately into two complementary decisions:
+Three complementary execution/security decisions are now accepted architecture:
 
 - `docs/decisions/D033-execution-access-control-plane.md` — authorization by actor/target/effect/privilege/credential/resource scope;
-- `docs/decisions/D034-runbook-first-terminal-neutral-execution.md` — reusable runbook procedures and terminal/platform-neutral execution adapters.
+- `docs/decisions/D034-runbook-first-terminal-neutral-execution.md` — reusable runbook procedures and terminal/platform-neutral execution adapters;
+- `docs/decisions/D035-security-authority-freshness-and-independent-verification.md` — current security authority, freshness, known-bad anti-regression and independent verification.
 
-Consolidated overview:
+Consolidated overviews:
 
-`docs/ARCHITECTURE-EXECUTION-ACCESS-CONTROL.md`
+- `docs/ARCHITECTURE-EXECUTION-ACCESS-CONTROL.md`;
+- `docs/ARCHITECTURE-SECURITY-VERIFICATION.md`.
 
-D033/D034 are `ACCEPTED` architecture but are not yet integrated into Governance Core/protocol.
+D033/D034/D035 are architecture decisions only and are not yet integrated into Governance Core/protocol.
 
-## Core Execution-Control Model
+## D033 — Execution Authorization
 
-```text
-Human intent / approved task
-          │
-          ▼
-Execution Capability Envelope
-          │
-          ▼
-       Runbook
- semantic procedure
-          │
-          ▼
-   Execution Adapter
-  ┌───────┼─────────┬────────────┐
-  ▼       ▼         ▼            ▼
- shell   native    API/SDK     remote/
-        CLI/runner             automation
-  └───────┴─────────┴──────┬─────┘
-                           ▼
-                   target resource
-                           │
-                           ▼
-                 sanitized evidence
-                           │
-                           ▼
-              continue / rollback / review
-```
-
-Normative invariants:
+Core invariant:
 
 ```text
 transport or credential possession != execution authority
-procedure semantics != terminal syntax
-approved runbook != approved invocation
 ```
 
-## D033 — Execution Capability Envelope
+Execution Capability Envelopes bound the applicable subset of:
 
-For material process/system access, authorization is defined by the applicable subset of:
-
-- actor/execution role;
-- exact target/environment/account/resource identity;
+- actor/role;
+- exact target/environment/account/resource;
 - effect classes;
 - resource scope;
 - privilege ceiling;
 - credential source/use;
-- network destinations/path;
+- network path/destinations;
 - task/time/operation lifetime;
 - rollback/recovery expectation;
 - approval mode;
 - audit/evidence requirement.
 
-Authorization is effect-oriented rather than executable-name-oriented.
+Approval outcomes:
 
-### Approval modes
+- `ALLOW_TASK`;
+- `ALLOW_EXPLICIT`;
+- `REQUIRE_HUMAN`;
+- `DENY`.
 
-- `ALLOW_TASK` — routine effects already inside the approved task boundary.
-- `ALLOW_EXPLICIT` — a persisted decision/contract explicitly bounds the non-baseline effect.
-- `REQUIRE_HUMAN` — Human approval required for a bounded high-impact operation/stage.
-- `DENY` — fail closed under the current authority.
+Child/nested execution cannot expand authority.
 
-Human approval normally applies to a coherent bounded operation/runbook stage rather than every terminal command.
+## D034 — Runbook-First Terminal-Neutral Procedure
 
-Child/nested execution may inherit only a subset of the parent envelope.
+Core invariants:
 
-## D034 — Runbook-first Procedure Layer
+```text
+procedure semantics != terminal syntax
+approved runbook != approved invocation
+```
 
-Runbooks become the preferred durable operational procedure for repeatable/material execution.
+Runbooks are preferred durable procedures for repeatable/material operational changes and describe the applicable subset of:
 
-A runbook describes the applicable subset of:
-
-- purpose/outcome;
+- outcome;
 - applicability/exclusions;
-- required capability/target/privilege class;
+- capability/target/privilege class;
 - non-secret inputs;
 - preconditions;
-- ordered **semantic steps**;
-- checkpoints and Human gates;
+- ordered semantic steps;
+- checkpoints/Human gates;
 - postconditions;
 - rollback/recovery;
-- evidence requirements.
+- evidence.
 
-The canonical semantic step states the required effect/state transition, not a Bash/PowerShell/provider-specific command.
+Reuse adequate project-native runbooks/workflows before creating Governance-owned procedures.
 
-A durable runbook is required by default for material operations such as:
+Terminal, shell, CLI, API, SDK, remote transport, CI/CD and orchestration products are execution adapters, not Governance authority.
 
-- production deploy/service mutation;
-- privileged execution;
-- remote persistent system mutation;
-- infrastructure/IAM/network/security-control changes;
-- credential lifecycle operations;
-- persistent schema/data migrations;
-- destructive/recovery-sensitive actions;
-- multi-system sequencing;
-- recurring material maintenance;
-- recovery/failover/restore procedures.
+## D035 — Security Authority, Freshness and Independent Verification
 
-Ordinary low-risk local development commands do not require a dedicated runbook when the Task Contract already bounds them adequately.
+The Human Owner identified a specific AI-security risk: a probabilistic model may choose a historically common implementation/configuration that has since been found vulnerable, especially when the secure replacement is newer or less represented in model training data.
 
-## Runbook Reuse / Coexistence
+D035 addresses this structurally rather than through stronger prompting.
 
-Reuse project-native operational procedures before creating Governance-owned runbooks.
+Core invariants:
 
 ```text
-native runbook/workflow
-   ├─ adequate             -> REUSE
-   ├─ needs Governance gate -> ADAPT by reference
-   └─ conflicting ownership -> CONFLICT / fail closed
+model output != security authority
+security guidance freshness != model training freshness
+security acceptance = applicable current controls + independent evidence
+past task acceptance != permanent security posture
 ```
 
-Do not copy/mirror native runbooks into duplicate Governance truth merely to rename them.
-
-Runbook procedural validity does not authorize an invocation. Before each material invocation, bind the real target/context/inputs and re-evaluate D033.
-
-## Terminal / Platform Neutrality
-
-Agent Governance MUST NOT center execution methodology on Linux, POSIX shells, PowerShell, Windows, SSH or any other terminal/platform family.
-
-These are replaceable adapter layers:
-
-- terminal/UI host;
-- command environment/shell;
-- native CLI/task runner;
-- remote transport;
-- API/SDK;
-- automation/orchestration system;
-- executor host.
-
-Possible adapters include PowerShell, POSIX-style shells, `cmd`, Nushell, project task runners, cloud/database/cluster/deployment CLIs, APIs, remote-management systems, CI/CD/orchestration providers and safe graphical/admin surfaces.
-
-None is Governance authority or a required Core dependency.
-
-An Execution Adapter must preserve:
-
-- target/effect/privilege boundaries;
-- semantic ordering/state transitions;
-- checkpoints/Human gates;
-- success/failure semantics;
-- rollback/recovery;
-- audit evidence.
-
-Different command syntax is acceptable. Different semantic effects are not.
-
-## Runbook Invocation Lifecycle
-
-Conceptual sequence:
+Security-sensitive work follows three stages:
 
 ```text
-SELECT RUNBOOK
- -> BIND INPUTS/TARGET
- -> PREFLIGHT CURRENT STATE
- -> AUTHORIZE AGAINST D033
- -> HUMAN GATE if required
- -> EXECUTE semantic step through adapter
- -> VERIFY checkpoint
- -> ...
- -> VERIFY postconditions
- -> DONE
+1. GROUND BEFORE GENERATION
+   resolve/load applicable current security controls
+
+2. VERIFY AFTER GENERATION
+   independent deterministic/technical evidence decides acceptance
+
+3. INVALIDATE AFTER DEPLOYMENT
+   advisories/vulnerabilities/drift can revoke current posture
 ```
 
-Failure behavior:
+Grounding lowers probability of insecure output. Independent verification is the acceptance authority.
 
-- identity/authorization mismatch -> `BLOCKED`;
-- checkpoint failure -> stop and rollback/recover or block;
-- material tool/platform/context drift -> stale/revalidate;
-- Human denial -> cancel/block under the controlling lifecycle.
+## D035 Security Source Classes
 
-Material runbooks must address idempotency/retries/concurrency where repeated/partial execution could cause harm.
+Applicable security requirements may come from:
 
-## Execution Evidence
+1. project-authoritative security decisions/threat model/exceptions;
+2. exact product/vendor current security documentation/advisories;
+3. current vulnerability/threat intelligence, including applicable CISA KEV as prioritization input;
+4. versioned verification/security standards such as applicable OWASP ASVS, CIS Benchmarks and NIST security configuration checklists;
+5. model/internal knowledge only as non-authoritative discovery/implementation assistance.
 
-Material evidence should be keyed to the **runbook invocation**, not only raw command transcripts.
+Current external/project sources override unsupported model recollection when applicable.
 
-Capture the applicable subset of:
+Material source conflicts fail closed until resolved.
 
-- task/envelope authorization reference;
-- runbook identity/revision;
-- adapter identity/version when material;
-- bound non-secret inputs;
-- actual target/principal/environment;
-- semantic steps/checkpoints completed;
-- postcondition result;
-- rollback/recovery result;
-- unexpected gate/context deviation.
+## Versioned Security Control Set
 
-Raw terminal logs are optional supplemental evidence and must not become the canonical record or persist credentials/hidden reasoning.
+A later Core implementation should make the applicable subset of these fields determinable:
 
-## Native Enforcement
+- control identity;
+- component/target/version applicability;
+- source class/reference/version/revision;
+- source freshness/check timestamp;
+- required state;
+- forbidden/known-bad state;
+- independent verifier/evidence;
+- freshness class;
+- priority/severity where relevant;
+- Human exception reference/expiry;
+- regression verifier reference;
+- status: current/stale/conflict/violated/exception/superseded.
 
-For material risk, prefer actual platform controls over prompt-only trust.
+D035 defines semantics, not one serialization.
 
-Governance defines authorization/procedure semantics; project/platform-native IAM, privilege, network, resource, sandbox, remote-management and audit controls enforce them where practical.
+## Security Freshness
 
-No single OS/security/terminal mechanism is universal.
+Do not use one arbitrary global TTL.
+
+Conceptual freshness classes:
+
+- `THREAT_LIVE` — KEV/active advisories/affected-version data; recheck at relevant security-sensitive execution/release/operation points;
+- `PRODUCT_VERSION` — vendor/product hardening; bind exact version/context and recheck on material product/target/context change;
+- `STANDARD_PINNED` — stable ASVS/CIS/NIST baseline version pinned to the current contract; newer releases trigger explicit review rather than silently changing in-flight work;
+- `PROJECT_DECISION` — persists until superseded; weakening exceptions must be time/review bounded.
+
+Freshness outcomes:
+
+- `CURRENT`;
+- `STALE`;
+- `UNKNOWN`;
+- `CONFLICT`;
+- `SUPERSEDED`.
+
+High-impact security acceptance blocks on stale/unknown/conflicting current-security state unless the Human explicitly accepts bounded risk.
+
+## Known-Bad Security Pattern Registry
+
+Confirmed vulnerabilities and obsolete insecure patterns should become durable negative knowledge when applicable.
+
+Examples:
+
+- vulnerable dependency/version range;
+- deprecated insecure API/algorithm/configuration;
+- vendor setting invalidated by advisory;
+- previous project exploit/bug pattern;
+- configuration forbidden by selected baseline;
+- superseded insecure workaround.
+
+Records are scoped/versioned and may be `ACTIVE`, `MITIGATED`, `SUPERSEDED`, `NOT_APPLICABLE` or `EXCEPTION`.
+
+Only relevant active records enter implementation context.
+
+## Security-Fix Regression Invariant
+
+When technically practical, remediation is not complete until:
+
+1. corrected required behavior is defined;
+2. former vulnerable state is forbidden/superseded;
+3. deterministic regression rule/test/check detects the former defect;
+4. the fix makes that verifier pass;
+5. the verifier remains in regression coverage.
+
+This is the primary defense against a later model statistically preferring the old vulnerable pattern.
+
+## Independent Security Verification
+
+Model self-review is not sufficient where independent verification is possible.
+
+Software-development verification may include the applicable subset of:
+
+- threat modeling/abuse cases;
+- automated regression tests;
+- static analysis;
+- secret checks;
+- dependency/software-composition vulnerability checks;
+- negative/black-box/structural tests;
+- historical security regressions;
+- fuzzing;
+- web/API dynamic security tests;
+- included-library/service verification;
+- independent architecture/security review for non-mechanical properties.
+
+No single scanner constitutes complete proof.
+
+For material system/configuration work:
+
+```text
+Security Control Set
+ -> Execution Capability Envelope (D033)
+ -> Runbook (D034)
+ -> bind exact target/version/principal
+ -> preflight actual state
+ -> execute through terminal-neutral adapter
+ -> query actual resulting state
+ -> configuration/compliance/vulnerability verification
+ -> PASS / BLOCK / HUMAN_EXCEPTION
+```
+
+Command/runbook success is not security proof. Resulting target state is verified independently.
+
+## Machine-Readable Security Verification
+
+Where a security property is deterministic, prefer a machine-evaluable assertion.
+
+Examples:
+
+- required secure setting/value;
+- forbidden feature absent;
+- dependency outside vulnerable range;
+- required access rule present;
+- forbidden network exposure absent;
+- known vulnerable code/API absent;
+- exploit/regression no longer succeeds;
+- target configuration matches selected baseline.
+
+Potential providers include project-native policy-as-code/configuration tooling, NIST SCAP/OVAL ecosystems, NIST checklist content, CIS assessment tooling and equivalent platform-native mechanisms.
+
+No single provider is a Core dependency.
+
+## Security Posture Is Temporal
+
+Historical task acceptance and current security posture are separate.
+
+```text
+T123 ACCEPTED at time A
+        +
+new advisory/KEV/vulnerability at time B
+        -> T123 remains historically ACCEPTED
+        -> affected current control becomes STALE/VIOLATED
+        -> create remediation task/runbook
+```
+
+New vulnerability intelligence does not silently authorize remediation; it routes through D032 quality/design, D033 authorization and D034 runbook controls.
+
+## Human Security Exceptions
+
+Only Human/Strategy authority may accept an exception.
+
+A bounded exception records the applicable subset of:
+
+- violated/deferred control;
+- exact scope/target/version;
+- rationale/risk;
+- compensating controls;
+- verification of compensation;
+- owner;
+- expiration/review condition;
+- remediation trigger.
+
+The model cannot invent an exception because the secure solution is inconvenient.
+
+## Security-Control Supply Chain
+
+Security baselines/rules/checklists are security-sensitive inputs.
+
+Retain appropriate provenance:
+
+- canonical publisher/source;
+- stable/draft/deprecated status;
+- exact revision/version;
+- retrieval/check time;
+- digest/signature when supplied;
+- local approved adaptation delta.
+
+Reuse project-native security systems/baselines before duplicating them.
+
+## D035 Research Baseline — August 2026
+
+Current authoritative sources reviewed:
+
+- NIST SP 800-218 SSDF 1.1 — current final SSDF; SSDF 1.2 remains initial public draft;
+- NIST IR 8397 — developer verification techniques including threat modeling, automated testing, static analysis, secret detection, historical tests, fuzzing, web scanners and included-component monitoring;
+- OWASP ASVS 5.0.0 — current stable ASVS and explicit version-qualified requirement references;
+- NIST SP 800-70 Rev. 5 — final May 2026 security configuration checklists including machine-readable/executable content, verification and unauthorized-change detection;
+- SCAP 1.4 — current final June 2026 security configuration/vulnerability/compliance automation framework;
+- OSCAL — machine-readable security-control/baseline/implementation/assessment formats;
+- CIS Benchmarks — consensus secure configuration recommendations;
+- CISA KEV — living catalog of vulnerabilities exploited in the wild;
+- NIST AI RMF — ongoing testing/monitoring and Human intervention where AI cannot detect/correct errors.
+
+Empirical AI-code-security studies reviewed show context-dependent/mixed security outcomes rather than deterministic reliability. D035 therefore does not depend on a particular failure rate; independent verification is required by architecture.
 
 ## T004 State
 
-T004 remains the current executable frontier and is unchanged by D033/D034.
-
-Its child-eval isolation is one narrow example of capability bounding but does not constitute general execution-control implementation.
+T004 remains the current executable frontier and is unchanged by D033/D034/D035.
 
 T004 semantic grading remains `PENDING_CHATGPT` until its final handoff/results/transcripts are remotely reviewed.
 
 ## Planned Core-Integration Frontier
 
-After T004 PD5, the leading planned architecture increment is the smallest coherent integration of **D033 + D034 together**, tentatively T005.
+After T004 PD5, the leading architecture integration must consider **D033 + D034 + D035 together**, though implementation may be decomposed into multiple Task Contracts after graphical/quality readiness.
 
-It should be diagrammed/contracted before execution and should cover the applicable subset of:
+The smallest coherent future design should include the applicable subset of:
 
-- focused execution-control Core module;
-- progressive routing from `GOVERNANCE.md`;
-- linkage from `EXECUTION.md` so READY does not mean unlimited system authority;
-- Task Contract support for Execution Capability Envelopes;
-- Task Contract/native-artifact support for material runbook references;
-- runbook selection/binding/preflight/Human-gate semantics;
-- terminal-neutral Execution Adapter contract;
-- handoff evidence keyed by runbook invocation;
-- deterministic authorization/runbook/version/module tests;
-- synthetic adapter fixtures spanning materially different terminal/platform families;
-- dynamic security/adapter tests only where deterministic verification is insufficient.
+- execution-control Core routing;
+- Execution Capability Envelope semantics;
+- runbook selection/binding/preflight/Human gates;
+- terminal-neutral adapter contract;
+- Security Source Resolver;
+- Versioned Security Control Set;
+- Known-Bad Security Pattern Registry;
+- security freshness/invalidation;
+- independent verifier/evidence requirements;
+- handoff evidence keyed by runbook/security control;
+- deterministic synthetic tests for obsolete vulnerable patterns, stale security guidance, vendor advisory override, dependency vulnerability, actual configuration drift and Human exceptions;
+- materially different adapter/platform fixtures so security semantics remain terminal-neutral.
 
-Do not implement a POSIX/Linux-only execution-control model.
+Do not start this Core integration until T004 is resolved and a fresh D032 Primary Solution Diagram/quality triage has been presented.
 
 ## Active Remote Artifacts
 
-- canonical `develop` before D034 planning: `c431ce4f475521f54224b99806ec25bb49b8c153`;
-- T004 Task Contract: `docs/tasks/T004-d032-agent-facing-capability-eval.md`;
-- D032 decision: `docs/decisions/D032-adaptive-intent-engineering-proxy-and-quality-envelope.md`;
-- D033 decision: `docs/decisions/D033-execution-access-control-plane.md`;
-- D034 decision: `docs/decisions/D034-runbook-first-terminal-neutral-execution.md`;
-- execution-control overview: `docs/ARCHITECTURE-EXECUTION-ACCESS-CONTROL.md`.
+- current T004 Task Contract: `docs/tasks/T004-d032-agent-facing-capability-eval.md`;
+- D033: `docs/decisions/D033-execution-access-control-plane.md`;
+- D034: `docs/decisions/D034-runbook-first-terminal-neutral-execution.md`;
+- D035: `docs/decisions/D035-security-authority-freshness-and-independent-verification.md`;
+- execution-control overview: `docs/ARCHITECTURE-EXECUTION-ACCESS-CONTROL.md`;
+- security-verification overview: `docs/ARCHITECTURE-SECURITY-VERIFICATION.md`.
 
 ## Open Questions or Blockers
 
-No known D033/D034 architecture blocker remains.
+No known D035 architecture blocker remains.
 
 T004 still requires executor return and PD5.
 
-The source product remains not stable/release-ready. D033/D034 Core integration, broader behavioral/security evals, property/state-machine coverage, Skill gates and other release gates remain incomplete.
+The source product remains not stable/release-ready. D033/D034/D035 Core integration, broader security/behavioral evals, property/state-machine coverage, Skill gates and other release gates remain incomplete.
 
 ## Next Action
 
-1. Review and integrate the D034 Markdown planning change if its diff is limited to D034 + execution overview + this checkpoint.
-2. Do not alter the running T004 contract.
-3. When T004 returns, perform remote PD5 over its branch/handoff/results/transcripts.
-4. After T004 is resolved, design the D033+D034 Core-integration increment with a fresh Primary Solution Diagram and quality/security triage.
-5. Ensure that increment includes materially different synthetic adapter families so terminal neutrality becomes mechanically testable rather than documentation-only.
+1. review/integrate the D035 Markdown branch if limited to D035 + security architecture overview + this checkpoint;
+2. do not alter T004;
+3. when T004 returns, perform remote PD5 over harness/results/transcripts;
+4. after T004 is resolved, design the combined D033+D034+D035 Core frontier graphically before implementation;
+5. use deterministic security verifiers wherever the security property is mechanically checkable.
 
 ## Next Chat Minimum Load
 
 After `AGENTS.md` and this checkpoint:
 
-1. if T004 is active/returned, load `docs/tasks/T004-d032-agent-facing-capability-eval.md` and its handoff/results as needed;
-2. for execution-control work, load D033 + D034;
-3. load `docs/ARCHITECTURE-EXECUTION-ACCESS-CONTROL.md` when a consolidated view is useful;
-4. load D032/`QUALITY.md` only as needed for diagram/quality readiness or T004 semantic review.
+1. if T004 is active/returned, load `docs/tasks/T004-d032-agent-facing-capability-eval.md` and handoff/results as needed;
+2. for execution/security-control planning, load D033 + D034 + D035;
+3. load `docs/ARCHITECTURE-EXECUTION-ACCESS-CONTROL.md` and/or `docs/ARCHITECTURE-SECURITY-VERIFICATION.md` only when consolidated views are useful;
+4. load D032/`QUALITY.md` only when diagram/quality readiness or T004 semantic review requires it.
 
 ## Do Not Load or Do
 
 - Do not reopen T001/T002/T003 absent a concrete regression.
-- Do not retroactively broaden/rewrite T004 because D033/D034 were accepted while it was running.
-- Do not interpret terminal/credential availability as authorization.
-- Do not treat local execution as inherently trusted compared with remote execution.
-- Do not authorize by executable name alone when target/effect/privilege changes meaning.
-- Do not treat runbook approval as invocation authorization.
-- Do not let runbooks/adapters/child processes expand the parent capability envelope.
-- Do not make Bash/POSIX/Linux, PowerShell/Windows, SSH, a cloud provider or another execution mechanism a Governance Core dependency.
-- Do not duplicate adequate project-native runbooks/workflows.
-- Do not weaken native IAM/privilege/security/audit controls to simplify automation.
-- Do not commit credentials, secret values, raw secret-bearing environments or hidden reasoning.
-- Do not update Core/protocol for D033/D034 until a separate integrated Task Contract can align deterministic verification.
-- Do not declare the source product stable/release-ready from D033/D034 or T004 alone.
+- Do not retroactively broaden/rewrite T004 because D033/D034/D035 were accepted while it was running.
+- Do not treat model output/self-confidence/self-review as security authority.
+- Do not rely on model training freshness for a security-sensitive current fact when an authoritative source can establish it.
+- Do not treat past task acceptance as permanent security posture.
+- Do not accept a successful command/runbook as proof of secure resulting state.
+- Do not let stale/unknown/conflicting security-source state silently pass high-impact security acceptance.
+- Do not let a model invent a security exception.
+- Do not remove historical vulnerability regression checks merely because newer code appears different.
+- Do not make ASVS/CIS/SCAP/OSCAL or another external security product a universal Core dependency.
+- Do not duplicate adequate project-native security baselines/runbooks/tooling.
+- Do not modify Core/protocol until a separate integrated Task Contract aligns code, protocol and deterministic verification.
+- Do not declare the source product stable/release-ready from D035 or T004 alone.
