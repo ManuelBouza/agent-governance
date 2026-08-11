@@ -1,136 +1,61 @@
 # Current ChatGPT Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O016  
+Checkpoint-Sequence: O017  
 Canonical-Branch: `develop`  
 Chat-Closure: CONTINUE_ALLOWED
 
 ## Current Work Unit
 
-T001 and T002 are `ACCEPTED` and integrated.
+T003 — D032 deterministic policy-contract foundation — has completed PD5 R1 and is `ACCEPTED` for implementation integration.
 
-D032 is `ACCEPTED` and integrated, but its dedicated verification is incomplete. During post-T002 planning ChatGPT found a concrete deterministic regression caused by D032-era protocol evolution: `governance-core/GOVERNANCE.md` is now protocol `1.10.0`, while `tests/_helpers.py` still declares `SOURCE_PROTOCOL_VERSION = "1.9.0"`; the helper's `CORE_REQUIRED_MODULES` also omits new Core modules `INTERACTION.md` and `QUALITY.md`.
+Executor final state:
 
-The next planned work unit is T003 — D032 deterministic policy-contract foundation — persisted on Markdown branch `docs/t003-d032-deterministic-contract` at `docs/tasks/T003-d032-deterministic-policy-contract.md`.
+- branch: `test/d032-deterministic-contract`;
+- final pushed HEAD: `829273cbc19a3aa79299ef227546f8eb11d7066b`;
+- accepted implementation anchor: `7000e0dbca4be27f574614b76a3eb5ea0ca9dee6`;
+- handoff: `handoffs/T003-executor-handoff.json`;
+- acceptance: `docs/reviews/T003-R1.md`.
 
-T003 is not an agent-behavior eval. It restores deterministic harness alignment and encodes only D032 properties that can be verified mechanically without model interpretation.
+D029 identity passes: final HEAD is a one-commit handoff-only successor of the implementation anchor.
 
 ## Completed
 
 - T001 remains `ACCEPTED` and integrated.
-- T002 PD5 R2 remains `ACCEPTED` and integrated.
-- T002 implementation merge: `7ef62bbea5b3d0030bcc715d4b973538114c746e`.
-- Post-T002 checkpoint merge: `bcf7899b01a1fb668c16a95ef6d83c053f398277`.
+- T002 remains `ACCEPTED` and integrated.
 - D030 remains controlling for clone-local Gentle-AI RDD opt-out.
 - D031 remains controlling for normal local Gentle-AI Skill Registry `.atl/` coexistence.
-- D032 remains controlling for the Human-intent ↔ engineering proxy, invariant engineering quality, implicit quality envelope and Primary Solution Diagram readiness.
-- D032 architecture overview: `docs/ARCHITECTURE-INTENT-ENGINEERING-PROXY.md`.
-- Current D032 Core modules: `governance-core/INTERACTION.md` and `governance-core/QUALITY.md`.
+- D032 remains controlling for adaptive Human-intent ↔ engineering translation, invariant engineering quality, implicit quality routing and Primary Solution Diagram readiness.
+- T003 characterized the expected pre-mutation protocol drift: stale deterministic expectation `1.9.0` versus canonical Core `1.10.0`.
+- T003 aligns `SOURCE_PROTOCOL_VERSION` to `1.10.0` and mechanically requires `INTERACTION.md` plus `QUALITY.md` without weakening the exact layout/version assertions.
+- T003 adds a non-Markdown synthetic D032 corpus and test-local deterministic policy examples for register invariance, code-native token preservation, quality routing, diagram selection and diagram refresh invalidation.
+- Remote implementation diff is limited to `tests/_helpers.py`, `tests/fixtures/d032/policy_cases.json`, `tests/test_d032_policy_contract.py`, and `handoffs/T003-executor-handoff.json`.
+- Executor evidence reports focused D032 `13 passed`, focused T001/T002 regression subset `52 passed`, and full suite `114 passed, 0 failed, 0 skipped`.
+- Ruff checks are green; Python/uv/pytest/Ruff remain within the accepted locked toolchain.
+- No dependency, lockfile, Python-version, production runtime, executor Markdown, external SDD runtime, committed `.atl/` content, network runtime or credentials were introduced.
 
-## T003 Planning Decision
+## T003 Deterministic Boundary
 
-`docs/TESTING-AND-EVALUATION.md` requires the least probabilistic verifier that can correctly prove a property.
+T003 proves only mechanical D032 contract properties from explicit fixture facts.
 
-The D032 verification frontier is therefore decomposed:
+It does not prove that ChatGPT, OpenCode, another model or a future Consumer Governance Skill correctly interprets arbitrary natural language. The following remain future agent-facing eval concerns:
 
-1. **T003 deterministic policy-contract foundation** — current planned task;
-2. **future agent-facing D032 eval increment** — only after T003, for actual model interpretation/interaction behavior.
+- semantically equivalent requests expressed at different interaction registers;
+- preservation of supplied code semantics in actual model responses;
+- recognition and selective disclosure of material quality concerns from realistic user scenarios;
+- selection and use of an appropriate Primary Solution Diagram during an actual planning session;
+- refresh behavior when an agent materially changes a proposed solution.
 
-This avoids using model-based evals to prove mechanical properties and avoids overclaiming that a fixture classifier demonstrates real LLM behavior.
-
-## T003 Primary Solution Diagram
-
-Dominant design question: local verification workflow/dependency change.
-
-```text
-D032 Core (read-only)
-INTERACTION + QUALITY + LIFECYCLE
-              │
-              ▼
-     Synthetic D032 cases (JSON)
-     ┌────────┼─────────┬──────────┐
-     │        │         │          │
- register   quality   diagram    refresh
- variants   routing   selection   invalidation
-     │        │         │          │
-     └────────┴────┬────┴──────────┘
-                   ▼
-        Deterministic test-local model
-                   │
-      ┌────────────┼──────────────┐
-      ▼            ▼              ▼
- engineering   material-only   correct diagram/
- invariance     disclosure      stale-on-change
-      │            │              │
-      └────────────┴──────┬───────┘
-                          ▼
-       protocol/module drift checks
-       1.10.0 + INTERACTION + QUALITY
-                          │
-                          ▼
-              canonical locked gate
-              pytest + Ruff + no network
-```
-
-The diagram is persisted in T003 and is the current D032 graphical-readiness evidence for this implementation scope.
-
-## T003 Scope Summary
-
-Expected executor branch:
-
-`test/d032-deterministic-contract`
-
-Expected handoff:
-
-`handoffs/T003-executor-handoff.json`
-
-Expected non-Markdown surfaces include only the smallest needed subset of:
-
-- `tests/_helpers.py`;
-- `tests/fixtures/d032/` non-Markdown fixture data;
-- one focused D032 deterministic Python test module;
-- small existing Python test alignment only when necessary;
-- T003 handoff JSON.
-
-No new dependency, production runtime policy engine, LLM call, agent session, transcript grader, Hypothesis layer, external SDD runtime or executor-authored Markdown is authorized.
-
-## Known Pre-Mutation Regression
-
-Current source bytes imply that the exact protocol-version test is stale/failing:
-
-- canonical Core: `Protocol-Version: 1.10.0`;
-- deterministic helper expectation: `SOURCE_PROTOCOL_VERSION = "1.9.0"`.
-
-T003 requires the executor to characterize this mismatch before mutation. If current `develop` unexpectedly no longer exhibits it, the executor must stop `PARTIAL` rather than rewriting the premise.
-
-T003 must align the harness forward to 1.10.0 and mechanically require `INTERACTION.md`/`QUALITY.md`; it must not downgrade Core or weaken exact assertions.
-
-## D032 Deterministic Properties Planned for T003
-
-- equivalent plain/technical/code-native fixture variants preserve an explicit engineering fingerprint, controls and acceptance facts;
-- code-native fixtures preserve supplied identifiers/tokens mechanically;
-- quality routing covers `BASELINE|MATERIAL|NOT_APPLICABLE`, material contract controls, Human-visible materiality, mandatory security triage and privacy independence;
-- all eight D032 Primary Solution Diagram mapping families are covered from explicit dominant-question facts;
-- none/cosmetic/material design changes map correctly to diagram-refresh requirements;
-- test-local routing/classification never branches on product/user labels;
-- no model behavior is claimed by this deterministic layer.
-
-## Quality-Envelope Result for T003
-
-Material dimensions:
-
-- functional correctness / acceptance fidelity;
-- verification;
-- maintainability/change isolation;
-- compatibility with accepted T001/T002 regression coverage.
-
-Security is explicitly triaged as baseline because T003 introduces no trust boundary, secrets, untrusted executable content, network/public surface or production state. Privacy and end-user accessibility are not applicable to the synthetic local test assets. No additional threat model/DFD is required.
+The least-probabilistic-verifier rule remains controlling: deterministic properties stay in code tests; model-dependent behavior belongs in isolated agent evals.
 
 ## Active Remote Artifacts
 
-- canonical `develop`: `bcf7899b01a1fb668c16a95ef6d83c053f398277` at T003 planning start;
-- T003 Markdown planning branch: `docs/t003-d032-deterministic-contract`;
-- T003 Task Contract: `docs/tasks/T003-d032-deterministic-policy-contract.md`;
+- canonical `develop` before T003 acceptance Markdown integration: `a00b17be6a889017e77c46b904a6f42150c7afc8`;
+- T003 acceptance Markdown branch: `docs/t003-r1-acceptance`;
+- executor branch: `test/d032-deterministic-contract@829273cbc19a3aa79299ef227546f8eb11d7066b`;
+- accepted implementation anchor: `7000e0dbca4be27f574614b76a3eb5ea0ca9dee6`;
+- Task Contract: `docs/tasks/T003-d032-deterministic-policy-contract.md`;
+- acceptance review: `docs/reviews/T003-R1.md`;
 - D032 decision: `docs/decisions/D032-adaptive-intent-engineering-proxy-and-quality-envelope.md`;
 - D032 overview: `docs/ARCHITECTURE-INTENT-ENGINEERING-PROXY.md`.
 
@@ -141,40 +66,35 @@ Two prior accidental direct Markdown writes remain audit history and are not pol
 1. T002-R1 placeholder: `6a3bff4f12850bd701fea624815e955231082afa`, corrected by `67d8dc6de9679f833f3136c6a66ee7ad05283cb3`.
 2. Architecture-overview placeholder: `a0e063344043fda53f55b8fcb5b03742a33a7185`, corrected by `09fa91f6b3c829e6edc0719fcd636cf3cba8f879`.
 
-T003 planning correctly created its topic branch before any Markdown contents mutation.
+No placeholder content remains. Current Markdown work correctly uses a topic branch before mutation.
 
 ## Open Questions or Blockers
 
-No architecture blocker is currently known for T003.
+No T003 rework blocker remains.
 
-The source product is not stable/release-ready. After T003, model-dependent D032 behavior still needs agent-facing eval coverage, and other release gates in `docs/TESTING-AND-EVALUATION.md` remain incomplete.
+The source product is still not stable/release-ready. After T003 integration, the leading frontier is a separately diagrammed and contracted D032 agent-facing eval increment. Other release gates in `docs/TESTING-AND-EVALUATION.md` also remain incomplete.
 
 ## Next Action
 
-1. Review `docs/t003-d032-deterministic-contract` against current `develop`.
-2. Confirm the diff contains only `docs/tasks/T003-d032-deterministic-policy-contract.md` and this checkpoint update.
-3. Merge the Markdown planning PR into `develop` if clean.
-4. Verify resulting `develop` HEAD and T003 `READY` contract.
-5. Launch an executor only after that merge, using the minimal Task Contract pointer.
-6. After executor handoff, ChatGPT performs remote PD5 before any implementation PR.
-7. If T003 is accepted/integrated, plan a separate agent-facing D032 eval increment; do not merge it into T003 retroactively.
+1. Merge the T003-R1 acceptance Markdown PR into `develop` after verifying it contains only `docs/reviews/T003-R1.md` and this checkpoint update.
+2. Open the implementation PR from `test/d032-deterministic-contract` to current `develop`.
+3. Verify the implementation PR contains only the four accepted non-Markdown paths and does not revert current Markdown/D032 history.
+4. If mergeable and clean, squash-merge the implementation PR.
+5. Persist a post-integration checkpoint before defining the next Task Contract.
+6. Before any next executor task, present and persist the new Primary Solution Diagram required by D032.
 
 ## Next Chat Minimum Load
 
-After `AGENTS.md` and this checkpoint, load only:
+After `AGENTS.md` and this checkpoint:
 
-1. `docs/tasks/T003-d032-deterministic-policy-contract.md`;
-2. `docs/decisions/D032-adaptive-intent-engineering-proxy-and-quality-envelope.md`;
-3. `governance-core/INTERACTION.md`;
-4. `governance-core/QUALITY.md`;
-5. `docs/TESTING-AND-EVALUATION.md` only when interpreting verifier-layer boundaries.
+1. for T003 integration, load `docs/reviews/T003-R1.md` and `handoffs/T003-executor-handoff.json` only as needed;
+2. after T003 integration, for D032 agent-eval planning load `docs/decisions/D032-adaptive-intent-engineering-proxy-and-quality-envelope.md`, `governance-core/INTERACTION.md`, `governance-core/QUALITY.md`, and the agent-eval portions of `docs/TESTING-AND-EVALUATION.md`.
 
 ## Do Not Load or Do
 
 - Do not reopen T001/T002 absent a concrete regression.
-- Do not claim current `develop` deterministic suite is green until the D032 protocol-version drift is repaired and verified.
-- Do not broaden T003 into model/agent evals, a production policy engine, state-machine testing or new dependencies.
-- Do not interpret fixture-level engineering invariance as proof of actual model behavior.
+- Do not broaden T003 into model/agent evals retroactively.
+- Do not interpret deterministic fixture invariance as proof of actual model behavior.
 - Do not commit `.atl/` contents or treat Skill registry selection as Governance trust/approval.
 - Do not re-enable or globally alter Gentle-AI RDD.
 - Do not erase or normalize away recorded direct-write incidents.
