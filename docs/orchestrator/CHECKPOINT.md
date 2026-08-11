@@ -1,7 +1,7 @@
 # Current ChatGPT Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O027  
+Checkpoint-Sequence: O028  
 Canonical-Branch: `develop`  
 Chat-Closure: CONTINUE_ALLOWED
 
@@ -9,169 +9,238 @@ Chat-Closure: CONTINUE_ALLOWED
 
 T001, T002 and T003 remain `ACCEPTED` and integrated.
 
-T004 — D032 agent-facing capability eval foundation — is terminal:
+T004 is terminal:
 
 `CANCELLED_BY_HUMAN`
 
-Controlling closure:
+Controlling closure/policy:
 
 - `docs/reviews/T004-CLOSURE.md`
 - `docs/decisions/D037-deterministic-code-only-verification.md`
 
-The Human Owner explicitly discarded model-based tests and selected code-based verification as the repository verification policy.
+Do not resume T004, run model-facing verification, or integrate `eval/d032-agent-capability` without a new explicit Human Owner decision superseding D037.
 
-Do not continue T004 R1/R2/R3, do not run more LLM/provider/OpenCode trials, and do not integrate the partial T004 implementation branch.
+## Verification Policy
 
-Historical last T004 executor state before cancellation:
-
-```text
-STATUS: PARTIAL
-HANDOFF: handoffs/T004-executor-handoff.json
-BRANCH: eval/d032-agent-capability
-HEAD: eb20dc0fed2674190a82ef40aa0e02436c02ced4
-```
-
-Latest T004 implementation anchor reported under D029:
-
-`edc7fe186c0c84f6f30e3a2d8bbb4022ac609356`
-
-No real T004 capability baseline was ever produced: 0/18 sessions, 0/21 turns, no baseline artifact.
-
-T004 remains historical/audit evidence only. No implementation PR is authorized.
-
-## D037 — Deterministic Code-Only Verification
-
-D037 is accepted architecture/policy.
-
-Core rules:
+D037 is active:
 
 ```text
 probabilistic implementation assistant != verification authority
-
 source-product acceptance = deterministic evidence + authorized Human/Orchestrator judgment
 ```
 
-Repository-owned verification and release gates use deterministic/mechanically reproducible evidence such as:
+Repository-owned verification/release gates use deterministic code/fixtures/property/state/security/configuration/provenance evidence. No live LLM calls, model graders, generated-transcript scoring or stochastic model thresholds are source-product release dependencies.
 
-- unit/contract/regression tests;
-- JSON/JSONL fixtures;
-- deterministic test-local policy models;
-- property/state-machine tests where justified;
-- schema/version/provenance/identity checks;
-- synthetic coexistence fixtures;
-- static/security/dependency/configuration verifiers;
-- runbook precondition/postcondition checks;
-- bounded deterministic technical probes under future D033–D036 authorization;
-- Human/ChatGPT review only for genuinely irreducible qualitative judgment.
+## Architecture Decomposition D033–D036
 
-Repository verification SHALL NOT require live LLM calls, repeated stochastic agent trials, model-as-judge graders, generated transcript scoring, provider/model availability, agent-host compatibility or statistical model-behavior release thresholds.
-
-D037 supersedes earlier testing-strategy/task language that required or permitted live model/agent evals as source-product verification or release gates.
-
-T003 is the accepted deterministic D032 verification foundation. D032 remains accepted architecture, but Agent Governance does not claim that arbitrary models have been empirically certified to exhibit D032 behavior.
-
-## Accepted Architecture Frontier — D033 through D036
-
-Accepted and not yet integrated into Governance Core/protocol:
-
-- `docs/decisions/D033-execution-access-control-plane.md` — bounded execution authority;
-- `docs/decisions/D034-runbook-first-terminal-neutral-execution.md` — runbook-first platform/terminal-neutral execution;
-- `docs/decisions/D035-security-authority-freshness-and-independent-verification.md` — current security authority, freshness, known-bad regression and independent verification;
-- `docs/decisions/D036-existing-system-assurance-audit-mode.md` — evidence-first assurance audits of existing systems.
-
-Consolidated overviews:
-
-- `docs/ARCHITECTURE-EXECUTION-ACCESS-CONTROL.md`;
-- `docs/ARCHITECTURE-SECURITY-VERIFICATION.md`;
-- `docs/ARCHITECTURE-ASSURANCE-AUDIT.md`.
-
-Future combined stack:
+The accepted execution/security/audit frontier is intentionally decomposed:
 
 ```text
-D032 interaction/quality contract
-        ↓
-D035 current security authority/freshness
-        ↓
-D036 assessment / independent verification
-        ↕
-D033 execution authorization
-        ↓
-D034 runbook + terminal-neutral adapter
-        ↓
-deterministic/bounded technical evidence under D037
+T005  D033 + D034
+      execution authorization + runbook/terminal-neutral procedure contract
+
+T006  D035
+      security authority/freshness/known-bad/independent verification
+
+T007  D036
+      existing-system assurance audit/evidence/coverage contract
 ```
 
-## Next Product Frontier
+Rationale: D033 and D034 are one authorization/procedure layer and must remain coherent. D035 depends on that foundation but adds independently testable current-security authority/posture semantics. D036 consumes the preceding layers and adds assessment/evidence/report semantics. This keeps work atomic and reworkable under D037.
 
-With T004 closed, the next work is to design the first deterministic Core/test integration of D033–D036.
+## T005 — Current Active Work Unit
 
-Before any implementation scope becomes READY:
+Task Contract:
 
-1. decide whether D033–D036 should be one coherent task or intentionally decomposed increments;
-2. present a fresh D032 Primary Solution Diagram at the smallest useful abstraction;
-3. perform D032 quality/security triage;
-4. define explicit deterministic contracts/fixtures and fail-closed acceptance behavior;
-5. preserve terminal/platform neutrality and runbook semantics;
-6. ensure D035 security freshness/known-bad verification and D036 audit evidence/coverage semantics are mechanically testable where possible;
-7. use Human/ChatGPT review for semantics that cannot honestly be reduced to code rather than adding a model grader.
+`docs/tasks/T005-d033-d034-deterministic-execution-control-contract.md`
+
+Status after planning integration: `READY`.
+
+Expected executor branch:
+
+`test/execution-control-contract`
+
+Expected handoff:
+
+`handoffs/T005-executor-handoff.json`
+
+Owner for executable work: Agente de IA Ejecutor.
+
+T005 tests the ChatGPT-owned Core execution-control integration; the executor must not edit Markdown.
+
+### T005 Core integration authored by ChatGPT
+
+T005 planning introduces:
+
+- `governance-core/EXECUTION-CONTROL.md` — Execution-Control-Version `1.0.0`;
+- `governance-core/EXECUTION.md` — Execution-Version `1.2.0`;
+- `governance-core/GOVERNANCE.md` — Protocol-Version `1.11.0` with source-map/context-router/readiness execution-control routing.
+
+Protocol `1.11.0` is a backward-compatible minor extension under `PROTOCOL.md` semver rules.
+
+Core execution invariants:
+
+```text
+mechanism != authority
+procedure semantics != terminal syntax
+approved runbook != approved invocation
+authority(child) ⊆ authority(parent)
+```
+
+Approval outcomes:
+
+`ALLOW_TASK | ALLOW_EXPLICIT | REQUIRE_HUMAN | DENY`
+
+Material execution is governed by actor/target/effect/resource/privilege/credential/network scope and approval mode, not executable name.
+
+Runbooks are required for material/repeatable/risky/recovery-sensitive operations; ordinary local source/build/test work does not require a runbook when no durable procedure adds value.
+
+Execution adapters remain terminal/platform neutral. T005 creates no real command broker, shell wrapper, cloud adapter or remote execution runtime.
+
+## T005 Primary Solution Diagram
+
+Primary view: DFD with trust boundaries.
+
+```text
+Human Owner / Strategy
+        │ task + bounded approval
+        ▼
+┌──────── GOVERNANCE AUTHORITY BOUNDARY ────────┐
+│ Task Contract                                  │
+│       ▼                                        │
+│ Execution Capability Envelope                  │
+│ actor · target · effect · privilege · auth     │
+│       ├─ ALLOW_TASK / ALLOW_EXPLICIT           │
+│       ├─ REQUIRE_HUMAN ─► Human gate           │
+│       └─ DENY ───────────► BLOCKED              │
+│       ▼                                        │
+│ Runbook: preconditions/steps/checkpoints/       │
+│          postconditions/recovery/evidence       │
+└──────────────────┬─────────────────────────────┘
+                   ▼
+┌──────── EXECUTION ADAPTER BOUNDARY ────────────┐
+│ terminal/runner/CLI/API/remote/automation       │
+│ authority(child) ⊆ authority(parent)           │
+└──────────────────┬─────────────────────────────┘
+                   ▼
+┌──────────── TARGET SYSTEM BOUNDARY ────────────┐
+│ actual resource + native access controls        │
+└──────────────────┬─────────────────────────────┘
+                   ▼
+        observed postcondition/evidence
+        PASS → continue/DONE
+        FAIL → STOP/BLOCK/RECOVER
+```
+
+A material change into a real execution runtime or real-system adapter invalidates T005 readiness and requires Strategy revision.
+
+## T005 Quality/Security Disposition
+
+Material:
+
+- correctness/acceptance;
+- architecture/coexistence;
+- security;
+- reliability/recovery;
+- observability/evidence;
+- testability;
+- maintainability/change isolation;
+- compatibility/protocol alignment;
+- configuration/deployment/rollback semantics;
+- destructive/privileged safety semantics.
+
+Baseline/not applicable for the local test harness:
+
+- privacy/data: baseline, no real sensitive data;
+- performance/resource cost: baseline;
+- human UI/accessibility/i18n: not applicable;
+- dependency supply chain: baseline, no new dependencies.
+
+T005 security testing is synthetic/deterministic. It must include negative authority-escalation, target-mismatch, credential misuse and security-control-bypass cases but must not touch real credentials/networks/privilege/remote systems.
+
+## T005 Expected Executable Scope
+
+Expected non-Markdown implementation shape:
+
+- `tests/_helpers.py` — Protocol `1.11.0` + required `EXECUTION-CONTROL.md`;
+- `tests/fixtures/execution_control/policy_cases.json` or equivalent;
+- `tests/test_execution_control_contract.py` or equivalent;
+- `handoffs/T005-executor-handoff.json`;
+- only a narrowly required existing Python test if mechanical alignment demands it.
+
+No production runtime, real adapter, network/model call, dependency/config change or Markdown mutation is authorized.
+
+Required deterministic families include:
+
+- all four approval outcomes and strictest-effect precedence;
+- envelope/target/resource/privilege/credential/network/context mismatch;
+- child/adapter authority non-expansion;
+- runbook-required routing;
+- runbook validity versus invocation authorization;
+- runbook lifecycle/failure/stale/recovery behavior;
+- terminal-neutral adapter semantic equivalence;
+- unsupported/stale/native-denied adapter blocking;
+- semantic/sanitized invocation evidence;
+- Protocol/Core module reference alignment.
+
+Canonical verification remains:
+
+```text
+uv sync --locked
+uv run --locked ruff check .
+uv run --locked ruff format --check .
+uv run --locked python -m pytest
+```
+
+No network, credentials, LLM/provider or real-system mutation in ordinary T005 verification.
+
+## Future Frontier
+
+After T005 acceptance/integration:
+
+1. T006 integrates D035 security authority/freshness/known-bad/security-posture deterministic semantics on top of T005;
+2. T007 integrates D036 audit scope/profiles/evidence graph/findings/coverage deterministic semantics;
+3. only after those foundations should project-native real-system verifier/runbook adapters be considered, under explicit D033/D034 authorization and D037 deterministic evidence.
 
 The source product remains not stable/release-ready.
 
 ## Orchestrator Direct-Write Audit History
 
-Preserve these incidents; do not hide or rewrite them without explicit Human authorization.
+Preserve; do not hide/rewrite without explicit Human authorization:
 
-### T002-R1 placeholder
-
-- accidental direct `develop`: `6a3bff4f12850bd701fea624815e955231082afa`
-- corrective: `67d8dc6de9679f833f3136c6a66ee7ad05283cb3`
-
-### Architecture overview placeholder
-
-- accidental direct `develop`: `a0e063344043fda53f55b8fcb5b03742a33a7185`
-- corrective: `09fa91f6b3c829e6edc0719fcd636cf3cba8f879`
-
-### T004-R1 placeholder
-
-- accidental direct `develop`: `197ce3fad02a69baf99238beb9859280a137a681`
-- corrective: `52ae6fb5126517ea19c8d00918e7b148c17f146a`
-
-### D037 placeholder
-
-While implementing the Human Owner's code-only verification decision, ChatGPT accidentally created `docs/decisions/D037-deterministic-code-only-verification.md` with `placeholder` directly on `develop`.
-
-- accidental direct `develop`: `71b62980c41b183dfb33ef3099c72fc827234606`
-- corrective deletion restoring the prior tree: `e5ee3c56cbd17f72f876987550bab34cde065b53`
-
-The proper D037 persistence uses `docs/d037-deterministic-code-only-verification` and the normal Markdown PR flow.
+- T002-R1 placeholder: accidental `6a3bff4f12850bd701fea624815e955231082afa`; corrective `67d8dc6de9679f833f3136c6a66ee7ad05283cb3`.
+- architecture overview placeholder: accidental `a0e063344043fda53f55b8fcb5b03742a33a7185`; corrective `09fa91f6b3c829e6edc0719fcd636cf3cba8f879`.
+- T004-R1 placeholder: accidental `197ce3fad02a69baf99238beb9859280a137a681`; corrective `52ae6fb5126517ea19c8d00918e7b148c17f146a`.
+- D037 placeholder: accidental `71b62980c41b183dfb33ef3099c72fc827234606`; corrective `e5ee3c56cbd17f72f876987550bab34cde065b53`.
 
 ## Next Action
 
-1. Integrate D037 + T004 closure + O027 through normal Markdown PR flow if the diff is Markdown-only and contains no unexpected paths.
-2. Do not send any further T004 prompt to the executor.
-3. Begin Strategy design for deterministic D033–D036 Core integration.
-4. Produce a new Task Contract only after the Primary Solution Diagram and quality/security triage are complete.
-5. Execute that future task with ordinary code tests and no model-facing eval dependency.
+1. Review the Markdown diff on `docs/t005-execution-control-core`.
+2. Integrate the planning/Core change to `develop` through normal Markdown PR flow if the diff contains only the intended Core/Task/checkpoint paths.
+3. Launch the executor from the resulting current `develop` with only a pointer to `docs/tasks/T005-d033-d034-deterministic-execution-control-contract.md`.
+4. On return, verify D029 identity, remote diff and deterministic evidence.
+5. Accept/rework T005 before any implementation PR.
+6. After T005 integration, define T006; do not implement D035/D036 inside T005.
 
 ## Next Chat Minimum Load
 
 After `AGENTS.md` and this checkpoint:
 
-1. load `docs/decisions/D037-deterministic-code-only-verification.md`;
-2. load D033–D036 and their architecture overviews;
-3. load `governance-core/EXECUTION.md`, `governance-core/QUALITY.md` and applicable lifecycle/security Core only as needed for the new integration design;
-4. load `docs/TESTING-AND-EVALUATION.md` only to reconcile deterministic sections with D037 when authoring the next Task Contract or a later consolidation;
-5. do not load T004/R1/R2/R3 unless a concrete audit/history conflict requires it.
+1. load `docs/tasks/T005-d033-d034-deterministic-execution-control-contract.md`;
+2. load `governance-core/EXECUTION-CONTROL.md` and `governance-core/EXECUTION.md`;
+3. load D033/D034/D037 only if semantic/review context is needed;
+4. if executor returned, fetch `handoffs/T005-executor-handoff.json` and exact remote branch/diff;
+5. do not load T004 history absent a concrete audit conflict;
+6. do not load D035/D036 until T005 is accepted or a concrete dependency question requires them.
 
 ## Do Not Load or Do
 
-- Do not reopen T001/T002/T003 absent a concrete regression.
-- Do not resume T004 without a new explicit Human Owner decision superseding D037.
-- Do not integrate `eval/d032-agent-capability` as T004 product work.
-- Do not introduce live LLM calls, model graders or probabilistic agent trials into source-product release verification.
-- Do not claim deterministic fixtures empirically certify arbitrary model behavior.
-- Do not make OpenCode, another agent host, a provider or model identifier a source-product release dependency.
-- Do not weaken D035 independent security verification; use current authoritative controls plus technical evidence.
-- Do not modify Core for D033–D036 before a separate READY Task Contract aligns semantics/code/tests.
-- Do not hide/rewrite direct-write incidents without explicit Human authorization.
-- Do not declare the source product stable/release-ready.
+- Do not reopen T001/T002/T003 absent regression.
+- Do not resume/integrate T004.
+- Do not add live LLM/model verification.
+- Do not turn T005 into a terminal/shell/OS-specific implementation.
+- Do not execute real remote/privileged/destructive/credentialed operations in T005.
+- Do not implement D035/D036 inside T005.
+- Do not allow executor Markdown edits.
+- Do not open/merge T005 implementation PR before ChatGPT acceptance.
+- Do not declare source product stable/release-ready.
