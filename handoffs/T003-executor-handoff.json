@@ -1,0 +1,104 @@
+{
+  "task_id": "T003",
+  "status": "DONE",
+  "task_contract_path": "docs/tasks/T003-d032-deterministic-policy-contract.md",
+  "branch": "test/d032-deterministic-contract",
+  "base_branch": "develop",
+  "base_sha": "a00b17be6a889017e77c46b904a6f42150c7afc8",
+  "implementation_head_sha": "7000e0dbca4be27f574614b76a3eb5ea0ca9dee6",
+  "implementation_head_sha_note": "D029 implementation anchor. This handoff is committed in a handoff-only successor; visible executor response reports final pushed branch HEAD.",
+  "files_changed": [
+    "tests/_helpers.py",
+    "tests/fixtures/d032/policy_cases.json",
+    "tests/test_d032_policy_contract.py",
+    "handoffs/T003-executor-handoff.json"
+  ],
+  "implementation_summary": "Aligned strict canonical harness constants to Core protocol 1.10.0 and required INTERACTION.md/QUALITY.md. Added a compact JSON corpus plus test-local deterministic checks for D032 register invariance, code-native token preservation, quality routing, diagram selection, and diagram refresh invalidation.",
+  "pre_mutation_characterization": {
+    "command": "uv run --locked python -m pytest tests/test_canonical_layout.py::test_governance_core_uses_documented_protocol_version",
+    "result": "1 failed in 0.03s: Expected Protocol-Version 1.9.0 for the canonical source, found '1.10.0'.",
+    "interpretation": "Expected T003 protocol-drift characterization before mutation; the stale version assertion was preserved and aligned rather than weakened.",
+    "persisted_evidence_location": "handoffs/T003-executor-handoff.json"
+  },
+  "d032_policy_contract": {
+    "fixture": "tests/fixtures/d032/policy_cases.json",
+    "test_module": "tests/test_d032_policy_contract.py",
+    "register_invariance": ["plain/domain", "expert/architecture", "code-native", "presentation-only mutation control"],
+    "code_native_tokens": ["deploy_release", "--locked", "release_id"],
+    "quality_routing": ["BASELINE", "MATERIAL", "NOT_APPLICABLE", "mandatory security triage", "privacy MATERIAL with security BASELINE", "material Human-impact visibility only"],
+    "diagram_selection_families": ["C4 System Context", "C4 Container", "C4 Component", "dynamic/sequence", "state diagram", "DFD with trust boundaries", "ER/data model", "compact flow/dependency diagram"],
+    "diagram_refresh_cases": ["no design change", "cosmetic/local detail", "material architecture/data-flow/state/responsibility change"],
+    "test_local_boundary": "All routing helpers live in tests/test_d032_policy_contract.py and consume explicit fixture facts only. No product labels influence diagram selection. No production API, free-form intent inference, model call, Agent Skill activation, or runtime behavior was introduced."
+  },
+  "verification": {
+    "commands": [
+      "uv run --locked ruff format .",
+      "uv sync --locked",
+      "uv run --locked ruff check .",
+      "uv run --locked ruff format --check .",
+      "uv run --locked python -m pytest"
+    ],
+    "focused_commands": [
+      "uv run --locked python -m pytest tests/test_d032_policy_contract.py",
+      "uv run --locked python -m pytest tests/test_canonical_layout.py tests/test_coexistence_classification.py"
+    ],
+    "negative_controls": ["presentation-only register mutation retains engineering contract", "product-label mutation retains diagram selection", "BASELINE and NOT_APPLICABLE concerns are not visible", "privacy MATERIAL remains independent from security BASELINE", "none and cosmetic changes do not require diagram refresh"],
+    "results": {
+      "focused_d032": "13 passed in 0.02s; 13 collected",
+      "t001_t002_regressions": "52 passed in 0.07s; 52 collected",
+      "ruff_format_mutating": "8 files left unchanged",
+      "uv_sync_locked": "Resolved 8 packages in 0.78ms; Checked 6 packages in 0.13ms",
+      "ruff_check": "All checks passed!",
+      "ruff_format_check": "8 files already formatted",
+      "full_pytest": "114 passed in 0.58s; 114 collected, 0 failed, 0 skipped"
+    },
+    "runtime": {
+      "uv": "uv 0.11.33",
+      "python": "Python 3.13.14",
+      "pytest": "pytest 9.1.1",
+      "ruff": "ruff 0.16.2"
+    },
+    "network_required": {
+      "provisioning_network": false,
+      "test_runtime_network": false,
+      "credentials_required": false
+    }
+  },
+  "dependencies_or_config_changes": {
+    "packages_added": [],
+    "pyproject_toml_changed": false,
+    "uv_lock_changed": false,
+    "python_version_changed": false,
+    "proof": "git diff --exit-code origin/develop -- pyproject.toml uv.lock .python-version exited 0 before commit."
+  },
+  "scope_exclusions": {
+    "markdown_changed": false,
+    "production_runtime_changed": false,
+    "model_or_llm_behavior_added": false,
+    "external_sdd_or_service_required": false,
+    "root_consumer_footprint_created": false
+  },
+  "external_overlay_facts": {
+    "skill_registry": "D031 COEXIST behavior observed: .atl/ is ignored and uncommitted; it is not a test dependency or product artifact.",
+    "rdd": "Read-only status reported clone_local off, effective off, global unset. No RDD/global mutation occurred; ordinary repository policy applies without receipt approval claim.",
+    "sdd": "No SDD initialization, migration, OpenSpec artifact, or consumer coordination state was created."
+  },
+  "changed_line_budget": {
+    "additions": 144,
+    "deletions": 1,
+    "authored_total": 145,
+    "limit": 400,
+    "exception": null
+  },
+  "rollback": "Revert implementation commit 7000e0dbca4be27f574614b76a3eb5ea0ca9dee6 to remove only T003 harness alignment, fixture corpus, and test-local contract. Revert this handoff-only successor separately if needed.",
+  "git_status": {
+    "branch_created_from": "origin/develop@a00b17be6a889017e77c46b904a6f42150c7afc8",
+    "branch_ancestry_verified": true,
+    "pre_handoff_tracked_state": "clean",
+    "ignored_local_state": ".atl/ ignored and uncommitted"
+  },
+  "unresolved_issues": [],
+  "recommended_next_task": "ChatGPT remote review and acceptance of T003.",
+  "chatgpt_read_path": "handoffs/T003-executor-handoff.json",
+  "skill_resolution": "paths-injected"
+}
