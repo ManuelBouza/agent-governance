@@ -1,7 +1,7 @@
 # Current ChatGPT Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O024  
+Checkpoint-Sequence: O025  
 Canonical-Branch: `develop`  
 Chat-Closure: CONTINUE_ALLOWED
 
@@ -9,15 +9,15 @@ Chat-Closure: CONTINUE_ALLOWED
 
 T001, T002 and T003 remain `ACCEPTED` and integrated.
 
-T004 — D032 agent-facing capability eval foundation — has returned `PARTIAL` from the Agente de IA Ejecutor.
+T004 — D032 agent-facing capability eval foundation — remains `PARTIAL` after a second executor return.
 
-Executor return reviewed:
+Latest reviewed executor return:
 
 ```text
 STATUS: PARTIAL
 HANDOFF: handoffs/T004-executor-handoff.json
 BRANCH: eval/d032-agent-capability
-HEAD: d3b8fbfe71467e19a2225bb5fd779c82930214bd
+HEAD: 1c11fb838ca228e9a1c5b465d5bce41cf380d36b
 ```
 
 Remote branch HEAD exactly matched the visible HEAD.
@@ -26,9 +26,13 @@ T004 Task Contract:
 
 `docs/tasks/T004-d032-agent-facing-capability-eval.md`
 
-Active rework directive:
+Historical R1 directive:
 
 `docs/reviews/T004-R1.md`
+
+Active R2 directive:
+
+`docs/reviews/T004-R2.md`
 
 Expected executor branch remains:
 
@@ -40,16 +44,16 @@ Expected handoff remains:
 
 T004 is **not accepted** and no implementation PR is authorized.
 
-## T004 PD5 R1 Findings
+## T004 Second-Return Identity / Scope
 
-D029 identity is valid for the reviewed return:
+D029 identity is valid:
 
-- `base_sha`: `f7182fe06d0324be424617fc4764528704f51e4c`;
-- implementation anchor: `d1961944e2a6c00ff5c35f2eb7dc11c3d151535a`;
-- final pushed branch HEAD: `d3b8fbfe71467e19a2225bb5fd779c82930214bd`;
+- controlling T004 base remains `f7182fe06d0324be424617fc4764528704f51e4c`;
+- latest implementation anchor: `dc5ddacec697947c311013ec0b5fb6f23daf426b`;
+- final pushed branch HEAD: `1c11fb838ca228e9a1c5b465d5bce41cf380d36b`;
 - the only commit after the implementation anchor changes only `handoffs/T004-executor-handoff.json`.
 
-Branch delta from the controlling T004 base is limited to:
+R1 implementation stayed within authorized eval/test/handoff surfaces:
 
 - `evals/d032/adapters/opencode.py`;
 - `evals/d032/cases.json`;
@@ -57,53 +61,84 @@ Branch delta from the controlling T004 base is limited to:
 - `tests/test_d032_agent_eval_harness.py`;
 - `handoffs/T004-executor-handoff.json`.
 
-No Markdown, dependency or toolchain configuration drift is present on the executor branch.
+No executor Markdown/dependency/toolchain configuration drift was found.
 
-Reported deterministic verification is green:
+## T004 R1 Progress Accepted
 
-- pre-mutation baseline: `114 passed`;
-- focused harness: `22 passed`;
-- final canonical suite: `136 passed`;
-- Ruff check/format green.
+R1 corrected the concrete custom-agent configuration defect:
 
-However the required real model baseline did not execute successfully:
+- `d032-eval` now has a non-empty `description`;
+- mode is explicitly `primary`;
+- model is explicitly `openai/gpt-5.6-terra`;
+- global and agent permissions remain deny-all;
+- legacy per-tool disables remain defense in depth;
+- disposable workspace/config/database isolation remains in place.
 
-- required independent sessions: 18;
-- required turns: 21;
-- completed sessions: 0;
-- completed turns: 0;
-- persisted result artifact: none.
+The exact temporary configuration now passes a no-model-call preflight through installed OpenCode `1.18.16`.
 
-The executor correctly failed closed and did not fabricate transcripts or weaken isolation.
+Reported verification:
 
-## Concrete T004 Adapter Defect
+- focused harness: `34 passed`;
+- canonical suite: `148 passed`;
+- Ruff check/format green;
+- Python `3.13.14`;
+- uv `0.11.33`;
+- pytest `9.1.1`;
+- Ruff `0.16.2`;
+- OpenCode `1.18.16`.
 
-The reviewed OpenCode adapter creates the temporary custom agent `d032-eval` without a `description`.
+No dependencies or global OpenCode/Gentle-AI/provider configuration changed.
 
-Current OpenCode agent documentation for the installed-era interface declares `description` a required custom-agent option. The implementation therefore has a concrete adapter-configuration defect that must be corrected before the remaining child failure can be attributed to the host/provider/model.
+## Remaining T004 Blocker
 
-The existing focused tests verify record/corpus/security invariants but do not prove that the generated temporary custom-agent configuration resolves a runnable `d032-eval` before the provider call.
+The required baseline still has:
 
-T004-R1 therefore requires:
+- required independent sessions: `18`;
+- required turns: `21`;
+- completed sessions: `0`;
+- completed turns: `0`;
+- result artifact: none.
 
-1. add a non-empty custom-agent `description`;
-2. explicitly make the eval agent `primary` unless the installed interface proves another mode is required;
-3. preserve deny-all isolation;
-4. add a read-only adapter configuration smoke/preflight under the exact temporary environment, using a documented capability such as `opencode agent list`;
-5. improve sanitized fail-closed diagnostic classification;
-6. rerun the full 18-session / 21-turn real baseline only after adapter preflight passes;
-7. if the corrected adapter still cannot produce a response, return `PARTIAL` with exact sanitized failure evidence rather than weakening isolation or silently changing provider/model.
+After successful R1 preflight, the first exact real child observed:
 
-Semantic D032 grading remains unavailable until real transcripts exist.
+- process exit: non-zero (`1`);
+- JSON events: exactly `1`;
+- user-visible response: none;
+- tool calls: zero.
+
+A bounded diagnostic also failed without a response. No provider/model substitution or isolation weakening occurred.
+
+The executor correctly failed closed; semantic D032 PD5 remains unavailable.
+
+## T004 R2 Finding
+
+The OpenCode adapter currently parses JSON events but does not preserve/classify the structured OpenCode `error` event before reducing the failure to event counts and heuristic stderr categories.
+
+OpenCode `run --format json` emits session failures as JSON error events. R2 requires the adapter to extract only safe structured error identity before any provider/model/adapter decision.
+
+Recent upstream OpenCode history contains GPT-5.6-family OAuth/model-transport compatibility defects, but this is only a hypothesis until the exact Terra error event is observed.
+
+## T004 R2 Required Sequence
+
+1. Keep the existing R1 preflight and isolation unchanged.
+2. Add structured JSON error-event extraction/redaction with deterministic tests.
+3. Establish only safe read-only metadata: OpenAI auth entry present/not present and exact Terra model advertised/resolvable.
+4. Re-run exactly `A-plain` trial 1 first.
+5. If the structured error identifies provider/model/auth/network/transport failure, stop `PARTIAL` and report it.
+6. If still inconclusive, at most one minimal disposable deny-all control probe may distinguish provider path from eval-agent/context path.
+7. No iterative diagnostic matrix.
+8. Do not switch provider/model or OpenCode version and do not weaken isolation.
+9. Only if the exact eval child succeeds may the complete 18-session / 21-turn baseline run.
+10. Semantic fields remain `PENDING_CHATGPT` until ChatGPT PD5.
 
 ## Accepted Architecture Frontier — D033 through D036
 
-Architecture work accepted while T004 was running remains non-retroactive to T004:
+Accepted architecture, not yet integrated into Governance Core/protocol:
 
-- `docs/decisions/D033-execution-access-control-plane.md` — execution authorization by actor/target/effect/privilege/credential/resource scope;
-- `docs/decisions/D034-runbook-first-terminal-neutral-execution.md` — reusable runbooks + terminal/platform-neutral execution adapters;
-- `docs/decisions/D035-security-authority-freshness-and-independent-verification.md` — current/versioned security authority, known-bad anti-regression and independent verification;
-- `docs/decisions/D036-existing-system-assurance-audit-mode.md` — evidence-first audits of existing systems across implementation quality, security, configuration and applicable practices.
+- `docs/decisions/D033-execution-access-control-plane.md` — bounded execution authority;
+- `docs/decisions/D034-runbook-first-terminal-neutral-execution.md` — runbook-first platform/terminal-neutral execution;
+- `docs/decisions/D035-security-authority-freshness-and-independent-verification.md` — current security authority, freshness, known-bad regression and independent verification;
+- `docs/decisions/D036-existing-system-assurance-audit-mode.md` — evidence-first assurance audits of existing systems.
 
 Consolidated overviews:
 
@@ -111,9 +146,9 @@ Consolidated overviews:
 - `docs/ARCHITECTURE-SECURITY-VERIFICATION.md`;
 - `docs/ARCHITECTURE-ASSURANCE-AUDIT.md`.
 
-D033–D036 are accepted architecture only; they are not yet integrated into Governance Core/protocol and MUST NOT broaden the running T004 contract.
+These decisions MUST NOT retroactively broaden T004.
 
-Combined future stack:
+Future combined stack:
 
 ```text
 D032 quality/interaction
@@ -127,68 +162,68 @@ D033 execution authorization
 D034 runbook + terminal-neutral adapter
 ```
 
-## Orchestrator Direct-Write Incident During T004-R1 Persistence
+After T004 is resolved, design the first D033–D036 Core integration with a fresh D032 Primary Solution Diagram and quality/security triage before implementation.
 
-While preparing this R1 review, ChatGPT accidentally created `docs/reviews/T004-R1.md` with content `placeholder` directly on `develop`.
+## Orchestrator Direct-Write Audit History
 
-Unauthorized direct-write commit:
+Preserve these known accidental direct-write incidents; do not hide/rewrite them without explicit Human authorization.
 
-`197ce3fad02a69baf99238beb9859280a137a681`
+### T002-R1 placeholder incident
 
-It was immediately corrected by deleting the placeholder directly from `develop`:
+- accidental direct `develop` commit: `6a3bff4f12850bd701fea624815e955231082afa`;
+- corrective commit: `67d8dc6de9679f833f3136c6a66ee7ad05283cb3`.
 
-`52ae6fb5126517ea19c8d00918e7b148c17f146a`
+### Architecture overview placeholder incident
 
-The corrective commit removes exactly the accidental placeholder. No T004/Core/runtime/configuration content was intentionally changed by the incident. Preserve this history for audit; do not rewrite it unless the Human Owner explicitly authorizes history repair.
+- accidental direct `develop` commit: `a0e063344043fda53f55b8fcb5b03742a33a7185`;
+- corrective commit: `09fa91f6b3c829e6edc0719fcd636cf3cba8f879`.
 
-The proper T004-R1 persistence uses the Markdown topic branch:
+### T004-R1 placeholder incident
 
-`docs/t004-r1-opencode-adapter-preflight`
+- accidental direct `develop` commit: `197ce3fad02a69baf99238beb9859280a137a681`;
+- corrective commit: `52ae6fb5126517ea19c8d00918e7b148c17f146a`.
+
+The proper T004-R1 review was later integrated through the Markdown PR flow.
 
 ## Open Questions / Blockers
 
-Active blocker: T004 cannot reach semantic PD5 because its OpenCode child execution produced no valid response/event stream.
+Primary blocker: exact structured OpenCode child error is not yet preserved, so provider/model/auth/transport versus eval-agent/context failure is not yet proven.
 
-First required correction is the documented custom-agent configuration defect and adapter preflight defined by T004-R1.
-
-If corrected/preflighted OpenCode still fails, Strategy must decide from sanitized evidence whether the next step is:
-
-- a bounded OpenCode/provider compatibility diagnosis; or
-- another execution adapter behind the same adapter-neutral T004 contract.
-
-Do not make that decision before R1 evidence exists.
+Do not authorize a provider/model/OpenCode-version/adapter change until R2 structured evidence is reviewed.
 
 The source product remains not stable/release-ready.
 
 ## Next Action
 
-1. Integrate this T004-R1 Markdown review/checkpoint through the normal Markdown PR flow if its diff is limited to `docs/reviews/T004-R1.md` + this checkpoint.
-2. Send the executor a minimal prompt to continue the existing `eval/d032-agent-capability` branch and apply only T004-R1.
-3. On the next executor return, validate remote HEAD and D029 identity.
-4. If a complete 21-record baseline exists, perform semantic PD5 over every persisted response and verify the 18-session cardinality/isolation evidence.
-5. If still `PARTIAL`, review exact sanitized diagnostics before authorizing any provider/model/adapter change.
-6. Only after T004 is resolved, design the D033–D036 Core-integration frontier with a fresh D032 Primary Solution Diagram and quality/security triage.
+1. Integrate T004-R2 + O025 through the normal Markdown PR flow if the diff is limited to those two files.
+2. Send the executor a minimal prompt to continue `eval/d032-agent-capability` and apply only T004-R2.
+3. On return, verify D029 and inspect the structured error/result evidence.
+4. If the exact A-plain child succeeds and a complete 21-record baseline exists, perform semantic PD5 over all transcripts.
+5. If provider/model/transport incompatibility is proven, Strategy/Human chooses a separately authorized remediation: alternate model, OpenCode version adjustment or alternate adapter.
+6. Only after T004 resolution, design D033–D036 Core integration.
 
 ## Next Chat Minimum Load
 
 After `AGENTS.md` and this checkpoint:
 
 1. load `docs/tasks/T004-d032-agent-facing-capability-eval.md`;
-2. load `docs/reviews/T004-R1.md`;
-3. if the executor has returned again, fetch `handoffs/T004-executor-handoff.json` and the exact remote branch/results at the reported final HEAD;
-4. load D029 for handoff identity review if needed;
+2. load `docs/reviews/T004-R2.md` (R1 only if historical comparison is needed);
+3. if the executor has returned, fetch `handoffs/T004-executor-handoff.json` and exact branch files/results at the reported final HEAD;
+4. load D029 only if identity mechanics need re-checking;
 5. load D032 Core files only when semantic transcript grading is possible;
-6. load D033–D036 only if execution/security/audit architecture planning becomes the active work after T004.
+6. load D033–D036 only when post-T004 architecture planning becomes active.
 
 ## Do Not Load or Do
 
 - Do not reopen T001/T002/T003 absent a concrete regression.
 - Do not accept T004 without the real 18-session / 21-turn baseline and ChatGPT semantic PD5.
-- Do not fabricate/massage transcripts or use model self-grading to complete T004.
-- Do not weaken tool denial, disposable-environment isolation or source-worktree immutability to make OpenCode run.
-- Do not silently switch provider/model on R1.
-- Do not retroactively apply D033–D036 to change T004 scope.
+- Do not fabricate transcripts or use model self-grading.
+- Do not weaken deny-all, disposable isolation or source-worktree immutability.
+- Do not silently switch provider/model or OpenCode version.
+- Do not copy/persist credentials or raw secret-bearing diagnostics.
+- Do not run an unbounded diagnostic matrix.
 - Do not open/merge a T004 implementation PR while T004 remains `PARTIAL`.
-- Do not modify Core/protocol for D033–D036 until T004 is resolved and a separate READY Task Contract aligns semantics/code/tests.
-- Do not hide or rewrite the direct-write incident without explicit Human authorization.
+- Do not retroactively apply D033–D036 to broaden T004.
+- Do not modify Governance Core/protocol for D033–D036 until T004 is resolved and a separate READY Task Contract exists.
+- Do not hide/rewrite direct-write incidents without explicit Human authorization.
 - Do not declare the source product stable/release-ready.
