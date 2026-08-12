@@ -1,7 +1,7 @@
 # T007 — Branch hygiene cleanup
 
 Task ID: T007  
-Status: READY  
+Status: IN_PROGRESS  
 Type: infrastructure  
 Base branch: `develop`  
 Expected topic branch: `chore/branch-hygiene-cleanup`  
@@ -21,6 +21,7 @@ T007 is a repository-maintenance interruption. It does not change product semant
 - `docs/TASK-CONTRACTS.md`
 - `docs/EXECUTOR-HANDOFFS.md`
 - GitHub issue #50 (`chore: audit and clean historical topic branches`)
+- Active rework directive: `docs/reviews/T007-R1.md`
 
 ## Authorized scope
 
@@ -43,7 +44,7 @@ The executor MAY use ordinary Git/GitHub CLI/API capabilities available in its h
 The executor MUST NOT:
 
 - delete `main` or `develop`;
-- delete a branch classified `REVIEW` or `RETAIN`;
+- delete a branch classified `REVIEW` or `RETAIN` unless a persisted Orchestrator/Human review directive explicitly resolves its disposition;
 - delete an active Task Contract branch or an open-PR branch;
 - infer deletion safety from branch naming or `git branch --merged` alone;
 - discard uncommitted local work, unique local commits, or a branch still required by another worktree;
@@ -60,27 +61,27 @@ branch deletion requires evidence that no unique work is being discarded
 squash merge ancestry != deletion authority
 ```
 
-For each remote deletion candidate, the executor must establish:
+For each normal merged-PR remote deletion candidate, the executor must establish:
 
 1. the associated PR is actually merged into the authorized target;
 2. the reviewed PR `head_sha` is known;
 3. the current remote branch HEAD equals that reviewed `head_sha`;
 4. no evidence of post-review unique work exists.
 
-Any mismatch or ambiguity becomes `REVIEW` and remains undeleted.
+Any mismatch or ambiguity becomes `REVIEW` and remains undeleted until a persisted Orchestrator/Human disposition resolves it.
 
 The executor owns only the checkout(s) actually accessible in its execution environment. It MUST NOT claim local cleanup for inaccessible Human/other-agent checkouts. Those must be reported explicitly as outstanding owner-side cleanup.
 
 ## Required execution sequence
 
-1. Verify current `develop` contains this exact T007 contract.
-2. Create/use `chore/branch-hygiene-cleanup` from that `develop` revision.
+1. Verify current `develop` contains this exact T007 contract and any active review directive.
+2. Create/use `chore/branch-hygiene-cleanup` from a `develop` revision containing the controlling contract; rework continues on the same task branch.
 3. Verify local checkout cleanliness/worktree state before destructive branch operations.
 4. Fetch/prune and capture complete remote and local branch inventories.
 5. Exclude `main` and `develop` from deletion classification.
 6. Classify every remaining remote branch exactly once as `DELETE | REVIEW | RETAIN` with evidence.
 7. Delete remote `DELETE` branches in bounded batches of at most 10, re-reading remote state after every batch.
-8. Resolve no `REVIEW` branch by assumption; leave unresolved items intact and report them.
+8. Resolve no `REVIEW` branch by assumption; only a persisted Orchestrator/Human disposition may authorize its deletion.
 9. Clean the executor-controlled local checkout: switch to `develop`, fetch/prune, remove safely retired local topic branches, inspect worktrees, and verify no stale remote-tracking refs remain for deleted remote branches.
 10. Re-fetch final remote/local inventories and persist the T007 handoff.
 11. Commit/push the handoff on `chore/branch-hygiene-cleanup` and return only the canonical minimal executor response.
@@ -89,9 +90,9 @@ The executor owns only the checkout(s) actually accessible in its execution envi
 
 ChatGPT accepts T007 only when remote evidence shows:
 
-- every historical non-long-lived remote branch has an explicit `DELETE | REVIEW | RETAIN` disposition;
-- every branch reported `DELETE` is absent from the canonical remote;
-- every `REVIEW` branch remains present unless separately resolved with auditable evidence;
+- every historical non-long-lived remote branch has an explicit final disposition;
+- every branch authorized for deletion is absent from the canonical remote;
+- every unresolved `REVIEW` branch remains present unless separately resolved with auditable evidence;
 - every `RETAIN` branch has a concrete current reason;
 - `main` and `develop` are unchanged by deletion operations;
 - the executor-controlled local checkout is on an appropriate retained branch, clean, pruned, and contains no safely retired local topic branch that should have been removed;
@@ -111,7 +112,8 @@ The handoff must include, at minimum:
 - clean `git status` evidence after cleanup;
 - unresolved `REVIEW` branches with exact reason;
 - retained branches with exact reason;
-- statement identifying any local checkout not accessible/verified.
+- statement identifying any local checkout not accessible/verified;
+- any procedural nonconformance discovered during execution, including recovery evidence.
 
 Normal product pytest/Ruff gates are not required because T007 changes no product implementation. The verification authority for T007 is deterministic Git/GitHub state evidence plus Orchestrator review.
 
@@ -119,13 +121,13 @@ Normal product pytest/Ruff gates are not required because T007 changes no produc
 
 Stop deletion of the affected branch and classify it `REVIEW` if:
 
-- current remote HEAD differs from the merged PR head;
-- no reliable associated merged PR can be established;
+- current remote HEAD differs from the merged PR head or a persisted resolved-review SHA;
+- no reliable associated merged PR can be established and no persisted review disposition resolves it;
 - local uncommitted or unique work could be lost;
 - another worktree still owns the branch and safe disposition is unclear;
 - repository permissions/tooling prevent verified deletion;
 - deletion would require history rewriting or weakening branch protection;
-- any evidence conflicts about whether work is already represented.
+- any evidence conflicts about whether work is already represented or intentionally abandoned.
 
 A single `REVIEW` item does not require abandoning safe cleanup of independently verified `DELETE` branches.
 
@@ -139,3 +141,7 @@ HANDOFF: handoffs/T007-executor-handoff.json
 BRANCH: chore/branch-hygiene-cleanup
 HEAD: <pushed-commit-sha>
 ```
+
+## Review history
+
+- `T007-R1` reviews executor HEAD `656c71e22f60ae8b235304179dc1d8fee4ec4031`, preserves the classify-before-delete procedural nonconformance, and resolves `eval/d032-agent-capability` as intentionally abandoned T004 work eligible for exact-SHA deletion.
