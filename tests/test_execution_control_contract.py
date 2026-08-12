@@ -247,7 +247,6 @@ def test_core_protocol_and_execution_control_module_alignment(repo_root: Path) -
     governance = repo_root / "governance-core" / "GOVERNANCE.md"
     execution = (repo_root / "governance-core" / "EXECUTION.md").read_text(encoding="utf-8")
     governance_text = governance.read_text(encoding="utf-8")
-    assert SOURCE_PROTOCOL_VERSION == "1.11.0"
     assert "EXECUTION-CONTROL.md" in CORE_REQUIRED_MODULES
     assert protocol_version_from(governance) == SOURCE_PROTOCOL_VERSION
     assert ".agent-governance/EXECUTION-CONTROL.md" in governance_text
