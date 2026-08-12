@@ -1,0 +1,181 @@
+{
+  "task_id": "T005",
+  "status": "DONE",
+  "task_contract_path": "docs/tasks/T005-d033-d034-deterministic-execution-control-contract.md",
+  "branch": "test/execution-control-contract",
+  "base_branch": "develop",
+  "base_sha": "658826e8b17e7b8454cfce5a5e6c7850f07f8d35",
+  "implementation_head_sha": "f4d6119c4351d6968588e9cfb9d921d1a10c0404",
+  "implementation_head_sha_note": "D029 implementation anchor. This handoff is committed in a handoff-only successor; visible executor response reports final pushed branch HEAD.",
+  "files_changed": [
+    "tests/_helpers.py",
+    "tests/fixtures/execution_control/policy_cases.json",
+    "tests/test_execution_control_contract.py",
+    "handoffs/T005-executor-handoff.json"
+  ],
+  "implementation_summary": "Aligned strict harness constants to Core Protocol 1.11.0 and EXECUTION-CONTROL.md. Added an explicit JSON corpus and test-local evaluator covering effect-oriented authorization, envelope fail-closed checks, authority non-expansion, runbook routing/invocation/lifecycle, semantic adapter equivalence and sanitized evidence without production execution logic.",
+  "execution_control_contract": {
+    "fixture": "tests/fixtures/execution_control/policy_cases.json",
+    "test_module": "tests/test_execution_control_contract.py",
+    "fixture_families": [
+      "approval outcomes and strictest effect",
+      "envelope and target identity",
+      "child/adapter authority non-expansion",
+      "runbook-required routing",
+      "approved runbook versus invocation authorization",
+      "runbook lifecycle and failure paths",
+      "terminal-neutral adapter equivalence",
+      "unsupported/stale/native-denied adapter paths",
+      "semantic sanitized evidence"
+    ],
+    "approval_outcomes": ["ALLOW_TASK", "ALLOW_EXPLICIT", "REQUIRE_HUMAN", "DENY"],
+    "approval_cases": [
+      "ordinary task-local observation/test",
+      "bounded non-production remote service mutation",
+      "production mutation",
+      "administrator/global configuration",
+      "credential lifecycle with and without prior bounded Human gate",
+      "destructive persistent effect",
+      "unknown/mismatched target",
+      "identity verification bypass",
+      "credential exfiltration",
+      "security/audit control bypass",
+      "strictest material effect and DENY precedence"
+    ],
+    "envelope_mismatch_cases": [
+      "missing target",
+      "target mismatch",
+      "resource outside scope",
+      "privilege above ceiling",
+      "credential binding mismatch",
+      "network binding mismatch",
+      "context drift",
+      "actor mismatch",
+      "effect outside scope"
+    ],
+    "authority_subset_cases": [
+      "child capability subset accepted",
+      "adapter privilege expansion rejected",
+      "script target expansion rejected",
+      "server-side effect expansion rejected"
+    ],
+    "runbook_routing_cases": [
+      "ordinary task-local false",
+      "production mutation",
+      "privileged administration",
+      "remote persistent mutation",
+      "infrastructure/IAM/network/security control",
+      "credential lifecycle",
+      "persistent migration",
+      "destructive operation",
+      "multi-system sequencing",
+      "recovery/failover/restore",
+      "recurring maintenance with meaningful failure modes"
+    ],
+    "runbook_lifecycle_cases": [
+      "successful repeated step/checkpoint sequence",
+      "preflight mismatch BLOCKED",
+      "authorization mismatch BLOCKED",
+      "checkpoint STOP then RECOVER or ROLLBACK",
+      "material drift STALE",
+      "Human denial before execution",
+      "client exit without postconditions cannot reach valid DONE"
+    ],
+    "adapter_cases": [
+      "different synthetic family/syntax with equal semantic fingerprint",
+      "changed effect boundary non-equivalent",
+      "unsupported step blocked",
+      "semantic drift stale/revalidate",
+      "stricter native denial blocked without bypass"
+    ],
+    "evidence_cases": [
+      "complete task/authorization, target, runbook, adapter, checkpoint, postcondition and recovery facts",
+      "raw transcript not required",
+      "secret-bearing evidence rejected",
+      "missing postcondition evidence rejected"
+    ],
+    "protocol_alignment": {
+      "source_protocol_version": "1.11.0",
+      "required_module": "EXECUTION-CONTROL.md",
+      "governance_source_map_reference": ".agent-governance/EXECUTION-CONTROL.md",
+      "execution_router_reference": "EXECUTION-CONTROL.md"
+    },
+    "test_local_boundary": "All evaluator logic lives in tests/test_execution_control_contract.py and consumes explicit fixture facts. No production runtime, executable adapter, arbitrary natural-language command parsing, OS/shell/terminal dependency, network operation, credential access, model call or real-system mutation was introduced."
+  },
+  "verification": {
+    "focused_commands": [
+      "uv run --locked python -m pytest tests/test_execution_control_contract.py",
+      "uv run --locked python -m pytest tests/test_harness_foundation.py tests/test_canonical_layout.py tests/test_source_consumer_separation.py tests/test_reference_integrity.py tests/test_coexistence_classification.py tests/test_d032_policy_contract.py"
+    ],
+    "commands": [
+      "uv sync --locked",
+      "uv run --locked ruff check .",
+      "uv run --locked ruff format --check .",
+      "uv run --locked python -m pytest"
+    ],
+    "results": {
+      "focused_t005": "11 passed in 0.03s; 11 collected, 0 failed, 0 skipped",
+      "t001_t003_regressions": "115 passed in 0.72s; 115 collected, 0 failed, 0 skipped",
+      "uv_sync_locked": "Resolved 8 packages in 0.80ms; Checked 6 packages in 0.08ms",
+      "ruff_check": "All checks passed!",
+      "ruff_format_check": "9 files already formatted",
+      "full_pytest": "126 passed in 0.58s; 126 collected, 0 failed, 0 skipped"
+    },
+    "runtime": {
+      "uv": "uv 0.11.33",
+      "python": "Python 3.13.14",
+      "pytest": "pytest 9.1.1",
+      "ruff": "ruff 0.16.2"
+    },
+    "network_required": {
+      "provisioning_network": false,
+      "test_runtime_network": false,
+      "credentials_required": false,
+      "model_or_llm_calls": false,
+      "real_system_execution": false
+    }
+  },
+  "dependencies_or_config_changes": {
+    "packages_added": [],
+    "pyproject_toml_changed": false,
+    "uv_lock_changed": false,
+    "python_version_changed": false,
+    "global_config_changed": false,
+    "proof": "git diff --exit-code origin/develop -- pyproject.toml uv.lock .python-version '*.md' exited 0 before implementation commit."
+  },
+  "scope_exclusions": {
+    "markdown_changed": false,
+    "production_runtime_changed": false,
+    "d035_or_d036_implemented": false,
+    "real_platform_adapter_added": false,
+    "network_or_remote_operation_executed": false,
+    "credential_or_secret_used": false,
+    "privileged_destructive_or_persistent_operation_executed": false,
+    "model_or_llm_behavior_added": false,
+    "root_consumer_footprint_created": false,
+    "pull_request_opened": false
+  },
+  "external_overlay_facts": {
+    "rdd": "gentle-ai review mode status --cwd . reported effective off, clone-local off, global unset. No RDD or global configuration mutation occurred.",
+    "skill_registry": ".atl/ remains ignored local state under .gitignore and was not staged or committed.",
+    "sdd": "No SDD initialization, migration, consumer state or external product artifact was created."
+  },
+  "changed_line_budget": {
+    "implementation_additions": 350,
+    "implementation_deletions": 1,
+    "authored_total": 351,
+    "limit": 400,
+    "exception": null
+  },
+  "rollback": "Revert implementation commit f4d6119c4351d6968588e9cfb9d921d1a10c0404 to remove only T005 harness alignment, fixture corpus and test-local contract. Revert the handoff-only successor separately if needed.",
+  "git_status": {
+    "branch_created_from": "origin/develop@658826e8b17e7b8454cfce5a5e6c7850f07f8d35",
+    "branch_ancestry_verified": true,
+    "pre_handoff_in_scope_state": "implementation committed; only handoff JSON pending",
+    "ignored_local_state": ".atl/ ignored and uncommitted"
+  },
+  "unresolved_issues": [],
+  "recommended_next_task": "ChatGPT remote review and acceptance of T005.",
+  "chatgpt_read_path": "handoffs/T005-executor-handoff.json",
+  "skill_resolution": "work-unit-commits loaded from exact injected path"
+}
