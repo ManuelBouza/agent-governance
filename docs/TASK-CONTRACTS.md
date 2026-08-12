@@ -116,7 +116,7 @@ A reviewer must be able to distinguish the original task from later authorized r
 12. Rework repeats on the same task branch using durable review/revision instructions.
 13. After ChatGPT acceptance, the implementation proceeds through PR to `develop`.
 14. ChatGPT may update lifecycle/acceptance metadata without rewriting original execution semantics.
-15. After accepted task content/handoff and acceptance records are integrated, post-integration branch retirement is performed under `docs/BRANCH-CLEANUP.md` using the canonical prompt in `docs/POST-INTEGRATION-CLEANUP-PROMPT.md` when delegated to an executor.
+15. After accepted task content/handoff and acceptance records are integrated, any delegated post-integration branch retirement MUST be governed by an integrated Operational Contract under `docs/OPERATION-CONTRACTS.md` and launched only through `docs/POST-INTEGRATION-CLEANUP-PROMPT.md`.
 16. Operational task closure is complete only after required remote/local branch cleanup is verified.
 
 ## Canonical minimal executor launch prompt
@@ -185,29 +185,21 @@ If the Task Contract is missing, not `READY`, not integrated into the stated bas
 
 If a launch prompt conflicts with the persisted Task Contract or repository policy, the executor MUST stop/escalate rather than choosing the chat-only instruction as a new task scope. Human/ChatGPT changes to objective/scope/acceptance/verification must be persisted through the normal Task Contract revision flow.
 
-## Canonical post-integration cleanup prompt
+## Canonical post-integration cleanup delegation
 
-Post-integration branch retirement is not another implementation launch and MUST NOT be expressed as an ad hoc executor instruction.
+Post-integration branch retirement is not another implementation launch and MUST NOT be expressed as an ad hoc executor instruction or as a chat-carried `TASK`/`PR` cleanup target.
 
-When an accepted/integrated task still has task-related topic, review, acceptance, or implementation branches to retire, delegation to an executor MUST use `docs/POST-INTEGRATION-CLEANUP-PROMPT.md`.
+Before delegating cleanup, ChatGPT MUST persist the complete concrete operation in an integrated `docs/operations/OPNNN-*.md` Operational Contract governed by `docs/OPERATION-CONTRACTS.md`.
 
-The cleanup prompt:
-
-- identifies the repository and completed Task ID;
-- bootstraps from current `develop` and `AGENTS.md`;
-- points to `docs/BRANCH-CLEANUP.md` as the authoritative operational procedure;
-- requires the executor to derive eligible branches from Git/GitHub merged-PR state rather than a chat-provided branch list;
-- authorizes no repository-content modifications and no new implementation handoff;
-- returns only cleanup status plus final remote/local branch inventories.
+The cleanup bootstrap prompt then contains only repository/base/bootstrap context plus exactly one Operational Contract path. All concrete targets, resolved-review exceptions, safety semantics, and required evidence live in Git.
 
 ```text
-normal task launch != post-integration cleanup
-
-normal task launch -> Task Contract execution + handoff
-post-integration cleanup -> already-integrated task branch retirement only
+normal task launch -> Task Contract pointer
+post-integration cleanup -> Operational Contract pointer
+prompt-specific operation semantics -> prohibited
 ```
 
-If cleanup safety cannot be derived from authoritative Git/GitHub state, the executor returns `BLOCKED` or `PARTIAL`; ChatGPT MUST NOT compensate with branch-specific chat-only deletion instructions.
+If cleanup safety cannot be derived from the persisted Operational Contract and its referenced authoritative Git/GitHub state, the executor returns `BLOCKED` or `PARTIAL`; ChatGPT MUST NOT compensate with chat-only instructions.
 
 ## Minimal executor response pattern
 
@@ -221,12 +213,12 @@ After persisting/committing/pushing the required implementation handoff, the exe
 
 `HEAD: <pushed-commit-sha>`
 
-The distinct post-integration cleanup response schema is defined in `docs/POST-INTEGRATION-CLEANUP-PROMPT.md`.
+Operational Contract completion schemas are defined by each integrated Operational Contract and are referenced through `docs/POST-INTEGRATION-CLEANUP-PROMPT.md` for branch retirement.
 
 ## Audit invariant
 
 A reviewer must be able to reconstruct from Git alone:
-- what was requested before implementation;
+- what was requested before implementation or operation;
 - any explicit revisions/review directives;
 - what the executor reported it did;
 - what actually changed.
