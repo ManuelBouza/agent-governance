@@ -4,11 +4,20 @@ Status: ACTIVE
 
 ## Purpose
 
-Define the canonical executor prompt used after an accepted source-product task has been integrated and only branch-retirement work remains.
+Define the canonical executor prompt used after an authorized source-product change has been integrated and only branch-retirement work remains.
 
 This prompt is distinct from the normal Task Contract launch prompt in `docs/TASK-CONTRACTS.md`.
 
-The normal launch prompt starts or continues executable task work. The post-integration cleanup prompt performs repository hygiene only after task implementation/acceptance content is already integrated.
+The normal launch prompt starts or continues executable task work. The post-integration cleanup prompt performs repository hygiene only after the relevant content is already integrated.
+
+## Cleanup target
+
+A cleanup target is exactly one durable integration identity:
+
+- `TASK <task-id>` for a Task-Contract-governed change; or
+- `PR <number>` for an integrated source change that has no Task ID, such as a Markdown-only maintenance PR.
+
+Do not identify the cleanup target with a branch list. Branch candidates are derived from Git/GitHub history.
 
 ## Authority boundary
 
@@ -18,12 +27,12 @@ The cleanup authority is the combination of:
 
 - current `develop`;
 - `AGENTS.md`;
-- the completed task identity;
-- merged PR records associated with that task;
+- the cleanup target identity;
+- the target's merged PR records and related integration history;
 - `docs/BRANCHING.md`;
 - `docs/BRANCH-CLEANUP.md`.
 
-The executor uses Git/GitHub state to derive which already-merged task branches remain eligible for retirement.
+The executor uses Git/GitHub state to derive which already-integrated branches remain eligible for retirement.
 
 ## Canonical prompt
 
@@ -32,20 +41,20 @@ Operate as the Agente de IA Ejecutor for <owner>/<repository>.
 
 Start from current develop and read AGENTS.md first.
 
-Then perform post-integration branch cleanup for completed task <task-id> under the authoritative procedure:
+Then perform post-integration branch cleanup for <cleanup-target> under the authoritative procedure:
 docs/BRANCH-CLEANUP.md
 
-Treat current Git/GitHub state, the completed task record, its merged PR records, and the referenced repository policies as the complete cleanup specification. Do not modify repository content, reopen task scope, or infer deletion safety from branch names or ancestry alone.
+Treat current Git/GitHub state, the cleanup target's integrated records, and the referenced repository policies as the complete cleanup specification. Do not modify repository content, reopen scope, or infer deletion safety from branch names or ancestry alone.
 
 Complete remote and accessible-local branch retirement and verification, then return only:
 
 STATUS: DONE | BLOCKED | PARTIAL
-TASK: <task-id>
+TARGET: <cleanup-target>
 REMOTE_REMAINING: <branches>
 LOCAL_REMAINING: <branches>
 ```
 
-Normal substitutions are limited to repository identity and task ID.
+Normal substitutions are limited to repository identity and exactly one cleanup target (`TASK <task-id>` or `PR <number>`).
 
 ## Required semantics
 
@@ -55,20 +64,20 @@ For each candidate branch, the executor follows `docs/BRANCH-CLEANUP.md`, includ
 
 The executor cleans every accessible local checkout/worktree it controls and reports inaccessible checkouts as unverified rather than claiming they are clean.
 
-No handoff commit is required solely for this closure phase because the task handoff and acceptance are already integrated. The durable audit surfaces are the completed Task Contract, reviews/acceptance records, merged PRs, Git history, and the Orchestrator's verified final remote state.
+No handoff commit is required solely for this closure phase because the governed content is already integrated. The durable audit surfaces are the Task Contract/reviews when applicable, merged PRs, Git history, and the Orchestrator's verified final remote state.
 
 ## Completion invariant
 
 ```text
-accepted task != operationally closed task
+integrated change != operationally closed change
 
-operational closure = accepted/integrated task + post-integration branch retirement
+operational closure = integrated change + post-integration branch retirement
 ```
 
-A completed task is not considered branch-cleanup-closed until the merged task topic/review/acceptance branches are absent remotely and the accessible local checkout has been pruned accordingly, except for branches explicitly retained under `docs/BRANCH-CLEANUP.md`.
+A cleanup target is not operationally closed until its eligible merged topic/review/acceptance/implementation branches are absent remotely and the accessible local checkout has been pruned accordingly, except for branches explicitly retained under `docs/BRANCH-CLEANUP.md`.
 
 ## Non-duplication rule
 
-Do not add task-specific branch names, SHA values, PR numbers, cleanup commands, or deletion decisions to the launch prompt. Those facts belong to Git/GitHub state and repository policy.
+Do not add branch names, SHA values, cleanup commands, or deletion decisions to the prompt. Those facts belong to Git/GitHub state and repository policy.
 
 If cleanup cannot be derived safely from authoritative state, return `BLOCKED` or `PARTIAL`; do not compensate with chat-only deletion instructions.
