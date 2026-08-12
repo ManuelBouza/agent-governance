@@ -1,6 +1,15 @@
 # Assurance Audit
 
-Assurance-Audit-Version: 1.0.0
+Assurance-Audit-Version: 1.0.0  
+Activation-State: STAGED
+
+## Activation boundary
+
+This module is staged for deterministic verification under T010 while canonical Protocol remains `1.12.0`.
+
+It is **not** yet an active routed/required Core module. D040 requires T010 verification readiness to be accepted/integrated/clean before ChatGPT activates `ASSURANCE.md` in `GOVERNANCE.md` and bumps Protocol to `1.13.0`.
+
+Staging the module does not itself authorize an audit, live-system access, scanner/provider use or remediation.
 
 ## Purpose
 
