@@ -1,63 +1,118 @@
 # Current ChatGPT Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O049  
+Checkpoint-Sequence: O050  
 Canonical-Branch: `develop`  
 Chat-Closure: CONTINUE_ALLOWED
 
 ## Current Frontier
 
-D039 is `ACCEPTED`. T008 and T009 are accepted, integrated, and post-integration-cleaned. L001 is `VERIFIED`. L002 remains `ANALYZED` and separate.
+T006, T008 and T009 are `ACCEPTED`, integrated and post-integration-cleaned. L001 is `VERIFIED`. L002 remains `ANALYZED` and separate.
 
-T006 is `ACCEPTED` by `docs/reviews/T006-R1.md` and integrated by PR #71 at `develop@33fe6e49a6d972607ce874d74d8182c1470c11ed`. Post-integration cleanup remains pending under OP006.
+D036 — Existing-System Assurance Audit Mode — is `ACCEPTED`. Its portable Core integration and first deterministic implementation contract are now the active planning frontier.
 
-D036 remains after T006 and MUST NOT start before OP006 closes and T006 branch lifecycle is independently verified clean.
+The D036 planning change adds:
 
-## T006 — ACCEPTED / INTEGRATED / CLEANUP PENDING
+- `governance-core/ASSURANCE.md` version `1.0.0`;
+- `governance-core/GOVERNANCE.md` Protocol `1.13.0` with assurance routing/invariants;
+- active `docs/ARCHITECTURE-ASSURANCE-AUDIT.md` integration architecture;
+- `docs/tasks/T010-d036-deterministic-assurance-audit-contract.md`;
+- `docs/operations/OP007-retire-d036-t010-planning-branch.md`.
 
-Task Contract: `docs/tasks/T006-d035-deterministic-security-verification-contract.md`  
-Review: `docs/reviews/T006-R1.md`  
-Accepted executor HEAD: `080cf745a9555a70e4f6d3d487c8d817905d4a80`  
-Implementation anchor: `2323f88d32744286ecde1d7bf05b65e4238cdbd4`  
-Implementation PR: #71  
-Integrated `develop`: `33fe6e49a6d972607ce874d74d8182c1470c11ed`
+No T010 executor work may start until this Markdown planning change is integrated into `develop` and OP007 has retired its merged planning branch.
 
-Accepted verification evidence: focused pytest 9 passed; full pytest 144 passed; Ruff check and format check PASS.
+## D036 Core model
 
-T006 remains provider/model/network neutral and does not implement D036.
+```text
+existing subject
+      ↓
+scope + authorization
+      ↓
+assessment profile + applicable quality/security controls
+      ↓
+normalized evidence graph
+      ↓
+explicit finding states + severity/confidence
+      ↓
+coverage truth
+      ↓
+assurance report + remediation roadmap + retest plan
+```
 
-## OP006 — READY after PR #72 integration
+Core invariants include:
 
-Operational Contract: `docs/operations/OP006-retire-t006-integration-branches.md`
+```text
+model opinion != audit evidence
+NOT_ASSESSED != PASS
+INCONCLUSIVE != PASS
+finding severity != finding confidence
+audit finding != remediation authorization
+```
 
-Durable targets are PRs #70, #71 and #72. OP006 derives exact branch/head/deletion authority from Git/GitHub and preserves `main`, `develop`, unrelated work and repository content.
+D036 composes D035 security authority and D033/D034 execution control; it does not create authority owned by those planes.
+
+## T010 — READY AFTER PLANNING INTEGRATION + OP007
+
+Task Contract:
+
+`docs/tasks/T010-d036-deterministic-assurance-audit-contract.md`
+
+Expected executor branch:
+
+`test/d036-deterministic-assurance-audit-contract`
+
+Expected handoff:
+
+`handoffs/T010-executor-handoff.json`
+
+T010 is deterministic/test-only under D037. It establishes synthetic policy-contract coverage for scope/authorization, profile ceilings, evidence/finding states, severity-confidence separation, coverage accounting, audit/remediation separation, temporal posture and D035/D033/D034 composition.
+
+T010 MUST NOT perform real-system access, authenticated observation, scanning, active testing, model calls, live advisory fetches, provider integration or remediation mutations.
+
+## OP007 — DRAFT UNTIL PLANNING PR IDENTITY IS PERSISTED
+
+Operational Contract:
+
+`docs/operations/OP007-retire-d036-t010-planning-branch.md`
+
+OP007 will retire only the merged D036/T010 Markdown planning branch. Its integrating PR identity must be persisted before status becomes `READY`.
 
 ## Persisted executor-instruction invariant
 
 `prompt = bootstrap transport only`; persisted Task/Operational Contract plus referenced Git policy is the complete instruction.
 
+## Learning state
+
+L001 remains `VERIFIED`.
+
+L002 remains `ANALYZED` and non-blocking. Do not fold its broader handoff-identity control into D036/T010 without a separate persisted decision/task.
+
 ## Next Action
 
-1. Integrate PR #72 and freeze `docs/t006-post-integration-cleanup`.
-2. Execute OP006 using only its persisted Operational Contract pointer and independently verify final remote/local branch inventories.
-3. After OP006 completes, T006 is fully closed.
-4. Only then advance to D036 through the governance flow required by the current repository state; do not infer D036 implementation scope from old chat context.
-5. Keep L002 separate unless explicitly selected by a new decision/task.
+1. Open and review the D036/T010 Markdown planning PR to `develop`.
+2. Persist that PR identity in OP007 and mark OP007 `READY`; update this checkpoint if needed.
+3. Integrate the planning PR and freeze its source branch.
+4. Execute OP007 using only its persisted Operational Contract pointer; independently verify remote/local branch inventories.
+5. Launch T010 using only `docs/tasks/T010-d036-deterministic-assurance-audit-contract.md`.
+6. Review/accept/integrate/clean T010 through the normal contract-first lifecycle.
+7. Do not start real-system audit adapters/providers until a later explicit decision/Task Contract authorizes them.
 
 ## Next Chat Minimum Load
 
 After `AGENTS.md` and this checkpoint:
 
-1. if OP006 is incomplete, load `docs/operations/OP006-retire-t006-integration-branches.md` plus branch-cleanup policy;
-2. after T006 closes, load the current D036 decision/architecture/contract frontier named by Git before acting;
-3. load L002 only if making its separate control decision or on concrete handoff-identity conflict;
-4. do not reload older task history absent regression/audit need.
+1. if the D036/T010 planning PR is not integrated, load D036, `docs/ARCHITECTURE-ASSURANCE-AUDIT.md`, `governance-core/ASSURANCE.md` and T010;
+2. if OP007 is pending, load `docs/operations/OP007-retire-d036-t010-planning-branch.md` plus branch-cleanup policy;
+3. for T010 execution/review load T010, D036, `ASSURANCE.md`, D035/`SECURITY.md`, D033/D034/`EXECUTION-CONTROL.md`, and D037 only as required by the contract;
+4. load L002 only on a concrete handoff-identity conflict or explicit separate control-selection work;
+5. do not reload older task history absent regression/audit need.
 
 ## Do Not
 
-- Do not append commits to merged T006 branches.
-- Do not delete `main` or `develop`.
-- Do not start D036 before OP006 closes.
-- Do not fold L002 into T006/D035/D036.
-- Do not place concrete executor semantics only in chat.
+- Do not write directly to `develop` or `main`.
+- Do not launch T010 before its controlling Markdown is integrated and OP007 closes.
+- Do not infer intrusive/live assessment authorization from D036 or T010.
+- Do not add scanner/provider/model/network dependencies to T010.
+- Do not treat audit findings as remediation authority.
+- Do not fold L002 into D036/T010.
 - Preserve prior procedural audit history.
