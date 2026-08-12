@@ -1,7 +1,7 @@
 # OP005 — Retire T008 integration branches
 
 Operation ID: OP005  
-Status: DRAFT  
+Status: READY  
 Type: post-integration branch cleanup  
 Base branch: `develop`
 
@@ -14,9 +14,10 @@ Retire the merged branches created to accept, integrate, and close T008 while pr
 The executor MUST derive branch identity and exact reviewed-head evidence from:
 
 - PR #67 — final T008 acceptance;
-- PR #68 — exact accepted T008 implementation.
+- PR #68 — exact accepted T008 implementation;
+- PR #69 — T008 post-integration learning/checkpoint closure and this OP005 contract.
 
-The PR integrating this OP005 contract MUST be added here before OP005 becomes `READY`. Its source branch is intended to be retired by this same operation after merge.
+The source branch of PR #69 is intentionally included before merge so this operation can retire its own contract branch without recursive cleanup-contract creation.
 
 ## Controlling references
 
