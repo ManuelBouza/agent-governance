@@ -1,7 +1,7 @@
 # OP003 — Retire T009 integration branches
 
 Operation ID: OP003  
-Status: DRAFT  
+Status: READY  
 Type: post-integration branch cleanup  
 Base branch: `develop`
 
@@ -14,9 +14,10 @@ Retire the merged branches created to accept, integrate, and close T009 while pr
 The executor MUST derive branch identity and exact reviewed-head evidence from:
 
 - PR #63 — T009 acceptance (`docs/t009-acceptance`);
-- PR #64 — accepted T009 implementation (`test/protocol-version-baseline-alignment`).
+- PR #64 — accepted T009 implementation (`test/protocol-version-baseline-alignment`);
+- PR #65 — L001 control-integration / OP003 planning (`docs/t009-post-integration-cleanup`).
 
-The PR integrating this OP003 contract MUST be added before OP003 becomes `READY` or is merged. Its source branch is intended to be retired by this same operation after merge.
+PR #65 is intentionally included before merge so this contract-authoring branch can be retired by the same operation without creating recursive cleanup work.
 
 ## Controlling references
 
@@ -25,7 +26,7 @@ The PR integrating this OP003 contract MUST be added before OP003 becomes `READY
 - `docs/BRANCHING.md`
 - `docs/BRANCH-CLEANUP.md`
 - `docs/POST-INTEGRATION-CLEANUP-PROMPT.md`
-- merged Git/GitHub records for the durable targets above
+- merged Git/GitHub records for PRs #63, #64 and #65
 
 ## Authorized operations
 
