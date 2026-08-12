@@ -3,9 +3,9 @@
   "status": "DONE",
   "task_contract_path": "docs/tasks/T008-egll-deterministic-learning-detectors.md",
   "branch": "test/egll-deterministic-learning-detectors",
-  "implementation_head_sha": "fb2343ff3724810ed327c9e5a68232504894e59e",
+  "implementation_head_sha": "401da43c14241a481afca6df3d3a5c24b3701711",
   "base_branch": "develop",
-  "base_sha": "2be1ad9329e0b7901b784cff542aca50a8516927",
+  "base_sha": "472bc4fc2c283a3cd649c2efc4c80733dd02428b",
   "files_changed": [
     "tests/_governance_learning.py",
     "tests/fixtures/governance_learning/cases.json",
@@ -40,8 +40,8 @@
       "uv run --locked ruff format --check ."
     ],
     "results": [
-      "Focused pytest: PASS, 8 passed in 0.03s.",
-      "Full pytest: PASS, 134 passed in 0.56s after incorporating current develop with the accepted T009 protocol-version baseline correction.",
+      "Focused pytest: PASS, 8 passed in 0.02s.",
+      "Full pytest: PASS, 134 passed in 0.60s after incorporating current develop with the persisted T008-R2 handoff identity rework.",
       "Ruff check: PASS, All checks passed.",
       "Ruff format check: PASS, 11 files already formatted."
     ],
@@ -50,10 +50,10 @@
   },
   "dependencies_or_config_changes": "None.",
   "scope_confirmation": "No Markdown, Governance Core, dependency, configuration, network, model/provider, external policy engine, ruleset, GitHub Actions, or consumer-footprint changes were made.",
-  "git_status": "Implementation and corrected current develop baseline committed at implementation_head_sha; handoff finalization commit pending. Pre-existing untracked .codegraph/ remains untouched, untracked, and excluded from staging and commits.",
+  "git_status": "Implementation and current develop baseline committed at implementation_head_sha; corrected handoff finalization commit pending. Pre-existing untracked .codegraph/ remains untouched, untracked, and excluded from staging and commits.",
   "unresolved_issues": [],
   "procedural_nonconformance": null,
-  "discovered_ambiguity": "None. T009 corrected the independently authorized baseline drift; T008 detector files remain byte-equivalent to reviewed implementation anchor 6cf30513ef545fc276807a22272633f436b956bd.",
+  "discovered_ambiguity": "T008-R2 identified the prior handoff base SHA as invalid. This handoff records the exact incorporated origin/develop revision 472bc4fc2c283a3cd649c2efc4c80733dd02428b; T008 detector files remain byte-equivalent to reviewed implementation anchor 6cf30513ef545fc276807a22272633f436b956bd.",
   "recommended_next_task": "Orchestrator review and acceptance of T008 before implementation integration into develop.",
   "chatgpt_read_path": "handoffs/T008-executor-handoff.json",
   "rollback_boundary": "Remove tests/_governance_learning.py, tests/fixtures/governance_learning/cases.json, tests/test_governance_learning.py, and handoffs/T008-executor-handoff.json; no unrelated behavior or configuration is affected."
