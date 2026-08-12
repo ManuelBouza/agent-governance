@@ -1,7 +1,7 @@
 # OP006 — Retire T006 integration branches
 
 Operation ID: OP006  
-Status: DRAFT  
+Status: READY  
 Type: post-integration branch cleanup  
 Base branch: `develop`
 
@@ -14,9 +14,10 @@ Retire the merged branches created to accept, integrate, and close T006 while pr
 The executor MUST derive branch identity and exact reviewed-head evidence from:
 
 - PR #70 — T006 acceptance (`docs/t006-acceptance`);
-- PR #71 — accepted T006 implementation (`test/security-verification-contract`).
+- PR #71 — accepted T006 implementation (`test/security-verification-contract`);
+- PR #72 — T006 post-integration cleanup contract (`docs/t006-post-integration-cleanup`).
 
-The PR integrating this OP006 contract MUST be added here before OP006 becomes `READY`. Its source branch is intended to be retired by this same operation after merge.
+The source branch of PR #72 is intentionally included so this operation can retire its own merged planning branch without recursive chat-only cleanup authority.
 
 ## Controlling references
 
