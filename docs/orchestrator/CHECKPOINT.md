@@ -1,7 +1,7 @@
 # Current ChatGPT Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O038  
+Checkpoint-Sequence: O039  
 Canonical-Branch: `develop`  
 Chat-Closure: CONTINUE_ALLOWED
 
@@ -11,13 +11,13 @@ T001, T002, T003, T005 and T007 are `ACCEPTED` and integrated.
 
 T004 remains terminal `CANCELLED_BY_HUMAN` under D037.
 
-T007 branch-hygiene implementation was accepted by `docs/reviews/T007-R2.md` and integrated through PR #54. The historical branch backlog is resolved. Post-integration retirement of the temporary T007 and follow-up policy branches remains the only closure work before T006 resumes.
+T007 branch-hygiene implementation was accepted by `docs/reviews/T007-R2.md` and integrated through PR #54. The historical branch backlog is resolved. Post-integration retirement of the temporary T007 and follow-up policy/research branches remains required before normal executor work resumes.
 
-T006 remains `READY` and unchanged. After post-integration branch retirement is verified, resume T006 exactly as already contracted.
+T006 remains `READY` and unchanged. It MUST NOT absorb D039/EGLL work. D036 remains after T006 unless a later explicit Human/Orchestrator sequencing decision changes the frontier.
 
 ## Branch lifecycle hardening
 
-PR #58 introduces the explicit merged-branch freeze invariant in `docs/BRANCHING.md` and `docs/BRANCH-CLEANUP.md`.
+PR #58 introduced the explicit merged-branch freeze invariant in `docs/BRANCHING.md` and `docs/BRANCH-CLEANUP.md`.
 
 ```text
 merge -> freeze -> cleanup
@@ -26,7 +26,44 @@ new work -> new branch from current develop
 
 Once a topic PR is merged, its source branch MUST receive no additional commits. Any post-merge branch advancement is a workflow nonconformance and becomes `REVIEW`; follow-up work must be recovered/persisted through a fresh branch from the current authorized base before the original merged branch can be retired.
 
-This policy closes the failure mode exposed during T007 closure, when `docs/t007-post-integration` received new Markdown commits after PR #55 had already merged. Those commits were later recovered through a fresh branch/PR (#56). Do not reuse a merged branch again, including for closely related follow-up Markdown or checkpoint work.
+This policy closes the failure mode exposed during T007 closure, when `docs/t007-post-integration` received new Markdown commits after PR #55 had already merged. Those commits were later recovered through fresh branch/PR #56.
+
+## D039 — PROPOSED evidence-driven governance learning loop
+
+Research/proposal:
+
+- `docs/ARCHITECTURE-GOVERNANCE-LEARNING-LOOP.md`
+- `docs/decisions/D039-evidence-driven-governance-learning-loop.md`
+- PR #59
+
+D039 is `PROPOSED`, not accepted or executable authority.
+
+The proposed **Evidence-Driven Governance Learning Loop (EGLL)** converts meaningful failures/near misses into a closed recurrence-prevention lifecycle:
+
+```text
+detect -> evidence -> fingerprint/triage -> causal analysis
+       -> control selection -> controlled implementation
+       -> regression/replay proof -> recurrence monitoring
+```
+
+Key proposed invariants:
+
+```text
+failure observed != learning completed
+written lesson != preventive control
+control integrated != control effective
+model reflection != learning authority
+```
+
+Automatic components may detect/fingerprint evidence and enforce already-accepted deterministic invariants. They MUST NOT create new Governance authority, mutate policy/architecture/Task Contracts, approve their own remediation, or use LLM judgment as a verification gate.
+
+Initial automatically detectable source-maintenance candidates include deterministic verification regressions, explicit procedural nonconformance, merged-branch advancement, stale merged-branch retirement, Task Contract/branch/handoff mismatch, formal rework after executor `DONE`, deterministically visible protected-flow bypass, security known-bad recurrence, and repeated exception fingerprints.
+
+Recurrence of a stable fingerprint after a control reached `VERIFIED` is proposed to become `CONTROL_FAILURE` and require new causal/control analysis.
+
+The source-maintainer mechanism is proposed first. Consumer Governance Core adoption requires a later separate architecture decision after source-maintainer evidence demonstrates value.
+
+No executable EGLL implementation is authorized until D039 is explicitly accepted and a dedicated Task Contract is integrated.
 
 ## T006 — READY
 
@@ -42,7 +79,7 @@ Expected handoff:
 
 `handoffs/T006-executor-handoff.json`
 
-T006 semantics, D035 Core state and deterministic verification requirements remain unchanged. D036 remains after T006 and MUST NOT be folded into it.
+T006 semantics, D035 Core state and deterministic verification requirements remain unchanged. D036 MUST NOT be folded into T006.
 
 ## T007 closure state
 
@@ -78,19 +115,20 @@ Preserve; do not hide/rewrite without explicit Human authorization:
 
 ## Next Action
 
-1. After PR #58 is integrated, perform canonical post-integration cleanup using one durable target per invocation: first `TASK T007`, then the follow-up Markdown policy PR targets `PR 56`, `PR 57`, and `PR 58` as applicable to branches still present.
-2. ChatGPT verifies the executor's returned remote/local inventories against current GitHub state. No eligible merged topic branch may remain remotely; inaccessible local checkouts must remain explicitly unverified rather than assumed clean.
-3. Then launch the Agente de IA Ejecutor for T006 using the canonical minimal launch prompt and exactly one Task Contract pointer.
-4. ChatGPT remotely reviews T006 handoff/diff/evidence before acceptance.
-5. Do not start D036 until T006 is accepted/integrated.
+1. Integrate PR #59 if its Markdown diff remains limited to the D039 research/proposal and this checkpoint; freeze its source branch immediately after merge.
+2. Complete canonical post-integration cleanup using one durable target per invocation for T007 and the integrated follow-up PRs whose branches remain present, including PR #59 after integration.
+3. Human Owner / ChatGPT Orchestrator decide whether to accept D039 and where its dedicated implementation task belongs in the frontier. Do not infer sequencing from the research proposal.
+4. If D039 is accepted, persist its acceptance and a dedicated executable Task Contract before any EGLL code/CI implementation begins.
+5. T006 remains unchanged and is launched only according to the resulting explicit frontier; D039 work MUST NOT be folded into T006.
+6. Do not start D036 until T006 is accepted/integrated unless a later explicit Human architecture decision changes that ordering.
 
 Canonical post-integration cleanup prompt template is controlled by:
 
 `docs/POST-INTEGRATION-CLEANUP-PROMPT.md`
 
-For T007, substitute only the repository identity and target `TASK T007`. For each Markdown follow-up, substitute only its durable `PR <number>` target. Do not add branch names, SHAs, commands, or deletion decisions to the prompt.
+Do not add branch names, SHAs, commands, or deletion decisions to the cleanup prompt.
 
-Canonical T006 launch prompt:
+Canonical T006 launch prompt remains:
 
 ```text
 Operate as the Agente de IA Ejecutor for ManuelBouza/agent-governance.
@@ -115,20 +153,23 @@ HEAD: <pushed-commit-sha>
 After `AGENTS.md` and this checkpoint:
 
 1. verify post-integration branch retirement under `docs/BRANCHING.md`, `docs/BRANCH-CLEANUP.md`, and `docs/POST-INTEGRATION-CLEANUP-PROMPT.md` if not already complete;
-2. for T006 load `docs/tasks/T006-d035-deterministic-security-verification-contract.md`;
-3. load D035 and `governance-core/SECURITY.md` as normative security semantics;
-4. load `governance-core/GOVERNANCE.md`, D037 and deterministic helpers only as needed;
-5. load D033/D034 only for explicit security-vs-execution composition cases;
-6. load D038/D030 only for a concrete provider conflict;
-7. load D036 only after T006 closes or for a concrete boundary conflict;
-8. do not reload T001–T005/T007 implementation history absent regression/audit need.
+2. if D039 decision is pending, load `docs/decisions/D039-evidence-driven-governance-learning-loop.md` and `docs/ARCHITECTURE-GOVERNANCE-LEARNING-LOOP.md` only;
+3. for T006 load `docs/tasks/T006-d035-deterministic-security-verification-contract.md`;
+4. load D035 and `governance-core/SECURITY.md` as normative security semantics;
+5. load `governance-core/GOVERNANCE.md`, D037 and deterministic helpers only as needed;
+6. load D033/D034 only for explicit security-vs-execution composition cases;
+7. load D038/D030 only for a concrete provider conflict;
+8. load D036 only after T006 closes or for a concrete boundary conflict;
+9. do not reload T001–T005/T007 implementation history absent regression/audit need.
 
 ## Do Not Load or Do
 
 - Do not delete `main` or `develop`.
 - Do not append commits to a topic branch after its PR has merged.
+- Do not treat D039 as accepted until explicit Human acceptance is persisted.
+- Do not implement EGLL without a dedicated integrated Task Contract.
+- Do not let automatic learning components mutate Governance authority.
 - Do not hide the T007 procedural nonconformance or Orchestrator direct-write audit history.
-- Do not reopen T001–T005/T007 absent regression/audit need.
 - Do not add model-based verification gates.
 - Do not implement D036 inside T006.
 - Do not declare the source product stable/release-ready.
