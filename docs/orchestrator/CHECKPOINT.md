@@ -9,9 +9,9 @@ Chat-Closure: CONTINUE_ALLOWED
 
 T006, T008 and T009 are `ACCEPTED`, integrated and post-integration-cleaned. L001 is `VERIFIED`. L002 remains `ANALYZED` and separate.
 
-D036 — Existing-System Assurance Audit Mode — is `ACCEPTED`. Its portable Core integration and first deterministic implementation contract are now the active planning frontier.
+D036 — Existing-System Assurance Audit Mode — is `ACCEPTED`. PR #73 carries its portable Core integration and first deterministic implementation contract.
 
-The D036 planning change adds:
+PR #73 adds:
 
 - `governance-core/ASSURANCE.md` version `1.0.0`;
 - `governance-core/GOVERNANCE.md` Protocol `1.13.0` with assurance routing/invariants;
@@ -19,7 +19,7 @@ The D036 planning change adds:
 - `docs/tasks/T010-d036-deterministic-assurance-audit-contract.md`;
 - `docs/operations/OP007-retire-d036-t010-planning-branch.md`.
 
-No T010 executor work may start until this Markdown planning change is integrated into `develop` and OP007 has retired its merged planning branch.
+No T010 executor work may start until PR #73 is integrated into `develop` and OP007 has retired its merged planning branch.
 
 ## D036 Core model
 
@@ -51,7 +51,7 @@ audit finding != remediation authorization
 
 D036 composes D035 security authority and D033/D034 execution control; it does not create authority owned by those planes.
 
-## T010 — READY AFTER PLANNING INTEGRATION + OP007
+## T010 — READY AFTER PR #73 + OP007
 
 Task Contract:
 
@@ -69,13 +69,13 @@ T010 is deterministic/test-only under D037. It establishes synthetic policy-cont
 
 T010 MUST NOT perform real-system access, authenticated observation, scanning, active testing, model calls, live advisory fetches, provider integration or remediation mutations.
 
-## OP007 — DRAFT UNTIL PLANNING PR IDENTITY IS PERSISTED
+## OP007 — READY AFTER PR #73 INTEGRATION
 
 Operational Contract:
 
 `docs/operations/OP007-retire-d036-t010-planning-branch.md`
 
-OP007 will retire only the merged D036/T010 Markdown planning branch. Its integrating PR identity must be persisted before status becomes `READY`.
+Durable target: PR #73. OP007 derives the exact merged source branch and reviewed head from GitHub and retires only that branch. It preserves `main`, `develop`, future T010 work and repository content.
 
 ## Persisted executor-instruction invariant
 
@@ -89,19 +89,17 @@ L002 remains `ANALYZED` and non-blocking. Do not fold its broader handoff-identi
 
 ## Next Action
 
-1. Open and review the D036/T010 Markdown planning PR to `develop`.
-2. Persist that PR identity in OP007 and mark OP007 `READY`; update this checkpoint if needed.
-3. Integrate the planning PR and freeze its source branch.
-4. Execute OP007 using only its persisted Operational Contract pointer; independently verify remote/local branch inventories.
-5. Launch T010 using only `docs/tasks/T010-d036-deterministic-assurance-audit-contract.md`.
-6. Review/accept/integrate/clean T010 through the normal contract-first lifecycle.
-7. Do not start real-system audit adapters/providers until a later explicit decision/Task Contract authorizes them.
+1. Review and integrate PR #73; freeze its source branch.
+2. Execute OP007 using only its persisted Operational Contract pointer; independently verify remote/local branch inventories.
+3. Launch T010 using only `docs/tasks/T010-d036-deterministic-assurance-audit-contract.md`.
+4. Review/accept/integrate/clean T010 through the normal contract-first lifecycle.
+5. Do not start real-system audit adapters/providers until a later explicit decision/Task Contract authorizes them.
 
 ## Next Chat Minimum Load
 
 After `AGENTS.md` and this checkpoint:
 
-1. if the D036/T010 planning PR is not integrated, load D036, `docs/ARCHITECTURE-ASSURANCE-AUDIT.md`, `governance-core/ASSURANCE.md` and T010;
+1. if PR #73 is not integrated, load D036, `docs/ARCHITECTURE-ASSURANCE-AUDIT.md`, `governance-core/ASSURANCE.md` and T010;
 2. if OP007 is pending, load `docs/operations/OP007-retire-d036-t010-planning-branch.md` plus branch-cleanup policy;
 3. for T010 execution/review load T010, D036, `ASSURANCE.md`, D035/`SECURITY.md`, D033/D034/`EXECUTION-CONTROL.md`, and D037 only as required by the contract;
 4. load L002 only on a concrete handoff-identity conflict or explicit separate control-selection work;
