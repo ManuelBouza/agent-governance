@@ -1,7 +1,7 @@
 # Current ChatGPT Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O043  
+Checkpoint-Sequence: O044  
 Canonical-Branch: `develop`  
 Chat-Closure: CONTINUE_ALLOWED
 
@@ -11,9 +11,11 @@ T001, T002, T003, T005 and T007 are `ACCEPTED` and integrated. T004 remains term
 
 D039 — Evidence-Driven Governance Learning Loop (EGLL) — is `ACCEPTED`.
 
-T009 implementation at `test/protocol-version-baseline-alignment@e0c80c62c1c543504719616c547d4df03d1b3d21` is `ACCEPTED` by `docs/reviews/T009-R1.md`, pending implementation PR integration and post-integration cleanup.
+T009 is `ACCEPTED` and integrated. PR #63 integrated `docs/reviews/T009-R1.md`; PR #64 integrated exact accepted executor HEAD `e0c80c62c1c543504719616c547d4df03d1b3d21` into `develop` at `fdb815394fd5ef91bd513f3701fa99c895536b8b`.
 
-T008 remains `REWORK_REQUIRED` only because its first run encountered the pre-existing protocol-version baseline drift. After T009 is integrated and cleaned, T008 resumes on its existing branch, incorporates current `develop`, reruns its original gates, refreshes its handoff, and returns for re-review. T006 remains `READY` after T008. D036 remains after T006.
+L001 is `CONTROL_INTEGRATED`, not `VERIFIED`. T008 remains `REWORK_REQUIRED` until T009 post-integration cleanup completes and T008 reruns successfully on current `develop` without detector-semantic changes.
+
+T006 remains `READY` after T008. D036 remains after T006.
 
 ## Persisted executor-instruction invariant
 
@@ -22,49 +24,52 @@ prompt = bootstrap transport only
 persisted contract + referenced Git policy = complete instruction
 ```
 
-Use exactly one persisted contract pointer for delegated work. Prompts MUST NOT carry concrete task/operation semantics absent from Git.
+Use exactly one persisted Task Contract or Operational Contract pointer. Chat MUST NOT supply concrete semantics absent from Git.
 
-## L001 — CONTROL_PLANNED
+## OP003 — READY after PR #65 integration
+
+Operational Contract:
+
+`docs/operations/OP003-retire-t009-integration-branches.md`
+
+OP003 covers only merged branches from:
+
+- PR #63 — `docs/t009-acceptance`;
+- PR #64 — `test/protocol-version-baseline-alignment`;
+- PR #65 — `docs/t009-post-integration-cleanup`.
+
+It explicitly preserves `main`, `develop`, and active T008 branch `test/egll-deterministic-learning-detectors`.
+
+## L001 — CONTROL_INTEGRATED
 
 Learning record: `docs/learning/L001-protocol-version-baseline-drift.md`  
 Fingerprint: `verification.regression.protocol_version_drift`
 
-T009 provides the accepted corrective implementation. L001 MUST NOT become `VERIFIED` until the correction is integrated into `develop` and T008 subsequently passes its original full verification suite on that corrected baseline.
+T009 restored the deterministic version-alignment baseline while preserving Core as authority and the test-side value as verifier expectation. L001 becomes `VERIFIED` only after OP003 closes and T008 passes its original focused/full/Ruff gates on the corrected current `develop` baseline.
 
-## T009 — ACCEPTED, PENDING INTEGRATION
+## T009 — ACCEPTED / INTEGRATED
 
 Task Contract: `docs/tasks/T009-protocol-version-baseline-alignment.md`  
 Review: `docs/reviews/T009-R1.md`  
-Executor branch: `test/protocol-version-baseline-alignment`  
-Reviewed HEAD: `e0c80c62c1c543504719616c547d4df03d1b3d21`  
-Implementation anchor: `4d3b2cc440e7f8e0b3d6f720d12540231abed2c0`
+Accepted executor HEAD: `e0c80c62c1c543504719616c547d4df03d1b3d21`  
+Integration PR: #64  
+Integrated `develop`: `fdb815394fd5ef91bd513f3701fa99c895536b8b`
 
-Accepted diff is limited to:
+Accepted implementation changed only:
 
-- `tests/_helpers.py`: verifier expectation `1.11.0` -> `1.12.0`;
-- `tests/test_execution_control_contract.py`: redundant fixed-literal assertion removed;
+- `tests/_helpers.py`;
+- `tests/test_execution_control_contract.py`;
 - `handoffs/T009-executor-handoff.json`.
 
-Deterministic mismatch detection remains: tests continue to parse Core `Protocol-Version` and compare it to the single test-side verifier expectation.
+Reported gates before integration: focused 47 passed; full pytest 126 passed; Ruff check/format PASS.
 
-Reported gates:
-
-```text
-focused protocol/version tests: 47 passed
-full pytest: 126 passed
-ruff check: PASS
-ruff format --check: PASS
-```
-
-No Markdown/Core/T008/T006/D036/dependency/config/network/model/provider scope expansion is accepted.
-
-## T008 — REWORK_REQUIRED AFTER T009
+## T008 — REWORK_REQUIRED AFTER OP003
 
 Task Contract: `docs/tasks/T008-egll-deterministic-learning-detectors.md`  
 Review: `docs/reviews/T008-R1.md`  
-Current task branch: `test/egll-deterministic-learning-detectors`
+Active branch: `test/egll-deterministic-learning-detectors`
 
-After T009 integration and cleanup, T008 SHALL incorporate current `develop` into that existing task branch, rerun the original focused/full/Ruff gates, refresh `handoffs/T008-executor-handoff.json`, commit/push, and return for re-review. No detector semantic changes are authorized by this sequencing step.
+After OP003 is independently verified, resume T008 on the existing branch. Incorporate current `develop`, rerun the original T008 focused/full/Ruff gates, refresh `handoffs/T008-executor-handoff.json`, commit/push, and return for re-review. No detector-semantic changes are authorized by this step.
 
 ## T006 — READY AFTER T008
 
@@ -79,37 +84,36 @@ merge -> freeze -> cleanup
 new work -> new branch from current develop
 ```
 
-Merged topic branches are frozen. Cleanup authority must be persisted through Operational Contracts.
+Merged branches are frozen; operational cleanup uses persisted Operational Contracts only.
 
 ## Procedural audit history
 
-Preserve the existing audit history, including T007 classify-before-delete recovery, Orchestrator direct-write incidents, the post-merge reuse of `docs/t007-post-integration`, and the accidental `46050487d3a066afd37cf340ccd58ab09daddfb9` direct write corrected by PR #61. Do not rewrite or hide those records.
+Preserve existing audit history, including T007 classify-before-delete recovery, Orchestrator direct-write incidents, post-merge reuse of `docs/t007-post-integration`, and accidental `46050487d3a066afd37cf340ccd58ab09daddfb9` direct write corrected by PR #61. Do not rewrite or hide those records.
 
 ## Next Action
 
-1. Integrate this T009 acceptance Markdown change; freeze its source branch.
-2. Open and merge the exact accepted T009 implementation HEAD to `develop`.
-3. Persist and integrate an Operational Contract covering retirement of the T009 acceptance branch, T009 implementation branch, and the cleanup-contract branch itself; execute and verify that cleanup.
-4. Update L001 to `CONTROL_INTEGRATED` when T009 is integrated; do not mark `VERIFIED` yet.
-5. Resume T008 exactly per T008-R1, then re-review.
-6. After T008 acceptance/integration/cleanup, resume T006 unchanged.
-7. Do not start D036 until T006 closes.
+1. Integrate PR #65 and freeze `docs/t009-post-integration-cleanup`.
+2. Launch OP003 using only the Operational Contract pointer; independently verify final remote/local branch inventories.
+3. Resume T008 exactly per T008-R1 on its existing branch and re-review.
+4. If T008 passes and is accepted/integrated/cleaned, mark L001 `VERIFIED` with persisted evidence and resume T006 unchanged.
+5. Do not start D036 until T006 closes.
 
 ## Next Chat Minimum Load
 
 After `AGENTS.md` and this checkpoint:
 
-1. if T009 integration/cleanup is incomplete, load `docs/reviews/T009-R1.md`, T009 Task Contract, L001, and applicable Operational Contract;
-2. for T008 re-review load T008 Task Contract, T008-R1, current handoff, D039 and `docs/GOVERNANCE-LEARNING.md`;
+1. if OP003 is incomplete, load `docs/operations/OP003-retire-t009-integration-branches.md` plus branch-cleanup policy;
+2. for T008 re-review load its Task Contract, T008-R1, current handoff, D039, L001 and `docs/GOVERNANCE-LEARNING.md`;
 3. after T008 closes, load T006 + D035 + `governance-core/SECURITY.md`;
-4. do not reload older task history absent regression/audit need.
+4. do not reload older history absent regression/audit need.
 
 ## Do Not Load or Do
 
 - Do not delete `main` or `develop`.
-- Do not append commits to a merged topic branch.
+- Do not delete or repurpose active T008 branch through OP003.
+- Do not append commits to merged topic branches.
 - Do not place concrete executor instructions in chat when absent from the persisted contract.
-- Do not mark L001 `VERIFIED` before T008 passes on the corrected baseline.
+- Do not mark L001 `VERIFIED` before T008 passes on corrected baseline.
 - Do not modify T008 detector semantics merely to consume T009.
 - Do not fold T008/T009 into T006 or D036.
 - Do not hide procedural/audit history.
