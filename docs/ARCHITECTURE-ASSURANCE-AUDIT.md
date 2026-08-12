@@ -1,7 +1,9 @@
 # Existing-System Assurance Audit Architecture
 
-Status: ARCHITECTURE OVERVIEW  
-Normative decision: `docs/decisions/D036-existing-system-assurance-audit-mode.md`
+Status: ACTIVE ARCHITECTURE — CORE STAGED  
+Normative decision: `docs/decisions/D036-existing-system-assurance-audit-mode.md`  
+Protocol migration: `docs/decisions/D040-atomic-protocol-migration-and-single-version-authority.md`  
+Staged Core module: `governance-core/ASSURANCE.md`
 
 ## Purpose
 
@@ -43,7 +45,57 @@ model opinion != evidence
 report completeness != proof of no unknown defects
 audit finding != permission to remediate
 severity != confidence
+NOT_ASSESSED != PASS
+INCONCLUSIVE != PASS
 ```
+
+## Staged Core integration
+
+D036's focused portable module `ASSURANCE.md` is staged at version `1.0.0`, but it is not yet routed as an active required Core module.
+
+Canonical Protocol remains `1.12.0` during T010 readiness work. This follows D040 so that the repository does not require a knowingly red intermediate state while Markdown-owned protocol routing and executor-owned deterministic verification are updated across separate ownership phases.
+
+The staged module defines portable semantics for:
+
+- audit scope contracts;
+- assessment-profile ceilings;
+- evidence graph/provenance;
+- explicit finding states;
+- severity/confidence separation;
+- coverage accounting and bounded conclusions;
+- audit/remediation separation;
+- temporal assurance posture;
+- composition with D035 security authority and D033/D034 execution control.
+
+It does **not** define a universal scanner, provider, evidence database, platform adapter or production audit runtime.
+
+## D040 activation sequence
+
+```text
+Phase A — verification readiness
+
+ASSURANCE.md STAGED
+Protocol 1.12 unchanged
+        │
+        ▼
+T010 deterministic assurance semantics
++ single current-version authority
+        │
+        ▼
+T010 accepted / integrated / cleaned
+
+Phase B — Markdown activation
+
+GOVERNANCE.md -> Protocol 1.13.0
+ASSURANCE.md -> ACTIVE
+source-map/router/readiness -> ASSURANCE
+        │
+        ▼
+full deterministic suite remains green
+without exact-current literal synchronization
+```
+
+If Phase B reveals a need for additional executable behavior, stop and create a new Task Contract rather than accepting a red canonical intermediate state.
 
 ## What can be audited
 
@@ -219,7 +271,7 @@ required evidence semantics
                observed state
 ```
 
-This matches D034 terminal neutrality and the CIS Controls Assessment Specification pattern of defining what to measure separately from how a platform-specific tool measures it.
+This matches D034 terminal neutrality: define what must be measured separately from how a platform-specific adapter collects normalized evidence.
 
 ## Audit versus remediation
 
@@ -243,6 +295,28 @@ Human/Strategy prioritization
 ```
 
 The assessment process does not silently mutate targets to improve its own score.
+
+## Deterministic foundation before adapters
+
+The implementation order is intentionally conservative:
+
+```text
+staged portable Core semantics
+      ↓
+deterministic fixtures/evaluator + protocol readiness (T010)
+      ↓
+Markdown activation of Protocol 1.13 / ASSURANCE routing
+      ↓
+representative normalized evidence schemas/adapters
+      ↓
+optional provider/platform integrations
+      ↓
+real-system audit workflows under explicit authorization
+```
+
+T010 uses synthetic normalized facts only. It must prove scope, profile ceilings, evidence/finding states, coverage, temporal posture and control-plane composition without wall-clock time, network access, models or real targets. It also implements D040's single-current-version-authority verification model.
+
+Broad scanner or live-target integration requires a later separately persisted decision/Task Contract and must satisfy D033/D034/D035 plus coexistence/supply-chain constraints.
 
 ## Report shape
 
@@ -275,19 +349,15 @@ Representative sources include:
 - NIST SP 800-115 technical security testing/assessment;
 - NIST CSF 2.0;
 - NIST SSDF;
-- CIS Controls / Controls Assessment Specification / Benchmarks;
+- CIS Controls / assessment specifications / Benchmarks;
 - OWASP ASVS;
 - OWASP Web Security Testing Guide;
 - OWASP SAMM;
 - CISA KEV and vendor advisories.
 
-No framework is automatically applied to every system.
+No framework is automatically applied to every system, and none is a runtime dependency of portable Core or T010.
 
-## Planned Core integration
-
-D036 is accepted architecture only while T004 is still running.
-
-The post-T004 Core-integration frontier should now treat D033–D036 as a coherent assurance/execution stack:
+## Coherent assurance/execution stack
 
 ```text
 D032 quality intent
@@ -301,4 +371,4 @@ D033 execution authorization
 D034 runbook/adapters
 ```
 
-Future implementation should establish deterministic audit-state semantics, evidence/finding schemas, assessment profiles, coverage accounting and representative platform-neutral verifier fixtures before adding broad real-system scanner adapters.
+Neither audit status, security status nor execution authorization expands authority owned by another plane.
