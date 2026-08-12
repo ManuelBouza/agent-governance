@@ -1,119 +1,57 @@
 # Current ChatGPT Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O044  
+Checkpoint-Sequence: O045  
 Canonical-Branch: `develop`  
 Chat-Closure: CONTINUE_ALLOWED
 
 ## Current Frontier
 
-T001, T002, T003, T005 and T007 are `ACCEPTED` and integrated. T004 remains terminal `CANCELLED_BY_HUMAN` under D037.
+T009 is `ACCEPTED`, integrated, and post-integration-cleaned. D039 is `ACCEPTED`.
 
-D039 — Evidence-Driven Governance Learning Loop (EGLL) — is `ACCEPTED`.
+T008 rerun reached green focused/full/Ruff gates, but T008-R2 is `REWORK_REQUIRED` because `handoffs/T008-executor-handoff.json` at executor HEAD `b67d9894e6f979d04f17ed5e512cf92a6601d228` records non-existent base SHA `2be1ad9329e0b7901b784cff542aca50a8516927` instead of authoritative incorporated `develop` `2be1ad97fefb43e7116d534eecfd420a3c4f9923`.
 
-T009 is `ACCEPTED` and integrated. PR #63 integrated `docs/reviews/T009-R1.md`; PR #64 integrated exact accepted executor HEAD `e0c80c62c1c543504719616c547d4df03d1b3d21` into `develop` at `fdb815394fd5ef91bd513f3701fa99c895536b8b`.
+This is deterministic dogfooding evidence for fingerprint `task.handoff.identity_mismatch`. L002 is `DETECTED` at `docs/learning/L002-t008-handoff-identity-mismatch.md`.
 
-L001 is `CONTROL_INTEGRATED`, not `VERIFIED`. T008 remains `REWORK_REQUIRED` until T009 post-integration cleanup completes and T008 reruns successfully on current `develop` without detector-semantic changes.
+L001 remains `CONTROL_INTEGRATED`, not `VERIFIED`, until T008 closes with valid auditable identity.
 
 T006 remains `READY` after T008. D036 remains after T006.
 
 ## Persisted executor-instruction invariant
 
-```text
-prompt = bootstrap transport only
-persisted contract + referenced Git policy = complete instruction
-```
+`prompt = bootstrap transport only`; persisted Task/Operational Contract plus referenced Git policy is the complete instruction. Concrete rework authority is persisted in review records, never supplied only by chat.
 
-Use exactly one persisted Task Contract or Operational Contract pointer. Chat MUST NOT supply concrete semantics absent from Git.
-
-## OP003 — READY after PR #65 integration
-
-Operational Contract:
-
-`docs/operations/OP003-retire-t009-integration-branches.md`
-
-OP003 covers only merged branches from:
-
-- PR #63 — `docs/t009-acceptance`;
-- PR #64 — `test/protocol-version-baseline-alignment`;
-- PR #65 — `docs/t009-post-integration-cleanup`.
-
-It explicitly preserves `main`, `develop`, and active T008 branch `test/egll-deterministic-learning-detectors`.
-
-## L001 — CONTROL_INTEGRATED
-
-Learning record: `docs/learning/L001-protocol-version-baseline-drift.md`  
-Fingerprint: `verification.regression.protocol_version_drift`
-
-T009 restored the deterministic version-alignment baseline while preserving Core as authority and the test-side value as verifier expectation. L001 becomes `VERIFIED` only after OP003 closes and T008 passes its original focused/full/Ruff gates on the corrected current `develop` baseline.
-
-## T009 — ACCEPTED / INTEGRATED
-
-Task Contract: `docs/tasks/T009-protocol-version-baseline-alignment.md`  
-Review: `docs/reviews/T009-R1.md`  
-Accepted executor HEAD: `e0c80c62c1c543504719616c547d4df03d1b3d21`  
-Integration PR: #64  
-Integrated `develop`: `fdb815394fd5ef91bd513f3701fa99c895536b8b`
-
-Accepted implementation changed only:
-
-- `tests/_helpers.py`;
-- `tests/test_execution_control_contract.py`;
-- `handoffs/T009-executor-handoff.json`.
-
-Reported gates before integration: focused 47 passed; full pytest 126 passed; Ruff check/format PASS.
-
-## T008 — REWORK_REQUIRED AFTER OP003
+## T008 — REWORK_REQUIRED
 
 Task Contract: `docs/tasks/T008-egll-deterministic-learning-detectors.md`  
-Review: `docs/reviews/T008-R1.md`  
+R1: `docs/reviews/T008-R1.md`  
+R2: `docs/reviews/T008-R2.md`  
 Active branch: `test/egll-deterministic-learning-detectors`
 
-After OP003 is independently verified, resume T008 on the existing branch. Incorporate current `develop`, rerun the original T008 focused/full/Ruff gates, refresh `handoffs/T008-executor-handoff.json`, commit/push, and return for re-review. No detector-semantic changes are authorized by this step.
+R2 authorizes only correction of the non-Markdown handoff identity and rerun of original gates. Detector implementation/fixtures/tests must remain unchanged.
 
-## T006 — READY AFTER T008
+## Learning state
 
-Task Contract: `docs/tasks/T006-d035-deterministic-security-verification-contract.md`
+L001 — `verification.regression.protocol_version_drift` — `CONTROL_INTEGRATED`; T009 corrected the baseline and T008 rerun is green, but L001 waits for T008 accepted closure.
 
-T006/D035 semantics remain unchanged. Do not fold T008/T009 or D036 into T006.
+L002 — `task.handoff.identity_mismatch` — `DETECTED`; invalid handoff base identity blocked acceptance despite green tests. Future control planning may add automatic handoff identity validation before executor return.
 
-## Branch lifecycle
+## Procedural audit
 
-```text
-merge -> freeze -> cleanup
-new work -> new branch from current develop
-```
-
-Merged branches are frozen; operational cleanup uses persisted Operational Contracts only.
-
-## Procedural audit history
-
-Preserve existing audit history, including T007 classify-before-delete recovery, Orchestrator direct-write incidents, post-merge reuse of `docs/t007-post-integration`, and accidental `46050487d3a066afd37cf340ccd58ab09daddfb9` direct write corrected by PR #61. Do not rewrite or hide those records.
+Preserve all prior audit history. Additionally, during T008-R2 preparation the Orchestrator accidentally wrote placeholder `docs/reviews/T008-R2.md` directly to `develop` in commit `643abb6eb91ea928d9f3f933f6ee8dfa6bf7e839`. History must remain visible; this branch replaces the placeholder through normal reviewed Markdown flow.
 
 ## Next Action
 
-1. Integrate PR #65 and freeze `docs/t009-post-integration-cleanup`.
-2. Launch OP003 using only the Operational Contract pointer; independently verify final remote/local branch inventories.
-3. Resume T008 exactly per T008-R1 on its existing branch and re-review.
-4. If T008 passes and is accepted/integrated/cleaned, mark L001 `VERIFIED` with persisted evidence and resume T006 unchanged.
-5. Do not start D036 until T006 closes.
+1. Integrate the Markdown change containing T008-R2, L002, OP004 and this checkpoint; freeze its source branch.
+2. Execute OP004 to retire that planning branch only, preserving active T008.
+3. Resume T008 using its existing Task Contract; executor must consume persisted R2 and correct only handoff identity plus rerun gates.
+4. Re-review T008. If accepted, integrate and clean it; then mark L001 `VERIFIED` and advance L002 according to evidence/control decision.
+5. Resume T006 unchanged. D036 remains after T006.
 
-## Next Chat Minimum Load
+## Do Not
 
-After `AGENTS.md` and this checkpoint:
-
-1. if OP003 is incomplete, load `docs/operations/OP003-retire-t009-integration-branches.md` plus branch-cleanup policy;
-2. for T008 re-review load its Task Contract, T008-R1, current handoff, D039, L001 and `docs/GOVERNANCE-LEARNING.md`;
-3. after T008 closes, load T006 + D035 + `governance-core/SECURITY.md`;
-4. do not reload older history absent regression/audit need.
-
-## Do Not Load or Do
-
-- Do not delete `main` or `develop`.
-- Do not delete or repurpose active T008 branch through OP003.
-- Do not append commits to merged topic branches.
-- Do not place concrete executor instructions in chat when absent from the persisted contract.
-- Do not mark L001 `VERIFIED` before T008 passes on corrected baseline.
-- Do not modify T008 detector semantics merely to consume T009.
-- Do not fold T008/T009 into T006 or D036.
-- Do not hide procedural/audit history.
+- Do not accept T008 with unresolved handoff identity.
+- Do not modify T008 detector semantics under R2.
+- Do not hide the `643abb6e…` direct-write incident.
+- Do not delete `main`, `develop`, or active T008 during planning cleanup.
+- Do not place concrete executor semantics only in chat.
