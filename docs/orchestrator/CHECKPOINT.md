@@ -128,7 +128,7 @@ Preserve; do not hide/rewrite without explicit Human authorization:
 - T007 executor: `eval/d032-agent-capability` was initially deleted before missing-PR ambiguity was fully resolved, then restored at exact original SHA; persisted T007-R1 later authorized final deletion.
 - T002-R1 placeholder: accidental `6a3bff4f12850bd701fea624815e955231082afa`; corrective `67d8dc6de9679f833f3136c6a66ee7ad05283cb3`.
 - architecture overview placeholder: accidental `a0e063344043fda53f55b8fcb5b03742a33a7185`; corrective `09fa91f6b3c829e6edc0719fcd636cf3cba8f879`.
-- T004-R1 placeholder: accidental `197ce3fad02a69baf99238beb9859280a137a681`; corrective `52ae6fb5126517ea19e8b002eb6ee85281401`.
+- T004-R1 placeholder: accidental `197ce3fad02a69baf99238beb9859280a137a681`; corrective `52ae6fb5126517ea19c8d00918e7b148c17f146a`.
 - D037 placeholder: accidental `71b62980c41b183dfb33ef3099c72fc827234606`; corrective `e5ee3c56cbd17f72f876987550bab34cde065b53`.
 - T007-R1 review preparation: accidental temporary non-Markdown `noop` on `docs/t007-r1-branch-cleanup`; removed before integration.
 - T007 post-integration prompt work: commits were appended to already-merged `docs/t007-post-integration` after PR #55; recovered through PR #56; basis for merged-branch freeze and T008 regression fixture.
