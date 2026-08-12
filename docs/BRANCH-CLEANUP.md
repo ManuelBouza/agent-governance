@@ -22,11 +22,20 @@ Normal topic branches are disposable integration surfaces. `main` and `develop` 
 
 ## Responsibility split
 
-- **ChatGPT Orchestrator / merge operator** — verifies PR/base/head identity, classifies the remote branch, performs or requests remote deletion, and verifies the canonical remote no longer exposes the retired topic branch.
-- **Local checkout owner** — Human Owner or Agente de IA Ejecutor that controls a workstation/worktree containing the branch; verifies there is no unrepresented local work, deletes the local branch, and prunes stale remote-tracking refs.
+- **ChatGPT Orchestrator / merge operator** — verifies PR/base/head identity, classifies the remote branch, delegates cleanup with the canonical prompt when an executor performs it, and verifies the canonical remote no longer exposes the retired topic branch.
+- **Agente de IA Ejecutor / local checkout owner** — when delegated cleanup, performs authorized remote retirement plus cleanup of every checkout/worktree actually accessible in its execution environment; it MUST report inaccessible checkouts as unverified.
+- **Human/local checkout owner** — for a checkout not accessible to the delegated executor, verifies there is no unrepresented local work, deletes the local branch, and prunes stale remote-tracking refs before beginning the next repository task there.
 - **Human Owner** — resolves ambiguous retention/deletion cases when unique work or intent cannot be reconstructed safely from Git.
 
 Remote cleanup is centrally auditable. Local branch cleanup is checkout-specific and cannot be inferred from GitHub alone.
+
+## Canonical post-integration cleanup delegation
+
+When branch retirement is delegated to an Agente de IA Ejecutor after task acceptance/integration, ChatGPT MUST use the canonical prompt defined in `docs/POST-INTEGRATION-CLEANUP-PROMPT.md`.
+
+Do not replace that prompt with an ad hoc branch list or chat-only deletion instructions. The executor derives cleanup candidates from the completed task identity, current Git/GitHub state, merged PR records, and this procedure.
+
+This closure phase is not a new implementation task and does not create another implementation handoff commit. It is operational retirement of already-integrated task branches.
 
 ## Normal post-merge procedure
 
@@ -153,11 +162,15 @@ Large historical cleanups SHOULD be performed in bounded batches so an incorrect
 
 ## Integration closure gate
 
-For normal future topic work, the integration is not operationally closed until:
+For normal future topic work, task acceptance/integration and operational branch closure are distinct states.
 
-- the PR is merged into the authorized target;
-- the remote topic branch is absent or has been explicitly placed in `REVIEW` because its HEAD changed;
-- the merge operator has verified remote state;
-- local cleanup has been performed in controlled checkouts, or is an explicit mandatory precondition before their next repository task.
+The task is not operationally closed until:
+
+- the accepted content/handoff is integrated into the authorized target;
+- the canonical post-integration cleanup prompt has been executed when cleanup is delegated;
+- every eligible merged task topic/review/acceptance branch is absent remotely;
+- any `REVIEW`/`RETAIN` exception has an explicit durable reason;
+- the merge operator has verified final remote state;
+- local cleanup has been performed in controlled/accessed checkouts, or is an explicit mandatory precondition before the next repository task in an inaccessible checkout.
 
 Do not preserve stale topic branches merely as history. PRs, commits, Task Contracts, reviews, handoffs, and Git history are the durable audit surfaces.
