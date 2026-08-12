@@ -1,0 +1,82 @@
+{
+  "approval_cases": [
+    {"id": "task-local-observe-test", "effects": ["OBSERVE", "EXECUTE_LOCAL"], "effect_outcomes": ["ALLOW_TASK", "ALLOW_TASK"], "expected": "ALLOW_TASK"},
+    {"id": "bounded-staging-restart", "effects": ["NETWORK_CONNECT", "REMOTE_EXECUTE", "DEPLOY_SERVICE_CHANGE"], "effect_outcomes": ["ALLOW_EXPLICIT", "ALLOW_EXPLICIT", "ALLOW_EXPLICIT"], "expected": "ALLOW_EXPLICIT"},
+    {"id": "production-deploy", "effects": ["DEPLOY_SERVICE_CHANGE"], "effect_outcomes": ["REQUIRE_HUMAN"], "expected": "REQUIRE_HUMAN"},
+    {"id": "administrator-global-config", "effects": ["INSTALL_CONFIGURE", "PRIVILEGE_ELEVATE"], "effect_outcomes": ["REQUIRE_HUMAN", "REQUIRE_HUMAN"], "expected": "REQUIRE_HUMAN"},
+    {"id": "credential-rotation", "effects": ["SECRET_USE", "DESTRUCTIVE_IRREVERSIBLE"], "effect_outcomes": ["REQUIRE_HUMAN", "REQUIRE_HUMAN"], "expected": "REQUIRE_HUMAN"},
+    {"id": "bounded-approved-credential-gate", "effects": ["SECRET_USE"], "effect_outcomes": ["ALLOW_EXPLICIT"], "human_gate_approved": true, "expected": "ALLOW_EXPLICIT"},
+    {"id": "destructive-persistent-effect", "effects": ["DATA_MUTATE", "DESTRUCTIVE_IRREVERSIBLE"], "effect_outcomes": ["ALLOW_EXPLICIT", "REQUIRE_HUMAN"], "expected": "REQUIRE_HUMAN"},
+    {"id": "unknown-target", "effects": ["OBSERVE"], "effect_outcomes": ["ALLOW_TASK"], "violations": ["target_unknown"], "expected": "DENY"},
+    {"id": "identity-verification-bypass", "effects": ["NETWORK_CONNECT"], "effect_outcomes": ["ALLOW_EXPLICIT"], "violations": ["identity_verification_bypass"], "expected": "DENY"},
+    {"id": "credential-exfiltration", "effects": ["SECRET_USE"], "effect_outcomes": ["REQUIRE_HUMAN"], "violations": ["credential_exfiltration"], "expected": "DENY"},
+    {"id": "disable-audit-control", "effects": ["INSTALL_CONFIGURE"], "effect_outcomes": ["REQUIRE_HUMAN"], "violations": ["security_control_bypass"], "expected": "DENY"},
+    {"id": "strictest-effect-wins", "effects": ["OBSERVE", "MUTATE_SCOPED", "DEPLOY_SERVICE_CHANGE"], "effect_outcomes": ["ALLOW_TASK", "ALLOW_EXPLICIT", "REQUIRE_HUMAN"], "expected": "REQUIRE_HUMAN"},
+    {"id": "deny-wins", "effects": ["OBSERVE", "NETWORK_CONNECT"], "effect_outcomes": ["ALLOW_TASK", "ALLOW_EXPLICIT"], "violations": ["target_mismatch"], "expected": "DENY"}
+  ],
+  "envelope_cases": [
+    {"id": "exact-envelope", "approved": {"actor": "implementation", "target": "service:staging:orders", "effects": ["REMOTE_EXECUTE", "DEPLOY_SERVICE_CHANGE"], "resources": ["orders-service"], "privilege": 2, "credential": "workload:orders-staging", "network": "staging-control-plane", "context": "staging/orders"}, "requested": {"actor": "implementation", "target": "service:staging:orders", "effects": ["REMOTE_EXECUTE"], "resources": ["orders-service"], "privilege": 2, "credential": "workload:orders-staging", "network": "staging-control-plane", "context": "staging/orders"}, "expected_valid": true},
+    {"id": "missing-target", "approved": {"actor": "implementation", "target": "service:staging:orders", "effects": ["REMOTE_EXECUTE"], "resources": ["orders-service"], "privilege": 2, "credential": "workload:orders-staging", "network": "staging-control-plane", "context": "staging/orders"}, "requested": {"actor": "implementation", "target": null, "effects": ["REMOTE_EXECUTE"], "resources": ["orders-service"], "privilege": 2, "credential": "workload:orders-staging", "network": "staging-control-plane", "context": "staging/orders"}, "expected_valid": false},
+    {"id": "target-mismatch", "mutation": {"field": "target", "value": "service:production:orders"}, "expected_valid": false},
+    {"id": "resource-outside-scope", "mutation": {"field": "resources", "value": ["orders-service", "billing-service"]}, "expected_valid": false},
+    {"id": "privilege-above-ceiling", "mutation": {"field": "privilege", "value": 3}, "expected_valid": false},
+    {"id": "credential-binding-mismatch", "mutation": {"field": "credential", "value": "workload:production"}, "expected_valid": false},
+    {"id": "network-binding-mismatch", "mutation": {"field": "network", "value": "production-control-plane"}, "expected_valid": false},
+    {"id": "context-drift", "mutation": {"field": "context", "value": "production/orders"}, "expected_valid": false},
+    {"id": "actor-mismatch", "mutation": {"field": "actor", "value": "strategy"}, "expected_valid": false},
+    {"id": "effect-outside-scope", "mutation": {"field": "effects", "value": ["REMOTE_EXECUTE", "DATA_MUTATE"]}, "expected_valid": false}
+  ],
+  "authority_cases": [
+    {"id": "child-narrows", "parent": ["observe:repo", "execute:test", "mutate:fixture"], "child": ["observe:repo", "execute:test"], "expected_valid": true},
+    {"id": "adapter-expands-privilege", "parent": ["observe:repo", "execute:test"], "child": ["observe:repo", "execute:test", "privilege:admin"], "expected_valid": false},
+    {"id": "script-expands-target", "parent": ["remote:staging", "service:orders"], "child": ["remote:staging", "service:orders", "service:billing"], "expected_valid": false},
+    {"id": "server-side-expands-effect", "parent": ["service:restart"], "child": ["service:restart", "data:delete"], "expected_valid": false}
+  ],
+  "runbook_routing_cases": [
+    {"id": "task-local", "traits": ["task_local"], "expected": false},
+    {"id": "production-mutation", "traits": ["production_mutation"], "expected": true},
+    {"id": "privileged-admin", "traits": ["privileged"], "expected": true},
+    {"id": "remote-persistent", "traits": ["remote_persistent"], "expected": true},
+    {"id": "infrastructure-iam-network-security", "traits": ["security_control"], "expected": true},
+    {"id": "credential-lifecycle", "traits": ["credential_lifecycle"], "expected": true},
+    {"id": "schema-migration", "traits": ["persistent_migration"], "expected": true},
+    {"id": "destructive", "traits": ["destructive"], "expected": true},
+    {"id": "multi-system", "traits": ["multi_system_sequence"], "expected": true},
+    {"id": "recovery", "traits": ["recovery"], "expected": true},
+    {"id": "recurring-maintenance", "traits": ["recurring_failure_modes"], "expected": true}
+  ],
+  "runbook_invocations": {
+    "runbook": {"id": "service-release", "revision": "7", "procedurally_valid": true},
+    "cases": [
+      {"id": "authorized-staging", "target_valid": true, "authorization": "ALLOW_EXPLICIT", "expected_executable": true},
+      {"id": "production-needs-human", "target_valid": true, "authorization": "REQUIRE_HUMAN", "expected_executable": false},
+      {"id": "mismatched-target", "target_valid": false, "authorization": "ALLOW_EXPLICIT", "expected_executable": false}
+    ]
+  },
+  "lifecycle_cases": [
+    {"id": "success-two-steps", "states": ["SELECT", "BIND_INPUTS", "PREFLIGHT", "AUTHORIZE", "READY", "EXECUTE_STEP", "VERIFY_CHECKPOINT", "EXECUTE_STEP", "VERIFY_CHECKPOINT", "VERIFY_POSTCONDITIONS", "DONE"], "expected_valid": true, "expected_terminal": "DONE"},
+    {"id": "preflight-blocked", "states": ["SELECT", "BIND_INPUTS", "PREFLIGHT", "BLOCKED"], "expected_valid": true, "expected_terminal": "BLOCKED"},
+    {"id": "authorization-blocked", "states": ["SELECT", "BIND_INPUTS", "PREFLIGHT", "AUTHORIZE", "BLOCKED"], "expected_valid": true, "expected_terminal": "BLOCKED"},
+    {"id": "checkpoint-recovery", "states": ["SELECT", "BIND_INPUTS", "PREFLIGHT", "AUTHORIZE", "READY", "EXECUTE_STEP", "VERIFY_CHECKPOINT", "STOP", "RECOVER", "BLOCKED"], "expected_valid": true, "expected_terminal": "BLOCKED"},
+    {"id": "checkpoint-rollback", "states": ["SELECT", "BIND_INPUTS", "PREFLIGHT", "AUTHORIZE", "READY", "EXECUTE_STEP", "VERIFY_CHECKPOINT", "STOP", "ROLLBACK", "BLOCKED"], "expected_valid": true, "expected_terminal": "BLOCKED"},
+    {"id": "context-drift-stale", "states": ["SELECT", "BIND_INPUTS", "PREFLIGHT", "AUTHORIZE", "READY", "STALE"], "expected_valid": true, "expected_terminal": "STALE"},
+    {"id": "human-denial", "states": ["SELECT", "BIND_INPUTS", "PREFLIGHT", "AUTHORIZE", "BLOCKED"], "human_approved": false, "expected_valid": true, "expected_terminal": "BLOCKED"},
+    {"id": "exit-without-postconditions", "states": ["SELECT", "BIND_INPUTS", "PREFLIGHT", "AUTHORIZE", "READY", "EXECUTE_STEP", "VERIFY_CHECKPOINT", "DONE"], "expected_valid": false, "expected_terminal": "DONE"}
+  ],
+  "adapter_pairs": [
+    {"id": "different-syntax-same-semantics", "left": {"family": "command-environment", "inert_syntax": "invoke staged service operation", "semantic": {"target": "service:staging:orders", "effects": ["DEPLOY_SERVICE_CHANGE"], "privilege": "service-operator", "order": ["prepare", "mutate", "verify"], "checkpoints": ["identity", "health"], "recovery": "restore-previous", "evidence": ["target", "health"]}}, "right": {"family": "native-api-automation", "inert_syntax": "submit operation object", "semantic": {"target": "service:staging:orders", "effects": ["DEPLOY_SERVICE_CHANGE"], "privilege": "service-operator", "order": ["prepare", "mutate", "verify"], "checkpoints": ["identity", "health"], "recovery": "restore-previous", "evidence": ["target", "health"]}}, "expected_equivalent": true},
+    {"id": "changed-effect-boundary", "left": {"family": "command-environment", "semantic": {"target": "service:staging:orders", "effects": ["DEPLOY_SERVICE_CHANGE"], "privilege": "service-operator", "order": ["mutate", "verify"], "checkpoints": ["health"], "recovery": "restore-previous", "evidence": ["target", "health"]}}, "right": {"family": "native-api-automation", "semantic": {"target": "service:staging:orders", "effects": ["DEPLOY_SERVICE_CHANGE", "DATA_MUTATE"], "privilege": "service-operator", "order": ["mutate", "verify"], "checkpoints": ["health"], "recovery": "restore-previous", "evidence": ["target", "health"]}}, "expected_equivalent": false}
+  ],
+  "adapter_path_cases": [
+    {"id": "supported", "supports_steps": true, "semantic_drift": false, "native_denial": false, "expected": "READY"},
+    {"id": "unsupported-step", "supports_steps": false, "semantic_drift": false, "native_denial": false, "expected": "BLOCKED_UNSUPPORTED"},
+    {"id": "tool-drift", "supports_steps": true, "semantic_drift": true, "native_denial": false, "expected": "STALE_REVALIDATE"},
+    {"id": "native-denial", "supports_steps": true, "semantic_drift": false, "native_denial": true, "expected": "BLOCKED_NATIVE_DENIAL"}
+  ],
+  "evidence_cases": [
+    {"id": "sanitized-complete", "facts": {"task_authorization": "T005/synthetic", "target": "service:staging:orders", "runbook": "service-release@7", "adapter": "native-api-automation@3", "checkpoints": ["identity", "health"], "postconditions": ["healthy"], "recovery": "not-used"}, "raw_terminal_transcript": false, "secret_value": false, "expected_valid": true},
+    {"id": "raw-transcript-not-required", "facts": {"task_authorization": "T005/synthetic", "target": "service:staging:orders", "runbook": "service-release@7", "adapter": "command-environment@2", "checkpoints": ["identity"], "postconditions": ["healthy"], "recovery": "not-used"}, "raw_terminal_transcript": false, "secret_value": false, "expected_valid": true},
+    {"id": "secret-bearing", "facts": {"task_authorization": "T005/synthetic", "target": "service:staging:orders", "runbook": "service-release@7", "adapter": "native-api-automation@3", "checkpoints": ["identity"], "postconditions": ["healthy"], "recovery": "not-used"}, "raw_terminal_transcript": true, "secret_value": true, "expected_valid": false},
+    {"id": "missing-postconditions", "facts": {"task_authorization": "T005/synthetic", "target": "service:staging:orders", "runbook": "service-release@7", "adapter": "native-api-automation@3", "checkpoints": ["identity"], "recovery": "not-used"}, "raw_terminal_transcript": false, "secret_value": false, "expected_valid": false}
+  ]
+}
