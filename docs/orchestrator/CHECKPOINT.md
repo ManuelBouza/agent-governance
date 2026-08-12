@@ -1,7 +1,7 @@
 # Current ChatGPT Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O031  
+Checkpoint-Sequence: O032  
 Canonical-Branch: `develop`  
 Chat-Closure: CONTINUE_ALLOWED
 
@@ -11,159 +11,139 @@ T001, T002, T003 and T005 are `ACCEPTED` and integrated.
 
 T004 remains terminal `CANCELLED_BY_HUMAN` under D037.
 
-Current deterministic verification policy:
+T006 is now `READY` and its controlling Core/Task Contract are integrated into `develop` through PR #45.
+
+Current deterministic verification policy remains:
 
 ```text
 probabilistic implementation assistant != verification authority
 source-product acceptance = deterministic evidence + authorized Human/Orchestrator judgment
 ```
 
-No live LLM/model review may become a required repository verification/release gate without a new explicit Human Owner decision superseding D037.
+No live LLM/model reviewer may become a required repository verification/release gate without a new explicit Human Owner decision superseding D037.
 
-## T005 — CLOSED / INTEGRATED
+## T006 — READY FOR EXECUTOR
 
-Task:
+Task Contract:
 
-`docs/tasks/T005-d033-d034-deterministic-execution-control-contract.md`
+`docs/tasks/T006-d035-deterministic-security-verification-contract.md`
 
-Acceptance:
+Planning/Core integration PR #45:
 
-`docs/reviews/T005-R1.md`
+`d2730f2054a5a0639db28eae4564a47bf6051714`
 
-Reviewed executor identity:
+Required executor branch:
 
-- controlling base: `658826e8b17e7b8454cfce5a5e6c7850f07f8d35`;
-- implementation anchor: `f4d6119c4351d6968588e9cfb9d921d1a10c0404`;
-- final executor HEAD: `04b88b31790c8254dd9d0c40f29cd4720e957843`;
-- D029 handoff-only successor validated.
+`test/security-verification-contract`
 
-Acceptance PR #41:
+Expected handoff:
 
-`05b101d0c0d40817119626d685e6c87cf1b46544`
+`handoffs/T006-executor-handoff.json`
 
-Implementation PR #42:
+Executor implementation MUST start from a `develop` revision containing the exact T006 Task Contract. The PR #45 squash above is the first such canonical revision.
 
-`be01beb9a0cabf8737b6d853b76908e38a756f5d`
+Do not launch from an older base.
 
-Accepted deterministic evidence:
-
-- focused T005: 11 passed;
-- T001–T003 regression subset: 115 passed;
-- full suite: 126 passed;
-- Ruff check/format green;
-- no Markdown/dependency/runtime adapter/network/model/real-system scope drift.
-
-Do not reopen T005 absent a concrete regression.
-
-## Current Core execution-control state
+## D035 Core state
 
 Integrated:
 
-- `governance-core/EXECUTION-CONTROL.md` — Execution-Control-Version `1.0.0`;
-- `governance-core/EXECUTION.md` — Execution-Version `1.2.0`;
-- `governance-core/GOVERNANCE.md` — Protocol-Version `1.11.0`.
+- `governance-core/SECURITY.md` — Security-Verification-Version `1.0.0`;
+- `governance-core/GOVERNANCE.md` — Protocol-Version `1.12.0`;
+- `docs/ARCHITECTURE-SECURITY-VERIFICATION.md` — T006 implementation boundary;
+- T006 deterministic Task Contract.
 
-Core invariants:
+Core security invariants:
 
 ```text
-mechanism != authority
-procedure semantics != terminal syntax
-approved runbook != approved invocation
-authority(child) ⊆ authority(parent)
+model output != security authority
+security guidance freshness != model training freshness
+security acceptance = applicable current controls + independent evidence
+past task acceptance != permanent security posture
+security PASS != execution authorization
+execution authorization != security PASS
 ```
 
-Approval outcomes:
+Security outcomes:
 
-`ALLOW_TASK | ALLOW_EXPLICIT | REQUIRE_HUMAN | DENY`
+`PASS | BLOCK | HUMAN_EXCEPTION`
 
-## D038 — ACCEPTED / INTEGRATED
+Freshness states:
 
-Decision:
+`CURRENT | STALE | UNKNOWN | CONFLICT | SUPERSEDED`
 
-`docs/decisions/D038-external-review-receipt-delivery-integrity-provider-boundary.md`
+Freshness classes:
 
-D030 specialization update:
+`THREAT_LIVE | PRODUCT_VERSION | STANDARD_PINNED | PROJECT_DECISION`
 
-`docs/decisions/D030-source-maintainer-external-workflow-overlay-precedence.md`
+Known-bad states are scoped/versioned and include active, mitigated, superseded, not-applicable and bounded-exception disposition.
 
-Integration PR #43:
+## T006 deterministic verification boundary
 
-`ed922f6ec7d3cdcaf378150b258f0c2f8b4885e3`
+T006 executor work is non-Markdown test scaffolding only.
 
-D038 partially supersedes D030 only for Gentle-AI RDD capability classification. D030 remains authoritative for general external-workflow precedence and retains clone-local RDD disable as the fallback when bounded coexistence is unavailable.
+It must mechanically prove at least:
 
-### D038 invariants
+- authoritative source/applicability/conflict behavior;
+- class-aware freshness without wall-clock/network dependence;
+- applicable active known-bad state blocks even when model/statistical metadata favors it;
+- independent evidence is required for `PASS`;
+- Human exceptions are exact-scope, independently supported and expiry-sensitive;
+- temporal invalidation changes current posture without rewriting historical acceptance;
+- security and D033/D034 execution control cannot grant each other's authority;
+- Protocol `1.12.0` and `SECURITY.md` module alignment;
+- provider/SDD/model/network/dependency neutrality.
+
+Required verification is defined in the Task Contract and includes focused pytest, full pytest and Ruff check/format in the locked uv environment.
+
+## Provider / SDD separation invariant
+
+Portable Governance Core remains provider-neutral.
+
+`governance-core/SECURITY.md` does not depend on Gentle-AI, GitHub Spec Kit, OpenSpec or another SDD/security/review provider.
+
+Provider-specific lifecycle, commands, paths, schemas, receipts and integration behavior remain outside portable Core semantics and are loaded/implemented only when a concrete provider integration is separately governed.
+
+`COEXISTENCE.md` may name known systems as compatibility examples; those names are not required branches/dependencies in portable Core behavior.
+
+D038/D030 remain relevant only if external-provider evidence/integrity behavior actually affects a future task. They are not implementation dependencies for T006.
+
+## D033/D034 preservation
+
+T006 does not modify `governance-core/EXECUTION-CONTROL.md`.
+
+Security and execution control compose as independent planes:
+
+```text
+security evaluation may narrow/block
+but cannot expand execution authority
+
+execution authorization/procedure success
+cannot manufacture security PASS
+```
+
+Do not reinterpret T006 as authorization/runtime/runbook adapter work.
+
+## D036 boundary
+
+D036 remains the next planned architecture layer after T006 closes.
+
+Do not implement D036 audit mode, findings/evidence graph, assurance reporting or coverage semantics inside T006.
+
+## D038 — External provider boundary remains accepted
+
+D038 remains integrated and continues to specialize D030 only for Gentle-AI RDD capability classification.
+
+Relevant invariant if provider work later becomes material:
 
 ```text
 external evidence != Governance acceptance
 external provider lifecycle != Governance task lifecycle
 external PASS = evidence, never acceptance authority
 external native enforcement may narrow/block but cannot expand authorization
-RDD PASS != Governance ACCEPT
-RDD receipt != merge/release authorization
 ```
 
-### Gentle-AI RDD capability disposition
-
-- exact candidate freezing/identity: `REUSE|ADAPT`;
-- live-Git re-derivation/drift detection: `REUSE|ADAPT`;
-- provider status/recovery/reconciliation: `REUSE|ADAPT`;
-- content-bound receipt as supplemental evidence: `REUSE|ADAPT`;
-- deterministic delivery-integrity validation: `ADAPT` subject to D037;
-- probabilistic reviewer/lens findings: `COEXIST` supplemental only;
-- reviewer/model approval as required source-product release gate: `DENY` under D037;
-- Governance task/scope/acceptance authority: `DENY`;
-- Governance merge/release authorization: `DENY`;
-- external SDD initialization solely to satisfy RDD: `DENY`.
-
-### Selected-provider non-bypass
-
-Once a candidate/delivery path is intentionally governed by a selected external integrity provider, a mismatch/stale/corrupt/deny result is a real blocker for that provider path.
-
-Do not disable or switch mechanism merely to deliver the same candidate. Repair/revalidate or persist an explicit Strategy/Human provider-disposition change and revalidate under the new disposition.
-
-### D037 boundary
-
-Probabilistic RDD reviewer/model output may be supplemental evidence only. It cannot become required source-product verification or a mandatory release gate.
-
-If the installed/current provider cannot expose useful candidate-integrity/delivery-integrity behavior without making probabilistic reviewer approval mandatory, use the D030 clone-local opt-out fallback.
-
-### Trust boundary
-
-Gentle-AI's published review-authority threat model states that its local review store/receipt does not authenticate against a malicious same-user actor with equivalent filesystem/Git/binary access.
-
-Therefore:
-
-```text
-RDD receipt != cryptographic remote attestation
-```
-
-Canonical remote Git, D029, deterministic tests, D035 security verification where applicable, and Human/ChatGPT authority remain necessary.
-
-Gentle-AI remains optional and is not a canonical source dependency.
-
-## Next Product Frontier — T006 / D035
-
-Next work is the deterministic Core integration of D035:
-
-- current/versioned security source authority;
-- freshness state;
-- known-bad security patterns;
-- independent verification outcomes;
-- security exceptions/expiry;
-- temporal posture invalidation;
-- deterministic tests proving obsolete/vulnerable state cannot pass because it is statistically common.
-
-Before T006 becomes READY:
-
-1. present a fresh D032 Primary Solution Diagram;
-2. perform quality/security triage;
-3. define the smallest coherent Core change;
-4. define deterministic fixtures/tests under D037;
-5. preserve D033/D034 execution-control semantics;
-6. do not broaden into D036 audit-report implementation yet.
-
-T007/D036 follows after T006.
+Do not load D038/D030 during normal T006 execution/review unless an actual provider/coexistence conflict appears.
 
 ## Orchestrator Direct-Write Audit History
 
@@ -176,29 +156,39 @@ Preserve; do not hide/rewrite without explicit Human authorization:
 
 ## Next Action
 
-1. Integrate this O031 post-D038 checkpoint through normal Markdown PR flow.
-2. Begin T006 Strategy for D035.
-3. Do not implement an RDD adapter/schema integration unless separately tasked.
-4. Do not add D036 implementation to T006.
+1. Launch the Agente de IA Ejecutor for T006 using only the canonical repository plus the exact Task Contract path.
+2. Executor creates/uses `test/security-verification-contract` from current `develop`, implements only authorized non-Markdown scope, runs required deterministic verification, persists/pushes the D029-compliant handoff and returns status/path/branch/HEAD only.
+3. ChatGPT reviews remote base/head identity, Task Contract, handoff, complete diff and verification evidence before acceptance.
+4. Do not start D036 until T006 is accepted/integrated.
+
+Minimal executor launch prompt:
+
+```text
+Operate as the Agente de IA Ejecutor for ManuelBouza/agent-governance. Read AGENTS.md, then load and execute the Task Contract at docs/tasks/T006-d035-deterministic-security-verification-contract.md from current develop. Follow all referenced repository policies. Do not edit Markdown. Persist, commit and push the required executor handoff before returning.
+```
 
 ## Next Chat Minimum Load
 
 After `AGENTS.md` and this checkpoint:
 
-1. load D035 and `docs/ARCHITECTURE-SECURITY-VERIFICATION.md`;
-2. load `governance-core/QUALITY.md`, `governance-core/EXECUTION-CONTROL.md`, `governance-core/GOVERNANCE.md` and current deterministic test helpers as needed for T006;
-3. load D038/D030 only if external-provider evidence/integrity affects T006 design;
-4. load D036 only after T006 closes or if a concrete boundary conflict requires it;
-5. do not reload T005 implementation details absent regression/audit need.
+1. for T006 execution/review load `docs/tasks/T006-d035-deterministic-security-verification-contract.md`;
+2. load D035 and `governance-core/SECURITY.md` as the normative security semantics;
+3. load `governance-core/GOVERNANCE.md`, D037 and current deterministic test helpers as needed for contract/review;
+4. load `governance-core/EXECUTION-CONTROL.md` / D033/D034 only when evaluating the explicit security-vs-execution composition cases;
+5. load D038/D030 only if a concrete external-provider conflict appears;
+6. load D036 only after T006 closes or if a concrete boundary conflict requires it;
+7. do not reload T001–T005 implementation details absent regression/audit need.
 
 ## Do Not Load or Do
 
 - Do not reopen T001–T005 absent a concrete regression or explicit Human decision.
 - Do not add live LLM/model reviewer output as a required source-product gate.
-- Do not let RDD/external providers grant Agent Governance acceptance, scope, merge or release authority.
-- Do not treat provider receipts as hostile-local-actor attestation.
-- Do not bypass a selected provider denial by mechanism switching.
-- Do not add Gentle-AI as a canonical source dependency.
-- Do not start an RDD executable integration without a separate Task Contract.
+- Do not fetch live vulnerability/advisory data in T006 deterministic tests.
+- Do not add an external security/SDD/review provider dependency to T006 or portable Core.
+- Do not couple portable Core semantics to Gentle-AI or another named SDD/provider.
+- Do not treat security `PASS` as execution authorization or D033/D034 success as security `PASS`.
+- Do not let an implementation/model invent security exceptions.
+- Do not use wall-clock/network state as hidden freshness inputs in deterministic tests.
 - Do not implement D036 inside T006.
+- Do not start an RDD/external-provider executable integration without a separate Task Contract.
 - Do not declare the source product stable/release-ready.
