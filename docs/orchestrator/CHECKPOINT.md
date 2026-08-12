@@ -51,6 +51,15 @@ T006 semantics, D035 Core state and verification requirements remain unchanged. 
 
 D036 remains after T006.
 
+## Orchestrator Direct-Write Audit History
+
+Preserve; do not hide/rewrite without explicit Human authorization:
+
+- T002-R1 placeholder: accidental `6a3bff4f12850bd701fea624815e955231082afa`; corrective `67d8dc6de9679f833f3136c6a66ee7ad05283cb3`.
+- architecture overview placeholder: accidental `a0e063344043fda53f55b8fcb5b03742a33a7185`; corrective `09fa91f6b3c829e6edc0719fcd636cf3cba8f879`.
+- T004-R1 placeholder: accidental `197ce3fad02a69baf99238beb9859280a137a681`; corrective `52ae6fb5126517ea19c8d00918e7b148c17f146a`.
+- D037 placeholder: accidental `71b62980c41b183dfb33ef3099c72fc827234606`; corrective `e5ee3c56cbd17f72f876987550bab34cde065b53`.
+
 ## Next Action
 
 1. Re-launch/continue the Agente de IA Ejecutor on T007 using the canonical minimal prompt and the same Task Contract pointer.
