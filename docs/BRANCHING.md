@@ -39,6 +39,31 @@ Use product/task meaning, never agent-product names, in branch names.
 
 Topic branches are short-lived and merge back into `develop` through pull request. Prefer squash merge so one accepted PR becomes one coherent integration unit.
 
+A topic branch lifecycle is not complete merely because its PR was merged. Successful integration includes post-merge branch cleanup according to `docs/BRANCH-CLEANUP.md`.
+
+## Post-merge branch cleanup
+
+After a topic PR is successfully merged into its authorized target, the corresponding topic branch MUST be retired rather than left indefinitely on the canonical remote.
+
+For normal `feat/*`, `fix/*`, `refactor/*`, `test/*`, `docs/*`, and `chore/*` work:
+
+1. verify that the PR is actually merged into the authorized target;
+2. verify the exact reviewed PR head identity;
+3. if the remote topic branch still exists, verify that its current HEAD has not advanced beyond the reviewed PR head;
+4. delete the remote topic branch;
+5. verify that the remote branch is absent;
+6. prune/delete corresponding local topic branches in every maintainer/executor checkout that still carries them, after verifying that no unrepresented local work would be discarded.
+
+Remote branch deletion is part of normal integration closure and SHOULD happen immediately after merge. Local cleanup MUST happen immediately when the merge operator controls that checkout; otherwise it MUST happen before that checkout begins its next repository task.
+
+Because normal topic PRs are commonly squash-merged, Git ancestry alone is not sufficient evidence that a topic branch is safe to delete: the original topic commits may not appear as ancestors of `develop`. The safe deletion decision MUST use the merged PR record and its exact reviewed `head_sha`, plus confirmation that the branch has not received post-review/post-merge commits.
+
+If the branch HEAD differs from the merged PR head, the branch has no merged PR, the PR was closed without merge, or the state is otherwise ambiguous, do not delete it automatically. Classify it for explicit review under `docs/BRANCH-CLEANUP.md`.
+
+Repository hosting settings SHOULD automatically delete merged PR head branches when the platform supports that control. Automatic deletion is defense in depth, not a substitute for the post-merge verification above.
+
+`main` and `develop` are long-lived and MUST NOT be deleted by this procedure. `release/*` and `hotfix/*` branches follow their specialized lifecycle and may be deleted only after their required propagation/integration is complete.
+
 ## Promotion to stable
 
 When ChatGPT Orchestrator determines `develop` satisfies the applicable release/readiness contract:
@@ -59,6 +84,8 @@ A release branch is cut from the intended `develop` baseline and accepts stabili
 
 After release, ensure any stabilization fixes are also represented in `develop`.
 
+Once a `release/*` branch has been fully integrated/propagated and no longer carries unique stabilization work, retire it using the same evidence-preserving cleanup principles in `docs/BRANCH-CLEANUP.md`.
+
 ## Hotfixes
 
 Use `hotfix/<semver>` only for urgent corrections to the current stable line.
@@ -71,6 +98,8 @@ A hotfix:
 5. MUST be propagated to `develop` so the defect does not reappear in the next version.
 
 Hotfix is not a shortcut around normal `develop` integration.
+
+After required propagation to both stable and integration lines is complete and no unique hotfix work remains, retire the `hotfix/*` branch using `docs/BRANCH-CLEANUP.md`.
 
 ## Pull-request targets
 
