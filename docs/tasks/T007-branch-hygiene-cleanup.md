@@ -1,7 +1,7 @@
 # T007 — Branch hygiene cleanup
 
 Task ID: T007  
-Status: IN_PROGRESS  
+Status: ACCEPTED  
 Type: infrastructure  
 Base branch: `develop`  
 Expected topic branch: `chore/branch-hygiene-cleanup`  
@@ -21,7 +21,8 @@ T007 is a repository-maintenance interruption. It does not change product semant
 - `docs/TASK-CONTRACTS.md`
 - `docs/EXECUTOR-HANDOFFS.md`
 - GitHub issue #50 (`chore: audit and clean historical topic branches`)
-- Active rework directive: `docs/reviews/T007-R1.md`
+- `docs/reviews/T007-R1.md`
+- `docs/reviews/T007-R2.md`
 
 ## Authorized scope
 
@@ -145,3 +146,4 @@ HEAD: <pushed-commit-sha>
 ## Review history
 
 - `T007-R1` reviews executor HEAD `656c71e22f60ae8b235304179dc1d8fee4ec4031`, preserves the classify-before-delete procedural nonconformance, and resolves `eval/d032-agent-capability` as intentionally abandoned T004 work eligible for exact-SHA deletion.
+- `T007-R2` accepts executor HEAD `aab9f650215d276f117cb60389654f29fd40d16e` after verifying final remote/local cleanup evidence and preserved procedural audit history.
