@@ -1,15 +1,16 @@
 {
   "task_id": "T008",
-  "status": "PARTIAL",
+  "status": "DONE",
   "task_contract_path": "docs/tasks/T008-egll-deterministic-learning-detectors.md",
   "branch": "test/egll-deterministic-learning-detectors",
-  "implementation_head_sha": "6cf30513ef545fc276807a22272633f436b956bd",
+  "implementation_head_sha": "fb2343ff3724810ed327c9e5a68232504894e59e",
   "base_branch": "develop",
-  "base_sha": "bb1a2de8db622141fc975d1c341e82b9bdc4c3c6",
+  "base_sha": "2be1ad9329e0b7901b784cff542aca50a8516927",
   "files_changed": [
     "tests/_governance_learning.py",
     "tests/fixtures/governance_learning/cases.json",
-    "tests/test_governance_learning.py"
+    "tests/test_governance_learning.py",
+    "handoffs/T008-executor-handoff.json"
   ],
   "implementation_summary": "Added deterministic, fixture-driven EGLL findings for all five required signal classes, including T007-derived branch freeze, deletion-resolution, rework, and procedural-nonconformance regressions. Findings are stable machine-readable dictionaries and do not infer cause, intent, blame, or remediation authority.",
   "fingerprint_catalog": [
@@ -39,8 +40,8 @@
       "uv run --locked ruff format --check ."
     ],
     "results": [
-      "Focused pytest: PASS, 8 passed in 0.02s.",
-      "Full pytest: FAIL, 2 failed and 132 passed in 0.66s. Both failures are pre-existing protocol-version drift: governance-core/GOVERNANCE.md declares 1.12.0 while tests/_helpers.py and tests/test_execution_control_contract.py require 1.11.0. The same mismatch is present at base bb1a2de.",
+      "Focused pytest: PASS, 8 passed in 0.03s.",
+      "Full pytest: PASS, 134 passed in 0.56s after incorporating current develop with the accepted T009 protocol-version baseline correction.",
       "Ruff check: PASS, All checks passed.",
       "Ruff format check: PASS, 11 files already formatted."
     ],
@@ -49,13 +50,11 @@
   },
   "dependencies_or_config_changes": "None.",
   "scope_confirmation": "No Markdown, Governance Core, dependency, configuration, network, model/provider, external policy engine, ruleset, GitHub Actions, or consumer-footprint changes were made.",
-  "git_status": "Implementation artifacts committed at implementation_head_sha; handoff finalization commit pending. Local untracked .codegraph runtime index is ignored from task staging and is not part of the handoff.",
-  "unresolved_issues": [
-    "Required full pytest gate is not green because baseline bb1a2de has protocol-version drift outside T008 scope: Governance Core is 1.12.0 while existing tests require 1.11.0. T008 forbids changing Governance Core semantics or weakening existing tests."
-  ],
+  "git_status": "Implementation and corrected current develop baseline committed at implementation_head_sha; handoff finalization commit pending. Pre-existing untracked .codegraph/ remains untouched, untracked, and excluded from staging and commits.",
+  "unresolved_issues": [],
   "procedural_nonconformance": null,
-  "discovered_ambiguity": "No T008 detector semantic ambiguity. Pre-existing full-suite baseline drift requires separately authorized correction.",
-  "recommended_next_task": "Orchestrator should authorize correction of the pre-existing protocol-version test drift, then rerun T008 full pytest before acceptance.",
+  "discovered_ambiguity": "None. T009 corrected the independently authorized baseline drift; T008 detector files remain byte-equivalent to reviewed implementation anchor 6cf30513ef545fc276807a22272633f436b956bd.",
+  "recommended_next_task": "Orchestrator review and acceptance of T008 before implementation integration into develop.",
   "chatgpt_read_path": "handoffs/T008-executor-handoff.json",
   "rollback_boundary": "Remove tests/_governance_learning.py, tests/fixtures/governance_learning/cases.json, tests/test_governance_learning.py, and handoffs/T008-executor-handoff.json; no unrelated behavior or configuration is affected."
 }
