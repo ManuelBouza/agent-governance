@@ -105,7 +105,7 @@ A reviewer must be able to distinguish the original task from later authorized r
 1. ChatGPT frames/researches the change.
 2. ChatGPT creates the Task Contract on a planning branch.
 3. The Task Contract is reviewed and integrated into `develop`.
-4. ChatGPT launches the executor with a minimal pointer to the Task Contract.
+4. ChatGPT launches the executor with the canonical minimal launch prompt defined below.
 5. The executor creates/uses the authorized implementation topic branch from the `develop` revision containing the contract.
 6. The executor performs only authorized non-Markdown work.
 7. Material task changes require a persisted ChatGPT revision before execution continues.
@@ -117,13 +117,71 @@ A reviewer must be able to distinguish the original task from later authorized r
 13. After ChatGPT acceptance, the implementation proceeds through PR to `develop`.
 14. ChatGPT may update lifecycle/acceptance metadata without rewriting original execution semantics.
 
-## Minimal launch prompt pattern
+## Canonical minimal executor launch prompt
 
-A product-specific launch prompt should be equivalent to:
+Every normal source-product executor launch MUST use the same structural contract. The launch prompt is transport/bootstrap only; it MUST NOT become a second task specification.
 
-> Operate as the Agente de IA Ejecutor for `ManuelBouza/agent-governance`. Read `AGENTS.md`, then load and execute the Task Contract at `<path>` from current `develop`. Follow all referenced repository policies. Do not edit Markdown. Persist, commit and push the required executor handoff before returning.
+The prompt contains exactly these semantic parts:
 
-Additional task semantics should not be duplicated into the launch prompt.
+1. **Role** — identify the abstract `Agente de IA Ejecutor` role and canonical repository.
+2. **Repository baseline** — instruct the executor to start from the current Task Contract base branch, normally current `develop`.
+3. **Bootstrap** — instruct the executor to read `AGENTS.md` first.
+4. **Authoritative task pointer** — provide exactly one controlling Task Contract path and state that the Task Contract plus its referenced repository policies are the complete execution specification.
+5. **Completion contract** — require the contract-defined verification/handoff, commit and push, then require only the minimal status/handoff/branch/HEAD response.
+
+Canonical template:
+
+```text
+Operate as the Agente de IA Ejecutor for <owner>/<repository>.
+
+Start from current <base-branch> and read AGENTS.md first.
+
+Then load and execute the authoritative Task Contract:
+<task-contract-path>
+
+Treat that Task Contract and its referenced repository policies as the complete execution specification. Do not infer or expand task scope from this prompt.
+
+Complete the required verification and executor handoff, commit and push all authorized work, then return only:
+
+STATUS: DONE | BLOCKED | PARTIAL
+HANDOFF: <path>
+BRANCH: <branch>
+HEAD: <pushed-commit-sha>
+```
+
+For normal launches, substitute only repository identity, base branch and Task Contract path. The output placeholders remain the generic completion schema; the concrete handoff path/branch are resolved from the Task Contract.
+
+### Launch-prompt non-duplication invariant
+
+The launch prompt MUST NOT duplicate task semantics that belong in Git, including:
+
+- objective/result;
+- acceptance criteria;
+- authorized filenames/scope;
+- exclusions;
+- architecture/design constraints;
+- test commands or fixture families;
+- expected implementation branch/handoff path when the Task Contract already defines them;
+- provider/product-specific implementation instructions;
+- task-specific safety/security restrictions;
+- protocol/module versions.
+
+Standing repository rules such as Markdown ownership also remain in `AGENTS.md`/referenced policy and SHOULD NOT be re-stated task-by-task in the launch prompt.
+
+If any such task-specific fact is necessary to execute safely or correctly, persist it in the Task Contract or its controlling repository policy before launch rather than extending the chat/terminal prompt.
+
+### Launch-prompt authority invariant
+
+The prompt does not supersede or supplement missing Task Contract semantics.
+
+```text
+launch prompt = role + repository + bootstrap + task pointer + completion contract
+Task Contract + referenced Git policy = execution specification
+```
+
+If the Task Contract is missing, not `READY`, not integrated into the stated base branch, or materially incomplete, do not compensate by adding instructions to the launch prompt. Repair/persist the contract first.
+
+If a launch prompt conflicts with the persisted Task Contract or repository policy, the executor MUST stop/escalate rather than choosing the chat-only instruction as a new task scope. Human/ChatGPT changes to objective/scope/acceptance/verification must be persisted through the normal Task Contract revision flow.
 
 ## Minimal executor response pattern
 
