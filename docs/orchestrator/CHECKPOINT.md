@@ -1,7 +1,7 @@
 # Current ChatGPT Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O036  
+Checkpoint-Sequence: O037  
 Canonical-Branch: `develop`  
 Chat-Closure: CONTINUE_ALLOWED
 
@@ -43,6 +43,8 @@ Integrated handoff:
 
 The T007 historical cleanup reduced the remote repository to the long-lived branches plus only temporary branches created by T007 acceptance/integration workflow. Before the next executor task begins, apply `docs/BRANCH-CLEANUP.md` to those temporary refs and prune/delete matching local refs where present.
 
+Delegated post-integration branch retirement MUST use the canonical transport contract in `docs/POST-INTEGRATION-CLEANUP-PROMPT.md`; do not send an ad hoc branch list or deletion instructions.
+
 Preserve the T007 procedural audit: the initial pass deleted `eval/d032-agent-capability` before fully resolving its missing PR association, restored it at the exact original SHA, and the persisted R1 disposition later authorized final exact-SHA deletion as cancelled T004 work.
 
 ## Orchestrator Direct-Write Audit History
@@ -57,10 +59,31 @@ Preserve; do not hide/rewrite without explicit Human authorization:
 
 ## Next Action
 
-1. Complete normal post-merge branch retirement for the temporary T007 workflow branches and verify canonical remote/local pruning.
-2. Then launch the Agente de IA Ejecutor for T006 using the canonical minimal launch prompt and exactly one Task Contract pointer.
-3. ChatGPT remotely reviews T006 handoff/diff/evidence before acceptance.
-4. Do not start D036 until T006 is accepted/integrated.
+1. Delegate T007 post-integration branch retirement using the canonical prompt in `docs/POST-INTEGRATION-CLEANUP-PROMPT.md`, substituting only repository identity and task ID.
+2. Verify the executor's returned remote/local inventories against current GitHub state; T007 is operationally closed only when no eligible task branches remain remotely and accessible local refs are pruned.
+3. Then launch the Agente de IA Ejecutor for T006 using the canonical minimal launch prompt and exactly one Task Contract pointer.
+4. ChatGPT remotely reviews T006 handoff/diff/evidence before acceptance.
+5. Do not start D036 until T006 is accepted/integrated.
+
+Canonical T007 post-integration cleanup prompt:
+
+```text
+Operate as the Agente de IA Ejecutor for ManuelBouza/agent-governance.
+
+Start from current develop and read AGENTS.md first.
+
+Then perform post-integration branch cleanup for completed task T007 under the authoritative procedure:
+docs/BRANCH-CLEANUP.md
+
+Treat current Git/GitHub state, the completed task record, its merged PR records, and the referenced repository policies as the complete cleanup specification. Do not modify repository content, reopen task scope, or infer deletion safety from branch names or ancestry alone.
+
+Complete remote and accessible-local branch retirement and verification, then return only:
+
+STATUS: DONE | BLOCKED | PARTIAL
+TASK: T007
+REMOTE_REMAINING: <branches>
+LOCAL_REMAINING: <branches>
+```
 
 Canonical T006 launch prompt:
 
@@ -86,7 +109,7 @@ HEAD: <pushed-commit-sha>
 
 After `AGENTS.md` and this checkpoint:
 
-1. verify T007 temporary branch retirement under `docs/BRANCH-CLEANUP.md` if not already complete;
+1. verify T007 temporary branch retirement under `docs/BRANCH-CLEANUP.md` and `docs/POST-INTEGRATION-CLEANUP-PROMPT.md` if not already complete;
 2. for T006 load `docs/tasks/T006-d035-deterministic-security-verification-contract.md`;
 3. load D035 and `governance-core/SECURITY.md` as normative security semantics;
 4. load `governance-core/GOVERNANCE.md`, D037 and deterministic helpers only as needed;
