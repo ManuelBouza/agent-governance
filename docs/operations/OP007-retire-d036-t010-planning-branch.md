@@ -1,7 +1,7 @@
 # OP007 — Retire D036/T010 planning branch
 
 Operation ID: OP007  
-Status: DRAFT  
+Status: READY  
 Type: post-integration branch cleanup  
 Base branch: `develop`
 
@@ -11,9 +11,9 @@ Retire the merged Markdown planning branch that integrates D036 portable Core as
 
 ## Durable target
 
-The PR integrating this OP007 contract and the D036/T010 planning change MUST be recorded here before OP007 becomes `READY`.
+PR #73 — D036 assurance Core + T010 planning integration.
 
-Its merged source branch is the sole retirement target of this operation.
+The executor MUST derive the exact source branch and reviewed `head_sha` from merged PR #73. The merged source branch of PR #73 is the sole retirement target of this operation.
 
 ## Controlling references
 
@@ -22,7 +22,7 @@ Its merged source branch is the sole retirement target of this operation.
 - `docs/BRANCHING.md`
 - `docs/BRANCH-CLEANUP.md`
 - `docs/POST-INTEGRATION-CLEANUP-PROMPT.md`
-- merged Git/GitHub record for the durable target
+- merged Git/GitHub record for PR #73
 
 ## Authorized operations
 
