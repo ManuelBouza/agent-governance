@@ -1,0 +1,229 @@
+{
+  "task_id": "T007",
+  "status": "DONE",
+  "task_contract_path": "docs/tasks/T007-branch-hygiene-cleanup.md",
+  "branch": "chore/branch-hygiene-cleanup",
+  "implementation_head_sha": "0503e084d3f55734f70e0ea8222d0b685198d827",
+  "base_branch": "develop",
+  "base_sha": "bf60b30d54445ddcf521f70538289931bd9de57a",
+  "files_changed": [
+    "handoffs/T007-executor-handoff.json"
+  ],
+  "implementation_summary": "Completed the T007-R1 rework by re-reading eval/d032-agent-capability at its authorized exact SHA, deleting its intentionally abandoned T004 ref remotely and locally, retiring the merged R1 review branch at its exact PR head, pruning the executor-controlled checkout, and leaving only main, develop, and the active T007 task branch.",
+  "branch_inventory": {
+    "initial_remote": {
+      "count": 53,
+      "names": [
+        "develop",
+        "docs-persist-governance-decisions",
+        "docs/accept-t001",
+        "docs/adaptive-proxy-quality-envelope",
+        "docs/branch-cleanup-policy",
+        "docs/chatgpt-project-bootstrap",
+        "docs/d033-execution-access-control",
+        "docs/d034-runbook-terminal-neutral",
+        "docs/d035-security-verification-authority",
+        "docs/d036-existing-system-assurance-audit",
+        "docs/d037-deterministic-code-only-verification",
+        "docs/d038-rdd-subordinate-evidence",
+        "docs/ecosystem-coexistence",
+        "docs/executor-launch-prompt-contract",
+        "docs/handoff-review-contract-fix",
+        "docs/local-development-toolchain",
+        "docs/maintainer-skill-role-routing",
+        "docs/o031-post-d038",
+        "docs/orchestrator-chat-checkpoints",
+        "docs/orchestrator-checkpoint-close",
+        "docs/persist-intent-proxy-architecture",
+        "docs/persisted-executor-handoffs",
+        "docs/persisted-task-handoffs",
+        "docs/python-testing-stack",
+        "docs/source-change-procedure",
+        "docs/source-overlay-precedence",
+        "docs/t001-r2-review",
+        "docs/t001-r3-review",
+        "docs/t002-atl-runtime-boundary",
+        "docs/t002-coexistence-fixtures",
+        "docs/t002-post-integration",
+        "docs/t002-r1-capability-coverage",
+        "docs/t002-r2-acceptance",
+        "docs/t003-d032-deterministic-contract",
+        "docs/t003-post-integration",
+        "docs/t003-r1-acceptance",
+        "docs/t004-d032-agent-eval",
+        "docs/t004-r1-opencode-adapter-preflight",
+        "docs/t004-r2-structured-child-diagnostics",
+        "docs/t004-r3-catalog-model-reselection",
+        "docs/t005-acceptance",
+        "docs/t005-execution-control-core",
+        "docs/t006-d035-security-core",
+        "docs/t006-ready-checkpoint",
+        "docs/t007-branch-hygiene-contract",
+        "docs/testing-capability-model",
+        "docs/testing-evaluation-strategy",
+        "eval/d032-agent-capability",
+        "main",
+        "test/coexistence-fixtures",
+        "test/d032-deterministic-contract",
+        "test/execution-control-contract",
+        "test/governance-harness"
+      ]
+    },
+    "final_remote": {
+      "count": 3,
+      "names": [
+        "chore/branch-hygiene-cleanup",
+        "develop",
+        "main"
+      ]
+    },
+    "initial_local": {
+      "count": 8,
+      "names": [
+        "chore/branch-hygiene-cleanup",
+        "develop",
+        "eval/d032-agent-capability",
+        "main",
+        "test/coexistence-fixtures",
+        "test/d032-deterministic-contract",
+        "test/execution-control-contract",
+        "test/governance-harness"
+      ]
+    },
+    "final_local": {
+      "count": 3,
+      "names": [
+        "chore/branch-hygiene-cleanup",
+        "develop",
+        "main"
+      ],
+      "branch_vv": [
+        "chore/branch-hygiene-cleanup 0503e08 [origin/chore/branch-hygiene-cleanup: ahead 2] Merge remote-tracking branch 'origin/develop' into chore/branch-hygiene-cleanup",
+        "develop bf60b30 [origin/develop] docs: persist T007 R1 cleanup directive (#52)",
+        "main 5333fb8 [origin/main] docs: establish binary agent role model"
+      ]
+    }
+  },
+  "dispositions": [
+    {"branch":"docs-persist-governance-decisions","disposition":"DELETE","pr":1,"base":"develop","reviewed_head_sha":"173d3e5e0e33735c0c8ac5971ac5a4c678bbe017","observed_remote_head":"173d3e5e0e33735c0c8ac5971ac5a4c678bbe017","reason":"PR merged into develop; exact reviewed head matched; no post-review work."},
+    {"branch":"docs/accept-t001","disposition":"DELETE","pr":18,"base":"develop","reviewed_head_sha":"19bfd516638fac242d0d0daa3b6d1481f5f94b0a","observed_remote_head":"19bfd516638fac242d0d0daa3b6d1481f5f94b0a","reason":"PR merged into develop; exact reviewed head matched; no post-review work."},
+    {"branch":"docs/adaptive-proxy-quality-envelope","disposition":"DELETE","pr":22,"base":"develop","reviewed_head_sha":"1a32db2cfac73869b03263312708e62dd0294ed7","observed_remote_head":"1a32db2cfac73869b03263312708e62dd0294ed7","reason":"PR merged into develop; exact reviewed head matched; no post-review work."},
+    {"branch":"docs/branch-cleanup-policy","disposition":"DELETE","pr":49,"base":"develop","reviewed_head_sha":"b3ffe42779f4cbefe27e1bd0fbde2c52ce893794","observed_remote_head":"b3ffe42779f4cbefe27e1bd0fbde2c52ce893794","reason":"PR merged into develop; exact reviewed head matched; no post-review work."},
+    {"branch":"docs/chatgpt-project-bootstrap","disposition":"DELETE","pr":11,"base":"develop","reviewed_head_sha":"8102a2b156db1afd9e7adf01b9d128463d3510aa","observed_remote_head":"8102a2b156db1afd9e7adf01b9d128463d3510aa","reason":"PR merged into develop; exact reviewed head matched; no post-review work."},
+    {"branch":"docs/d033-execution-access-control","disposition":"DELETE","pr":32,"base":"develop","reviewed_head_sha":"ec8ad25cdc20c0b56f1526dacb7a511724e366b0","observed_remote_head":"ec8ad25cdc20c0b56f1526dacb7a511724e366b0","reason":"PR merged into develop; exact reviewed head matched; no post-review work."},
+    {"branch":"docs/d034-runbook-terminal-neutral","disposition":"DELETE","pr":33,"base":"develop","reviewed_head_sha":"e4785b9e09a714f9a8738edf670708bf9484352e","observed_remote_head":"e4785b9e09a714f9a8738edf670708bf9484352e","reason":"PR merged into develop; exact reviewed head matched; no post-review work."},
+    {"branch":"docs/d035-security-verification-authority","disposition":"DELETE","pr":34,"base":"develop","reviewed_head_sha":"142bf7d8651318668058cfeee9c7e2ec6989c98b","observed_remote_head":"142bf7d8651318668058cfeee9c7e2ec6989c98b","reason":"PR merged into develop; exact reviewed head matched; no post-review work."},
+    {"branch":"docs/d036-existing-system-assurance-audit","disposition":"DELETE","pr":35,"base":"develop","reviewed_head_sha":"705434dc6e0df4e793e9bd9ad7128b7c50569880","observed_remote_head":"705434dc6e0df4e793e9bd9ad7128b7c50569880","reason":"PR merged into develop; exact reviewed head matched; no post-review work."},
+    {"branch":"docs/d037-deterministic-code-only-verification","disposition":"DELETE","pr":39,"base":"develop","reviewed_head_sha":"121b7204832c08a3a4a8b7ed0c688eabc3b673ef","observed_remote_head":"121b7204832c08a3a4a8b7ed0c688eabc3b673ef","reason":"PR merged into develop; exact reviewed head matched; no post-review work."},
+    {"branch":"docs/d038-rdd-subordinate-evidence","disposition":"DELETE","pr":43,"base":"develop","reviewed_head_sha":"664eb09e7d6b2bc7ea5fb22ab23d75960f3ba1e2","observed_remote_head":"664eb09e7d6b2bc7ea5fb22ab23d75960f3ba1e2","reason":"PR merged into develop; exact reviewed head matched; no post-review work."},
+    {"branch":"docs/ecosystem-coexistence","disposition":"DELETE","pr":9,"base":"develop","reviewed_head_sha":"c9158014d615d0e716b7fccb850c0e9800a5ed77","observed_remote_head":"c9158014d615d0e716b7fccb850c0e9800a5ed77","reason":"PR merged into develop; exact reviewed head matched; no post-review work."},
+    {"branch":"docs/executor-launch-prompt-contract","disposition":"DELETE","pr":47,"base":"develop","reviewed_head_sha":"fa5f9b268c1ae72ec4adea25f8249d8cbdb71dcd","observed_remote_head":"fa5f9b268c1ae72ec4adea25f8249d8cbdb71dcd","reason":"PR merged into develop; exact reviewed head matched; no post-review work."},
+    {"branch":"docs/handoff-review-contract-fix","disposition":"DELETE","pr":13,"base":"develop","reviewed_head_sha":"7ac9811b49877b0fa90ff1a140c064fcd380d450","observed_remote_head":"7ac9811b49877b0fa90ff1a140c064fcd380d450","reason":"PR merged into develop; exact reviewed head matched; no post-review work."},
+    {"branch":"docs/local-development-toolchain","disposition":"DELETE","pr":8,"base":"develop","reviewed_head_sha":"d5c9b86c1a14bac014bc0c68584484331d1793a0","observed_remote_head":"d5c9b86c1a14bac014bc0c68584484331d1793a0","reason":"PR merged into develop; exact reviewed head matched; no post-review work."},
+    {"branch":"docs/maintainer-skill-role-routing","disposition":"DELETE","pr":48,"base":"develop","reviewed_head_sha":"c1b975c40525b9805d85e24d55377be2d6ab747e","observed_remote_head":"c1b975c40525b9805d85e24d55377be2d6ab747e","reason":"PR merged into develop; exact reviewed head matched; no post-review work."},
+    {"branch":"docs/o031-post-d038","disposition":"DELETE","pr":44,"base":"develop","reviewed_head_sha":"3ef6368d25b5f2426c8f7a9085d9ddf50a948eab","observed_remote_head":"3ef6368d25b5f2426c8f7a9085d9ddf50a948eab","reason":"PR merged into develop; exact reviewed head matched; no post-review work."},
+    {"branch":"docs/orchestrator-chat-checkpoints","disposition":"DELETE","pr":10,"base":"develop","reviewed_head_sha":"54f0b3f5afc1356664f61718d028938a274fcef6","observed_remote_head":"54f0b3f5afc1356664f61718d028938a274fcef6","reason":"PR merged into develop; exact reviewed head matched; no post-review work."},
+    {"branch":"docs/orchestrator-checkpoint-close","disposition":"DELETE","pr":12,"base":"develop","reviewed_head_sha":"afa37b2ce1eba75ca222760bfa1c6880006183be","observed_remote_head":"afa37b2ce1eba75ca222760bfa1c6880006183be","reason":"PR merged into develop; exact reviewed head matched; no post-review work."},
+    {"branch":"docs/persist-intent-proxy-architecture","disposition":"DELETE","pr":23,"base":"develop","reviewed_head_sha":"7837f8b8014f19b5ca8b97c9e12924cad9efb103","observed_remote_head":"7837f8b8014f19b5ca8b97c9e12924cad9efb103","reason":"PR merged into develop; exact reviewed head matched; no post-review work."},
+    {"branch":"docs/persisted-executor-handoffs","disposition":"DELETE","pr":4,"base":"develop","reviewed_head_sha":"82f4229199d7ba53db31c7e3a4cb4f6df56d4716","observed_remote_head":"82f4229199d7ba53db31c7e3a4cb4f6df56d4716","reason":"PR merged into develop; exact reviewed head matched; no post-review work."},
+    {"branch":"docs/persisted-task-handoffs","disposition":"DELETE","pr":3,"base":"develop","reviewed_head_sha":"0163fcbad1a6f76449229fdc8c3dcdaa8450acc9","observed_remote_head":"0163fcbad1a6f76449229fdc8c3dcdaa8450acc9","reason":"PR merged into develop; exact reviewed head matched; no post-review work."},
+    {"branch":"docs/python-testing-stack","disposition":"DELETE","pr":6,"base":"develop","reviewed_head_sha":"999ec2bf5d429f5379572f1a3ce806a73f09faf4","observed_remote_head":"999ec2bf5d429f5379572f1a3ce806a73f09faf4","reason":"PR merged into develop; exact reviewed head matched; no post-review work."},
+    {"branch":"docs/source-change-procedure","disposition":"DELETE","pr":5,"base":"develop","reviewed_head_sha":"c56e13f7adbba482ffc4a0da86282042c62be1fa","observed_remote_head":"c56e13f7adbba482ffc4a0da86282042c62be1fa","reason":"PR merged into develop; exact reviewed head matched; no post-review work."},
+    {"branch":"docs/source-overlay-precedence","disposition":"DELETE","pr":14,"base":"develop","reviewed_head_sha":"8958430183d2e7f22742085d7ea13ffe4cd49ed6","observed_remote_head":"8958430183d2e7f22742085d7ea13ffe4cd49ed6","reason":"PR merged into develop; exact reviewed head matched; no post-review work."},
+    {"branch":"docs/t001-r2-review","disposition":"DELETE","pr":15,"base":"develop","reviewed_head_sha":"2f682d14c8ec2405e0d9eb3a3cbc41e23c85dbbd","observed_remote_head":"2f682d14c8ec2405e0d9eb3a3cbc41e23c85dbbd","reason":"PR merged into develop; exact reviewed head matched; no post-review work."},
+    {"branch":"docs/t001-r3-review","disposition":"DELETE","pr":16,"base":"develop","reviewed_head_sha":"d794670d0ae6e077af9a96e24f10c04d050ee545","observed_remote_head":"d794670d0ae6e077af9a96e24f10c04d050ee545","reason":"PR merged into develop; exact reviewed head matched; no post-review work."},
+    {"branch":"docs/t002-atl-runtime-boundary","disposition":"DELETE","pr":20,"base":"develop","reviewed_head_sha":"3faa3063d683698d34666fe4a4e1bf0b455f0e7f","observed_remote_head":"3faa3063d683698d34666fe4a4e1bf0b455f0e7f","reason":"PR merged into develop; exact reviewed head matched; no post-review work."},
+    {"branch":"docs/t002-coexistence-fixtures","disposition":"DELETE","pr":19,"base":"develop","reviewed_head_sha":"4de32a7466f0c7d6526729cf374d25af68b9e141","observed_remote_head":"4de32a7466f0c7d6526729cf374d25af68b9e141","reason":"PR merged into develop; exact reviewed head matched; no post-review work."},
+    {"branch":"docs/t002-post-integration","disposition":"DELETE","pr":26,"base":"develop","reviewed_head_sha":"533df7fdf710193ad127064645de4e7a2c3d5e53","observed_remote_head":"533df7fdf710193ad127064645de4e7a2c3d5e53","reason":"PR merged into develop; exact reviewed head matched; no post-review work."},
+    {"branch":"docs/t002-r1-capability-coverage","disposition":"DELETE","pr":21,"base":"develop","reviewed_head_sha":"e3181ce6caa9cc574b2d9cb2e5ea2b0cf6016eed","observed_remote_head":"e3181ce6caa9cc574b2d9cb2e5ea2b0cf6016eed","reason":"PR merged into develop; exact reviewed head matched; no post-review work."},
+    {"branch":"docs/t002-r2-acceptance","disposition":"DELETE","pr":24,"base":"develop","reviewed_head_sha":"9a5cff4d6e3a6e82ba6074c6cb97a8d0920d553a","observed_remote_head":"9a5cff4d6e3a6e82ba6074c6cb97a8d0920d553a","reason":"PR merged into develop; exact reviewed head matched; no post-review work."},
+    {"branch":"docs/t003-d032-deterministic-contract","disposition":"DELETE","pr":27,"base":"develop","reviewed_head_sha":"c07010c0b93d14181c1171367c85ab81fce74794","observed_remote_head":"c07010c0b93d14181c1171367c85ab81fce74794","reason":"PR merged into develop; exact reviewed head matched; no post-review work."},
+    {"branch":"docs/t003-post-integration","disposition":"DELETE","pr":30,"base":"develop","reviewed_head_sha":"d3dee0d48b1c7ea76352ff740ef5fe55861214a6","observed_remote_head":"d3dee0d48b1c7ea76352ff740ef5fe55861214a6","reason":"PR merged into develop; exact reviewed head matched; no post-review work."},
+    {"branch":"docs/t003-r1-acceptance","disposition":"DELETE","pr":28,"base":"develop","reviewed_head_sha":"28c3c38d505240db1dc50b84e43626cf76bb8807","observed_remote_head":"28c3c38d505240db1dc50b84e43626cf76bb8807","reason":"PR merged into develop; exact reviewed head matched; no post-review work."},
+    {"branch":"docs/t004-d032-agent-eval","disposition":"DELETE","pr":31,"base":"develop","reviewed_head_sha":"877a4a039b069a1afb9cb7463f4e6fe75a3e2567","observed_remote_head":"877a4a039b069a1afb9cb7463f4e6fe75a3e2567","reason":"PR merged into develop; exact reviewed head matched; no post-review work."},
+    {"branch":"docs/t004-r1-opencode-adapter-preflight","disposition":"DELETE","pr":36,"base":"develop","reviewed_head_sha":"50ba5d80615fc74a4d99165e1397e0f026f182ee","observed_remote_head":"50ba5d80615fc74a4d99165e1397e0f026f182ee","reason":"PR merged into develop; exact reviewed head matched; no post-review work."},
+    {"branch":"docs/t004-r2-structured-child-diagnostics","disposition":"DELETE","pr":37,"base":"develop","reviewed_head_sha":"9804e41453a051ddde295bc14bccc215b8ff4773","observed_remote_head":"9804e41453a051ddde295bc14bccc215b8ff4773","reason":"PR merged into develop; exact reviewed head matched; no post-review work."},
+    {"branch":"docs/t004-r3-catalog-model-reselection","disposition":"DELETE","pr":38,"base":"develop","reviewed_head_sha":"d0dee36d47c7e1f05380ae16d55784f9af1a0277","observed_remote_head":"d0dee36d47c7e1f05380ae16d55784f9af1a0277","reason":"PR merged into develop; exact reviewed head matched; no post-review work."},
+    {"branch":"docs/t005-acceptance","disposition":"DELETE","pr":41,"base":"develop","reviewed_head_sha":"1c70c407ad47046a228f9c053e90de1d3adc5e67","observed_remote_head":"1c70c407ad47046a228f9c053e90de1d3adc5e67","reason":"PR merged into develop; exact reviewed head matched; no post-review work."},
+    {"branch":"docs/t005-execution-control-core","disposition":"DELETE","pr":40,"base":"develop","reviewed_head_sha":"64cbc082171ed765bcbd9da31ad3834c35cfe668","observed_remote_head":"64cbc082171ed765bcbd9da31ad3834c35cfe668","reason":"PR merged into develop; exact reviewed head matched; no post-review work."},
+    {"branch":"docs/t006-d035-security-core","disposition":"DELETE","pr":45,"base":"develop","reviewed_head_sha":"09babc5cd1fd135173e1ac9e18f11701bbab5d8c","observed_remote_head":"09babc5cd1fd135173e1ac9e18f11701bbab5d8c","reason":"PR merged into develop; exact reviewed head matched; no post-review work."},
+    {"branch":"docs/t006-ready-checkpoint","disposition":"DELETE","pr":46,"base":"develop","reviewed_head_sha":"c6671fd7c102c5c2fe9a029b14a6172807721944","observed_remote_head":"c6671fd7c102c5c2fe9a029b14a6172807721944","reason":"PR merged into develop; exact reviewed head matched; no post-review work."},
+    {"branch":"docs/t007-branch-hygiene-contract","disposition":"DELETE","pr":51,"base":"develop","reviewed_head_sha":"87146915aa6fbe0a14b167cd392a3a112f1d7ab2","observed_remote_head":"87146915aa6fbe0a14b167cd392a3a112f1d7ab2","reason":"PR merged into develop; exact reviewed head matched; no post-review work."},
+    {"branch":"docs/testing-capability-model","disposition":"DELETE","pr":7,"base":"develop","reviewed_head_sha":"75a8fba751af61cf8cdd6f700bc9c1e262b93241","observed_remote_head":"75a8fba751af61cf8cdd6f700bc9c1e262b93241","reason":"PR merged into develop; exact reviewed head matched; no post-review work."},
+    {"branch":"docs/testing-evaluation-strategy","disposition":"DELETE","pr":2,"base":"develop","reviewed_head_sha":"86e0cd6f72679b80c90c173216297288d1d5f3f4","observed_remote_head":"86e0cd6f72679b80c90c173216297288d1d5f3f4","reason":"PR merged into develop; exact reviewed head matched; no post-review work."},
+    {"branch":"eval/d032-agent-capability","disposition":"DELETE","pr":null,"base":null,"reviewed_head_sha":"eb20dc0fed2674190a82ef40aa0e02436c02ced4","observed_remote_head":"eb20dc0fed2674190a82ef40aa0e02436c02ced4","reason":"T007-R1 explicitly resolves terminal cancelled T004 work as intentionally abandoned and authorizes exact-SHA remote and local deletion; ref was re-read unchanged immediately before deletion."},
+    {"branch":"docs/t007-r1-branch-cleanup","disposition":"DELETE","pr":52,"base":"develop","reviewed_head_sha":"c8f26a0729a0088e331fe81afbcc35b68b947fef","observed_remote_head":"c8f26a0729a0088e331fe81afbcc35b68b947fef","reason":"PR #52 merged into develop; current remote head exactly matched reviewed PR head; no post-review work."},
+    {"branch":"chore/branch-hygiene-cleanup","disposition":"RETAIN","pr":null,"base":"develop","reviewed_head_sha":null,"observed_remote_head":"656c71e22f60ae8b235304179dc1d8fee4ec4031","reason":"Active T007 implementation/rework branch required to persist and push this final handoff."},
+    {"branch":"test/coexistence-fixtures","disposition":"DELETE","pr":25,"base":"develop","reviewed_head_sha":"915c63a6e0095ecde3b3862e159e87ccd660573e","observed_remote_head":"915c63a6e0095ecde3b3862e159e87ccd660573e","reason":"PR merged into develop; exact reviewed head matched; no post-review work."},
+    {"branch":"test/d032-deterministic-contract","disposition":"DELETE","pr":29,"base":"develop","reviewed_head_sha":"829273cbc19a3aa79299ef227546f8eb11d7066b","observed_remote_head":"829273cbc19a3aa79299ef227546f8eb11d7066b","reason":"PR merged into develop; exact reviewed head matched; no post-review work."},
+    {"branch":"test/execution-control-contract","disposition":"DELETE","pr":42,"base":"develop","reviewed_head_sha":"04b88b31790c8254dd9d0c40f29cd4720e957843","observed_remote_head":"04b88b31790c8254dd9d0c40f29cd4720e957843","reason":"PR merged into develop; exact reviewed head matched; no post-review work."},
+    {"branch":"test/governance-harness","disposition":"DELETE","pr":17,"base":"develop","reviewed_head_sha":"3b01e5cd67966011b47d62544feede0c352467b9","observed_remote_head":"3b01e5cd67966011b47d62544feede0c352467b9","reason":"PR merged into develop; exact reviewed head matched; no post-review work."}
+  ],
+  "deleted_remote_branches": [
+    "docs-persist-governance-decisions", "docs/accept-t001", "docs/adaptive-proxy-quality-envelope", "docs/branch-cleanup-policy", "docs/chatgpt-project-bootstrap", "docs/d033-execution-access-control", "docs/d034-runbook-terminal-neutral", "docs/d035-security-verification-authority", "docs/d036-existing-system-assurance-audit", "docs/d037-deterministic-code-only-verification", "docs/d038-rdd-subordinate-evidence", "docs/ecosystem-coexistence", "docs/executor-launch-prompt-contract", "docs/handoff-review-contract-fix", "docs/local-development-toolchain", "docs/maintainer-skill-role-routing", "docs/o031-post-d038", "docs/orchestrator-chat-checkpoints", "docs/orchestrator-checkpoint-close", "docs/persist-intent-proxy-architecture", "docs/persisted-executor-handoffs", "docs/persisted-task-handoffs", "docs/python-testing-stack", "docs/source-change-procedure", "docs/source-overlay-precedence", "docs/t001-r2-review", "docs/t001-r3-review", "docs/t002-atl-runtime-boundary", "docs/t002-coexistence-fixtures", "docs/t002-post-integration", "docs/t002-r1-capability-coverage", "docs/t002-r2-acceptance", "docs/t003-d032-deterministic-contract", "docs/t003-post-integration", "docs/t003-r1-acceptance", "docs/t004-d032-agent-eval", "docs/t004-r1-opencode-adapter-preflight", "docs/t004-r2-structured-child-diagnostics", "docs/t004-r3-catalog-model-reselection", "docs/t005-acceptance", "docs/t005-execution-control-core", "docs/t006-d035-security-core", "docs/t006-ready-checkpoint", "docs/t007-branch-hygiene-contract", "docs/t007-r1-branch-cleanup", "docs/testing-capability-model", "docs/testing-evaluation-strategy", "eval/d032-agent-capability", "test/coexistence-fixtures", "test/d032-deterministic-contract", "test/execution-control-contract", "test/governance-harness"
+  ],
+  "deleted_remote_absence_verified": true,
+  "deleted_local_branches": [
+    "test/coexistence-fixtures",
+    "test/d032-deterministic-contract",
+    "test/execution-control-contract",
+    "test/governance-harness",
+    "eval/d032-agent-capability"
+  ],
+  "review_branches": [],
+  "retained_branches": [
+    {
+      "branch": "chore/branch-hygiene-cleanup",
+      "reason": "Active T007 implementation/rework branch; required for final handoff push and Orchestrator review."
+    }
+  ],
+  "worktrees": {
+    "verified": [
+      {
+        "path": "/home/manuel/projects/agent-governance",
+        "branch": "chore/branch-hygiene-cleanup",
+        "head": "0503e084d3f55734f70e0ea8222d0b685198d827"
+      }
+    ],
+    "inaccessible_or_unverified": "No additional checkout appears in this repository's git worktree list. Human or other-agent checkouts outside this Git worktree registry are inaccessible and not verified."
+  },
+  "verification": {
+    "commands": [
+      "git show origin/develop:docs/tasks/T007-branch-hygiene-cleanup.md",
+      "git status --porcelain=v1 --branch",
+      "git worktree list --porcelain",
+      "git for-each-ref refs/remotes/origin refs/heads",
+      "gh pr list --state all --limit 200 --json number,state,headRefName,headRefOid,baseRefName,mergedAt",
+      "git push origin --delete <verified branches in batches of at most 10>",
+      "git ls-remote --heads origin after every deletion batch",
+      "git fetch --prune origin",
+      "git branch -D <verified stale local branch>",
+      "git branch -vv",
+      "git ls-remote --heads origin refs/heads/eval/d032-agent-capability",
+      "git push origin --delete eval/d032-agent-capability docs/t007-r1-branch-cleanup",
+      "gh pr list --state open --limit 100 --json number,baseRefName,headRefName,headRefOid,state,url",
+      "uv run --locked python -m json.tool handoffs/T007-executor-handoff.json"
+    ],
+    "results": [
+      "T007 contract verified at origin/develop c30017ccfd6ab912321f10fe0baa9b5181787609.",
+      "Initial checkout clean; one registered worktree; 51 remote branches and 8 local branches after creating the authorized task branch.",
+      "GitHub returned 50 historical PRs, all merged into develop; 50 of 51 initial topic branches matched an associated merged PR head exactly.",
+      "50 DELETE branches removed in six bounded batches of 10, 10, 10, 10, 9, and 2 attempted operations; every batch was followed by a complete remote ref read. The 51 attempted operations include the REVIEW branch that was restored at its exact original SHA.",
+      "eval/d032-agent-capability lacked a PR association; after initial deletion exposed the mismatch, exact remote/local refs were immediately restored at eb20dc0fed2674190a82ef40aa0e02436c02ced4 and classified REVIEW.",
+      "T007-R1 authorized eval/d032-agent-capability deletion as intentionally abandoned cancelled T004 work at exact SHA eb20dc0fed2674190a82ef40aa0e02436c02ced4; immediate pre-delete remote read matched exactly.",
+      "eval/d032-agent-capability and merged PR #52 branch docs/t007-r1-branch-cleanup were deleted in one bounded batch; complete remote re-read verified both absent.",
+      "Final canonical remote has only chore/branch-hygiene-cleanup, develop, and main; zero open PRs exist.",
+      "Executor checkout has only chore/branch-hygiene-cleanup, develop, and main; eval/d032-agent-capability was deleted locally after switching away, checking the sole worktree, and pruning.",
+      "main remained 5333fb8e0cdbc288cd11457b8a952cdcd77f6fa9; develop advanced only through authorized merged PR #52 to bf60b30d54445ddcf521f70538289931bd9de57a, not through cleanup deletion operations.",
+      "Procedural nonconformance preserved: initial pass deleted eval/d032-agent-capability before resolving missing PR association, then safely restored exact original SHA; R1 later supplied explicit disposition before final deletion."
+    ],
+    "runtime": "N/A: T007 is Git/GitHub branch-state maintenance with no product runtime boundary.",
+    "network_required": true
+  },
+  "dependencies_or_config_changes": "None.",
+  "git_status": "Final task branch is clean after handoff commit; only the committed handoff differs from base.",
+  "unresolved_issues": [],
+  "recommended_next_task": "Orchestrator review and acceptance of T007; T006 may resume unchanged after T007 closure per the Task Contract.",
+  "chatgpt_read_path": "handoffs/T007-executor-handoff.json",
+  "rollback_boundary": "Repository content rollback is limited to handoffs/T007-executor-handoff.json. Deleted remote/local topic refs can be recreated at the recorded reviewed_head_sha values without changing main or develop."
+}
