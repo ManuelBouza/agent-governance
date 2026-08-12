@@ -343,17 +343,25 @@ security posture + evidence
 continuous invalidation signals
 ```
 
-## Planned implementation boundary
+## T006 implementation boundary
 
-D035 is architecture only while T004 is running.
+T006 is the first deterministic Core integration of D035.
 
-The next execution/security Core integration should consider D033 + D034 + D035 together and mechanically test at least:
+ChatGPT-owned Core alignment is intentionally narrow:
 
-- model proposes an obsolete known-bad pattern → verifier blocks it;
-- vendor advisory supersedes old configuration guidance;
-- stale security-source state blocks a high-impact operation;
-- new dependency vulnerability invalidates current posture;
-- actual system configuration differs from expected postcondition;
-- previous vulnerability has a regression verifier;
-- Human exception is scoped and expires;
-- terminal/platform adapter differences do not alter security semantics.
+- `governance-core/SECURITY.md` defines portable security authority, freshness, known-bad, independent verification, exception and temporal-posture semantics;
+- `governance-core/GOVERNANCE.md` routes material security to that module and advances Protocol to `1.12.0`;
+- D033/D034 semantics remain independent and unchanged; security and execution control compose without granting each other's authority.
+
+Executor-owned T006 work is deterministic test scaffolding only. It should mechanically test at least:
+
+- model proposes an obsolete applicable known-bad pattern → verifier blocks it;
+- authoritative source conflict/unknown/stale state blocks when current knowledge is required;
+- freshness behavior differs by source class and explicit evaluation context;
+- independent evidence is required for `PASS`;
+- Human exception is exact-scope, compensating-control verified and expiry-sensitive;
+- new vulnerability/advisory/drift invalidates current posture without rewriting historical acceptance;
+- security `PASS` does not grant D033 execution authorization and execution success does not establish security `PASS`;
+- provider/SDD/model/network dependencies are absent from the deterministic contract.
+
+T006 does **not** implement live advisory retrieval, external scanner/provider adapters, a production control-set/known-bad registry runtime, real-target security assessment or D036 assurance-audit reporting/evidence graphs. Those require separate governed work.
