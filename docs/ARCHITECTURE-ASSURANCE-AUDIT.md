@@ -1,7 +1,8 @@
 # Existing-System Assurance Audit Architecture
 
-Status: ARCHITECTURE OVERVIEW  
-Normative decision: `docs/decisions/D036-existing-system-assurance-audit-mode.md`
+Status: ACTIVE ARCHITECTURE  
+Normative decision: `docs/decisions/D036-existing-system-assurance-audit-mode.md`  
+Portable Core module: `governance-core/ASSURANCE.md`
 
 ## Purpose
 
@@ -43,7 +44,29 @@ model opinion != evidence
 report completeness != proof of no unknown defects
 audit finding != permission to remediate
 severity != confidence
+NOT_ASSESSED != PASS
+INCONCLUSIVE != PASS
 ```
+
+## Portable Core integration
+
+D036 is now integrated as the focused portable Core module `ASSURANCE.md` under Protocol `1.13.0`.
+
+The module owns portable semantics for:
+
+- audit scope contracts;
+- assessment-profile ceilings;
+- evidence graph/provenance;
+- explicit finding states;
+- severity/confidence separation;
+- coverage accounting and bounded conclusions;
+- audit/remediation separation;
+- temporal assurance posture;
+- composition with D035 security authority and D033/D034 execution control.
+
+It does **not** define a universal scanner, provider, evidence database, platform adapter or production audit runtime.
+
+The first executable frontier is T010, which establishes deterministic policy-contract tests over these semantics before any real-system scanner/adapter work.
 
 ## What can be audited
 
@@ -219,7 +242,7 @@ required evidence semantics
                observed state
 ```
 
-This matches D034 terminal neutrality and the CIS Controls Assessment Specification pattern of defining what to measure separately from how a platform-specific tool measures it.
+This matches D034 terminal neutrality: define what must be measured separately from how a platform-specific adapter collects the normalized evidence.
 
 ## Audit versus remediation
 
@@ -243,6 +266,26 @@ Human/Strategy prioritization
 ```
 
 The assessment process does not silently mutate targets to improve its own score.
+
+## Deterministic foundation before adapters
+
+The implementation order is intentionally conservative:
+
+```text
+portable Core semantics
+      ↓
+deterministic fixtures/evaluator contract (T010)
+      ↓
+representative normalized evidence schemas
+      ↓
+optional provider/platform adapters
+      ↓
+real-system audit workflows under explicit authorization
+```
+
+T010 therefore uses synthetic normalized facts only. It must prove scope, profile ceilings, evidence/finding states, coverage, temporal posture and control-plane composition without wall-clock time, network access, models or real targets.
+
+Broad scanner or live-target integration requires a later separately persisted decision/Task Contract and must satisfy D033/D034/D035 plus coexistence/supply-chain constraints.
 
 ## Report shape
 
@@ -275,19 +318,15 @@ Representative sources include:
 - NIST SP 800-115 technical security testing/assessment;
 - NIST CSF 2.0;
 - NIST SSDF;
-- CIS Controls / Controls Assessment Specification / Benchmarks;
+- CIS Controls / assessment specifications / Benchmarks;
 - OWASP ASVS;
 - OWASP Web Security Testing Guide;
 - OWASP SAMM;
 - CISA KEV and vendor advisories.
 
-No framework is automatically applied to every system.
+No framework is automatically applied to every system, and none is a runtime dependency of portable Core or T010.
 
-## Planned Core integration
-
-D036 is accepted architecture only while T004 is still running.
-
-The post-T004 Core-integration frontier should now treat D033–D036 as a coherent assurance/execution stack:
+## Coherent assurance/execution stack
 
 ```text
 D032 quality intent
@@ -301,4 +340,4 @@ D033 execution authorization
 D034 runbook/adapters
 ```
 
-Future implementation should establish deterministic audit-state semantics, evidence/finding schemas, assessment profiles, coverage accounting and representative platform-neutral verifier fixtures before adding broad real-system scanner adapters.
+Neither audit status, security status nor execution authorization expands authority owned by another plane.
