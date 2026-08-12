@@ -1,7 +1,7 @@
 # Current ChatGPT Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O041  
+Checkpoint-Sequence: O044  
 Canonical-Branch: `develop`  
 Chat-Closure: CONTINUE_ALLOWED
 
@@ -9,122 +9,111 @@ Chat-Closure: CONTINUE_ALLOWED
 
 T001, T002, T003, T005 and T007 are `ACCEPTED` and integrated. T004 remains terminal `CANCELLED_BY_HUMAN` under D037.
 
-D039 — Evidence-Driven Governance Learning Loop (EGLL) — is `ACCEPTED`. T008 is `READY` but MUST wait until outstanding post-integration branch retirement is complete. T006 remains `READY` unchanged after T008; D036 remains after T006.
+D039 — Evidence-Driven Governance Learning Loop (EGLL) — is `ACCEPTED`.
+
+T009 is `ACCEPTED` and integrated. PR #63 integrated `docs/reviews/T009-R1.md`; PR #64 integrated exact accepted executor HEAD `e0c80c62c1c543504719616c547d4df03d1b3d21` into `develop` at `fdb815394fd5ef91bd513f3701fa99c895536b8b`.
+
+L001 is `CONTROL_INTEGRATED`, not `VERIFIED`. T008 remains `REWORK_REQUIRED` until T009 post-integration cleanup completes and T008 reruns successfully on current `develop` without detector-semantic changes.
+
+T006 remains `READY` after T008. D036 remains after T006.
 
 ## Persisted executor-instruction invariant
-
-PR #61 introduces `docs/OPERATION-CONTRACTS.md` and replaces the old chat-carried cleanup target model.
 
 ```text
 prompt = bootstrap transport only
 persisted contract + referenced Git policy = complete instruction
 ```
 
-Every delegated executor action MUST be reconstructable from canonical Git without relying on operation-specific prompt text.
+Use exactly one persisted Task Contract or Operational Contract pointer. Chat MUST NOT supply concrete semantics absent from Git.
 
-Use exactly one persisted contract pointer:
+## OP003 — READY after PR #65 integration
 
-- normal executable/content work -> `docs/tasks/TNNN-*.md` Task Contract;
-- bounded non-implementation repository operation -> `docs/operations/OPNNN-*.md` Operational Contract.
+Operational Contract:
 
-Prompts MUST NOT carry targets, branch names, SHAs, deletion decisions, exceptions, commands, acceptance semantics, or other concrete instructions absent from the persisted contract.
+`docs/operations/OP003-retire-t009-integration-branches.md`
 
-The canonical cleanup prompt in `docs/POST-INTEGRATION-CLEANUP-PROMPT.md` is now a pointer to exactly one integrated Operational Contract.
+OP003 covers only merged branches from:
 
-## OP001 — READY after PR #61 integration
+- PR #63 — `docs/t009-acceptance`;
+- PR #64 — `test/protocol-version-baseline-alignment`;
+- PR #65 — `docs/t009-post-integration-cleanup`.
 
-Contract:
+It explicitly preserves `main`, `develop`, and active T008 branch `test/egll-deterministic-learning-detectors`.
 
-`docs/operations/OP001-pending-post-integration-branch-retirement.md`
+## L001 — CONTROL_INTEGRATED
 
-OP001 persistently identifies the currently pending cleanup targets through merged PRs #53–#61, including the special resolved-review evidence for the post-merge advancement of `docs/t007-post-integration`/PR #55.
+Learning record: `docs/learning/L001-protocol-version-baseline-drift.md`  
+Fingerprint: `verification.regression.protocol_version_drift`
 
-PR #61 is deliberately included in OP001 before merge so `docs/persisted-operational-contracts` can be retired by the same operation without recursive cleanup-contract creation.
+T009 restored the deterministic version-alignment baseline while preserving Core as authority and the test-side value as verifier expectation. L001 becomes `VERIFIED` only after OP003 closes and T008 passes its original focused/full/Ruff gates on the corrected current `develop` baseline.
 
-After PR #61 is integrated, launch the executor with only the OP001 contract pointer. Do not put cleanup target IDs, branches, SHAs, or deletion instructions into chat.
+## T009 — ACCEPTED / INTEGRATED
 
-## D039 / T008
+Task Contract: `docs/tasks/T009-protocol-version-baseline-alignment.md`  
+Review: `docs/reviews/T009-R1.md`  
+Accepted executor HEAD: `e0c80c62c1c543504719616c547d4df03d1b3d21`  
+Integration PR: #64  
+Integrated `develop`: `fdb815394fd5ef91bd513f3701fa99c895536b8b`
 
-D039 source-maintainer learning is controlled by:
+Accepted implementation changed only:
 
-- `docs/decisions/D039-evidence-driven-governance-learning-loop.md`
-- `docs/ARCHITECTURE-GOVERNANCE-LEARNING-LOOP.md`
-- `docs/GOVERNANCE-LEARNING.md`
+- `tests/_helpers.py`;
+- `tests/test_execution_control_contract.py`;
+- `handoffs/T009-executor-handoff.json`.
 
-T008 Task Contract:
+Reported gates before integration: focused 47 passed; full pytest 126 passed; Ruff check/format PASS.
 
-`docs/tasks/T008-egll-deterministic-learning-detectors.md`
+## T008 — REWORK_REQUIRED AFTER OP003
 
-Expected branch: `test/egll-deterministic-learning-detectors`  
-Expected handoff: `handoffs/T008-executor-handoff.json`
+Task Contract: `docs/tasks/T008-egll-deterministic-learning-detectors.md`  
+Review: `docs/reviews/T008-R1.md`  
+Active branch: `test/egll-deterministic-learning-detectors`
 
-T008 remains deterministic/local: no live GitHub/network/model/provider/ruleset/Actions dependency and no Governance Core consumer semantics.
+After OP003 is independently verified, resume T008 on the existing branch. Incorporate current `develop`, rerun the original T008 focused/full/Ruff gates, refresh `handoffs/T008-executor-handoff.json`, commit/push, and return for re-review. No detector-semantic changes are authorized by this step.
 
 ## T006 — READY AFTER T008
 
-Task Contract:
+Task Contract: `docs/tasks/T006-d035-deterministic-security-verification-contract.md`
 
-`docs/tasks/T006-d035-deterministic-security-verification-contract.md`
+T006/D035 semantics remain unchanged. Do not fold T008/T009 or D036 into T006.
 
-Expected branch: `test/security-verification-contract`  
-Expected handoff: `handoffs/T006-executor-handoff.json`
-
-T006/D035 semantics remain unchanged. Do not fold T008 or D036 into T006.
-
-## Branch lifecycle hardening
-
-PR #58 established:
+## Branch lifecycle
 
 ```text
 merge -> freeze -> cleanup
 new work -> new branch from current develop
 ```
 
-A merged source branch MUST receive no further commits. Post-merge advancement becomes `REVIEW`; valid later work must be recovered through a fresh branch/PR before retirement.
+Merged branches are frozen; operational cleanup uses persisted Operational Contracts only.
 
-## T007 procedural audit
+## Procedural audit history
 
-Preserve the initial executor nonconformance: `eval/d032-agent-capability` was deleted before its missing-PR ambiguity was fully resolved, then restored at the exact original SHA. Persisted T007 R1 later authorized final exact-SHA deletion as cancelled T004 work.
-
-## Orchestrator Direct-Write Audit History
-
-Preserve; do not hide/rewrite without explicit Human authorization:
-
-- T002-R1 placeholder: accidental `6a3bff4f12850bd701fea624815e955231082afa`; corrective `67d8dc6de9679f833f3136c6a66ee7ad05283cb3`.
-- architecture overview placeholder: accidental `a0e063344043fda53f55b8fcb5b03742a33a7185`; corrective `09fa91f6b3c829e6edc0719fcd636cf3cba8f879`.
-- T004-R1 placeholder: accidental `197ce3fad02a69baf99238beb9859280a137a681`; corrective `52ae6fb5126517ea19c8d00918e7b148c17f146a`.
-- D037 placeholder: accidental `71b62980c41b183dfb33ef3099c72fc827234606`; corrective `e5ee3c56cbd17f72f876987550bab34cde065b53`.
-- T007-R1 review preparation: accidental temporary non-Markdown `noop` on `docs/t007-r1-branch-cleanup`; removed before integration.
-- T007 post-integration prompt work: commits were appended to already-merged `docs/t007-post-integration` after PR #55; recovered through fresh PR #56; basis for merged-branch freeze.
-- Operational Contract policy preparation: accidental direct write `46050487d3a066afd37cf340ccd58ab09daddfb9` created placeholder `docs/OPERATION-CONTRACTS.md` on `develop`; history is preserved. PR #61 replaces the placeholder with the intended policy through normal review and records the stronger persisted-instruction invariant.
+Preserve existing audit history, including T007 classify-before-delete recovery, Orchestrator direct-write incidents, post-merge reuse of `docs/t007-post-integration`, and accidental `46050487d3a066afd37cf340ccd58ab09daddfb9` direct write corrected by PR #61. Do not rewrite or hide those records.
 
 ## Next Action
 
-1. Review and integrate PR #61; freeze `docs/persisted-operational-contracts` immediately after merge.
-2. Launch OP001 using the canonical Operational Contract bootstrap prompt with exactly one pointer to `docs/operations/OP001-pending-post-integration-branch-retirement.md`.
-3. Verify returned remote/local inventories independently against GitHub. No eligible OP001 target branch may remain remotely; inaccessible local checkouts remain explicitly unverified.
-4. Then launch T008 using its normal Task Contract pointer.
-5. Review/accept/integrate/clean T008; then resume T006 unchanged.
-6. Do not start D036 until T006 closes.
+1. Integrate PR #65 and freeze `docs/t009-post-integration-cleanup`.
+2. Launch OP003 using only the Operational Contract pointer; independently verify final remote/local branch inventories.
+3. Resume T008 exactly per T008-R1 on its existing branch and re-review.
+4. If T008 passes and is accepted/integrated/cleaned, mark L001 `VERIFIED` with persisted evidence and resume T006 unchanged.
+5. Do not start D036 until T006 closes.
 
 ## Next Chat Minimum Load
 
 After `AGENTS.md` and this checkpoint:
 
-1. if OP001 not complete, load `docs/OPERATION-CONTRACTS.md`, OP001, `docs/BRANCH-CLEANUP.md`, and `docs/POST-INTEGRATION-CLEANUP-PROMPT.md`;
-2. for T008 load its Task Contract, D039 and `docs/GOVERNANCE-LEARNING.md`;
-3. load D037/test helpers only as needed for T008 review;
-4. after T008 closes, load T006 + D035 + `governance-core/SECURITY.md`;
-5. do not reload older task history absent regression/audit need.
+1. if OP003 is incomplete, load `docs/operations/OP003-retire-t009-integration-branches.md` plus branch-cleanup policy;
+2. for T008 re-review load its Task Contract, T008-R1, current handoff, D039, L001 and `docs/GOVERNANCE-LEARNING.md`;
+3. after T008 closes, load T006 + D035 + `governance-core/SECURITY.md`;
+4. do not reload older history absent regression/audit need.
 
 ## Do Not Load or Do
 
 - Do not delete `main` or `develop`.
-- Do not append commits to a merged topic branch.
-- Do not place concrete executor instructions in chat when they are absent from the persisted contract.
-- Do not let automatic learning components mutate Governance authority.
-- Do not use model-based verification gates.
-- Do not implement live GitHub enforcement/trend aggregation/consumer EGLL inside T008.
-- Do not fold T008 into T006 or D036.
-- Do not hide T007 or Orchestrator audit history.
-- Do not declare the source product stable/release-ready.
+- Do not delete or repurpose active T008 branch through OP003.
+- Do not append commits to merged topic branches.
+- Do not place concrete executor instructions in chat when absent from the persisted contract.
+- Do not mark L001 `VERIFIED` before T008 passes on corrected baseline.
+- Do not modify T008 detector semantics merely to consume T009.
+- Do not fold T008/T009 into T006 or D036.
+- Do not hide procedural/audit history.
