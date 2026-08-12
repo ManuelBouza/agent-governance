@@ -31,11 +31,13 @@ Remote cleanup is centrally auditable. Local branch cleanup is checkout-specific
 
 ## Canonical post-integration cleanup delegation
 
-When branch retirement is delegated to an Agente de IA Ejecutor after task acceptance/integration, ChatGPT MUST use the canonical prompt defined in `docs/POST-INTEGRATION-CLEANUP-PROMPT.md`.
+When branch retirement is delegated to an Agente de IA Ejecutor after an authorized source change is integrated, ChatGPT MUST use the canonical prompt defined in `docs/POST-INTEGRATION-CLEANUP-PROMPT.md`.
 
-Do not replace that prompt with an ad hoc branch list or chat-only deletion instructions. The executor derives cleanup candidates from the completed task identity, current Git/GitHub state, merged PR records, and this procedure.
+The prompt identifies exactly one durable cleanup target: `TASK <task-id>` for Task-Contract-governed work or `PR <number>` for an integrated change without a Task ID.
 
-This closure phase is not a new implementation task and does not create another implementation handoff commit. It is operational retirement of already-integrated task branches.
+Do not replace that prompt with an ad hoc branch list or chat-only deletion instructions. The executor derives cleanup candidates from the cleanup target, current Git/GitHub state, merged PR records, and this procedure.
+
+This closure phase is not a new implementation task and does not create another implementation handoff commit. It is operational retirement of already-integrated branches.
 
 ## Normal post-merge procedure
 
@@ -162,13 +164,13 @@ Large historical cleanups SHOULD be performed in bounded batches so an incorrect
 
 ## Integration closure gate
 
-For normal future topic work, task acceptance/integration and operational branch closure are distinct states.
+For normal future topic work, integration and operational branch closure are distinct states.
 
-The task is not operationally closed until:
+The integrated change is not operationally closed until:
 
-- the accepted content/handoff is integrated into the authorized target;
+- the accepted/authorized content is integrated into the authorized target;
 - the canonical post-integration cleanup prompt has been executed when cleanup is delegated;
-- every eligible merged task topic/review/acceptance branch is absent remotely;
+- every eligible merged branch associated with the cleanup target is absent remotely;
 - any `REVIEW`/`RETAIN` exception has an explicit durable reason;
 - the merge operator has verified final remote state;
 - local cleanup has been performed in controlled/accessed checkouts, or is an explicit mandatory precondition before the next repository task in an inaccessible checkout.
