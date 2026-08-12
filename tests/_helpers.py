@@ -40,6 +40,7 @@ CORE_REQUIRED_MODULES: tuple[str, ...] = (
     "LIFECYCLE.md",
     "PROTOCOL.md",
     "QUALITY.md",
+    "SECURITY.md",
     "SKILL-DISCOVERY.md",
     "SKILL-SUPPLY-CHAIN.md",
     "SKILLS.md",

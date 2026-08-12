@@ -1,0 +1,212 @@
+{
+  "authority_cases": [
+    {
+      "id": "compatible-authoritative-sources",
+      "sources": [
+        {"class": "PROJECT", "authoritative": true, "applicable": true, "control": "required-secure-state"},
+        {"class": "PRODUCT_VENDOR", "authoritative": true, "applicable": true, "control": "required-secure-state"},
+        {"class": "THREAT_INTELLIGENCE", "authoritative": true, "applicable": true, "control": "required-secure-state"},
+        {"class": "VERSIONED_BASELINE", "authoritative": true, "applicable": true, "control": "required-secure-state"}
+      ],
+      "expected": "CURRENT"
+    },
+    {
+      "id": "authoritative-conflict",
+      "sources": [
+        {"class": "PROJECT", "authoritative": true, "applicable": true, "control": "state-alpha"},
+        {"class": "PRODUCT_VENDOR", "authoritative": true, "applicable": true, "control": "state-beta"}
+      ],
+      "expected": "CONFLICT"
+    },
+    {
+      "id": "unsupported-model-only",
+      "sources": [
+        {"class": "MODEL_ASSERTION", "authoritative": false, "applicable": true, "control": "required-secure-state"}
+      ],
+      "expected": "UNKNOWN"
+    }
+  ],
+  "freshness_cases": [
+    {
+      "id": "threat-live-current",
+      "class": "THREAT_LIVE",
+      "checked_at": "2026-08-10T00:00:00Z",
+      "evaluate_at": "2026-08-12T00:00:00Z",
+      "recheck_by": "2026-08-12T00:00:00Z",
+      "expected": "CURRENT"
+    },
+    {
+      "id": "threat-live-stale",
+      "class": "THREAT_LIVE",
+      "checked_at": "2026-08-01T00:00:00Z",
+      "evaluate_at": "2026-08-12T00:00:00Z",
+      "recheck_by": "2026-08-05T00:00:00Z",
+      "expected": "STALE"
+    },
+    {
+      "id": "product-version-current",
+      "class": "PRODUCT_VERSION",
+      "bound_context": "component-7@4/context-a",
+      "evaluation_context": "component-7@4/context-a",
+      "expected": "CURRENT"
+    },
+    {
+      "id": "product-version-context-change",
+      "class": "PRODUCT_VERSION",
+      "bound_context": "component-7@4/context-a",
+      "evaluation_context": "component-7@5/context-a",
+      "expected": "STALE"
+    },
+    {
+      "id": "standard-pinned-newer-signal",
+      "class": "STANDARD_PINNED",
+      "selected_revision": "baseline-3",
+      "active_revision": "baseline-3",
+      "newer_available_revision": "baseline-4",
+      "expected": "CURRENT"
+    },
+    {
+      "id": "project-decision-current",
+      "class": "PROJECT_DECISION",
+      "superseded": false,
+      "expected": "CURRENT"
+    },
+    {
+      "id": "project-decision-superseded",
+      "class": "PROJECT_DECISION",
+      "superseded": true,
+      "expected": "SUPERSEDED"
+    },
+    {
+      "id": "weakening-exception-current",
+      "class": "PROJECT_DECISION",
+      "is_exception": true,
+      "expires_at": "2026-08-13T00:00:00Z",
+      "evaluate_at": "2026-08-12T00:00:00Z",
+      "expected": "CURRENT"
+    },
+    {
+      "id": "weakening-exception-expired",
+      "class": "PROJECT_DECISION",
+      "is_exception": true,
+      "expires_at": "2026-08-11T00:00:00Z",
+      "evaluate_at": "2026-08-12T00:00:00Z",
+      "expected": "STALE"
+    },
+    {"id": "unknown-required-source", "class": "THREAT_LIVE", "source_known": false, "expected": "UNKNOWN"},
+    {"id": "unresolved-source-conflict", "class": "THREAT_LIVE", "source_conflict": true, "expected": "CONFLICT"}
+  ],
+  "known_bad_cases": [
+    {
+      "id": "active-common-model-recommended",
+      "state": "ACTIVE",
+      "applicable": true,
+      "model_recommends": true,
+      "historically_common": true,
+      "synthetic_prevalence": 99,
+      "prior_acceptance_context": "component-7@3/context-old",
+      "expected_block": true
+    },
+    {"id": "mitigated", "state": "MITIGATED", "applicable": true, "expected_block": false},
+    {"id": "superseded", "state": "SUPERSEDED", "applicable": true, "expected_block": false},
+    {"id": "not-applicable-state", "state": "NOT_APPLICABLE", "applicable": true, "expected_block": false},
+    {"id": "exception-state", "state": "EXCEPTION", "applicable": true, "expected_block": false},
+    {"id": "active-different-version", "state": "ACTIVE", "applicable": false, "historically_common": true, "expected_block": false}
+  ],
+  "acceptance_cases": [
+    {
+      "id": "all-current-evidence-passes",
+      "controls": [{"active": true, "freshness": "CURRENT", "evidence_required": true, "evidence_passes": true, "actual_matches": true}],
+      "known_bad": [],
+      "model_claims_secure": false,
+      "expected": "PASS"
+    },
+    {
+      "id": "failed-verifier",
+      "controls": [{"active": true, "freshness": "CURRENT", "evidence_required": true, "evidence_passes": false, "actual_matches": true}],
+      "known_bad": [],
+      "model_claims_secure": true,
+      "expected": "BLOCK"
+    },
+    {
+      "id": "missing-evidence",
+      "controls": [{"active": true, "freshness": "CURRENT", "evidence_required": true, "evidence_passes": null, "actual_matches": true}],
+      "known_bad": [],
+      "reviewer_claims_secure": true,
+      "expected": "BLOCK"
+    },
+    {
+      "id": "stale-source",
+      "controls": [{"active": true, "freshness": "STALE", "evidence_required": true, "evidence_passes": true, "actual_matches": true}],
+      "known_bad": [],
+      "expected": "BLOCK"
+    },
+    {
+      "id": "unknown-source",
+      "controls": [{"active": true, "freshness": "UNKNOWN", "evidence_required": true, "evidence_passes": true, "actual_matches": true}],
+      "known_bad": [],
+      "expected": "BLOCK"
+    },
+    {
+      "id": "conflicting-source",
+      "controls": [{"active": true, "freshness": "CONFLICT", "evidence_required": true, "evidence_passes": true, "actual_matches": true}],
+      "known_bad": [],
+      "expected": "BLOCK"
+    },
+    {
+      "id": "superseded-control-excluded",
+      "controls": [
+        {"active": true, "freshness": "CURRENT", "evidence_required": true, "evidence_passes": true, "actual_matches": true},
+        {"active": false, "freshness": "SUPERSEDED", "evidence_required": true, "evidence_passes": false, "actual_matches": false}
+      ],
+      "known_bad": [],
+      "expected": "PASS"
+    },
+    {
+      "id": "active-known-bad",
+      "controls": [{"active": true, "freshness": "CURRENT", "evidence_required": true, "evidence_passes": true, "actual_matches": true}],
+      "known_bad": [{"state": "ACTIVE", "applicable": true, "model_recommends": true}],
+      "expected": "BLOCK"
+    },
+    {
+      "id": "actual-state-mismatch",
+      "controls": [{"active": true, "freshness": "CURRENT", "evidence_required": true, "evidence_passes": true, "actual_matches": false}],
+      "known_bad": [],
+      "expected": "BLOCK"
+    },
+    {
+      "id": "valid-human-exception",
+      "controls": [{"id": "control-a", "active": true, "freshness": "CURRENT", "evidence_required": true, "evidence_passes": false, "actual_matches": false}],
+      "known_bad": [],
+      "target": "target-a",
+      "version": "7",
+      "evaluate_at": "2026-08-12T00:00:00Z",
+      "exception": {"human_approved": true, "control": "control-a", "target": "target-a", "version": "7", "compensating_evidence_passes": true, "expires_at": "2026-08-13T00:00:00Z"},
+      "expected": "HUMAN_EXCEPTION"
+    }
+  ],
+  "exception_cases": [
+    {"id": "exact-scope", "control": "control-a", "target": "target-a", "version": "7", "evaluate_at": "2026-08-12T00:00:00Z", "exception": {"human_approved": true, "control": "control-a", "target": "target-a", "version": "7", "compensating_evidence_passes": true, "expires_at": "2026-08-13T00:00:00Z"}, "expected_valid": true},
+    {"id": "target-mismatch", "control": "control-a", "target": "target-b", "version": "7", "evaluate_at": "2026-08-12T00:00:00Z", "exception": {"human_approved": true, "control": "control-a", "target": "target-a", "version": "7", "compensating_evidence_passes": true, "expires_at": "2026-08-13T00:00:00Z"}, "expected_valid": false},
+    {"id": "version-mismatch", "control": "control-a", "target": "target-a", "version": "8", "evaluate_at": "2026-08-12T00:00:00Z", "exception": {"human_approved": true, "control": "control-a", "target": "target-a", "version": "7", "compensating_evidence_passes": true, "expires_at": "2026-08-13T00:00:00Z"}, "expected_valid": false},
+    {"id": "unrelated-control", "control": "control-b", "target": "target-a", "version": "7", "evaluate_at": "2026-08-12T00:00:00Z", "exception": {"human_approved": true, "control": "control-a", "target": "target-a", "version": "7", "compensating_evidence_passes": true, "expires_at": "2026-08-13T00:00:00Z"}, "expected_valid": false},
+    {"id": "child-context-non-transitive", "control": "control-a", "target": "target-a/child", "version": "7", "evaluate_at": "2026-08-12T00:00:00Z", "exception": {"human_approved": true, "control": "control-a", "target": "target-a", "version": "7", "compensating_evidence_passes": true, "expires_at": "2026-08-13T00:00:00Z"}, "expected_valid": false},
+    {"id": "missing-compensating-evidence", "control": "control-a", "target": "target-a", "version": "7", "evaluate_at": "2026-08-12T00:00:00Z", "exception": {"human_approved": true, "control": "control-a", "target": "target-a", "version": "7", "compensating_evidence_passes": false, "expires_at": "2026-08-13T00:00:00Z"}, "expected_valid": false},
+    {"id": "expired", "control": "control-a", "target": "target-a", "version": "7", "evaluate_at": "2026-08-12T00:00:00Z", "exception": {"human_approved": true, "control": "control-a", "target": "target-a", "version": "7", "compensating_evidence_passes": true, "expires_at": "2026-08-11T00:00:00Z"}, "expected_valid": false}
+  ],
+  "invalidation_cases": [
+    {"id": "applicable-advisory", "historical_acceptance": "ACCEPTED", "current_posture": "CURRENT", "signal": {"kind": "ADVISORY", "applicable": true, "result": "STALE"}, "expected_historical": "ACCEPTED", "expected_posture": "STALE"},
+    {"id": "applicable-vulnerability", "historical_acceptance": "ACCEPTED", "current_posture": "CURRENT", "signal": {"kind": "VULNERABILITY", "applicable": true, "result": "VIOLATED"}, "expected_historical": "ACCEPTED", "expected_posture": "VIOLATED"},
+    {"id": "applicable-drift", "historical_acceptance": "ACCEPTED", "current_posture": "CURRENT", "signal": {"kind": "DRIFT", "applicable": true, "result": "BLOCKING"}, "expected_historical": "ACCEPTED", "expected_posture": "BLOCKING"},
+    {"id": "non-applicable-signal", "historical_acceptance": "ACCEPTED", "current_posture": "CURRENT", "signal": {"kind": "ADVISORY", "applicable": false, "result": "STALE"}, "expected_historical": "ACCEPTED", "expected_posture": "CURRENT"}
+  ],
+  "composition_cases": [
+    {"id": "security-pass-execution-deny", "security": "PASS", "execution": "DENY", "security_evidence_current": true, "target_context_matches": true, "expected_security": "PASS", "expected_execution": "DENY"},
+    {"id": "security-pass-human-gate", "security": "PASS", "execution": "REQUIRE_HUMAN", "security_evidence_current": true, "target_context_matches": true, "expected_security": "PASS", "expected_execution": "REQUIRE_HUMAN"},
+    {"id": "security-block-execution-allow-task", "security": "BLOCK", "execution": "ALLOW_TASK", "security_evidence_current": false, "target_context_matches": true, "expected_security": "BLOCK", "expected_execution": "ALLOW_TASK"},
+    {"id": "security-block-execution-allow-explicit", "security": "BLOCK", "execution": "ALLOW_EXPLICIT", "security_evidence_current": false, "target_context_matches": true, "expected_security": "BLOCK", "expected_execution": "ALLOW_EXPLICIT"},
+    {"id": "exception-does-not-authorize", "security": "HUMAN_EXCEPTION", "execution": "DENY", "security_evidence_current": true, "target_context_matches": true, "expected_security": "HUMAN_EXCEPTION", "expected_execution": "DENY"},
+    {"id": "adapter-success-no-security-evidence", "security": "PASS", "execution": "ALLOW_TASK", "runbook_adapter_success": true, "security_evidence_current": false, "target_context_matches": true, "expected_security": "BLOCK", "expected_execution": "ALLOW_TASK"},
+    {"id": "target-context-drift", "security": "PASS", "execution": "ALLOW_EXPLICIT", "security_evidence_current": true, "target_context_matches": false, "expected_security": "BLOCK", "expected_execution": "ALLOW_EXPLICIT"}
+  ]
+}
