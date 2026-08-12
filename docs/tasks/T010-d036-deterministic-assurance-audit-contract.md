@@ -1,7 +1,7 @@
-# T010 — D036 deterministic assurance-audit contract
+# T010 — D036 deterministic assurance-audit readiness contract
 
 Status: READY  
-Type: test/eval + protocol alignment  
+Type: test/eval + protocol-migration readiness  
 Base branch: `develop`  
 Expected topic branch: `test/d036-deterministic-assurance-audit-contract`  
 Expected executor handoff: `handoffs/T010-executor-handoff.json`  
@@ -10,9 +10,14 @@ Specification owner/reviewer: ChatGPT Orchestrator
 
 ## Objective
 
-Add the first deterministic repository-owned contract tests for accepted D036 Existing-System Assurance Audit Mode and its portable Core integration.
+Establish the deterministic D036 Existing-System Assurance Audit foundation **without creating a red protocol-migration intermediate state**.
 
-T010 must mechanically prove that the current Core defines an evidence-first, scope-bounded audit model in which:
+T010 has two coupled responsibilities:
+
+1. add deterministic repository-owned contract tests for staged `governance-core/ASSURANCE.md` semantics;
+2. implement D040's single-current-version-authority rule so repository verification no longer depends on a separately authored mutable literal duplicating `GOVERNANCE.md`'s current `Protocol-Version`.
+
+T010 must mechanically prove that:
 
 1. audit scope and authorization are explicit before evidence collection;
 2. assessment profiles are ordered by intrusiveness and generic audit requests do not imply intrusive testing;
@@ -26,9 +31,10 @@ T010 must mechanically prove that the current Core defines an evidence-first, sc
 10. security-material conclusions compose D035 without creating new security authority;
 11. assessment execution composes D033/D034 without creating execution authority;
 12. portable audit semantics are provider/tool/platform/model neutral;
-13. Protocol/module alignment includes `ASSURANCE.md` and Protocol `1.13.0`.
+13. current protocol identity is parsed from authoritative Core rather than duplicated as a mutable exact-current test literal;
+14. staged `ASSURANCE.md` is deterministically verifiable while Protocol remains `1.12.0` and is not yet treated as an active routed/required module.
 
-T010 is a deterministic policy-contract foundation. It does **not** inspect a real system, fetch current advisories, run scanners, call models, access credentials, perform live queries or implement platform-specific audit adapters.
+T010 is a deterministic policy-contract/readiness foundation. It does **not** activate Protocol `1.13.0`, edit Markdown, inspect a real system, fetch current advisories, run scanners, call models, access credentials, perform live queries or implement platform-specific audit adapters.
 
 ## Controlling references
 
@@ -46,7 +52,9 @@ Read and follow:
 - `docs/decisions/D035-security-authority-freshness-and-independent-verification.md`
 - `docs/decisions/D036-existing-system-assurance-audit-mode.md`
 - `docs/decisions/D037-deterministic-code-only-verification.md`
+- `docs/decisions/D040-atomic-protocol-migration-and-single-version-authority.md`
 - `docs/ARCHITECTURE-ASSURANCE-AUDIT.md`
+- `docs/learning/L001-protocol-version-baseline-drift.md`
 - `governance-core/GOVERNANCE.md`
 - `governance-core/ASSURANCE.md`
 - `governance-core/QUALITY.md`
@@ -54,68 +62,76 @@ Read and follow:
 - `governance-core/EXECUTION-CONTROL.md`
 - accepted deterministic harness/tests through T006/T008/T009.
 
-L002 remains explicitly outside T010. External scanner/provider behavior is not an implementation dependency for this task. If real-system access or external-provider behavior becomes necessary, stop and escalate rather than adding it.
+L002 remains explicitly outside T010. External scanner/provider behavior is not an implementation dependency. If real-system access or external-provider behavior becomes necessary, stop and escalate rather than adding it.
 
-## Protocol alignment authored by ChatGPT
+## Staged Core state for executor launch
 
-The controlling `develop` for executor launch must include this ChatGPT-owned Markdown Core change:
+The controlling `develop` for T010 launch must have:
 
-- new `governance-core/ASSURANCE.md` version `1.0.0`;
-- `governance-core/GOVERNANCE.md` Protocol-Version `1.13.0`;
-- source-map/context-router/readiness invariants routing existing-system assurance work to `ASSURANCE.md`;
-- explicit audit/evidence/coverage/remediation/temporal-posture invariants.
+- `governance-core/GOVERNANCE.md` still at Protocol `1.12.0`;
+- staged `governance-core/ASSURANCE.md` version `1.0.0` with `Activation-State: STAGED`;
+- no `ASSURANCE.md` source-map/router activation yet;
+- D040 accepted;
+- L001 recorded as `CONTROL_FAILURE` with T010 selected as part of the stronger prevention control.
 
-The executor MUST NOT edit those Markdown files.
+The executor MUST NOT edit any of those Markdown files.
+
+After T010 is accepted/integrated/clean, ChatGPT—not the executor—will perform a separate Markdown-only D036 activation change that bumps Protocol to `1.13.0` and routes `ASSURANCE.md`. That activation is outside T010 implementation scope.
+
+## D040 migration requirement
+
+Current protocol identity has one authority:
+
+```text
+Core Protocol-Version = current-version authority
+
+test helper = parser / validator / compatibility verifier
+             != second current-version authority
+```
+
+T010 must remove the requirement to manually synchronize a free-standing test-side exact-current protocol literal with `GOVERNANCE.md`.
+
+Acceptable implementation patterns include a focused helper API that parses current protocol identity from the authoritative Core file and exposes deterministic semantic-version validation to tests. The exact implementation is executor-owned.
+
+The change MUST preserve or strengthen meaningful protocol validation. It MUST NOT replace the old literal with a permissive assertion that accepts arbitrary/malformed versions or silently ignores module/protocol consistency.
+
+Historical fixture versions or explicit compatibility bounds may remain literal when they are genuine historical/compatibility data rather than a second mutable current-version authority.
 
 ## Primary Solution Diagram
 
 ```text
-existing subject
-      │
-      ▼
-scope + authorization
-      │
-      ▼
-applicable quality/security controls
-      │
-      ▼
-assessment profile + methods
-      │
-      ▼
-normalized evidence graph
-      │
-      ├── PASS / FAIL / PARTIAL
-      ├── NOT_APPLICABLE
-      ├── NOT_ASSESSED
-      ├── INCONCLUSIVE
-      └── ACCEPTED_EXCEPTION
-      │
-      ▼
-coverage truth + severity/confidence
-      │
-      ▼
-assurance report
-      ├── strengths
-      ├── findings
-      ├── remediation roadmap
-      └── retest plan
-
-Separate control planes:
-
-security conclusions ──► D035
-assessment effects   ──► D033/D034
-finding              != remediation authorization
+STAGED D036 MODULE
+ASSURANCE.md (not routed yet)
+        │
+        ├───────────────┐
+        ▼               ▼
+synthetic assurance   authoritative
+cases/evaluator       GOVERNANCE.md 1.12
+        │               │
+        ▼               ▼
+audit semantics      protocol parser/validator
+        │               │
+        └───────┬───────┘
+                ▼
+         deterministic green suite
+                │
+                ▼
+        T010 accepted/integrated/clean
+                │
+                ▼
+        later Markdown activation
+        GOV 1.13 + ASSURANCE routing
 ```
 
-A material change from deterministic policy-contract verification into live target assessment, scanner/provider integration, credentialed observation or active testing invalidates this T010 design and requires a separately persisted strategy/task contract.
+A material change into live target assessment, scanner/provider integration, credentialed observation or active testing invalidates this T010 design and requires a separately persisted strategy/task contract.
 
 ## Verification architecture under D037
 
 Use explicit normalized synthetic facts. Do not parse arbitrary prose, external pages, command output or model output.
 
 ```text
-Core Markdown authority
-        ↓
+staged ASSURANCE.md semantics
+        +
 synthetic assurance cases (JSON)
         ↓
 deterministic test-local evaluator
@@ -127,11 +143,15 @@ deterministic test-local evaluator
         ├─ remediation authorization separation
         ├─ temporal invalidation
         └─ security/execution composition
+
+GOVERNANCE.md
         ↓
-pytest assertions
+current protocol parser/validator
+        ↓
+no duplicated mutable current-version literal
 ```
 
-The evaluator is test scaffolding only. It is not a production audit engine, scanner orchestrator, evidence database or consumer runtime.
+The assurance evaluator is test scaffolding only. It is not a production audit engine, scanner orchestrator, evidence database or consumer runtime.
 
 All time-sensitive cases use explicit fixture timestamps. Tests MUST NOT depend on wall-clock time, network state or mutable external sources.
 
@@ -139,19 +159,22 @@ All time-sensitive cases use explicit fixture timestamps. Tests MUST NOT depend 
 
 The executor may modify/create only the minimum non-Markdown artifacts required, expected to include:
 
-- `tests/_helpers.py` for Protocol `1.13.0` and required `ASSURANCE.md` module alignment;
+- `tests/_helpers.py` to eliminate the duplicated mutable exact-current protocol authority and provide deterministic current-version parsing/validation;
+- existing deterministic Python tests that currently import/compare the duplicated `SOURCE_PROTOCOL_VERSION`, only as narrowly required to migrate them to the D040 authority model;
 - `tests/fixtures/assurance_audit/policy_cases.json` or one equivalently scoped non-Markdown fixture;
 - `tests/test_assurance_audit_contract.py` or one equivalent focused deterministic test module;
-- an existing Python test only if a narrow mechanical reference/version alignment is required;
 - `handoffs/T010-executor-handoff.json`.
 
-Prefer test-local evaluator logic inside the focused test module unless reuse clearly justifies another test-only Python file.
+Prefer test-local assurance evaluator logic inside the focused test module unless reuse clearly justifies another test-only Python file.
 
 ## Explicit exclusions
 
 Do NOT in T010:
 
 - edit/create/delete any committed `*.md` file;
+- change `governance-core/GOVERNANCE.md` to `1.13.0` or activate `ASSURANCE.md` routing;
+- weaken protocol tests into unbounded/permissive acceptance;
+- create another independently authored exact-current protocol-version literal under a different name;
 - inspect or connect to a real repository/application/service/system/environment other than this source repository as normal test input;
 - make live authenticated system queries;
 - run vulnerability scanners, DAST, fuzzing against real targets, penetration testing or intrusive assessment;
@@ -267,18 +290,18 @@ Tests must prove at least:
 - `INTRUSIVE_AUTHORIZED` method selection still requires explicit execution authorization;
 - `ACCEPTED_EXCEPTION` remains scope/expiry-bound and does not authorize execution/remediation.
 
-### I. Core/protocol/provider-neutrality alignment
+### I. Staged Core and D040 protocol-authority alignment
 
 Tests must mechanically prove:
 
-- `SOURCE_PROTOCOL_VERSION == "1.13.0"`;
-- `ASSURANCE.md` is in `CORE_REQUIRED_MODULES`;
-- `protocol_version_from(governance)` equals `1.13.0`;
-- Governance source map/router references `.agent-governance/ASSURANCE.md`/`ASSURANCE.md` where applicable;
-- `ASSURANCE.md` exists and declares `Assurance-Audit-Version: 1.0.0`;
+- current authoritative `protocol_version_from(governance)` is `1.12.0` during T010;
+- current protocol value is obtained from/parses the Core authority rather than compared against a separately authored mutable exact-current helper literal;
+- malformed/missing protocol declarations still fail deterministically;
+- staged `ASSURANCE.md` exists and declares `Assurance-Audit-Version: 1.0.0` and `Activation-State: STAGED`;
+- `ASSURANCE.md` is **not yet** required/routed by active Protocol `1.12.0` semantics;
 - focused fixture/test/evaluator contains no hard dependency on named scanner/SDD/agent/review-provider products, shell/OS syntax, network endpoints or model execution.
 
-Provider-neutrality assertions target T010 artifacts, not generic compatibility examples elsewhere in repository documentation.
+The executor may retain genuinely historical or compatibility-bound version literals when tests clearly distinguish them from current-version authority.
 
 ## Acceptance criteria
 
@@ -296,10 +319,11 @@ ChatGPT accepts T010 only if remote Git evidence proves all of the following:
 10. finding/remediation authorization are mechanically separate;
 11. temporal invalidation changes current posture without rewriting historical report state;
 12. D035 security and D033/D034 execution control cannot grant audit authority they do not own;
-13. Protocol `1.13.0`/`ASSURANCE.md` module alignment is mechanically verified;
-14. no external network/model/provider/dependency/runtime drift is introduced;
-15. focused and full deterministic verification are green;
-16. executor handoff is valid under D029 and `docs/EXECUTOR-HANDOFFS.md`.
+13. the duplicated mutable exact-current protocol literal is eliminated as an independent authority without weakening protocol validation;
+14. staged `ASSURANCE.md` is tested while active Protocol remains `1.12.0` and routing remains inactive;
+15. no external network/model/provider/dependency/runtime drift is introduced;
+16. focused and full deterministic verification are green;
+17. executor handoff is valid under D029 and `docs/EXECUTOR-HANDOFFS.md`.
 
 Passing tests are necessary evidence, not acceptance authority. ChatGPT reviews the remote contract, handoff, exact base/head identities and complete diff before acceptance.
 
@@ -313,6 +337,20 @@ uv run --locked pytest -q
 uv run --locked ruff check .
 uv run --locked ruff format --check .
 ```
+
+## Post-T010 activation gate
+
+T010 acceptance does **not** activate D036 in `GOVERNANCE.md`.
+
+After T010 is accepted/integrated/clean, ChatGPT must perform the D040 Phase-B Markdown activation from current green `develop`:
+
+- bump `GOVERNANCE.md` to Protocol `1.13.0`;
+- route/load `ASSURANCE.md` where applicable;
+- change `ASSURANCE.md` from staged to active;
+- update architecture/checkpoint;
+- confirm the deterministic suite remains compatible without any exact-current literal synchronization.
+
+If a new executable change is required at that point, stop and persist a new Task Contract; do not accept a red canonical intermediate state.
 
 ## Executor completion
 
