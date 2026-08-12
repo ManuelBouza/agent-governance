@@ -1,7 +1,7 @@
 # Current ChatGPT Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O032  
+Checkpoint-Sequence: O033  
 Canonical-Branch: `develop`  
 Chat-Closure: CONTINUE_ALLOWED
 
@@ -43,6 +43,24 @@ Expected handoff:
 Executor implementation MUST start from a `develop` revision containing the exact T006 Task Contract. The PR #45 squash above is the first such canonical revision.
 
 Do not launch from an older base.
+
+## Canonical executor launch-prompt invariant
+
+`docs/TASK-CONTRACTS.md` now defines the mandatory normal executor launch structure.
+
+Every normal launch prompt is transport/bootstrap only and contains these semantic parts:
+
+```text
+role
++ repository/base
++ AGENTS.md bootstrap
++ exactly one authoritative Task Contract pointer
++ completion/return contract
+```
+
+Do not duplicate objective, acceptance criteria, scope/files, exclusions, architecture, tests, branch/handoff details, provider-specific rules, safety/security restrictions or protocol versions into the launch prompt when they are already controlled by Git.
+
+If a required task fact is missing, incomplete or stale, persist/fix the Task Contract or controlling repository policy before launch. Do not compensate with chat-only launch instructions.
 
 ## D035 Core state
 
@@ -156,15 +174,29 @@ Preserve; do not hide/rewrite without explicit Human authorization:
 
 ## Next Action
 
-1. Launch the Agente de IA Ejecutor for T006 using only the canonical repository plus the exact Task Contract path.
+1. Launch the Agente de IA Ejecutor for T006 using the canonical minimal launch-prompt contract in `docs/TASK-CONTRACTS.md` and exactly one Task Contract pointer.
 2. Executor creates/uses `test/security-verification-contract` from current `develop`, implements only authorized non-Markdown scope, runs required deterministic verification, persists/pushes the D029-compliant handoff and returns status/path/branch/HEAD only.
 3. ChatGPT reviews remote base/head identity, Task Contract, handoff, complete diff and verification evidence before acceptance.
 4. Do not start D036 until T006 is accepted/integrated.
 
-Minimal executor launch prompt:
+Canonical T006 launch prompt:
 
 ```text
-Operate as the Agente de IA Ejecutor for ManuelBouza/agent-governance. Read AGENTS.md, then load and execute the Task Contract at docs/tasks/T006-d035-deterministic-security-verification-contract.md from current develop. Follow all referenced repository policies. Do not edit Markdown. Persist, commit and push the required executor handoff before returning.
+Operate as the Agente de IA Ejecutor for ManuelBouza/agent-governance.
+
+Start from current develop and read AGENTS.md first.
+
+Then load and execute the authoritative Task Contract:
+docs/tasks/T006-d035-deterministic-security-verification-contract.md
+
+Treat that Task Contract and its referenced repository policies as the complete execution specification. Do not infer or expand task scope from this prompt.
+
+Complete the required verification and executor handoff, commit and push all authorized work, then return only:
+
+STATUS: DONE | BLOCKED | PARTIAL
+HANDOFF: <path>
+BRANCH: <branch>
+HEAD: <pushed-commit-sha>
 ```
 
 ## Next Chat Minimum Load
