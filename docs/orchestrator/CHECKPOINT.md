@@ -1,7 +1,7 @@
 # Current ChatGPT Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O030  
+Checkpoint-Sequence: O031  
 Canonical-Branch: `develop`  
 Chat-Closure: CONTINUE_ALLOWED
 
@@ -37,15 +37,13 @@ Reviewed executor identity:
 - final executor HEAD: `04b88b31790c8254dd9d0c40f29cd4720e957843`;
 - D029 handoff-only successor validated.
 
-Acceptance PR:
+Acceptance PR #41:
 
-- PR #41;
-- squash `05b101d0c0d40817119626d685e6c87cf1b46544`.
+`05b101d0c0d40817119626d685e6c87cf1b46544`
 
-Implementation PR:
+Implementation PR #42:
 
-- PR #42;
-- squash `be01beb9a0cabf8737b6d853b76908e38a756f5d`.
+`be01beb9a0cabf8737b6d853b76908e38a756f5d`
 
 Accepted deterministic evidence:
 
@@ -78,19 +76,23 @@ Approval outcomes:
 
 `ALLOW_TASK | ALLOW_EXPLICIT | REQUIRE_HUMAN | DENY`
 
-## D038 — External review-receipt and delivery-integrity provider boundary
+## D038 — ACCEPTED / INTEGRATED
 
-Human Owner decision: reuse useful Gentle-AI RDD capabilities without transferring Agent Governance authority.
-
-Decision path:
+Decision:
 
 `docs/decisions/D038-external-review-receipt-delivery-integrity-provider-boundary.md`
 
-D038 is accepted on the current Markdown branch and awaits normal Markdown PR integration.
+D030 specialization update:
 
-D038 partially supersedes D030 only for Gentle-AI RDD capability classification. D030 remains the general external-workflow precedence rule and retains clone-local RDD disable as the fallback when bounded coexistence is unavailable.
+`docs/decisions/D030-source-maintainer-external-workflow-overlay-precedence.md`
 
-### D038 core invariants
+Integration PR #43:
+
+`ed922f6ec7d3cdcaf378150b258f0c2f8b4885e3`
+
+D038 partially supersedes D030 only for Gentle-AI RDD capability classification. D030 remains authoritative for general external-workflow precedence and retains clone-local RDD disable as the fallback when bounded coexistence is unavailable.
+
+### D038 invariants
 
 ```text
 external evidence != Governance acceptance
@@ -118,17 +120,17 @@ RDD receipt != merge/release authorization
 
 Once a candidate/delivery path is intentionally governed by a selected external integrity provider, a mismatch/stale/corrupt/deny result is a real blocker for that provider path.
 
-Do not disable/switch mechanism merely to deliver the same candidate. Repair/revalidate or persist an explicit Strategy/Human provider-disposition change and revalidate under the new disposition.
+Do not disable or switch mechanism merely to deliver the same candidate. Repair/revalidate or persist an explicit Strategy/Human provider-disposition change and revalidate under the new disposition.
 
 ### D037 boundary
 
-RDD reviewer/model output may be supplemental evidence only. It cannot become required source-product verification or a mandatory release gate.
+Probabilistic RDD reviewer/model output may be supplemental evidence only. It cannot become required source-product verification or a mandatory release gate.
 
 If the installed/current provider cannot expose useful candidate-integrity/delivery-integrity behavior without making probabilistic reviewer approval mandatory, use the D030 clone-local opt-out fallback.
 
 ### Trust boundary
 
-Gentle-AI's public review-authority threat model states that its local review store/receipt does not authenticate against a malicious same-user actor with equivalent filesystem/Git/binary access.
+Gentle-AI's published review-authority threat model states that its local review store/receipt does not authenticate against a malicious same-user actor with equivalent filesystem/Git/binary access.
 
 Therefore:
 
@@ -138,23 +140,30 @@ RDD receipt != cryptographic remote attestation
 
 Canonical remote Git, D029, deterministic tests, D035 security verification where applicable, and Human/ChatGPT authority remain necessary.
 
-### Current research basis
+Gentle-AI remains optional and is not a canonical source dependency.
 
-Public Gentle-AI documentation inspected on 2026-08-12 describes RDD as the supported stable path and identifies stable `v2.3.0` at that time. It documents exact-candidate freezing, immutable candidate identity, content-bound receipts, same-receipt delivery gates, native status/recovery/reconciliation, live-Git re-derivation and fail-closed state handling.
+## Next Product Frontier — T006 / D035
 
-This is research basis only; Gentle-AI/version identifiers are not source-product dependencies.
+Next work is the deterministic Core integration of D035:
 
-## Next deterministic architecture sequence
+- current/versioned security source authority;
+- freshness state;
+- known-bad security patterns;
+- independent verification outcomes;
+- security exceptions/expiry;
+- temporal posture invalidation;
+- deterministic tests proving obsolete/vulnerable state cannot pass because it is statistically common.
 
-```text
-T006  D035
-      security authority + freshness + known-bad + independent verification
+Before T006 becomes READY:
 
-T007  D036
-      existing-system assurance audit + evidence graph + coverage
-```
+1. present a fresh D032 Primary Solution Diagram;
+2. perform quality/security triage;
+3. define the smallest coherent Core change;
+4. define deterministic fixtures/tests under D037;
+5. preserve D033/D034 execution-control semantics;
+6. do not broaden into D036 audit-report implementation yet.
 
-D038 is an external-provider coexistence refinement and must not silently broaden T006/T007.
+T007/D036 follows after T006.
 
 ## Orchestrator Direct-Write Audit History
 
@@ -167,19 +176,20 @@ Preserve; do not hide/rewrite without explicit Human authorization:
 
 ## Next Action
 
-1. Review the D038 Markdown diff on `docs/d038-rdd-subordinate-evidence`.
-2. Integrate D038 + narrow D030 supersession update + O030 through normal Markdown PR flow if only those intended paths changed.
-3. Then begin T006 Strategy: Primary Solution Diagram, D032 quality/security triage and deterministic Task Contract for D035.
-4. Do not implement an RDD adapter/schema integration unless separately tasked; D038 is architecture/policy only.
+1. Integrate this O031 post-D038 checkpoint through normal Markdown PR flow.
+2. Begin T006 Strategy for D035.
+3. Do not implement an RDD adapter/schema integration unless separately tasked.
+4. Do not add D036 implementation to T006.
 
 ## Next Chat Minimum Load
 
 After `AGENTS.md` and this checkpoint:
 
-1. load D038 and D030 if RDD/external review-integrity behavior is relevant;
-2. load D033/D034/D037 only when their boundaries are needed;
-3. for T006 planning, load D035, `QUALITY.md`, `EXECUTION-CONTROL.md`, `GOVERNANCE.md` and the deterministic test architecture as needed;
-4. do not reload T005 implementation details absent regression/audit need.
+1. load D035 and `docs/ARCHITECTURE-SECURITY-VERIFICATION.md`;
+2. load `governance-core/QUALITY.md`, `governance-core/EXECUTION-CONTROL.md`, `governance-core/GOVERNANCE.md` and current deterministic test helpers as needed for T006;
+3. load D038/D030 only if external-provider evidence/integrity affects T006 design;
+4. load D036 only after T006 closes or if a concrete boundary conflict requires it;
+5. do not reload T005 implementation details absent regression/audit need.
 
 ## Do Not Load or Do
 
@@ -190,4 +200,5 @@ After `AGENTS.md` and this checkpoint:
 - Do not bypass a selected provider denial by mechanism switching.
 - Do not add Gentle-AI as a canonical source dependency.
 - Do not start an RDD executable integration without a separate Task Contract.
+- Do not implement D036 inside T006.
 - Do not declare the source product stable/release-ready.
