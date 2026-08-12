@@ -9,7 +9,7 @@ Chat-Closure: CONTINUE_ALLOWED
 
 T001, T002, T003, T005 and T007 are `ACCEPTED` and integrated. T004 remains terminal `CANCELLED_BY_HUMAN` under D037.
 
-OP001 post-integration branch retirement completed successfully and was independently verified remotely: canonical remote branches are only `develop` and `main`. Local `develop`/`main` cleanup is executor-reported evidence; inaccessible external checkouts are not inferred clean.
+OP001 post-integration branch retirement completed successfully and was independently verified remotely: canonical remote branches were reduced to `develop` and `main` before T008 launch. Local `develop`/`main` cleanup is executor-reported evidence; inaccessible external checkouts are not inferred clean.
 
 D039 — Evidence-Driven Governance Learning Loop (EGLL) — is `ACCEPTED`.
 
@@ -30,6 +30,14 @@ Use exactly one persisted contract pointer:
 - bounded non-implementation repository operation -> `docs/operations/OPNNN-*.md` Operational Contract.
 
 Prompts MUST NOT carry concrete targets, branches, SHAs, deletion decisions, exceptions, commands, acceptance semantics, or other task/operation instructions absent from the persisted contract.
+
+## OP002 — READY after PR #62 integration
+
+Operational Contract:
+
+`docs/operations/OP002-retire-t008-r1-planning-branch.md`
+
+OP002 persistently authorizes only retirement of the source branch of PR #62 after merge. It explicitly excludes the active T008 implementation branch and all executable work.
 
 ## L001 — CONTROL_PLANNED
 
@@ -120,7 +128,7 @@ Preserve; do not hide/rewrite without explicit Human authorization:
 - T007 executor: `eval/d032-agent-capability` was initially deleted before missing-PR ambiguity was fully resolved, then restored at exact original SHA; persisted T007-R1 later authorized final deletion.
 - T002-R1 placeholder: accidental `6a3bff4f12850bd701fea624815e955231082afa`; corrective `67d8dc6de9679f833f3136c6a66ee7ad05283cb3`.
 - architecture overview placeholder: accidental `a0e063344043fda53f55b8fcb5b03742a33a7185`; corrective `09fa91f6b3c829e6edc0719fcd636cf3cba8f879`.
-- T004-R1 placeholder: accidental `197ce3fad02a69baf99238beb9859280a137a681`; corrective `52ae6fb5126517ea19c8d00918e7b148c17f146a`.
+- T004-R1 placeholder: accidental `197ce3fad02a69baf99238beb9859280a137a681`; corrective `52ae6fb5126517ea19e8b002eb6ee85281401`.
 - D037 placeholder: accidental `71b62980c41b183dfb33ef3099c72fc827234606`; corrective `e5ee3c56cbd17f72f876987550bab34cde065b53`.
 - T007-R1 review preparation: accidental temporary non-Markdown `noop` on `docs/t007-r1-branch-cleanup`; removed before integration.
 - T007 post-integration prompt work: commits were appended to already-merged `docs/t007-post-integration` after PR #55; recovered through PR #56; basis for merged-branch freeze and T008 regression fixture.
@@ -128,8 +136,8 @@ Preserve; do not hide/rewrite without explicit Human authorization:
 
 ## Next Action
 
-1. Review/integrate the Markdown planning change containing T008-R1, L001, T009, and this checkpoint; freeze its source branch immediately after merge.
-2. Retire that merged planning branch under the persisted Operational Contract mechanism before executable work if required by current branch policy.
+1. Review/integrate PR #62 containing T008-R1, L001, T009, OP002, and this checkpoint; freeze its source branch immediately after merge.
+2. Launch OP002 using only the canonical Operational Contract bootstrap prompt and pointer to `docs/operations/OP002-retire-t008-r1-planning-branch.md`; independently verify retirement.
 3. Launch T009 using only the canonical Task Contract bootstrap prompt and pointer to `docs/tasks/T009-protocol-version-baseline-alignment.md`.
 4. ChatGPT reviews T009 handoff/diff/evidence; after acceptance, integrate and post-integration-clean T009.
 5. Resume T008 on its existing task branch exactly as specified by T008-R1; review again.
@@ -140,15 +148,17 @@ Preserve; do not hide/rewrite without explicit Human authorization:
 
 After `AGENTS.md` and this checkpoint:
 
-1. if T009 is not closed, load `docs/tasks/T009-protocol-version-baseline-alignment.md`, `docs/learning/L001-protocol-version-baseline-drift.md`, and `docs/reviews/T008-R1.md`;
-2. for T008 re-review load its Task Contract, T008-R1, handoff, D039 and `docs/GOVERNANCE-LEARNING.md`;
-3. load D037/test helpers only as needed;
-4. after T008 closes, load T006 + D035 + `governance-core/SECURITY.md`;
-5. do not reload older task history absent regression/audit need.
+1. if OP002 not complete, load `docs/operations/OP002-retire-t008-r1-planning-branch.md` plus branch-cleanup policy;
+2. if T009 is not closed, load `docs/tasks/T009-protocol-version-baseline-alignment.md`, `docs/learning/L001-protocol-version-baseline-drift.md`, and `docs/reviews/T008-R1.md`;
+3. for T008 re-review load its Task Contract, T008-R1, handoff, D039 and `docs/GOVERNANCE-LEARNING.md`;
+4. load D037/test helpers only as needed;
+5. after T008 closes, load T006 + D035 + `governance-core/SECURITY.md`;
+6. do not reload older task history absent regression/audit need.
 
 ## Do Not Load or Do
 
 - Do not delete `main` or `develop`.
+- Do not delete or repurpose the active T008 branch through OP002.
 - Do not append commits to a merged topic branch.
 - Do not place concrete executor instructions in chat when absent from the persisted contract.
 - Do not accept T008 while its required full-suite gate is red.
