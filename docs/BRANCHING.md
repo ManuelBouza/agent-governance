@@ -41,6 +41,23 @@ Topic branches are short-lived and merge back into `develop` through pull reques
 
 A topic branch lifecycle is not complete merely because its PR was merged. Successful integration includes post-merge branch cleanup according to `docs/BRANCH-CLEANUP.md`.
 
+## Merged-branch freeze invariant
+
+Once a topic branch PR is merged, that branch is **frozen** at the exact reviewed/merged PR head and MUST NOT receive additional commits.
+
+```text
+merged topic branch = frozen retirement candidate
+merged topic branch != reusable continuation branch
+```
+
+After merge, the only normal operations on the source branch are evidence inspection and retirement under `docs/BRANCH-CLEANUP.md`.
+
+If additional repository work is required after merge — including follow-up documentation, checkpoint changes, review records, fixes, cleanup-policy changes, or any other correction — create a new topic branch from the current authorized base, normally the current `develop` head. Do not append the new work to the already-merged branch.
+
+A post-merge commit on a topic branch is a workflow nonconformance because it invalidates the reviewed PR-head identity used for deterministic deletion safety. Such a branch MUST be classified `REVIEW`; its post-merge work must be dispositioned through a new policy-compliant branch/PR or explicitly abandoned before the original branch can be retired.
+
+This invariant applies equally to Human, ChatGPT Orchestrator, and Agente de IA Ejecutor operations.
+
 ## Post-merge branch cleanup
 
 After a topic PR is successfully merged into its authorized target, the corresponding topic branch MUST be retired rather than left indefinitely on the canonical remote.
