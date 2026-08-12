@@ -1,7 +1,7 @@
 # L001 — Protocol-version baseline drift
 
 Learning ID: L001  
-State: CONTROL_INTEGRATED  
+State: VERIFIED  
 Fingerprint: `verification.regression.protocol_version_drift`
 
 ## Detection
@@ -11,7 +11,7 @@ Detected during T008 executor verification at executor HEAD `59f0b8bc443636c5a7f
 Affected records:
 
 - T008 — `docs/tasks/T008-egll-deterministic-learning-detectors.md`;
-- review — `docs/reviews/T008-R1.md`;
+- T008 reviews — `docs/reviews/T008-R1.md`, `docs/reviews/T008-R2.md`, `docs/reviews/T008-R3.md`;
 - source protocol declaration — `governance-core/GOVERNANCE.md`;
 - deterministic baseline helpers/tests — `tests/_helpers.py`, `tests/test_execution_control_contract.py`;
 - corrective task — `docs/tasks/T009-protocol-version-baseline-alignment.md`;
@@ -72,17 +72,29 @@ ruff format --check: PASS
 
 PR #64 integrated the exact accepted T009 implementation into `develop`.
 
-## Verification requirement
+## Regression/replay verification
 
-This learning case remains `CONTROL_INTEGRATED`, not `VERIFIED`.
+T009 post-integration cleanup completed before the final T008 rerun.
 
-It reaches `VERIFIED` only when:
+T008 then incorporated the corrected current `develop` baseline and, at final accepted HEAD `79df001b6a20a6f363e34e61093c63fc639479fe`, reported:
 
-1. T009 post-integration branch cleanup is complete;
-2. T008 incorporates the corrected current `develop` baseline;
-3. T008's original focused/full/Ruff verification gates all pass without weakening detector semantics;
-4. no second protocol authority or duplicated independent current-version source has been introduced.
+```text
+focused T008 pytest: 8 passed
+full pytest: 134 passed
+ruff check: PASS
+ruff format --check: PASS
+```
+
+T008-R3 independently verified that the detector, fixture, and focused-test blobs were byte-identical to the original reviewed T008 implementation anchor, so the green result was not obtained by weakening or changing detector semantics.
+
+PR #68 integrated the exact accepted T008 HEAD into `develop` at `aff36aa65423b11febb81035d307de966745fee5`.
+
+No second protocol authority or duplicated independent current-version source was introduced.
+
+Therefore the selected control is integrated and the original failure class has deterministic regression evidence on the corrected baseline. L001 is `VERIFIED`.
 
 ## Recurrence
 
-A future mismatch between authoritative Core protocol version and deterministic source-test version expectation is the same fingerprint unless evidence establishes a materially different condition. Recurrence after this case reaches `VERIFIED` becomes `CONTROL_FAILURE` under D039.
+A future mismatch between authoritative Core protocol version and deterministic source-test version expectation is the same fingerprint unless evidence establishes a materially different condition.
+
+Any recurrence after this `VERIFIED` state becomes `CONTROL_FAILURE` under D039 and requires re-analysis rather than merely another literal update.
