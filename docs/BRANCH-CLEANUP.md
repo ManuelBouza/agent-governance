@@ -12,9 +12,7 @@ Define the repeatable post-integration procedure for retiring short-lived source
 
 ```text
 merged work != completed branch lifecycle
-
-completed branch lifecycle = integration + remote retirement + local pruning
-
+completed branch lifecycle = integration + frozen branch + remote retirement + local pruning
 branch deletion requires evidence that no unique work is being discarded
 ```
 
@@ -28,6 +26,22 @@ Normal topic branches are disposable integration surfaces. `main` and `develop` 
 - **Human Owner** — resolves ambiguous retention/deletion cases when unique work or intent cannot be reconstructed safely from Git.
 
 Remote cleanup is centrally auditable. Local branch cleanup is checkout-specific and cannot be inferred from GitHub alone.
+
+## Merged-branch freeze precondition
+
+Before any cleanup classification, apply the merged-branch freeze invariant from `docs/BRANCHING.md`.
+
+Once a PR is merged, its source branch is expected to remain exactly at the reviewed PR `head_sha`. No new work may be appended to it.
+
+If the current branch HEAD differs from the merged PR `head_sha`, do not treat that as ordinary stale-branch cleanup. Classify the branch `REVIEW` and determine what the post-merge commits represent.
+
+Resolution must make the new work explicit:
+
+- if the post-merge commits are valid new work, reproduce/persist them on a new topic branch from the current authorized base and integrate them normally;
+- if they are intentionally abandoned, record that disposition before deletion;
+- if their intent or uniqueness is uncertain, retain the branch until Human/Orchestrator review resolves it.
+
+Never move the branch backward merely to manufacture a matching PR head and make deletion easier. The divergent state is evidence and must remain auditable until resolved.
 
 ## Canonical post-integration cleanup delegation
 
@@ -61,7 +75,7 @@ If the source branch already no longer exists, remote cleanup passes and the pro
 If it still exists, compare its current remote HEAD with the reviewed PR `head_sha`.
 
 - equal -> eligible for remote deletion;
-- different -> `REVIEW`; do not delete automatically;
+- different -> `REVIEW`; this is also a merged-branch-freeze violation unless separately explained by an authorized specialized lifecycle;
 - unavailable/ambiguous -> `REVIEW`; do not delete automatically.
 
 This exact-head check prevents deletion of work pushed after the reviewed PR state.
@@ -129,6 +143,7 @@ Use when any of the following is true:
 - the associated PR was closed without merge;
 - no associated PR can be established;
 - current branch HEAD differs from the merged PR head;
+- the branch received commits after merge, violating the frozen-branch invariant;
 - the branch carries commits whose disposition is unclear;
 - the branch may correspond to cancelled, abandoned, superseded, or manually interrupted work;
 - the branch state cannot be reconstructed safely from Git metadata.
@@ -169,6 +184,7 @@ For normal future topic work, integration and operational branch closure are dis
 The integrated change is not operationally closed until:
 
 - the accepted/authorized content is integrated into the authorized target;
+- the merged source branch has remained frozen at the reviewed PR head until retirement;
 - the canonical post-integration cleanup prompt has been executed when cleanup is delegated;
 - every eligible merged branch associated with the cleanup target is absent remotely;
 - any `REVIEW`/`RETAIN` exception has an explicit durable reason;
@@ -176,3 +192,16 @@ The integrated change is not operationally closed until:
 - local cleanup has been performed in controlled/accessed checkouts, or is an explicit mandatory precondition before the next repository task in an inaccessible checkout.
 
 Do not preserve stale topic branches merely as history. PRs, commits, Task Contracts, reviews, handoffs, and Git history are the durable audit surfaces.
+
+## Operational lesson — post-merge branch reuse
+
+The T007 closure exposed a concrete failure mode: a documentation branch was merged, then received new documentation commits before retirement. That made its remote HEAD diverge from the reviewed PR head and converted an otherwise deterministic deletion into a `REVIEW` case that required recovery through a fresh branch/PR.
+
+The preventive rule is now explicit:
+
+```text
+merge -> freeze -> cleanup
+new work -> new branch from current develop
+```
+
+Do not use a merged branch as a convenient continuation surface, even for closely related follow-up work.
