@@ -1,0 +1,52 @@
+{
+  "task_id": "T009",
+  "status": "DONE",
+  "task_contract_path": "docs/tasks/T009-protocol-version-baseline-alignment.md",
+  "branch": "test/protocol-version-baseline-alignment",
+  "implementation_head_sha": "4d3b2cc440e7f8e0b3d6f720d12540231abed2c0",
+  "base_branch": "develop",
+  "base_sha": "d1e16fc60c1fca909a49306e78fb9ccde180d6e5",
+  "files_changed": [
+    "tests/_helpers.py",
+    "tests/test_execution_control_contract.py",
+    "handoffs/T009-executor-handoff.json"
+  ],
+  "implementation_summary": "Aligned the single test-side source protocol verifier expectation with authoritative Core Protocol-Version 1.12.0 and removed the redundant stale literal assertion. Both protocol alignment tests still compare the parsed Core declaration against SOURCE_PROTOCOL_VERSION, so any future disagreement fails deterministically.",
+  "pre_fix_failures": [
+    {
+      "command": "uv run --locked pytest -q tests/test_execution_control_contract.py",
+      "result": "1 failed, 10 passed in 0.04s",
+      "failure": "test_core_protocol_and_execution_control_module_alignment: protocol_version_from(governance) returned '1.12.0' while SOURCE_PROTOCOL_VERSION was '1.11.0'."
+    },
+    {
+      "command": "uv run --locked pytest -q tests/test_canonical_layout.py",
+      "result": "1 failed, 35 passed in 0.05s",
+      "failure": "test_governance_core_uses_documented_protocol_version: canonical source declared '1.12.0' while SOURCE_PROTOCOL_VERSION was '1.11.0'."
+    }
+  ],
+  "deterministic_mismatch_detection": "tests/test_canonical_layout.py and tests/test_execution_control_contract.py continue to parse governance-core/GOVERNANCE.md with protocol_version_from() and assert equality with the single SOURCE_PROTOCOL_VERSION verifier expectation in tests/_helpers.py. Changing either side without the other still produces deterministic failures.",
+  "verification": {
+    "commands": [
+      "uv run --locked pytest -q tests/test_execution_control_contract.py tests/test_canonical_layout.py",
+      "uv run --locked pytest -q",
+      "uv run --locked ruff check .",
+      "uv run --locked ruff format --check ."
+    ],
+    "results": [
+      "Focused protocol/version alignment: 47 passed in 0.06s.",
+      "Full pytest: 126 passed in 0.59s.",
+      "Ruff check: All checks passed!",
+      "Ruff format check: 9 files already formatted."
+    ],
+    "runtime": "N/A: T009 changes deterministic source-contract tests only; no product runtime boundary exists.",
+    "network_required": false
+  },
+  "dependencies_or_config_changes": "None.",
+  "scope_confirmation": "No Markdown, Governance Core, T008 implementation, T006/D035/D036 behavior, dependency, configuration, CI/ruleset, consumer footprint, model/provider, external service, or network-dependent verification changes were made.",
+  "git_status": "All in-scope changes are committed. Pre-existing untracked .codegraph/ remains untouched, untracked, and excluded from staging and commits.",
+  "unresolved_issues": [],
+  "procedural_nonconformance": [],
+  "recommended_next_task": "Orchestrator review and acceptance of T009 before T008 resumes per the Task Contract sequencing.",
+  "chatgpt_read_path": "handoffs/T009-executor-handoff.json",
+  "rollback_boundary": "Revert tests/_helpers.py and tests/test_execution_control_contract.py together to remove the protocol baseline correction without affecting unrelated work. The handoff-only successor commit can be reverted independently."
+}
