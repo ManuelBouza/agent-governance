@@ -3,6 +3,8 @@
 Status: ACCEPTED
 Authority: Human Owner / ChatGPT Orchestrator under D022 and D026
 
+Supersession note: `docs/decisions/D038-external-review-receipt-delivery-integrity-provider-boundary.md` supersedes only the blanket Gentle-AI RDD capability disposition below. D030 remains authoritative for general external-workflow precedence and for the clone-local RDD opt-out fallback when D038-compatible bounded coexistence is unavailable.
+
 ## Problem
 
 The source repository may be executed from an agent host that has pre-existing workflow overlays such as SDD, review-driven development, receipt gates, commit/push hooks, Skill registries, memory, or other agent-development infrastructure.
@@ -38,15 +40,29 @@ If an external review/delivery gate stops an otherwise authorized source task:
 6. continue under repository-native policy;
 7. record the disposition in the executor handoff when material.
 
+D038 adds a more precise alternative for Gentle-AI RDD: reuse/adapt subordinate candidate-integrity/evidence capabilities when they preserve D037 and Governance authority. A stricter selected-provider denial remains a real technical blocker for that provider path, but the provider cannot grant Governance acceptance or expand authorization.
+
 ## Gentle-AI RDD adapter disposition
 
 Gentle-AI is a supported example of an external executor-host ecosystem, not a dependency of Agent Governance.
 
-Gentle-AI's current public RDD contract states that review mode is user-owned; a clone can opt out with `--scope clone`; when review is disabled, native delivery gates defer to ordinary repository policy rather than fabricating approval.
+Gentle-AI's public RDD contract supports clone-local review-mode opt-out and ordinary repository-policy fallback when review is disabled.
 
-For the Agent Governance source repository, Gentle-AI RDD review/delivery authority is classified `CONFLICT` because D022 already assigns review/acceptance authority to ChatGPT and repository contracts.
+### Historical/base disposition
 
-Therefore, when Gentle-AI RDD is present and blocks source-maintenance delivery, the approved adaptation is clone-local only:
+Before D038, the Agent Governance source repository classified Gentle-AI RDD review/delivery as one `CONFLICT` surface because D022 already assigns review/acceptance authority to ChatGPT and repository contracts.
+
+D038 now classifies RDD **by capability**:
+
+- subordinate deterministic/native candidate identity, receipt/integrity, Git re-derivation and provider status/recovery may be `REUSE`/`ADAPT`;
+- probabilistic reviewer findings may only `COEXIST` as supplemental evidence under D037;
+- external Task Contract/scope/acceptance/merge/release authority remains `DENY`/`CONFLICT`.
+
+Use D038 when the installed provider exposes a compatible bounded capability surface.
+
+### Clone-local fallback
+
+When D038-compatible bounded coexistence is unavailable, incompatible, or would make probabilistic reviewer approval a required source-product gate, the approved fallback remains clone-local only:
 
 ```text
 gentle-ai review mode status --cwd .
@@ -61,7 +77,8 @@ Requirements:
 - MUST NOT disable RDD globally as part of source maintenance;
 - do not initialize or migrate Agent Governance into Gentle-AI SDD merely to satisfy the gate;
 - do not treat Gentle-AI `disabled/unmanaged` as Agent Governance approval; it only means delivery is delegated back to repository policy;
-- ChatGPT still performs the required remote review before any implementation PR is opened/merged.
+- ChatGPT still performs the required remote review before any implementation PR is opened/merged;
+- do not disable a currently selected D038 provider path merely to bypass a negative integrity result without an explicit Strategy/Human disposition change and revalidation.
 
 Re-enabling Gentle-AI RDD for another clone/project remains the Human Owner's choice and is outside Agent Governance source state.
 
@@ -79,22 +96,21 @@ D026 remains the product-level capability-first/reuse-before-install/no-authorit
 
 D030 applies the same principle to development of the Agent Governance source product itself. It does not change the Governance Core protocol and does not make Gentle-AI a canonical integration dependency.
 
+D038 is a specialization of this capability-first rule, not a new authority tier.
+
 ## Research basis
 
 Gentle-AI public documentation:
 
 - https://github.com/Gentleman-Programming/gentle-ai
 
-Current documented behavior used by this decision:
-
-- review mode is user-owned;
-- clone-local disable is supported with `--scope clone`;
-- a clone-local disabled source wins without disabling review globally;
-- disabled native delivery gates defer to ordinary repository policy (`disabled/unmanaged`) rather than issuing approval.
+The original D030 disposition relied on documented clone-local disable and `disabled/unmanaged` fallback behavior. D038 contains the later capability-level research for candidate freezing, content-bound receipts, native delivery-integrity gates and the provider threat boundary.
 
 ## Consequences
 
-- T001 R1 may continue after a persisted clone-local Gentle-AI RDD opt-out.
-- the Gentle-AI escalation remains useful evidence that coexistence detection works; it is not a reason to add Gentle-AI to the source toolchain.
-- future executor hosts with comparable review/delivery overlays follow the same capability/authority classification rather than receiving product-specific governance authority.
+- the original T001 collision remains valid audit evidence and is not rewritten;
+- clone-local RDD opt-out remains an approved safe fallback;
+- compatible subordinate RDD integrity capabilities may now be reused/adapted under D038 rather than disabling the entire surface by default;
+- no provider receives Agent Governance acceptance authority merely because it can block or verify a technical delivery path;
+- future executor hosts with comparable review/delivery overlays follow the same capability/authority classification rather than receiving product-specific governance authority;
 - source tasks should stop and escalate when no safely scoped adaptation exists.
