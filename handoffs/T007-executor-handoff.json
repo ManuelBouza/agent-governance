@@ -3,13 +3,13 @@
   "status": "DONE",
   "task_contract_path": "docs/tasks/T007-branch-hygiene-cleanup.md",
   "branch": "chore/branch-hygiene-cleanup",
-  "implementation_head_sha": "c30017ccfd6ab912321f10fe0baa9b5181787609",
+  "implementation_head_sha": "0503e084d3f55734f70e0ea8222d0b685198d827",
   "base_branch": "develop",
-  "base_sha": "c30017ccfd6ab912321f10fe0baa9b5181787609",
+  "base_sha": "bf60b30d54445ddcf521f70538289931bd9de57a",
   "files_changed": [
     "handoffs/T007-executor-handoff.json"
   ],
-  "implementation_summary": "Audited all 51 initial non-long-lived remote branches, deleted 50 branches whose merged PR head exactly matched the observed remote head, retained one branch for REVIEW because no associated PR could be established, pruned the executor-controlled checkout, and left product semantics unchanged.",
+  "implementation_summary": "Completed the T007-R1 rework by re-reading eval/d032-agent-capability at its authorized exact SHA, deleting its intentionally abandoned T004 ref remotely and locally, retiring the merged R1 review branch at its exact PR head, pruning the executor-controlled checkout, and leaving only main, develop, and the active T007 task branch.",
   "branch_inventory": {
     "initial_remote": {
       "count": 53,
@@ -72,8 +72,8 @@
     "final_remote": {
       "count": 3,
       "names": [
+        "chore/branch-hygiene-cleanup",
         "develop",
-        "eval/d032-agent-capability",
         "main"
       ]
     },
@@ -91,17 +91,15 @@
       ]
     },
     "final_local": {
-      "count": 4,
+      "count": 3,
       "names": [
         "chore/branch-hygiene-cleanup",
         "develop",
-        "eval/d032-agent-capability",
         "main"
       ],
       "branch_vv": [
-        "chore/branch-hygiene-cleanup c30017c [origin/develop] docs: delegate branch hygiene cleanup as T007 (#51)",
-        "develop c30017c [origin/develop] docs: delegate branch hygiene cleanup as T007 (#51)",
-        "eval/d032-agent-capability eb20dc0 [origin/eval/d032-agent-capability] chore(evals): finalize T004 R2 correction",
+        "chore/branch-hygiene-cleanup 0503e08 [origin/chore/branch-hygiene-cleanup: ahead 2] Merge remote-tracking branch 'origin/develop' into chore/branch-hygiene-cleanup",
+        "develop bf60b30 [origin/develop] docs: persist T007 R1 cleanup directive (#52)",
         "main 5333fb8 [origin/main] docs: establish binary agent role model"
       ]
     }
@@ -153,35 +151,38 @@
     {"branch":"docs/t007-branch-hygiene-contract","disposition":"DELETE","pr":51,"base":"develop","reviewed_head_sha":"87146915aa6fbe0a14b167cd392a3a112f1d7ab2","observed_remote_head":"87146915aa6fbe0a14b167cd392a3a112f1d7ab2","reason":"PR merged into develop; exact reviewed head matched; no post-review work."},
     {"branch":"docs/testing-capability-model","disposition":"DELETE","pr":7,"base":"develop","reviewed_head_sha":"75a8fba751af61cf8cdd6f700bc9c1e262b93241","observed_remote_head":"75a8fba751af61cf8cdd6f700bc9c1e262b93241","reason":"PR merged into develop; exact reviewed head matched; no post-review work."},
     {"branch":"docs/testing-evaluation-strategy","disposition":"DELETE","pr":2,"base":"develop","reviewed_head_sha":"86e0cd6f72679b80c90c173216297288d1d5f3f4","observed_remote_head":"86e0cd6f72679b80c90c173216297288d1d5f3f4","reason":"PR merged into develop; exact reviewed head matched; no post-review work."},
-    {"branch":"eval/d032-agent-capability","disposition":"REVIEW","pr":null,"base":null,"reviewed_head_sha":null,"observed_remote_head":"eb20dc0fed2674190a82ef40aa0e02436c02ced4","reason":"No reliable associated PR exists in complete GitHub PR history; branch was restored immediately at the exact original SHA after this ambiguity was detected and remains intact for owner review."},
+    {"branch":"eval/d032-agent-capability","disposition":"DELETE","pr":null,"base":null,"reviewed_head_sha":"eb20dc0fed2674190a82ef40aa0e02436c02ced4","observed_remote_head":"eb20dc0fed2674190a82ef40aa0e02436c02ced4","reason":"T007-R1 explicitly resolves terminal cancelled T004 work as intentionally abandoned and authorizes exact-SHA remote and local deletion; ref was re-read unchanged immediately before deletion."},
+    {"branch":"docs/t007-r1-branch-cleanup","disposition":"DELETE","pr":52,"base":"develop","reviewed_head_sha":"c8f26a0729a0088e331fe81afbcc35b68b947fef","observed_remote_head":"c8f26a0729a0088e331fe81afbcc35b68b947fef","reason":"PR #52 merged into develop; current remote head exactly matched reviewed PR head; no post-review work."},
+    {"branch":"chore/branch-hygiene-cleanup","disposition":"RETAIN","pr":null,"base":"develop","reviewed_head_sha":null,"observed_remote_head":"656c71e22f60ae8b235304179dc1d8fee4ec4031","reason":"Active T007 implementation/rework branch required to persist and push this final handoff."},
     {"branch":"test/coexistence-fixtures","disposition":"DELETE","pr":25,"base":"develop","reviewed_head_sha":"915c63a6e0095ecde3b3862e159e87ccd660573e","observed_remote_head":"915c63a6e0095ecde3b3862e159e87ccd660573e","reason":"PR merged into develop; exact reviewed head matched; no post-review work."},
     {"branch":"test/d032-deterministic-contract","disposition":"DELETE","pr":29,"base":"develop","reviewed_head_sha":"829273cbc19a3aa79299ef227546f8eb11d7066b","observed_remote_head":"829273cbc19a3aa79299ef227546f8eb11d7066b","reason":"PR merged into develop; exact reviewed head matched; no post-review work."},
     {"branch":"test/execution-control-contract","disposition":"DELETE","pr":42,"base":"develop","reviewed_head_sha":"04b88b31790c8254dd9d0c40f29cd4720e957843","observed_remote_head":"04b88b31790c8254dd9d0c40f29cd4720e957843","reason":"PR merged into develop; exact reviewed head matched; no post-review work."},
     {"branch":"test/governance-harness","disposition":"DELETE","pr":17,"base":"develop","reviewed_head_sha":"3b01e5cd67966011b47d62544feede0c352467b9","observed_remote_head":"3b01e5cd67966011b47d62544feede0c352467b9","reason":"PR merged into develop; exact reviewed head matched; no post-review work."}
   ],
   "deleted_remote_branches": [
-    "docs-persist-governance-decisions", "docs/accept-t001", "docs/adaptive-proxy-quality-envelope", "docs/branch-cleanup-policy", "docs/chatgpt-project-bootstrap", "docs/d033-execution-access-control", "docs/d034-runbook-terminal-neutral", "docs/d035-security-verification-authority", "docs/d036-existing-system-assurance-audit", "docs/d037-deterministic-code-only-verification", "docs/d038-rdd-subordinate-evidence", "docs/ecosystem-coexistence", "docs/executor-launch-prompt-contract", "docs/handoff-review-contract-fix", "docs/local-development-toolchain", "docs/maintainer-skill-role-routing", "docs/o031-post-d038", "docs/orchestrator-chat-checkpoints", "docs/orchestrator-checkpoint-close", "docs/persist-intent-proxy-architecture", "docs/persisted-executor-handoffs", "docs/persisted-task-handoffs", "docs/python-testing-stack", "docs/source-change-procedure", "docs/source-overlay-precedence", "docs/t001-r2-review", "docs/t001-r3-review", "docs/t002-atl-runtime-boundary", "docs/t002-coexistence-fixtures", "docs/t002-post-integration", "docs/t002-r1-capability-coverage", "docs/t002-r2-acceptance", "docs/t003-d032-deterministic-contract", "docs/t003-post-integration", "docs/t003-r1-acceptance", "docs/t004-d032-agent-eval", "docs/t004-r1-opencode-adapter-preflight", "docs/t004-r2-structured-child-diagnostics", "docs/t004-r3-catalog-model-reselection", "docs/t005-acceptance", "docs/t005-execution-control-core", "docs/t006-d035-security-core", "docs/t006-ready-checkpoint", "docs/t007-branch-hygiene-contract", "docs/testing-capability-model", "docs/testing-evaluation-strategy", "test/coexistence-fixtures", "test/d032-deterministic-contract", "test/execution-control-contract", "test/governance-harness"
+    "docs-persist-governance-decisions", "docs/accept-t001", "docs/adaptive-proxy-quality-envelope", "docs/branch-cleanup-policy", "docs/chatgpt-project-bootstrap", "docs/d033-execution-access-control", "docs/d034-runbook-terminal-neutral", "docs/d035-security-verification-authority", "docs/d036-existing-system-assurance-audit", "docs/d037-deterministic-code-only-verification", "docs/d038-rdd-subordinate-evidence", "docs/ecosystem-coexistence", "docs/executor-launch-prompt-contract", "docs/handoff-review-contract-fix", "docs/local-development-toolchain", "docs/maintainer-skill-role-routing", "docs/o031-post-d038", "docs/orchestrator-chat-checkpoints", "docs/orchestrator-checkpoint-close", "docs/persist-intent-proxy-architecture", "docs/persisted-executor-handoffs", "docs/persisted-task-handoffs", "docs/python-testing-stack", "docs/source-change-procedure", "docs/source-overlay-precedence", "docs/t001-r2-review", "docs/t001-r3-review", "docs/t002-atl-runtime-boundary", "docs/t002-coexistence-fixtures", "docs/t002-post-integration", "docs/t002-r1-capability-coverage", "docs/t002-r2-acceptance", "docs/t003-d032-deterministic-contract", "docs/t003-post-integration", "docs/t003-r1-acceptance", "docs/t004-d032-agent-eval", "docs/t004-r1-opencode-adapter-preflight", "docs/t004-r2-structured-child-diagnostics", "docs/t004-r3-catalog-model-reselection", "docs/t005-acceptance", "docs/t005-execution-control-core", "docs/t006-d035-security-core", "docs/t006-ready-checkpoint", "docs/t007-branch-hygiene-contract", "docs/t007-r1-branch-cleanup", "docs/testing-capability-model", "docs/testing-evaluation-strategy", "eval/d032-agent-capability", "test/coexistence-fixtures", "test/d032-deterministic-contract", "test/execution-control-contract", "test/governance-harness"
   ],
   "deleted_remote_absence_verified": true,
   "deleted_local_branches": [
     "test/coexistence-fixtures",
     "test/d032-deterministic-contract",
     "test/execution-control-contract",
-    "test/governance-harness"
+    "test/governance-harness",
+    "eval/d032-agent-capability"
   ],
-  "review_branches": [
+  "review_branches": [],
+  "retained_branches": [
     {
-      "branch": "eval/d032-agent-capability",
-      "reason": "No reliable associated PR exists in complete GitHub PR history; exact original remote and local refs are preserved at eb20dc0fed2674190a82ef40aa0e02436c02ced4."
+      "branch": "chore/branch-hygiene-cleanup",
+      "reason": "Active T007 implementation/rework branch; required for final handoff push and Orchestrator review."
     }
   ],
-  "retained_branches": [],
   "worktrees": {
     "verified": [
       {
         "path": "/home/manuel/projects/agent-governance",
         "branch": "chore/branch-hygiene-cleanup",
-        "head": "c30017ccfd6ab912321f10fe0baa9b5181787609"
+        "head": "0503e084d3f55734f70e0ea8222d0b685198d827"
       }
     ],
     "inaccessible_or_unverified": "No additional checkout appears in this repository's git worktree list. Human or other-agent checkouts outside this Git worktree registry are inaccessible and not verified."
@@ -198,6 +199,9 @@
       "git fetch --prune origin",
       "git branch -D <verified stale local branch>",
       "git branch -vv",
+      "git ls-remote --heads origin refs/heads/eval/d032-agent-capability",
+      "git push origin --delete eval/d032-agent-capability docs/t007-r1-branch-cleanup",
+      "gh pr list --state open --limit 100 --json number,baseRefName,headRefName,headRefOid,state,url",
       "uv run --locked python -m json.tool handoffs/T007-executor-handoff.json"
     ],
     "results": [
@@ -206,19 +210,20 @@
       "GitHub returned 50 historical PRs, all merged into develop; 50 of 51 initial topic branches matched an associated merged PR head exactly.",
       "50 DELETE branches removed in six bounded batches of 10, 10, 10, 10, 9, and 2 attempted operations; every batch was followed by a complete remote ref read. The 51 attempted operations include the REVIEW branch that was restored at its exact original SHA.",
       "eval/d032-agent-capability lacked a PR association; after initial deletion exposed the mismatch, exact remote/local refs were immediately restored at eb20dc0fed2674190a82ef40aa0e02436c02ced4 and classified REVIEW.",
-      "Final canonical remote has develop, eval/d032-agent-capability, and main; all 50 DELETE refs are absent.",
-      "Executor checkout has chore/branch-hygiene-cleanup, develop, eval/d032-agent-capability, and main; four safely retired local test branches were removed; stale remote-tracking refs are absent.",
-      "main and develop branch heads remained 5333fb8e0cdbc288cd11457b8a952cdcd77f6fa9 and c30017ccfd6ab912321f10fe0baa9b5181787609 throughout cleanup."
+      "T007-R1 authorized eval/d032-agent-capability deletion as intentionally abandoned cancelled T004 work at exact SHA eb20dc0fed2674190a82ef40aa0e02436c02ced4; immediate pre-delete remote read matched exactly.",
+      "eval/d032-agent-capability and merged PR #52 branch docs/t007-r1-branch-cleanup were deleted in one bounded batch; complete remote re-read verified both absent.",
+      "Final canonical remote has only chore/branch-hygiene-cleanup, develop, and main; zero open PRs exist.",
+      "Executor checkout has only chore/branch-hygiene-cleanup, develop, and main; eval/d032-agent-capability was deleted locally after switching away, checking the sole worktree, and pruning.",
+      "main remained 5333fb8e0cdbc288cd11457b8a952cdcd77f6fa9; develop advanced only through authorized merged PR #52 to bf60b30d54445ddcf521f70538289931bd9de57a, not through cleanup deletion operations.",
+      "Procedural nonconformance preserved: initial pass deleted eval/d032-agent-capability before resolving missing PR association, then safely restored exact original SHA; R1 later supplied explicit disposition before final deletion."
     ],
     "runtime": "N/A: T007 is Git/GitHub branch-state maintenance with no product runtime boundary.",
     "network_required": true
   },
   "dependencies_or_config_changes": "None.",
   "git_status": "Final task branch is clean after handoff commit; only the committed handoff differs from base.",
-  "unresolved_issues": [
-    "eval/d032-agent-capability remains REVIEW because no reliable associated PR exists; Human/Orchestrator must resolve its unique work disposition before deletion."
-  ],
-  "recommended_next_task": "Orchestrator review of T007 handoff and explicit resolution of eval/d032-agent-capability; T006 may resume unchanged after T007 closure per the Task Contract.",
+  "unresolved_issues": [],
+  "recommended_next_task": "Orchestrator review and acceptance of T007; T006 may resume unchanged after T007 closure per the Task Contract.",
   "chatgpt_read_path": "handoffs/T007-executor-handoff.json",
   "rollback_boundary": "Repository content rollback is limited to handoffs/T007-executor-handoff.json. Deleted remote/local topic refs can be recreated at the recorded reviewed_head_sha values without changing main or develop."
 }
