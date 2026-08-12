@@ -1,7 +1,7 @@
 # OP001 — Pending post-integration branch retirement
 
 Operation ID: OP001  
-Status: DRAFT  
+Status: READY  
 Type: post-integration branch cleanup  
 Base branch: `develop`
 
@@ -13,7 +13,7 @@ This operation creates no repository content and does not reopen T007, D039, T00
 
 ## Durable targets
 
-The executor MUST derive branch identity and reviewed head evidence from the following merged integration records:
+The executor MUST derive branch identity and reviewed head evidence from these integration records:
 
 - PR #53 — T007 acceptance (`docs/t007-acceptance`);
 - PR #54 — accepted T007 handoff (`chore/branch-hygiene-cleanup`);
@@ -22,22 +22,23 @@ The executor MUST derive branch identity and reviewed head evidence from the fol
 - PR #57 — cleanup target generalization (`docs/post-integration-cleanup-target`);
 - PR #58 — merged-branch freeze policy (`docs/merged-branch-freeze`);
 - PR #59 — D039 research (`docs/governance-learning-loop-research`);
-- PR #60 — D039 acceptance/T008 contract (`docs/d039-acceptance-t008-contract`).
+- PR #60 — D039 acceptance/T008 contract (`docs/d039-acceptance-t008-contract`);
+- PR #61 — persisted Operational Contract policy and this OP001 contract (`docs/persisted-operational-contracts`).
 
-The PR that integrates this OP001 contract MUST be added to this list before OP001 becomes `READY` or is merged. Its source branch is intentionally eligible for retirement by this same operation after merge, preventing recursive cleanup-contract creation.
+PR #61 is intentionally included before merge so its source branch can be retired by this same operation after integration without creating a recursive cleanup contract.
 
 ## Special resolved-review evidence for PR #55
 
 `docs/t007-post-integration` advanced after PR #55 merged, which is a recorded workflow nonconformance. Those later Markdown commits were recovered through fresh branch/PR #56 and are represented in current `develop`.
 
-Therefore, for this operation only, the executor MAY retire `docs/t007-post-integration` after independently verifying all of the following from Git/GitHub:
+For this operation only, the executor MAY retire `docs/t007-post-integration` after independently verifying:
 
 1. PR #55 is merged;
 2. the current branch head differs from PR #55 reviewed head because of the recorded post-merge advancement;
 3. the post-merge changes are fully represented by merged PR #56/current `develop`;
 4. no additional unique work exists beyond that recovered content.
 
-If any of those facts cannot be established, classify the branch `REVIEW` and return `PARTIAL`/`BLOCKED`; do not delete by assumption.
+If any fact cannot be established, classify that branch `REVIEW` and return `PARTIAL`/`BLOCKED`; do not delete by assumption.
 
 ## Controlling references
 
@@ -50,27 +51,11 @@ If any of those facts cannot be established, classify the branch `REVIEW` and re
 
 ## Authorized operations
 
-The Agente de IA Ejecutor may:
-
-- fetch/prune and inspect canonical remote refs, PR metadata, local branches, worktrees, and clean/dirty state;
-- verify each durable target's merged state, reviewed head, current remote branch head, and represented-work evidence;
-- retire remote branches proven safe under `docs/BRANCH-CLEANUP.md` and this contract;
-- remove corresponding safe local branches and stale remote-tracking refs in accessible executor-controlled checkouts;
-- use local force deletion only where policy evidence proves no unique work would be discarded;
-- report inaccessible local checkouts as unverified.
+The Agente de IA Ejecutor may fetch/prune and inspect canonical remote refs, PR metadata, local branches, worktrees and clean/dirty state; verify every target's merged/reviewed/current identity; retire remote branches proven safe; remove corresponding safe local branches and stale tracking refs in accessible controlled checkouts; and report inaccessible checkouts as unverified.
 
 ## Explicit exclusions
 
-The executor MUST NOT:
-
-- modify, create, commit, or push repository content;
-- delete `main` or `develop`;
-- delete any branch not derived from the durable targets in this contract;
-- infer deletion safety from branch naming or ancestry alone;
-- discard uncommitted work or unique commits;
-- alter tags, releases, branch protection/rulesets, repository settings, or history;
-- start T008/T006 or any implementation work;
-- use chat-provided branch names, SHAs, or deletion decisions as authority.
+The executor MUST NOT modify/create/commit/push repository content; delete `main`/`develop`; delete branches not derived from these durable targets; infer safety from naming/ancestry alone; discard uncommitted or unique work; alter tags/releases/settings/rulesets/history; start T008/T006; or use chat-provided branches/SHAs/deletion decisions as authority.
 
 ## Safety invariants
 
@@ -81,26 +66,15 @@ merged PR + reviewed head_sha == current remote branch HEAD + no unique later wo
 => eligible for retirement
 ```
 
-For PR #55, use the explicit resolved-review rule above rather than pretending the reviewed head still matches.
-
-Any unexpected branch head drift, unrepresented work, dirty local state, worktree ambiguity, missing PR evidence, or permission/tool failure becomes `REVIEW`/stop for the affected branch.
+For PR #55 use the explicit resolved-review rule above. Unexpected head drift, unrepresented work, dirty local state, worktree ambiguity, missing PR evidence, or permission/tool failure becomes `REVIEW`/stop for the affected branch.
 
 ## Verification requirements
 
-Before returning, the executor must re-fetch and report:
-
-- final remote branch inventory;
-- final local branch inventory for each accessible controlled checkout;
-- any retained/review branch with exact reason;
-- confirmation that `main` and `develop` remain;
-- confirmation that no repository content commit/push was created;
-- inaccessible local checkouts explicitly unverified.
-
-Expected successful remote end state for the targets in this contract is that none of their eligible topic branches remain. The contract does not authorize deletion of unrelated active branches.
+Before returning, re-fetch and report final remote branch inventory; final local branch inventory for every accessible controlled checkout; retained/review branches with exact reason; confirmation `main`/`develop` remain; confirmation no repository content commit/push was created; and inaccessible local checkouts explicitly unverified.
 
 ## Stop / escalation
 
-Return `PARTIAL` or `BLOCKED` rather than guessing if any target cannot be mapped to authoritative merged-PR evidence, current branch state conflicts with the contract, unique work may exist, a checkout cannot be safely cleaned, or required deletion permissions are unavailable.
+Return `PARTIAL` or `BLOCKED` rather than guessing if any target cannot be mapped to authoritative evidence, current state conflicts with this contract, unique work may exist, a checkout cannot be safely cleaned, or deletion permissions are unavailable.
 
 ## Completion response
 
