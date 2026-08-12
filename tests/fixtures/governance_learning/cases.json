@@ -1,0 +1,100 @@
+{
+  "cases": [
+    {
+      "id": "t007-post-merge-branch-advanced",
+      "signal": "branch_post_merge_state",
+      "subject": "branch:docs/synthetic-follow-up",
+      "reference": "synthetic:T007/post-merge-advance",
+      "facts": {"source_branch": "docs/synthetic-follow-up", "source_branch_present": true, "reviewed_head_sha": "1111111111111111111111111111111111111111", "current_source_head_sha": "2222222222222222222222222222222222222222"},
+      "expected_fingerprints": ["git.branch.post_merge_advance"]
+    },
+    {
+      "id": "merged-branch-remains-frozen",
+      "signal": "branch_post_merge_state",
+      "subject": "branch:test/frozen",
+      "reference": "synthetic:branch/frozen",
+      "facts": {"source_branch": "test/frozen", "source_branch_present": true, "reviewed_head_sha": "3333333333333333333333333333333333333333", "current_source_head_sha": "3333333333333333333333333333333333333333"},
+      "expected_fingerprints": []
+    },
+    {
+      "id": "merged-source-branch-already-absent",
+      "signal": "branch_post_merge_state",
+      "subject": "branch:test/retired",
+      "reference": "synthetic:branch/absent",
+      "facts": {"source_branch": "test/retired", "source_branch_present": false, "reviewed_head_sha": "4444444444444444444444444444444444444444", "current_source_head_sha": null},
+      "expected_fingerprints": []
+    },
+    {
+      "id": "t007-delete-before-classification",
+      "signal": "branch_deletion_attempt",
+      "subject": "branch:eval/synthetic-cancelled",
+      "reference": "synthetic:T007/delete-before-resolution",
+      "facts": {"action": "DELETE", "disposition": "REVIEW", "reviewed_head_sha": null, "observed_head_sha": "5555555555555555555555555555555555555555"},
+      "expected_fingerprints": ["git.branch.delete_before_review_resolution"]
+    },
+    {
+      "id": "t007-delete-after-explicit-resolution",
+      "signal": "branch_deletion_attempt",
+      "subject": "branch:eval/synthetic-cancelled",
+      "reference": "synthetic:T007/delete-after-resolution",
+      "facts": {"action": "DELETE", "disposition": "RESOLVED_ABANDON", "reviewed_head_sha": "5555555555555555555555555555555555555555", "observed_head_sha": "5555555555555555555555555555555555555555"},
+      "expected_fingerprints": []
+    },
+    {
+      "id": "delete-disposition-with-mismatched-sha",
+      "signal": "branch_deletion_attempt",
+      "subject": "branch:test/moved",
+      "reference": "synthetic:branch/delete-mismatch",
+      "facts": {"action": "DELETE", "disposition": "DELETE", "reviewed_head_sha": "6666666666666666666666666666666666666666", "observed_head_sha": "7777777777777777777777777777777777777777"},
+      "expected_fingerprints": ["git.branch.delete_before_review_resolution"]
+    },
+    {
+      "id": "handoff-identity-mismatch",
+      "signal": "task_handoff_identity",
+      "subject": "task:T008",
+      "reference": "synthetic:handoff/mismatch",
+      "facts": {"expected": {"task_id": "T008", "branch": "test/egll-deterministic-learning-detectors", "handoff_path": "handoffs/T008-executor-handoff.json"}, "actual": {"task_id": "T080", "branch": "test/wrong", "handoff_path": "handoffs/wrong.json"}},
+      "expected_fingerprints": ["task.handoff.identity_mismatch"]
+    },
+    {
+      "id": "handoff-identity-compliant",
+      "signal": "task_handoff_identity",
+      "subject": "task:T008",
+      "reference": "synthetic:handoff/compliant",
+      "facts": {"expected": {"task_id": "T008", "branch": "test/egll-deterministic-learning-detectors", "handoff_path": "handoffs/T008-executor-handoff.json"}, "actual": {"task_id": "T008", "branch": "test/egll-deterministic-learning-detectors", "handoff_path": "handoffs/T008-executor-handoff.json"}},
+      "expected_fingerprints": []
+    },
+    {
+      "id": "done-followed-by-formal-rework",
+      "signal": "task_review_outcome",
+      "subject": "task:T007",
+      "reference": "synthetic:T007/rework",
+      "facts": {"executor_status": "DONE", "review_disposition": "REWORK_REQUIRED", "review_reference": "synthetic-review:T007-R1"},
+      "expected_fingerprints": ["task.done_requires_rework"]
+    },
+    {
+      "id": "done-followed-by-acceptance",
+      "signal": "task_review_outcome",
+      "subject": "task:T008",
+      "reference": "synthetic:task/accepted",
+      "facts": {"executor_status": "DONE", "review_disposition": "ACCEPTED", "review_reference": "synthetic-review:T008-R1"},
+      "expected_fingerprints": []
+    },
+    {
+      "id": "persisted-classify-before-delete-nonconformance",
+      "signal": "procedural_nonconformance",
+      "subject": "task:T007",
+      "reference": "synthetic:T007/procedural-nonconformance",
+      "facts": {"procedural_nonconformance": true, "code": "branch_deleted_before_classification", "evidence_reference": "synthetic-handoff:T007"},
+      "expected_fingerprints": ["workflow.procedural_nonconformance"]
+    },
+    {
+      "id": "procedure-conformant",
+      "signal": "procedural_nonconformance",
+      "subject": "task:T008",
+      "reference": "synthetic:task/procedure-conformant",
+      "facts": {"procedural_nonconformance": false, "code": "none", "evidence_reference": "synthetic-handoff:T008"},
+      "expected_fingerprints": []
+    }
+  ]
+}

@@ -1,0 +1,60 @@
+{
+  "task_id": "T008",
+  "status": "DONE",
+  "task_contract_path": "docs/tasks/T008-egll-deterministic-learning-detectors.md",
+  "branch": "test/egll-deterministic-learning-detectors",
+  "implementation_head_sha": "401da43c14241a481afca6df3d3a5c24b3701711",
+  "base_branch": "develop",
+  "base_sha": "472bc4fc2c283a3cd649c2efc4c80733dd02428b",
+  "files_changed": [
+    "tests/_governance_learning.py",
+    "tests/fixtures/governance_learning/cases.json",
+    "tests/test_governance_learning.py",
+    "handoffs/T008-executor-handoff.json"
+  ],
+  "implementation_summary": "Added deterministic, fixture-driven EGLL findings for all five required signal classes, including T007-derived branch freeze, deletion-resolution, rework, and procedural-nonconformance regressions. Findings are stable machine-readable dictionaries and do not infer cause, intent, blame, or remediation authority.",
+  "fingerprint_catalog": [
+    "git.branch.post_merge_advance",
+    "git.branch.delete_before_review_resolution",
+    "task.handoff.identity_mismatch",
+    "task.done_requires_rework",
+    "workflow.procedural_nonconformance"
+  ],
+  "fixture_inventory": [
+    {"id": "t007-post-merge-branch-advanced", "control": "merged-branch-remains-frozen and merged-source-branch-already-absent", "fingerprint": "git.branch.post_merge_advance"},
+    {"id": "t007-delete-before-classification and delete-disposition-with-mismatched-sha", "control": "t007-delete-after-explicit-resolution", "fingerprint": "git.branch.delete_before_review_resolution"},
+    {"id": "handoff-identity-mismatch", "control": "handoff-identity-compliant", "fingerprint": "task.handoff.identity_mismatch"},
+    {"id": "done-followed-by-formal-rework", "control": "done-followed-by-acceptance", "fingerprint": "task.done_requires_rework"},
+    {"id": "persisted-classify-before-delete-nonconformance", "control": "procedure-conformant", "fingerprint": "workflow.procedural_nonconformance"}
+  ],
+  "finding_schema": {
+    "fields": ["fingerprint", "detector_id", "detector_version", "severity", "classification", "subject", "reference", "reason", "evidence", "disposition"],
+    "dispositions": ["blocking", "advisory", "learning_candidate_only"],
+    "implementation_identity": "agent-governance.learning-signals@1"
+  },
+  "verification": {
+    "commands": [
+      "uv run --locked pytest -q tests/test_governance_learning.py",
+      "uv run --locked pytest -q",
+      "uv run --locked ruff check .",
+      "uv run --locked ruff format --check ."
+    ],
+    "results": [
+      "Focused pytest: PASS, 8 passed in 0.02s.",
+      "Full pytest: PASS, 134 passed in 0.60s after incorporating current develop with the persisted T008-R2 handoff identity rework.",
+      "Ruff check: PASS, All checks passed.",
+      "Ruff format check: PASS, 11 files already formatted."
+    ],
+    "runtime": "N/A: detector consumes explicit fixture facts and returns in-process structured findings; no external runtime boundary exists.",
+    "network_required": false
+  },
+  "dependencies_or_config_changes": "None.",
+  "scope_confirmation": "No Markdown, Governance Core, dependency, configuration, network, model/provider, external policy engine, ruleset, GitHub Actions, or consumer-footprint changes were made.",
+  "git_status": "Implementation and current develop baseline committed at implementation_head_sha; corrected handoff finalization commit pending. Pre-existing untracked .codegraph/ remains untouched, untracked, and excluded from staging and commits.",
+  "unresolved_issues": [],
+  "procedural_nonconformance": null,
+  "discovered_ambiguity": "T008-R2 identified the prior handoff base SHA as invalid. This handoff records the exact incorporated origin/develop revision 472bc4fc2c283a3cd649c2efc4c80733dd02428b; T008 detector files remain byte-equivalent to reviewed implementation anchor 6cf30513ef545fc276807a22272633f436b956bd.",
+  "recommended_next_task": "Orchestrator review and acceptance of T008 before implementation integration into develop.",
+  "chatgpt_read_path": "handoffs/T008-executor-handoff.json",
+  "rollback_boundary": "Remove tests/_governance_learning.py, tests/fixtures/governance_learning/cases.json, tests/test_governance_learning.py, and handoffs/T008-executor-handoff.json; no unrelated behavior or configuration is affected."
+}
