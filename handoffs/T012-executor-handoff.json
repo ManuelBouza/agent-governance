@@ -1,0 +1,56 @@
+{
+  "task_id": "T012",
+  "status": "DONE",
+  "task_contract_path": "docs/tasks/T012-codegraph-local-state-ignore.md",
+  "branch": "chore/codegraph-local-state-ignore",
+  "implementation_head_sha": "a7f70dd567d0ba8b7e44e88919c73e4bcac66567",
+  "implementation_head_sha_note": "Implementation anchor. This handoff is committed in a handoff-only successor; the executor response reports the final pushed branch HEAD.",
+  "base_branch": "develop",
+  "base_sha": "85910498a9150c954f6305be2da7f38950b869a7",
+  "files_changed": [
+    ".gitignore",
+    "handoffs/T012-executor-handoff.json"
+  ],
+  "implementation_summary": "Added the minimal root .gitignore rule `.codegraph/` under the existing local AI runtime state section while preserving all existing ignore entries.",
+  "ignore_evidence": {
+    "command": "git check-ignore -v .codegraph .codegraph/index.db .codegraph/representative-state",
+    "result": "PASS",
+    "matched_rule": ".gitignore:9:.codegraph/",
+    "tracked_codegraph_paths": []
+  },
+  "verification": {
+    "commands": [
+      "git check-ignore -v .codegraph .codegraph/index.db .codegraph/representative-state",
+      "git diff --check",
+      "uv run --locked pytest -q",
+      "uv run --locked ruff check .",
+      "uv run --locked ruff format --check ."
+    ],
+    "results": {
+      "ignore_check": "All representative repository-local .codegraph paths matched .gitignore line 9.",
+      "diff_check": "PASS",
+      "full_pytest": "154 passed in 0.63s",
+      "ruff_check": "All checks passed!",
+      "ruff_format_check": "13 files already formatted"
+    },
+    "runtime_harness": "N/A: T012 is a repository ignore-rule infrastructure change with no production runtime boundary. Git check-ignore is the behavioral verification."
+  },
+  "scope_confirmation": {
+    "markdown_changed": false,
+    "codegraph_state_tracked": false,
+    "codegraph_dependency_added": false,
+    "product_or_test_behavior_changed": false,
+    "executor_host_configuration_changed": false,
+    "unrelated_cleanup_performed": false
+  },
+  "dependencies_or_config_changes": {
+    "packages_added": [],
+    "pyproject_toml_changed": false,
+    "uv_lock_changed": false,
+    "python_version_changed": false,
+    "product_runtime_config_changed": false
+  },
+  "rollback": "Revert implementation commit a7f70dd567d0ba8b7e44e88919c73e4bcac66567 to remove only the `.codegraph/` ignore rule; revert the handoff-only successor separately if needed.",
+  "unresolved_issues": [],
+  "chatgpt_read_path": "handoffs/T012-executor-handoff.json"
+}
