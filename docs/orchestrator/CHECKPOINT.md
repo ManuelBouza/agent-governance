@@ -1,137 +1,100 @@
 # Current ChatGPT Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O060  
+Checkpoint-Sequence: O061  
 Canonical-Branch: `develop`  
 Chat-Closure: CONTINUE_ALLOWED
 
 ## Current Frontier
 
-T006, T008, T009 and T010 are `ACCEPTED`, integrated and post-integration-cleaned. D041, D042 and D043 are integrated and cleaned. L002 remains `ANALYZED` and separate.
+T011 — Assurance active-routing deterministic verification — is `ACCEPTED` and integrated. T011-R1 reviews executor HEAD `c231eec0cf5e96b676df9932402a3166fa4589c2`; implementation PR #84 is integrated in `develop`.
 
-D036 — Existing-System Assurance Audit Mode — remains `ACCEPTED`; canonical Core on `develop` remains Protocol `1.12.0` with `ASSURANCE.md` staged.
+Canonical Core on `develop` remains Protocol `1.12.0` with `ASSURANCE.md` staged until D040 Phase B is integrated.
 
-D040 Phase B activation candidate is PR #81 from `docs/d040-phase-b-assurance-activation`.
+The original D040 Phase-B candidate PR #81 remains unmerged historical blocked evidence. OP012 correctly failed that candidate before T011 readiness. A later mechanical `develop` -> old candidate refresh attempt was non-mergeable and PR #85 was closed without merge.
 
-OP012 verified exact candidate HEAD `1207637673619b40234556d0b37cac8401ffc83a` and returned `BLOCKED`:
+## D040 Phase-B v2 candidate
 
-```text
-MARKDOWN_ONLY: YES
-FOCUSED_PYTEST: FAIL
-FULL_PYTEST: FAIL
-RUFF_CHECK: PASS
-RUFF_FORMAT: PASS
-REPO_MUTATION: NONE
-```
+Current candidate branch:
 
-PR #81 MUST NOT be merged while this failure remains unresolved.
+`docs/d040-phase-b-assurance-activation-v2`
 
-## Root cause / T011
+This candidate is rebuilt directly from current `develop` containing T011 readiness.
 
-Repository inspection shows the deterministic readiness work is incomplete for the active state:
-
-- `tests/test_assurance_audit_contract.py` still explicitly asserts `Activation-State: STAGED` and Protocol `1.12.0`;
-- `tests/_helpers.py` does not include `ASSURANCE.md` in `CORE_REQUIRED_MODULES`;
-- therefore the Phase-B candidate correctly fails deterministic verification even though Ruff remains green.
-
-This is executor-owned non-Markdown verification work, not a Markdown-candidate repair.
-
-Corrective Task Contract:
-
-`docs/tasks/T011-assurance-active-routing-verification.md`
-
-T011 updates deterministic verification to model staged and active assurance states while preserving `governance-core/GOVERNANCE.md` as the sole mutable current-version authority.
-
-## D040 invariant
+Candidate intent:
 
 ```text
-Phase-B candidate red
-    -> do not merge
-    -> persist corrective executable contract
-    -> executor updates verification on current develop
-    -> accept/integrate/clean corrective task
-    -> refresh/rebase candidate from current develop
-    -> rerun OP012 against exact new candidate HEAD
+GOVERNANCE.md -> Protocol 1.13.0
+ASSURANCE.md  -> ACTIVE
+Source Map / Context Router -> ASSURANCE
+assurance architecture -> CORE ACTIVE
+        ↓
+OP017 exact-candidate deterministic verification
+        ↓
+merge only on all-green read-only evidence
 ```
 
-No `SOURCE_PROTOCOL_VERSION = "1.13.0"`-style second authority may be introduced.
+L001 remains `CONTROL_FAILURE` until the exact v2 candidate passes verification and the activation is integrated.
 
-L001 remains `CONTROL_FAILURE`.
-
-## PR #81 state
-
-PR #81 remains open and unmerged.
-
-Its activation intent remains valid:
-
-- `GOVERNANCE.md` -> Protocol `1.13.0`;
-- `ASSURANCE.md` -> `ACTIVE`;
-- source-map/context routing -> Assurance;
-- assurance architecture -> Core active;
-- no live-system/provider/scanner/remediation authority.
-
-Do not mutate PR #81 to compensate for executor-owned test readiness. After T011 integration, the activation branch must be refreshed from current `develop` through a policy-compliant Markdown update and reverified as a new exact candidate HEAD.
-
-## OP015 — T011 planning cleanup
+## OP017 — exact v2 verification
 
 Operational Contract:
 
-`docs/operations/OP015-retire-t011-planning-branch.md`
+`docs/operations/OP017-verify-d040-phase-b-v2-candidate.md`
 
-OP015 becomes `READY` only after the PR integrating T011/OP015/this checkpoint is recorded in the contract.
+Status: `READY`.
 
-## Executor bootstrap policy
-
-D041:
+OP017 requires the exact current v2 HEAD, Markdown-only diff, Protocol `1.13.0`, ACTIVE/routed `ASSURANCE.md`, and these gates:
 
 ```text
-Governance owns requested outcome + boundaries + acceptance
-Executor owns implementation process + internal orchestration
+uv run --locked pytest -q tests/test_assurance_audit_contract.py
+uv run --locked pytest -q
+uv run --locked ruff check .
+uv run --locked ruff format --check .
 ```
 
-D042 requires canonical remote freshness before contract load.
+The operation is read-only and must return `BLOCKED` on any failed gate or candidate mutation.
 
-D043 removes unconditional `read AGENTS.md` from normal prompts; this planning change does not modify `AGENTS.md`, so T011/OP015 launches require no explicit AGENTS reload line.
+## Learning state
+
+L001 — `verification.regression.protocol_version_drift` — remains `CONTROL_FAILURE` pending v2 PASS and activation integration.
+
+L002 — `task.handoff.identity_mismatch` — remains `ANALYZED`, separate and non-blocking.
 
 ## CodeGraph / Context7
 
-CodeGraph initialization remains deferred until D040 Phase B is fully integrated and cleaned.
+CodeGraph project initialization remains the next separate capability operation after D040 Phase B is integrated and cleaned. `.codegraph/` must remain local generated state and canonical `.gitignore` should exclude it.
 
-Context7 is treated as optional executor-host external documentation capability: useful for current library/API documentation, but not Governance authority, deterministic verification, security authority or repository state requirement.
+Context7 remains an optional executor-host external documentation capability, not Governance authority, deterministic verification, or required repository state.
 
 ## Next Action
 
-1. Review/integrate the T011 planning PR and record its identity in OP015.
-2. Execute OP015 to retire the planning branch.
-3. Launch T011 from current `develop` containing the exact Task Contract.
-4. Review T011 remote handoff/diff/evidence; accept only if no Markdown and no duplicate current-version authority.
-5. Integrate and clean T011 implementation/acceptance branches under normal workflow.
-6. Refresh PR #81 activation branch from then-current `develop` without changing its accepted activation semantics.
-7. Rerun OP012 against the new exact candidate HEAD.
-8. Merge Phase B only if all OP012 gates PASS with `REPO_MUTATION: NONE`.
-9. Persist L001 recovery only after successful activation integration.
-10. Execute OP014 activation-branch cleanup.
-11. Then prepare separate CodeGraph initialization / `.gitignore` work.
+1. Open/review the v2 activation PR from `docs/d040-phase-b-assurance-activation-v2` to `develop`.
+2. Verify its effective diff is Markdown-only and limited to the intended D040 Phase-B activation/checkpoint surfaces.
+3. Execute OP017 against the exact current v2 candidate HEAD.
+4. If OP017 is `DONE` with all gates PASS and `REPO_MUTATION: NONE`, merge exactly the tested candidate HEAD.
+5. Persist L001 recovery evidence/status only after activation integration.
+6. Retire the v2 activation branch plus obsolete historical D040/T011 branches through persisted cleanup operations.
+7. Then initialize CodeGraph as a separate executor-owned capability task/operation.
 
 ## Next Chat Minimum Load
 
 After repository bootstrap and this checkpoint:
 
-1. load T011 + D040 + T010-R1 for corrective implementation/review;
-2. load OP015 when its cleanup is pending;
-3. after T011 integration, load PR #81 exact diff + OP012 for candidate refresh/reverification;
-4. load L001 only when evaluating recovery state;
-5. load L002 only on a concrete handoff-identity conflict or explicit separate work.
+1. load OP017 + exact v2 candidate diff + D040 + T011-R1 for verification/review;
+2. after v2 integration, load L001 + exact OP017 result + merged activation PR identity;
+3. load branch-cleanup policy for post-integration cleanup;
+4. for CodeGraph work, load current `.gitignore`, D041 and the separate CodeGraph contract created for that scope;
+5. load L002 only on a concrete identity conflict or explicit separate control-selection work.
 
 ## Do Not
 
-- Do not merge PR #81 while OP012 is blocked.
-- Do not repair executor-owned tests from the Markdown activation branch.
-- Do not mark L001 `VERIFIED` before a green exact-candidate OP012 run and integration.
+- Do not merge the original blocked PR #81.
+- Do not merge the v2 candidate without exact-candidate green OP017 evidence.
+- Do not mark L001 `VERIFIED` before activation integration.
 - Do not create another mutable exact-current protocol-version authority.
 - Do not write directly to `develop` or `main`.
 - Do not prescribe executor-internal methodology/tool routing.
-- Do not add an unconditional `read AGENTS.md` directive.
-- Do not infer live/intrusive audit or remediation authority from D036.
-- Do not initialize CodeGraph in the middle of D040 recovery.
+- Do not add an unconditional `read AGENTS.md` directive to normal executor launch prompts.
+- Do not initialize CodeGraph inside D040 Phase B.
 - Preserve prior procedural audit history.
