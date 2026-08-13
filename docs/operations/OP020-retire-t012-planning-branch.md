@@ -1,7 +1,7 @@
 # OP020 — Retire T012 planning branch
 
 Operation ID: OP020  
-Status: DRAFT  
+Status: READY  
 Type: post-integration branch cleanup  
 Base branch: `develop`
 
@@ -11,11 +11,11 @@ Retire the merged Markdown planning branch that integrates T012 CodeGraph local-
 
 ## Durable target
 
-- PR: `<record after opening>`
-- Purpose: integrate T012 planning, OP020 and checkpoint update
-- Source branch/head identity: derive from that merged PR and canonical Git/GitHub state.
+- PR: `#89`
+- Purpose: integrate T012 planning, OP020 and checkpoint O063
+- Source branch/head identity: derive from merged PR #89 and canonical Git/GitHub state.
 
-OP020 becomes `READY` only after the actual PR is recorded here and merged.
+PR #89 MUST be merged before OP020 execution begins.
 
 ## Controlling references
 
@@ -24,7 +24,7 @@ OP020 becomes `READY` only after the actual PR is recorded here and merged.
 - `docs/BRANCHING.md`
 - `docs/BRANCH-CLEANUP.md`
 - `docs/POST-INTEGRATION-CLEANUP-PROMPT.md`
-- merged GitHub record for the integration PR
+- merged GitHub record for PR #89
 
 ## Authorized operations
 
