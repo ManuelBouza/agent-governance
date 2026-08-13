@@ -1,7 +1,7 @@
 # L001 — Protocol-version baseline drift
 
 Learning ID: L001  
-State: CONTROL_FAILURE  
+State: VERIFIED  
 Fingerprint: `verification.regression.protocol_version_drift`
 
 ## Original detection
@@ -68,27 +68,52 @@ Protocol changes crossing Markdown and executable ownership use a two-phase migr
 1. verification readiness while current protocol remains unchanged;
 2. Markdown activation only after deterministic verification can consume the new state without a red intermediate baseline.
 
-T010 is the first implementation of this stronger control while also establishing the D036 assurance-audit deterministic foundation.
+T010 was the first implementation of this stronger control while also establishing the D036 assurance-audit deterministic foundation. T011 completed active-routing readiness when the first Phase-B candidate exposed a remaining staged-only assumption.
 
-## Immediate containment
+## Containment and recovery execution
 
-- Do not merge the transient `1.13.0` mismatch from PR #73.
-- Keep `GOVERNANCE.md` at `1.12.0` during T010 readiness work.
-- Stage `ASSURANCE.md` without routing it as an active required Core module yet.
-- T010 must remove the independent mutable current-version literal and prove the assurance semantics deterministically.
-- Only after T010 is accepted/integrated/clean may ChatGPT activate `ASSURANCE.md` and bump Protocol to `1.13.0` through a Markdown-only activation change.
+The first D040 Phase-B activation candidate, PR #81, was verified read-only by OP012 and correctly returned `BLOCKED` because focused/full pytest still encoded staged-only assurance routing assumptions. The candidate was not merged and no repository mutation was used to obtain PASS.
 
-## Verification requirement for recovery
+T011 then updated executor-owned deterministic verification without changing Markdown, Core semantics or the single current-version authority. Its accepted implementation derived required Assurance Core membership from Core routing and validated both historical STAGED state and ACTIVE Protocol `1.13.0+` state.
 
-L001 may return to `VERIFIED` only after all of the following are true:
+The clean Phase-B v2 candidate was rebuilt from current `develop` after T011 integration. OP017 verified exact candidate HEAD `43a783ff5e8f810eaa8cf62aedca482feedc71d3` with:
+
+```text
+MARKDOWN_ONLY: YES
+FOCUSED_PYTEST: PASS
+FULL_PYTEST: PASS
+RUFF_CHECK: PASS
+RUFF_FORMAT: PASS
+REPO_MUTATION: NONE
+```
+
+PR #87 then merged exactly that tested candidate into `develop` as integration commit `85ccfac49e2e4a635f66c43fbedf95d54f7a6d29`.
+
+The integrated state now has:
+
+- `governance-core/GOVERNANCE.md` as the sole mutable current protocol-version authority;
+- Protocol `1.13.0` active in Core;
+- `governance-core/ASSURANCE.md` active/routed;
+- deterministic verification green without an executor-side current-version synchronization edit;
+- no second independently authored exact-current protocol-version authority.
+
+## Recovery conclusion
+
+The recovery requirements are satisfied:
 
 1. D040 is integrated;
-2. T010 replaces the duplicated mutable current-version authority with deterministic parsing/validation from Core;
-3. T010 focused/full/Ruff gates pass on Protocol `1.12.0` with staged `ASSURANCE.md`;
-4. T010 is accepted/integrated/clean;
-5. the subsequent Markdown-only D036 activation bumps Core to `1.13.0` and routes `ASSURANCE.md` while the full deterministic suite remains green without any executor literal update;
-6. no second independent current-version authority is introduced.
+2. T010 removed the duplicated mutable current-version authority and introduced deterministic Core parsing/validation;
+3. T010 passed focused/full/Ruff verification on staged Protocol `1.12.0`;
+4. T010 was accepted, integrated and cleaned;
+5. T011 corrected the remaining staged-only routing verifier and proved candidate composition without mutating the candidate;
+6. OP017 proved the exact Markdown-only Protocol `1.13.0` activation candidate with all deterministic gates green and `REPO_MUTATION: NONE`;
+7. PR #87 integrated exactly the tested candidate;
+8. no second independent current-version authority was introduced.
+
+Therefore L001 returns from `CONTROL_FAILURE` to `VERIFIED` under D039.
 
 ## Recurrence monitoring
 
 Any later need to synchronize an independently authored exact-current protocol literal is the same control failure unless evidence establishes a materially different compatibility requirement.
+
+A future protocol migration that cannot remain green under the D040 two-phase model must block and produce a new control/task correction rather than normalizing a red canonical intermediate state.
