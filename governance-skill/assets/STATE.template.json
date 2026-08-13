@@ -1,0 +1,11 @@
+{
+  "protocol_version": "1.13.0",
+  "mission_id": null,
+  "phase": "F0",
+  "gates": {},
+  "active_task": null,
+  "ready_tasks": [],
+  "next_action": "Obtain Human-approved mission inputs",
+  "controlling_records": [],
+  "exchange_q": 1
+}

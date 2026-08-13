@@ -1,0 +1,58 @@
+{
+  "task_id": "T014",
+  "status": "DONE",
+  "task_contract_path": "docs/tasks/T014-consumer-governance-bootstrap-validate-implementation.md",
+  "branch": "feat/consumer-governance-bootstrap-validate-r2",
+  "implementation_head_sha": "071e2dadf5553ce63d2063cb230d3d2ace279d23",
+  "implementation_head_sha_note": "Implementation anchor. This handoff is committed in a handoff-only successor; the executor response reports the final pushed branch HEAD.",
+  "base_branch": "develop",
+  "base_sha": "d6d7102193e9d62ce96c8c00860552cc3155a6cc",
+  "files_changed": [
+    "governance-skill/assets/CAPABILITIES.template.json",
+    "governance-skill/assets/EXCHANGE.template.jsonl",
+    "governance-skill/assets/SKILL-APPROVAL.template.json",
+    "governance-skill/assets/STATE.template.json",
+    "governance-skill/scripts/governance.py",
+    "handoffs/T014-executor-handoff.json",
+    "tests/test_consumer_governance_cli.py"
+  ],
+  "implementation_summary": "Added source-independent consumer bootstrap and structural validation with package prevalidation, atomic owned-root rollback, collision refusal, strict Core routing/version checks, strict coordination schemas and symlink/source separation checks. Added deterministic regressions for all bounded review findings.",
+  "verification": {
+    "commands": [
+      "uv run --locked pytest -q tests/test_consumer_governance_cli.py",
+      "uv run --locked ruff check governance-skill/scripts/governance.py tests/test_consumer_governance_cli.py",
+      "uv run --locked ruff format --check governance-skill/scripts/governance.py tests/test_consumer_governance_cli.py",
+      "git diff --check",
+      "uv run --locked pytest -q",
+      "uv run --locked ruff check .",
+      "uv run --locked ruff format --check ."
+    ],
+    "results": {
+      "focused_pytest": "40 passed in 2.62s",
+      "focused_ruff_check": "All checks passed!",
+      "focused_ruff_format_check": "2 files already formatted",
+      "diff_check": "PASS",
+      "full_pytest": "194 passed in 3.04s",
+      "ruff_check": "All checks passed!",
+      "ruff_format_check": "15 files already formatted"
+    },
+    "runtime_harness": "Focused CLI suite exercises bootstrap and standalone validation against disposable consumer repositories, including deterministic injected race, copy and post-copy validation failures."
+  },
+  "scope_confirmation": {
+    "markdown_changed": false,
+    "governance_core_changed": false,
+    "source_consumer_footprint_created": false,
+    "executor_host_configuration_changed": false,
+    "unrelated_cleanup_performed": false
+  },
+  "dependencies_or_config_changes": {
+    "packages_added": [],
+    "pyproject_toml_changed": false,
+    "uv_lock_changed": false,
+    "python_version_changed": false,
+    "product_runtime_config_changed": false
+  },
+  "rollback": "Revert implementation commit 071e2dadf5553ce63d2063cb230d3d2ace279d23 to remove the bootstrap/validation work unit; revert the handoff-only successor separately if needed.",
+  "unresolved_issues": [],
+  "chatgpt_read_path": "handoffs/T014-executor-handoff.json"
+}
