@@ -1,7 +1,7 @@
 # OP011 — Retire conditional AGENTS reload planning branch
 
 Operation ID: OP011  
-Status: DRAFT  
+Status: READY  
 Type: post-integration branch cleanup  
 Base branch: `develop`
 
@@ -11,9 +11,11 @@ Retire the merged Markdown planning branch that integrates D043 host-native repo
 
 ## Durable target
 
-The PR integrating D043, the Task/Operational launch-prompt changes, this OP011 contract and the accompanying checkpoint MUST be recorded here before OP011 becomes `READY`.
+- PR: `#79`
+- Purpose: D043 host-native repository-instruction loading plus conditional `AGENTS.md` reload policy
+- Source branch/head identity: derive from merged PR #79 and canonical Git/GitHub state at execution time.
 
-Its merged source branch is the sole retirement target of this operation.
+The merged source branch of PR #79 is the sole retirement target of this operation.
 
 ## Controlling references
 
@@ -23,7 +25,7 @@ Its merged source branch is the sole retirement target of this operation.
 - `docs/BRANCHING.md`
 - `docs/BRANCH-CLEANUP.md`
 - `docs/POST-INTEGRATION-CLEANUP-PROMPT.md`
-- merged Git/GitHub record for the durable target
+- merged Git/GitHub record for PR #79
 
 ## Authorized operations
 
