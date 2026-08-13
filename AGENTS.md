@@ -68,6 +68,10 @@ The Agente de IA Ejecutor owns all authorized non-Markdown technical work, inclu
 - persisted non-Markdown executor handoffs under `handoffs/`;
 - in-scope technical refactoring.
 
+Within the authorized Task Contract, the executor owns its **implementation process**. It may independently choose and compose direct work, internal planning, SDD/specification workflows, sub-agents/workers, Skills, code-graph/navigation tools, testing/review helpers, or other compatible executor-native capabilities. Agent Governance specifies required outcomes, boundaries and acceptance evidence; it does not prescribe the executor's internal methodology, agent topology or tool routing unless a method itself is material to an accepted safety/security/reproducibility/ownership invariant. D041 defines this boundary.
+
+Executor-internal plans, worker results, SDD state, Skill output, graph state or host-native approvals are implementation aids/evidence only. They do not become Task Contract authority or Agent Governance acceptance, and they must not create tracked repository state or external lifecycle authority outside the authorized scope.
+
 The executor MUST NOT:
 - create or edit committed `*.md` files;
 - change product scope, architecture, acceptance criteria, or strategic intent;
@@ -95,7 +99,7 @@ Executable work uses a contract-first sequence:
 1. ChatGPT persists the Task Contract and controlling Markdown/decisions.
 2. That planning change is reviewed and integrated into `develop`.
 3. Only then may an executor create the implementation topic branch from a `develop` revision containing the exact Task Contract.
-4. The executor implements/tests, persists its handoff, commits, and pushes the topic branch.
+4. The executor implements/tests using any compatible internal process it selects, persists its handoff, commits, and pushes the topic branch.
 5. The executor returns only status, handoff path, branch, and pushed HEAD.
 6. ChatGPT reviews the remote Task Contract, handoff, base/head identities, complete diff, and evidence through GitHub.
 7. Rework uses durable Git/contract revision history rather than chat-only requirements.
@@ -113,7 +117,7 @@ The executor does not normally open or merge the implementation PR unless the Ta
 - Material objective/scope/acceptance/verification changes require a persisted Task Contract revision before execution continues.
 - Before `DONE`, `BLOCKED`, or `PARTIAL`, the executor MUST persist, commit, and push the handoff/current task branch state.
 
-A reviewer must be able to reconstruct what was requested, what the executor reported, and what actually changed from the canonical Git remote alone.
+A reviewer must be able to reconstruct what was requested, what the executor reported, and what actually changed from the canonical Git remote alone. The executor's private/internal orchestration trace is not required for this reconstruction unless a Task Contract explicitly makes a particular process artifact part of the deliverable or evidence.
 
 ## Orchestrator chat continuity invariant
 
@@ -139,6 +143,8 @@ D024 and `docs/TESTING-SKILL-CAPABILITIES.md` define the source-product testing 
 - a cold executor can bootstrap from `AGENTS.md`, its persisted Task Contract, controlling references, and approved tooling before the Maintainer Skill exists;
 - external testing/authoring/security Skills are optional supplemental aids only after applicable supply-chain/coexistence approval and never replace repository-owned verification;
 - the Consumer Governance Skill MUST NOT activate for source-product test/eval maintenance.
+
+These rules constrain source-product capability authority and dependencies, not the executor's private choice of compatible internal workers/tools used to realize an authorized Task Contract.
 
 ## Local development toolchain invariant
 
