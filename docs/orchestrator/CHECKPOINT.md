@@ -1,7 +1,7 @@
 # Current ChatGPT Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT
-Checkpoint-Sequence: O067
+Checkpoint-Sequence: O068
 Canonical-Branch: `develop`
 Chat-Closure: CONTINUE_ALLOWED
 
@@ -11,18 +11,13 @@ D040 Phase B is closed. Protocol `1.13.0` is active and L001 is `VERIFIED`.
 
 T012/OP019 CodeGraph work is closed. CodeGraph remains local executor capability only; `.codegraph/` is ignored and untracked.
 
-The active product frontier is the Consumer Governance Skill, still `DESIGN-APPROVED / NOT YET RELEASED`. Final `governance-skill/SKILL.md` remains release-gated.
+T013 is closed as a valid contract blocker. Its Markdown ownership contradiction was corrected without weakening executor ownership.
 
-T013 stopped validly before implementation because its required outcome included committed Markdown templates while executor ownership forbids committed Markdown edits. The blocker is recorded in `docs/reviews/T013-B1.md`.
+T014 Consumer Governance deterministic package/tooling foundation is accepted and integrated. The accepted implementation provides vendor-neutral package assets, safe `bootstrap`, structural read-only `validate`, collision refusal, rollback of owned roots, source independence and deterministic tests. OP028 cleanup was independently verified with remote branches exactly `develop`, `main`.
 
-ChatGPT owns the integrated Markdown templates:
-- `governance-skill/assets/MISSION.template.md`;
-- `governance-skill/assets/WORKPLAN.template.md`;
-- `governance-skill/assets/TASK.template.md`.
+The Consumer Governance Skill remains `DESIGN-APPROVED / NOT YET RELEASED`. Final `governance-skill/SKILL.md` remains release-gated.
 
-T014 is the executable successor and owns only authorized non-Markdown implementation/tests/assets/handoff for safe consumer `bootstrap` and structural `validate`.
-
-OP026 retired `docs/t013-fix`. The blocked T013 branch remains only to preserve its unique blocker handoff. Independent GitHub comparison shows its only unique path is `handoffs/T013-executor-handoff.json`, with no implementation. OP027 is the required cleanup before T014.
+The next release gate is the repository-owned trigger/eval corpus. T015 defines fixed positive, negative and near-miss train/validation partitions, Consumer-vs-Maintainer separation and synthetic coexistence coverage. T015 does not author final `SKILL.md` and does not require live model/provider judgment for correctness.
 
 L002 remains separate and non-blocking.
 
@@ -34,19 +29,19 @@ The existing narrow external-worktree permission is treated as stable workstatio
 
 ## Next Action
 
-1. Integrate OP027.
-2. Execute OP027 and independently verify remote branches return to `develop`, `main`.
-3. Launch T014 from current `develop` containing the exact successor Task Contract.
-4. Review T014 remote handoff/diff/evidence before acceptance/integration.
-5. Do not author final `governance-skill/SKILL.md` until deterministic package/tooling and trigger/eval release gates are accepted.
+1. Integrate the T015 planning contract and its cleanup operation.
+2. Retire the planning branch after integration and independently verify remote branch cleanup.
+3. Launch T015 from current `develop`.
+4. Review T015 corpus, partitions, fixtures, deterministic graders and handoff before acceptance/integration.
+5. Only after the trigger/eval corpus gate is accepted, plan final `governance-skill/SKILL.md` authoring and focused release review.
 
 ## Next Chat Minimum Load
 
 After normal bootstrap:
-- while OP027 is pending, load OP027 and T014;
-- for T014 review, load T014, exact executor handoff/diff, the Consumer Skill v1 release gate and the three integrated Markdown templates;
-- load Maintainer Skill material only on a concrete cross-skill conflict.
+- while T015 planning/cleanup is pending, load T015 and its cleanup operation;
+- for T015 review, load T015, exact executor handoff/diff, `docs/CONSUMER-GOVERNANCE-SKILL-V1-RELEASE-GATE.md` and `evals/README.md`;
+- load Maintainer Skill material only on a concrete Consumer-vs-Maintainer conflict.
 
 ## Do Not
 
-Do not weaken executor Markdown ownership, ask the Human to perform delegable operational steps, author final Consumer `SKILL.md` early, create live consumer runtime footprints in this source checkout, track `.codegraph/`, make CodeGraph/Context7 an authority/correctness dependency, or write directly to `develop`/`main`.
+Do not weaken executor Markdown ownership, ask the Human to perform delegable operational steps, author final Consumer `SKILL.md` before T015 acceptance, create live consumer runtime footprints in this source checkout, install live external SDD/Skills for evals, make model/provider output a correctness authority, track `.codegraph/`, or write directly to `develop`/`main`.
