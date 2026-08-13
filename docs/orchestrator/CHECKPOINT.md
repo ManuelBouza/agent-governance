@@ -44,7 +44,7 @@ The executor chooses its compatible Git workflow, but MUST preserve local/uncomm
 
 D042 changes only bootstrap identity/freshness. D041 executor process autonomy remains unchanged.
 
-Canonical prompt policy updated by this planning branch:
+Canonical prompt policy updated in PR #78:
 
 - `docs/TASK-CONTRACTS.md`;
 - `docs/OPERATION-CONTRACTS.md`;
@@ -58,7 +58,7 @@ Canonical Protocol remains `1.12.0`.
 
 L001 remains `CONTROL_FAILURE` until post-T010 D040 Phase-B activation to Protocol `1.13.0` proves the stronger single-authority control end-to-end.
 
-## OP009 — pending relaunch after D042 integration
+## OP009 — pending relaunch after PR #78
 
 Operational Contract:
 
@@ -66,7 +66,7 @@ Operational Contract:
 
 Durable cleanup targets are merged PR #75, merged PR #76 and cleanup-contract PR #77.
 
-The first OP009 launch observed in the executor UI began from stale T010 branch state and attempted contract load before canonical remote freshness was established. Do not rely on that run as conforming completion evidence. Relaunch OP009 only after D042 prompt policy is integrated, using the new remote-fresh bootstrap.
+The first OP009 launch observed in the executor UI began from stale T010 branch state and attempted contract load before canonical remote freshness was established. Do not rely on that run as conforming completion evidence. Relaunch OP009 only after PR #78 is integrated/frozen, using the new remote-fresh bootstrap.
 
 OP009 MUST NOT touch the D041 planning branch governed separately by OP008.
 
@@ -78,13 +78,13 @@ Operational Contract:
 
 OP008 remains the sole cleanup authority for PR #74 source branch `docs/executor-process-autonomy`. Do not fold that target into OP009.
 
-## OP010 — D042 cleanup
+## OP010 — READY after PR #78 integration
 
 Operational Contract:
 
 `docs/operations/OP010-retire-bootstrap-freshness-branch.md`
 
-OP010 will retire only the D042/prompt-policy planning branch after its PR is durably recorded and integrated. It MUST NOT consume OP008/OP009 targets.
+Durable target: PR #78. OP010 retires only the PR #78 source branch after integration and MUST NOT consume OP008/OP009 targets.
 
 ## Executor process autonomy
 
@@ -105,10 +105,10 @@ L002 — `task.handoff.identity_mismatch` — `ANALYZED`, non-blocking and separ
 
 ## Next Action
 
-1. Review/integrate the D042 remote-bootstrap-freshness planning PR and freeze its source branch.
+1. Review/integrate PR #78 and freeze its source branch.
 2. Relaunch OP009 using the new canonical remote-fresh bootstrap; independently verify branch inventories.
 3. After T010 cleanup closes, execute pending OP008.
-4. Execute OP010 to retire the D042 planning branch.
+4. Execute OP010 to retire the PR #78 planning branch.
 5. Then perform D040 Phase-B Markdown activation to Protocol `1.13.0` and re-evaluate L001.
 6. Treat CodeGraph project initialization as a separate capability/repository-state operation.
 
@@ -116,7 +116,7 @@ L002 — `task.handoff.identity_mismatch` — `ANALYZED`, non-blocking and separ
 
 After `AGENTS.md` and this checkpoint:
 
-1. if D042 planning is not integrated, load D042 plus Task/Operational bootstrap policy;
+1. if PR #78 is not integrated, load D042 plus Task/Operational bootstrap policy;
 2. if OP009 is pending, load `docs/operations/OP009-retire-t010-integration-branches.md` plus branch-cleanup policy;
 3. if OP008 is pending after OP009, load `docs/operations/OP008-retire-executor-process-autonomy-branch.md` plus branch-cleanup policy;
 4. if OP010 is pending, load its Operational Contract plus branch-cleanup policy;
