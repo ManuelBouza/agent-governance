@@ -33,6 +33,22 @@ Likewise, review MUST NOT require the executor's private orchestration trace unl
 
 Executor-native workflows remain subordinate implementation mechanisms: they may not redefine Task Contract semantics, acquire Governance acceptance authority, or introduce tracked/generated repository state outside authorized scope.
 
+## Remote baseline freshness invariant
+
+Under D042, the executor MUST load `AGENTS.md` and the Task Contract from a local baseline that is current with the canonical remote base branch.
+
+```text
+synchronize canonical remote
+    -> verify safe local base == current origin/<base-branch>
+    -> read AGENTS.md
+    -> read Task Contract
+    -> execute
+```
+
+A currently checked-out older topic branch, or a stale local branch merely named `develop`, is not sufficient evidence of `current develop`.
+
+The executor chooses the concrete compatible Git workflow for synchronization. It MUST preserve local/uncommitted work and MUST stop/escalate rather than destructively overwrite, discard or guess if the current remote baseline cannot be established safely.
+
 ## Location and naming
 
 Active and completed source-maintenance Task Contracts live under:
@@ -103,13 +119,14 @@ Before launching an executor:
 2. ChatGPT reviews the contract and controlling Markdown/Decision Records;
 3. the planning change is merged into `develop`;
 4. the task status is `READY` only when all known prerequisite decisions are resolved;
-5. the executor implementation branch is then created from a `develop` revision containing that exact contract.
+5. the executor synchronizes the canonical remote and establishes a safe local baseline equal to the current remote base branch containing that exact contract;
+6. only then may the executor create/use the implementation topic branch from that current baseline.
 
 This creates two durable stages:
 
 `contract history -> implementation history`
 
-The executor MUST NOT begin executable work from a branch/revision that predates the controlling Task Contract.
+The executor MUST NOT begin executable work from a branch/revision that predates the controlling Task Contract or from a stale local base that has not been reconciled with the canonical remote.
 
 ## Freeze and revision semantics
 
@@ -129,7 +146,7 @@ A reviewer must be able to distinguish the original task from later authorized r
 2. ChatGPT creates the Task Contract on a planning branch.
 3. The Task Contract is reviewed and integrated into `develop`.
 4. ChatGPT launches the executor with the canonical minimal launch prompt defined below.
-5. The executor creates/uses the authorized implementation topic branch from the `develop` revision containing the contract.
+5. The executor synchronizes the canonical remote, verifies a safe current base baseline, and only then creates/uses the authorized implementation topic branch.
 6. The executor chooses its internal implementation process and performs only authorized non-Markdown work.
 7. Material task changes require a persisted ChatGPT revision before execution continues.
 8. The executor runs required verification and persists its non-Markdown handoff under `handoffs/`.
@@ -149,8 +166,8 @@ Every normal source-product executor launch MUST use the same structural contrac
 The prompt contains exactly these semantic parts:
 
 1. **Role** — identify the abstract `Agente de IA Ejecutor` role and canonical repository.
-2. **Repository baseline** — instruct the executor to start from the current Task Contract base branch, normally current `develop`.
-3. **Bootstrap** — instruct the executor to read `AGENTS.md` first.
+2. **Repository freshness/baseline** — require synchronization of the canonical remote and a safe local baseline current with the Task Contract base branch, normally `origin/develop`.
+3. **Bootstrap** — instruct the executor to read `AGENTS.md` from that current baseline first.
 4. **Authoritative task pointer** — provide exactly one controlling Task Contract path and state that the Task Contract plus its referenced repository policies are the complete execution specification.
 5. **Completion contract** — require the contract-defined verification/handoff, commit and push, then require only the minimal status/handoff/branch/HEAD response.
 
@@ -159,7 +176,9 @@ Canonical template:
 ```text
 Operate as the Agente de IA Ejecutor for <owner>/<repository>.
 
-Start from current <base-branch> and read AGENTS.md first.
+Synchronize the canonical remote and ensure the local <base-branch> baseline used for bootstrap is current with origin/<base-branch>. Preserve local/uncommitted work; if a safe current baseline cannot be established, stop and report BLOCKED rather than using stale repository state.
+
+From that current baseline, read AGENTS.md first.
 
 Then load and execute the authoritative Task Contract:
 <task-contract-path>
@@ -174,7 +193,7 @@ BRANCH: <branch>
 HEAD: <pushed-commit-sha>
 ```
 
-For normal launches, substitute only repository identity, base branch and Task Contract path. The output placeholders remain the generic completion schema; the concrete handoff path/branch are resolved from the Task Contract.
+For normal launches, substitute only repository identity, base branch and Task Contract path. The output placeholders remain the generic completion schema; the concrete handoff path/branch are resolved from the Task Contract. The executor chooses the concrete safe Git commands used to establish current remote identity.
 
 ### Launch-prompt non-duplication invariant
 
@@ -194,18 +213,22 @@ The launch prompt MUST NOT duplicate task semantics that belong in Git, includin
 
 Standing repository rules such as Markdown ownership also remain in `AGENTS.md`/referenced policy and SHOULD NOT be re-stated task-by-task in the launch prompt.
 
-If any such task-specific fact is necessary to execute safely or correctly, persist it in the Task Contract or its controlling repository policy before launch rather than extending the chat/terminal prompt.
+The generic D042 remote-freshness/bootstrap requirement is allowed in the prompt because it determines which persisted repository state is being loaded; it is not task-specific semantics.
+
+If any task-specific fact is necessary to execute safely or correctly, persist it in the Task Contract or its controlling repository policy before launch rather than extending the chat/terminal prompt.
 
 ### Launch-prompt authority invariant
 
 The prompt does not supersede or supplement missing Task Contract semantics.
 
 ```text
-launch prompt = role + repository + bootstrap + task pointer + completion contract
+launch prompt = role + repository + remote freshness + bootstrap + task pointer + completion contract
 Task Contract + referenced Git policy = execution specification
 ```
 
 If the Task Contract is missing, not `READY`, not integrated into the stated base branch, or materially incomplete, do not compensate by adding instructions to the launch prompt. Repair/persist the contract first.
+
+If the executor cannot find the Task Contract after synchronizing and verifying the current canonical base, it MUST stop/escalate; it MUST NOT fall back to a stale topic branch or chat-carried semantics.
 
 If a launch prompt conflicts with the persisted Task Contract or repository policy, the executor MUST stop/escalate rather than choosing the chat-only instruction as a new task scope. Human/ChatGPT changes to objective/scope/acceptance/verification must be persisted through the normal Task Contract revision flow.
 
@@ -215,7 +238,7 @@ Post-integration branch retirement is not another implementation launch and MUST
 
 Before delegating cleanup, ChatGPT MUST persist the complete concrete operation in an integrated `docs/operations/OPNNN-*.md` Operational Contract governed by `docs/OPERATION-CONTRACTS.md`.
 
-The cleanup bootstrap prompt then contains only repository/base/bootstrap context plus exactly one Operational Contract path. All concrete targets, resolved-review exceptions, safety semantics, and required evidence live in Git.
+The cleanup bootstrap prompt then contains only repository/base/remote-freshness/bootstrap context plus exactly one Operational Contract path. All concrete targets, resolved-review exceptions, safety semantics, and required evidence live in Git.
 
 ```text
 normal task launch -> Task Contract pointer
