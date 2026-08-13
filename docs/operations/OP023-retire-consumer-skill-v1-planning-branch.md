@@ -1,7 +1,7 @@
 # OP023 — Retire Consumer Skill v1 planning branch
 
 Operation ID: OP023
-Status: DRAFT
+Status: READY_AFTER_MERGE
 Type: post-integration cleanup
 Base branch: `develop`
 
@@ -11,10 +11,11 @@ After the planning PR containing the Consumer Governance Skill v1 release gate a
 
 ## Durable target
 
-- planning PR: `<record after opening>`
+- planning PR: `#94`
+- reviewed planning head: `c9788c885a641b25274895b5ec1992f53b66a133`
 - source branch: `docs/consumer-governance-skill-v1-release-gate`
 
-OP023 becomes READY only after the PR identity is recorded and merged.
+OP023 becomes executable only after PR #94 is merged. The branch is eligible for retirement only when its remote HEAD still matches the merged reviewed head and Git proves no later unique work exists.
 
 ## Boundaries
 
