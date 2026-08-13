@@ -13,7 +13,7 @@ D036 — Existing-System Assurance Audit Mode — is `ACCEPTED` and staged. D040
 
 D042 remote-baseline freshness is integrated by PR #78. OP010 remains pending to retire the PR #78 source branch.
 
-D043 — Host-native repository instruction loading — is the current policy change under review. It removes unconditional `read AGENTS.md` instructions from normal Task/Operational launch prompts while preserving `AGENTS.md` authority and D042 remote freshness.
+D043 — Host-native repository instruction loading — is carried by PR #79. It removes unconditional `read AGENTS.md` instructions from normal Task/Operational launch prompts while preserving `AGENTS.md` authority and D042 remote freshness.
 
 ## D043 — conditional AGENTS reload
 
@@ -66,7 +66,7 @@ Completed:
 Pending:
 
 - OP010 — retire PR #78 / D042 planning branch;
-- OP011 — retire the D043 planning branch after its integrating PR identity is persisted and the contract becomes `READY`.
+- OP011 — `READY`; after PR #79 is integrated, retire only the merged PR #79 source branch.
 
 ## Executor process autonomy
 
@@ -87,9 +87,9 @@ L002 — `task.handoff.identity_mismatch` — `ANALYZED`, non-blocking and separ
 
 ## Next Action
 
-1. Review/integrate the D043 policy PR and freeze its source branch.
-2. Execute OP010 using the D043 normal launch form: D042 remote freshness + OP010 pointer, with no explicit `AGENTS.md` read because D043 does not modify `AGENTS.md`.
-3. Execute OP011 to retire the D043 planning branch.
+1. Review/integrate PR #79 and freeze its source branch.
+2. Execute OP010 using the D043 normal launch form: D042 remote freshness + OP010 pointer, with no explicit `AGENTS.md` read because PR #79 does not modify `AGENTS.md`.
+3. Execute OP011 to retire the PR #79 planning branch.
 4. Verify remote branches reduce to `develop` and `main`.
 5. Then perform D040 Phase-B Markdown activation to Protocol `1.13.0` and re-evaluate L001.
 6. Treat CodeGraph project initialization as a separate capability/repository-state operation.
@@ -98,7 +98,7 @@ L002 — `task.handoff.identity_mismatch` — `ANALYZED`, non-blocking and separ
 
 After repository bootstrap and this checkpoint:
 
-1. if D043 is not integrated, load D043 plus Task/Operational bootstrap policy;
+1. if PR #79 is not integrated, load D043 plus Task/Operational bootstrap policy;
 2. if OP010 is pending, load `docs/operations/OP010-retire-bootstrap-freshness-branch.md` plus branch-cleanup policy;
 3. if OP011 is pending, load its Operational Contract plus branch-cleanup policy;
 4. after cleanup, load D040 + T010-R1 + staged `ASSURANCE.md` for Phase-B activation;
