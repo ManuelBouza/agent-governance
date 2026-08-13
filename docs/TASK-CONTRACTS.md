@@ -16,6 +16,23 @@ Task Contracts are auditable source-product maintenance records. They are intent
 
 A chat/terminal prompt is only a pointer to a Task Contract. It is not the canonical task specification.
 
+## Executor process autonomy invariant
+
+Task Contracts define **what must be delivered and what boundaries must hold**. They do not normally define **how the executor must organize its internal implementation process**.
+
+Under D041, the Agente de IA Ejecutor may independently choose and compose any compatible executor-native methods and capabilities needed to satisfy the contract, including direct work, internal planning, SDD/specification workflows, sub-agents/workers, Skills, code-graph/navigation tools, testing/review helpers, or other mechanisms.
+
+```text
+Task Contract = outcome + scope + invariants + acceptance + evidence
+Executor       = implementation process + internal orchestration
+```
+
+ChatGPT MUST NOT prescribe executor-specific agent types, delegation topology, SDD routing, internal planning structure, or tool selection unless the method itself is material to an accepted safety/security/reproducibility/ownership requirement or to the requested product behavior.
+
+Likewise, review MUST NOT require the executor's private orchestration trace unless a particular process artifact was explicitly part of the persisted deliverable/evidence contract. Governance evaluates remote Git state, persisted handoff and required verification evidence.
+
+Executor-native workflows remain subordinate implementation mechanisms: they may not redefine Task Contract semantics, acquire Governance acceptance authority, or introduce tracked/generated repository state outside authorized scope.
+
 ## Location and naming
 
 Active and completed source-maintenance Task Contracts live under:
@@ -53,8 +70,12 @@ Only the repository files/decisions needed to interpret the task correctly. `AGE
 ### Authorized scope
 Artifacts and behavior the executor is allowed to modify or create.
 
+Authorized scope constrains externally visible repository mutation/result, not the executor's private internal organization or compatible local tooling unless the contract explicitly states otherwise for a material reason.
+
 ### Explicit exclusions
 Things the executor must not change or expand into.
+
+Exclusions should protect product scope, authority, safety, reproducibility or repository state. Avoid using exclusions to ban an executor-internal methodology/tool merely because the current host provides it.
 
 ### Invariants / constraints
 Architecture, compatibility, safety, ownership, or behavioral properties that must remain true.
@@ -64,6 +85,8 @@ Objective conditions ChatGPT will use to accept or reject the implementation.
 
 ### Verification requirements
 Tests/evals that must be created or executed and the minimum evidence expected.
+
+Verification requirements define required evidence/results. They should not dictate internal execution topology unless that topology is itself part of the behavior or assurance property being verified.
 
 ### Stop / escalation conditions
 Conditions requiring the executor to stop instead of guessing or expanding scope.
@@ -107,7 +130,7 @@ A reviewer must be able to distinguish the original task from later authorized r
 3. The Task Contract is reviewed and integrated into `develop`.
 4. ChatGPT launches the executor with the canonical minimal launch prompt defined below.
 5. The executor creates/uses the authorized implementation topic branch from the `develop` revision containing the contract.
-6. The executor performs only authorized non-Markdown work.
+6. The executor chooses its internal implementation process and performs only authorized non-Markdown work.
 7. Material task changes require a persisted ChatGPT revision before execution continues.
 8. The executor runs required verification and persists its non-Markdown handoff under `handoffs/`.
 9. The executor commits and pushes the implementation branch, including the current handoff artifact.
@@ -166,7 +189,8 @@ The launch prompt MUST NOT duplicate task semantics that belong in Git, includin
 - expected implementation branch/handoff path when the Task Contract already defines them;
 - provider/product-specific implementation instructions;
 - task-specific safety/security restrictions;
-- protocol/module versions.
+- protocol/module versions;
+- executor-internal methodology, sub-agent topology, SDD mode, Skill routing, or tool choice.
 
 Standing repository rules such as Markdown ownership also remain in `AGENTS.md`/referenced policy and SHOULD NOT be re-stated task-by-task in the launch prompt.
 
@@ -223,4 +247,4 @@ A reviewer must be able to reconstruct from Git alone:
 - what the executor reported it did;
 - what actually changed.
 
-Chat history must not be required for this reconstruction.
+Chat history and private executor orchestration traces must not be required for this reconstruction unless a persisted contract explicitly makes a process artifact part of the deliverable/evidence.
