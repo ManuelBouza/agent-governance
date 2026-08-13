@@ -1,7 +1,7 @@
 # OP010 — Retire bootstrap-freshness planning branch
 
 Operation ID: OP010  
-Status: DRAFT  
+Status: READY  
 Type: post-integration branch cleanup  
 Base branch: `develop`
 
@@ -11,9 +11,9 @@ Retire the merged Markdown planning branch that integrates D042 remote-baseline 
 
 ## Durable target
 
-The PR integrating D042, its prompt-policy changes, this OP010 contract and the accompanying checkpoint MUST be recorded here before OP010 becomes `READY`.
+The sole retirement target is the merged source branch of PR #78, which integrates D042, its prompt-policy changes, this OP010 contract and checkpoint O056.
 
-Its merged source branch is the sole retirement target of this operation.
+The executor MUST derive the exact source branch and reviewed head from canonical GitHub PR #78 metadata rather than from chat text.
 
 ## Controlling references
 
@@ -23,7 +23,7 @@ Its merged source branch is the sole retirement target of this operation.
 - `docs/BRANCHING.md`
 - `docs/BRANCH-CLEANUP.md`
 - `docs/POST-INTEGRATION-CLEANUP-PROMPT.md`
-- merged Git/GitHub record for the durable target
+- merged Git/GitHub record for PR #78
 
 ## Authorized operations
 
