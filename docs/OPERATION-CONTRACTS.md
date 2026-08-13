@@ -17,7 +17,7 @@ prompt = bootstrap transport only
 persisted contract + referenced Git policy = complete instruction
 ```
 
-A prompt MAY identify the repository, base branch, abstract executor role, exactly one persisted contract path, the canonical-remote freshness precondition, and the completion response shape. It MUST NOT carry operation-specific targets, branch names, SHAs, deletion decisions, commands, exceptions, or acceptance semantics that are absent from the persisted contract.
+A prompt MAY identify the repository, base branch, abstract executor role, exactly one persisted contract path, the canonical-remote freshness precondition, an optional D043 `AGENTS.md` reload when the governing integrated change modified that file, and the completion response shape. It MUST NOT carry operation-specific targets, branch names, SHAs, deletion decisions, commands, exceptions, or acceptance semantics that are absent from the persisted contract.
 
 If concrete information is required to perform the operation safely or correctly, ChatGPT MUST persist it in the Operational Contract or a controlling Git policy before launch.
 
@@ -63,9 +63,12 @@ An Operational Contract is executable only when:
 3. the contract is integrated into `develop`;
 4. its status is `READY`;
 5. the executor synchronizes the canonical remote and establishes a safe local baseline equal to the current remote base branch containing that exact contract;
-6. only then does the executor load `AGENTS.md` and the Operational Contract from that baseline.
+6. if the governing integrated change modified `AGENTS.md`, ChatGPT includes the D043 reload line and the executor reloads current `AGENTS.md` from that baseline;
+7. the executor loads the Operational Contract from that current baseline.
 
 If the executor cannot establish the current remote baseline without risking local/uncommitted work, it MUST stop/escalate rather than discard work or attempt to execute the contract from stale state. D042 defines this bootstrap-freshness rule.
+
+Repository-level instructions remain authoritative. Under D043, compatible executor hosts load them natively; an explicit `AGENTS.md` read/reload is therefore omitted from normal launches and added only after a governing `AGENTS.md` change.
 
 If the operation contract itself is integrated by a PR whose source branch must be retired by that same operation, ChatGPT MUST persist that PR identity into the Operational Contract before merge. This allows the executor to retire the contract-authoring branch without creating another recursive cleanup instruction.
 
@@ -75,12 +78,12 @@ Once execution begins, the executor MUST NOT edit the Operational Contract. Mate
 
 ## Canonical launch prompt
 
+Normal form:
+
 ```text
 Operate as the Agente de IA Ejecutor for <owner>/<repository>.
 
 Synchronize the canonical remote and ensure the local <base-branch> baseline used for bootstrap is current with origin/<base-branch>. Preserve local/uncommitted work; if a safe current baseline cannot be established, stop and report BLOCKED rather than using stale repository state.
-
-From that current baseline, read AGENTS.md first.
 
 Then load and execute the authoritative Operational Contract:
 <operation-contract-path>
@@ -90,7 +93,13 @@ Treat that Operational Contract and its referenced repository policies as the co
 Complete the contract-defined operation and verification, then return only the completion response defined by the Operational Contract.
 ```
 
-Normal substitutions are limited to repository identity, base branch, and exactly one Operational Contract path. The executor chooses the concrete compatible Git workflow used to establish the required remote freshness; the prompt does not prescribe implementation methodology or task-specific Git commands.
+If and only if the governing integrated change modified `AGENTS.md`, insert this line after the remote-freshness paragraph and before the contract pointer:
+
+```text
+AGENTS.md changed in the governing integrated change; reload current AGENTS.md from this baseline before loading the Operational Contract.
+```
+
+Normal substitutions are limited to repository identity, base branch, exactly one Operational Contract path, and the conditional D043 reload line when Git history requires it. The executor chooses the concrete compatible Git workflow used to establish the required remote freshness; the prompt does not prescribe implementation methodology or task-specific Git commands.
 
 ## Audit invariant
 
