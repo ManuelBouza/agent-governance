@@ -1,7 +1,7 @@
 # OP014 — Retire D040 Phase-B assurance activation branch
 
 Operation ID: OP014  
-Status: DRAFT  
+Status: READY  
 Type: post-integration branch cleanup  
 Base branch: `develop`
 
@@ -11,9 +11,11 @@ Retire the merged Markdown activation branch that completes D040 Phase B and act
 
 ## Durable target
 
-The PR integrating the D040 Phase-B activation candidate MUST be recorded here before OP014 becomes `READY`.
+- PR: `#81`
+- Purpose: D040 Phase-B Assurance Core activation under Protocol `1.13.0`
+- Source branch/head identity: derive from merged PR #81 and canonical Git/GitHub state at execution time.
 
-Its merged source branch is the sole retirement target of this operation.
+The merged source branch of PR #81 is the sole retirement target of this operation.
 
 ## Controlling references
 
@@ -23,7 +25,7 @@ Its merged source branch is the sole retirement target of this operation.
 - `docs/BRANCHING.md`
 - `docs/BRANCH-CLEANUP.md`
 - `docs/POST-INTEGRATION-CLEANUP-PROMPT.md`
-- merged Git/GitHub record for the durable target
+- merged Git/GitHub record for PR #81
 
 ## Authorized operations
 
