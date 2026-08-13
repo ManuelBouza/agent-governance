@@ -1,7 +1,7 @@
 # OP013 — Retire D040 Phase-B verification-prep branch
 
 Operation ID: OP013  
-Status: DRAFT  
+Status: READY  
 Type: post-integration branch cleanup  
 Base branch: `develop`
 
@@ -11,9 +11,11 @@ Retire the merged Markdown planning branch that integrates OP012 and the accompa
 
 ## Durable target
 
-The PR integrating OP012, this OP013 contract and its checkpoint MUST be recorded here before OP013 becomes `READY`.
+- PR: `#80`
+- Purpose: integrate OP012 read-only D040 Phase-B candidate verification, OP013 and checkpoint O058
+- Source branch/head identity: derive from merged PR #80 and canonical Git/GitHub state at execution time.
 
-Its merged source branch is the sole retirement target of this operation.
+The merged source branch of PR #80 is the sole retirement target of this operation.
 
 ## Controlling references
 
@@ -22,7 +24,7 @@ Its merged source branch is the sole retirement target of this operation.
 - `docs/BRANCHING.md`
 - `docs/BRANCH-CLEANUP.md`
 - `docs/POST-INTEGRATION-CLEANUP-PROMPT.md`
-- merged Git/GitHub record for the durable target
+- merged Git/GitHub record for PR #80
 
 ## Authorized operations
 
