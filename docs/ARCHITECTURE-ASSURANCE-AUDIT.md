@@ -1,9 +1,9 @@
 # Existing-System Assurance Audit Architecture
 
-Status: ACTIVE ARCHITECTURE — CORE STAGED  
+Status: ACTIVE ARCHITECTURE — CORE ACTIVE  
 Normative decision: `docs/decisions/D036-existing-system-assurance-audit-mode.md`  
 Protocol migration: `docs/decisions/D040-atomic-protocol-migration-and-single-version-authority.md`  
-Staged Core module: `governance-core/ASSURANCE.md`
+Active Core module: `governance-core/ASSURANCE.md`
 
 ## Purpose
 
@@ -49,13 +49,13 @@ NOT_ASSESSED != PASS
 INCONCLUSIVE != PASS
 ```
 
-## Staged Core integration
+## Active Core integration
 
-D036's focused portable module `ASSURANCE.md` is staged at version `1.0.0`, but it is not yet routed as an active required Core module.
+D036's focused portable module `ASSURANCE.md` is active at version `1.0.0` and routed by Protocol `1.13.0`.
 
-Canonical Protocol remains `1.12.0` during T010 readiness work. This follows D040 so that the repository does not require a knowingly red intermediate state while Markdown-owned protocol routing and executor-owned deterministic verification are updated across separate ownership phases.
+D040 Phase A prepared deterministic verification while Protocol remained `1.12.0`. Phase B activates the already-tested assurance semantics without reintroducing an executor-owned mutable exact-current protocol-version literal.
 
-The staged module defines portable semantics for:
+The active module defines portable semantics for:
 
 - audit scope contracts;
 - assessment-profile ceilings;
@@ -89,6 +89,9 @@ Phase B — Markdown activation
 GOVERNANCE.md -> Protocol 1.13.0
 ASSURANCE.md -> ACTIVE
 source-map/router/readiness -> ASSURANCE
+        │
+        ▼
+OP012 exact-candidate verification
         │
         ▼
 full deterministic suite remains green
@@ -298,14 +301,14 @@ The assessment process does not silently mutate targets to improve its own score
 
 ## Deterministic foundation before adapters
 
-The implementation order is intentionally conservative:
+The implementation order remains conservative:
 
 ```text
-staged portable Core semantics
+portable Core assurance semantics
       ↓
 deterministic fixtures/evaluator + protocol readiness (T010)
       ↓
-Markdown activation of Protocol 1.13 / ASSURANCE routing
+Protocol 1.13 / ASSURANCE routing
       ↓
 representative normalized evidence schemas/adapters
       ↓
@@ -314,7 +317,7 @@ optional provider/platform integrations
 real-system audit workflows under explicit authorization
 ```
 
-T010 uses synthetic normalized facts only. It must prove scope, profile ceilings, evidence/finding states, coverage, temporal posture and control-plane composition without wall-clock time, network access, models or real targets. It also implements D040's single-current-version-authority verification model.
+T010 uses synthetic normalized facts only. It proves scope, profile ceilings, evidence/finding states, coverage, temporal posture and control-plane composition without wall-clock time, network access, models or real targets. It also implements D040's single-current-version-authority verification model.
 
 Broad scanner or live-target integration requires a later separately persisted decision/Task Contract and must satisfy D033/D034/D035 plus coexistence/supply-chain constraints.
 
