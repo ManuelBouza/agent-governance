@@ -1,7 +1,7 @@
 # OP015 — Retire T011 planning branch
 
 Operation ID: OP015  
-Status: DRAFT  
+Status: READY  
 Type: post-integration branch cleanup  
 Base branch: `develop`
 
@@ -11,9 +11,11 @@ Retire the merged Markdown planning branch that integrates T011 assurance active
 
 ## Durable target
 
-The PR integrating T011, this OP015 contract and the accompanying checkpoint MUST be recorded here before OP015 becomes `READY`.
+- PR: `#82`
+- Purpose: integrate T011 corrective deterministic-verification readiness, OP015 and checkpoint O060
+- Source branch/head identity: derive from merged PR #82 and canonical Git/GitHub state at execution time.
 
-Its merged source branch is the sole retirement target of this operation.
+The merged source branch of PR #82 is the sole retirement target of this operation.
 
 ## Controlling references
 
@@ -22,7 +24,7 @@ Its merged source branch is the sole retirement target of this operation.
 - `docs/BRANCHING.md`
 - `docs/BRANCH-CLEANUP.md`
 - `docs/POST-INTEGRATION-CLEANUP-PROMPT.md`
-- merged Git/GitHub record for the durable target
+- merged Git/GitHub record for PR #82
 
 ## Authorized operations
 
