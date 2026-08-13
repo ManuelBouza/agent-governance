@@ -1,7 +1,7 @@
 # Current ChatGPT Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O052  
+Checkpoint-Sequence: O053  
 Canonical-Branch: `develop`  
 Chat-Closure: CONTINUE_ALLOWED
 
@@ -11,9 +11,9 @@ T006, T008 and T009 are `ACCEPTED`, integrated and post-integration-cleaned. L00
 
 D036 — Existing-System Assurance Audit Mode — is `ACCEPTED`. PR #73 integrated the staged portable assurance module, D040 migration control and T010 readiness contract. OP007 then retired its planning branch.
 
-T010 remains the next executable implementation task, but before launching it the Human identified an executor-host integration ambiguity: source-maintenance policy could be read as constraining the executor's proprietary orchestration methodology rather than only Governance authority/repository boundaries.
+T010 remains the next executable implementation task, but the Human identified an executor-host integration ambiguity: source-maintenance policy could be read as constraining the executor's proprietary orchestration methodology rather than only Governance authority/repository boundaries.
 
-D041 resolves that ambiguity.
+D041 resolves that ambiguity. PR #74 carries D041 plus the corresponding `AGENTS.md` and Task Contract policy alignment.
 
 ## D041 — executor process autonomy
 
@@ -44,7 +44,7 @@ Canonical Protocol remains `1.12.0`.
 
 L001 remains `CONTROL_FAILURE` until T010 plus subsequent D040 Phase-B activation prove the stronger single-version-authority control end-to-end.
 
-## T010 — NEXT EXECUTABLE AFTER D041 PLANNING CLEANUP
+## T010 — NEXT EXECUTABLE AFTER PR #74 + OP008
 
 Task Contract:
 
@@ -67,13 +67,13 @@ T010 runs while authoritative Protocol remains `1.12.0` and `ASSURANCE.md` remai
 
 D041 changes only the executor-process boundary: the executor decides how to realize T010 using its available compatible tooling. Governance does not route it to SDD, General Task, particular workers, Skills or CodeGraph.
 
-## OP008 — DRAFT UNTIL D041 PR IDENTITY IS PERSISTED
+## OP008 — READY AFTER PR #74 INTEGRATION
 
 Operational Contract:
 
 `docs/operations/OP008-retire-executor-process-autonomy-branch.md`
 
-OP008 will retire only the merged D041 Markdown planning branch. Its integrating PR identity must be persisted before status becomes `READY`.
+Durable target: PR #74. OP008 derives the exact merged source branch and reviewed head from canonical Git/GitHub state and retires only that branch.
 
 ## Persisted executor-instruction invariant
 
@@ -89,7 +89,7 @@ L002 — `task.handoff.identity_mismatch` — `ANALYZED`, non-blocking and separ
 
 ## Next Action
 
-1. Review/integrate the D041 Markdown planning PR and freeze its source branch.
+1. Review and integrate PR #74; freeze its source branch.
 2. Execute OP008 using only its persisted Operational Contract pointer; independently verify remote/local inventories.
 3. Launch T010 using only its persisted Task Contract pointer. Do not add instructions about SDD, workers, Skills, CodeGraph or internal orchestration.
 4. Review/accept/integrate/clean T010.
@@ -101,7 +101,7 @@ L002 — `task.handoff.identity_mismatch` — `ANALYZED`, non-blocking and separ
 
 After `AGENTS.md` and this checkpoint:
 
-1. if the D041 planning PR is not integrated, load D041 and `docs/TASK-CONTRACTS.md`;
+1. if PR #74 is not integrated, load D041 and `docs/TASK-CONTRACTS.md`;
 2. if OP008 is pending, load `docs/operations/OP008-retire-executor-process-autonomy-branch.md` plus branch-cleanup policy;
 3. for T010 execution/review load T010, D041, D040, L001, D036/`ASSURANCE.md`, D035/`SECURITY.md`, D033/D034/`EXECUTION-CONTROL.md`, and D037 as required by the contract;
 4. after T010 closes, load D040 + T010 acceptance evidence + staged `ASSURANCE.md` for Phase-B activation;
