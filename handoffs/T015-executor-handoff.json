@@ -1,0 +1,78 @@
+{
+  "task_id": "T015",
+  "status": "DONE",
+  "executor_identity": "Agente de IA Ejecutor (OpenCode)",
+  "task_contract_path": "docs/tasks/T015-consumer-governance-trigger-eval-corpus.md",
+  "branch": "test/consumer-governance-trigger-corpus",
+  "base_branch": "develop",
+  "base_sha": "0d924ca26cbe511fe9954ae2ed1237f2c747e751",
+  "implementation_anchor_sha": "cbf682321eadf9e6e7a7d9ae86114726583c0187",
+  "changed_paths": [
+    "evals/consumer_governance/corpus.json",
+    "evals/consumer_governance/grader.py",
+    "handoffs/T015-executor-handoff.json",
+    "tests/test_consumer_governance_trigger_corpus.py"
+  ],
+  "implementation_summary": "Added a fixed source-independent Consumer Governance trigger corpus and strict deterministic integrity grader. The corpus separates positive, negative, and near-miss activation cases across train and validation partitions and covers coexistence, Consumer-vs-Maintainer separation, managed surfaces, no-SDD behavior, and source independence without model-backed judgment.",
+  "corpus": {
+    "total_cases": 36,
+    "counts": {
+      "train": {
+        "positive": 6,
+        "negative": 6,
+        "near_miss": 6
+      },
+      "validation": {
+        "positive": 6,
+        "negative": 6,
+        "near_miss": 6
+      }
+    },
+    "stable_ids_unique": true,
+    "global_prompt_fingerprints_unique": true,
+    "cross_partition_or_category_leakage_rejected": true,
+    "coexistence_shapes": [
+      "gentle_ai_like",
+      "spec_kit_like",
+      "openspec_like",
+      "custom_sdd",
+      "no_sdd"
+    ]
+  },
+  "verification": {
+    "commands": [
+      "uv run --locked python evals/consumer_governance/grader.py",
+      "uv run --locked pytest -q tests/test_consumer_governance_trigger_corpus.py",
+      "uv run --locked pytest -q",
+      "uv run --locked ruff check .",
+      "uv run --locked ruff format --check .",
+      "git diff --check"
+    ],
+    "results": {
+      "corpus_check": "PASS: 36 cases; 6 per category per partition",
+      "focused_pytest": "30 passed in 0.19s",
+      "full_pytest": "224 passed in 3.32s",
+      "ruff_check": "All checks passed!",
+      "ruff_format_check": "17 files already formatted",
+      "diff_check": "PASS"
+    },
+    "runtime_harness": "Deterministic grader and mutation tests validate corpus structure and coverage. No live model/provider trial is part of T015."
+  },
+  "scope_confirmation": {
+    "markdown_changed": false,
+    "skill_md_created": false,
+    "governance_core_changed": false,
+    "t014_runtime_changed": false,
+    "maintainer_skill_changed": false,
+    "live_consumer_footprint_created": false,
+    "network_or_provider_used": false
+  },
+  "dependencies_or_config_changes": [],
+  "limitations": [
+    "Probabilistic or model-backed trigger trials are deferred to a separately authorized release-eval task.",
+    "This corpus and grader prove deterministic integrity and coverage, not runtime model activation accuracy."
+  ],
+  "rollback": "Revert implementation commit cbf682321eadf9e6e7a7d9ae86114726583c0187 to remove only the T015 corpus, grader, and tests; revert the handoff-only successor separately if needed.",
+  "unresolved_issues": [],
+  "chatgpt_read_path": "handoffs/T015-executor-handoff.json"
+}
