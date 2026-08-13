@@ -1,7 +1,7 @@
 # Current ChatGPT Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O054  
+Checkpoint-Sequence: O055  
 Canonical-Branch: `develop`  
 Chat-Closure: CONTINUE_ALLOWED
 
@@ -11,7 +11,7 @@ T006, T008 and T009 are `ACCEPTED`, integrated and post-integration-cleaned. L00
 
 D036 — Existing-System Assurance Audit Mode — is `ACCEPTED` and staged. D040 controls atomic protocol migration/single-version authority. D041 executor-process autonomy is integrated by PR #74; its source branch remains pending OP008 cleanup.
 
-T010 is now **ACCEPTED and integrated**:
+T010 is **ACCEPTED and integrated**:
 
 - executor base: `develop@b043434b1ba58276e907d93242974e9e393c4ed5`;
 - implementation anchor: `bc517cbb02c5620dc2aa37c9506c54a7b346e669`;
@@ -47,13 +47,13 @@ Canonical Protocol remains `1.12.0`.
 
 L001 remains `CONTROL_FAILURE` until post-T010 D040 Phase-B activation to Protocol `1.13.0` proves the stronger single-authority control end-to-end.
 
-## OP009 — T010 cleanup
+## OP009 — READY after PR #77 integration
 
 Operational Contract:
 
 `docs/operations/OP009-retire-t010-integration-branches.md`
 
-Durable cleanup targets include merged PR #75, merged PR #76, and the PR integrating OP009 itself. OP009 remains `DRAFT` until that third PR identity is persisted and status becomes `READY`.
+Durable cleanup targets are merged PR #75, merged PR #76 and cleanup-contract PR #77. OP009 is `READY`; execute it only after PR #77 is merged/frozen.
 
 OP009 MUST NOT touch the D041 planning branch governed separately by OP008.
 
@@ -84,13 +84,11 @@ L002 — `task.handoff.identity_mismatch` — `ANALYZED`, non-blocking and separ
 
 ## Next Action
 
-1. Open the OP009/checkpoint Markdown PR from `docs/t010-post-integration-cleanup`.
-2. Persist that PR identity in OP009 and mark it `READY`.
-3. Merge the OP009 planning PR and freeze its source branch.
-4. Execute OP009 using only its persisted Operational Contract pointer; independently verify branch inventories.
-5. Only after T010 is fully cleaned, return to pending OP008 and retire the D041 planning branch.
-6. Then perform D040 Phase-B Markdown activation to Protocol `1.13.0` and re-evaluate L001.
-7. Treat CodeGraph project initialization as a separate capability/repository-state operation.
+1. Merge PR #77 and freeze `docs/t010-post-integration-cleanup`.
+2. Execute OP009 using only its persisted Operational Contract pointer; independently verify branch inventories.
+3. Only after T010 is fully cleaned, return to pending OP008 and retire the D041 planning branch.
+4. Then perform D040 Phase-B Markdown activation to Protocol `1.13.0` and re-evaluate L001.
+5. Treat CodeGraph project initialization as a separate capability/repository-state operation.
 
 ## Next Chat Minimum Load
 
