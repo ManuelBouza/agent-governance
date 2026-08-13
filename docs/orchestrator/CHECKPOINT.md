@@ -1,100 +1,155 @@
 # Current ChatGPT Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O061  
+Checkpoint-Sequence: O062  
 Canonical-Branch: `develop`  
 Chat-Closure: CONTINUE_ALLOWED
 
 ## Current Frontier
 
-T011 — Assurance active-routing deterministic verification — is `ACCEPTED` and integrated. T011-R1 reviews executor HEAD `c231eec0cf5e96b676df9932402a3166fa4589c2`; implementation PR #84 is integrated in `develop`.
+D040 Phase B is integrated.
 
-Canonical Core on `develop` remains Protocol `1.12.0` with `ASSURANCE.md` staged until D040 Phase B is integrated.
+Exact successful activation evidence:
 
-The original D040 Phase-B candidate PR #81 remains unmerged historical blocked evidence. OP012 correctly failed that candidate before T011 readiness. A later mechanical `develop` -> old candidate refresh attempt was non-mergeable and PR #85 was closed without merge.
+- OP017 verified candidate HEAD `43a783ff5e8f810eaa8cf62aedca482feedc71d3`;
+- `MARKDOWN_ONLY: YES`;
+- focused pytest: PASS;
+- full pytest: PASS;
+- Ruff check: PASS;
+- Ruff format-check: PASS;
+- `REPO_MUTATION: NONE`;
+- PR #87 merged exactly that tested candidate into `develop` as `85ccfac49e2e4a635f66c43fbedf95d54f7a6d29`.
 
-## D040 Phase-B v2 candidate
-
-Current candidate branch:
-
-`docs/d040-phase-b-assurance-activation-v2`
-
-This candidate is rebuilt directly from current `develop` containing T011 readiness.
-
-Candidate intent:
-
-```text
-GOVERNANCE.md -> Protocol 1.13.0
-ASSURANCE.md  -> ACTIVE
-Source Map / Context Router -> ASSURANCE
-assurance architecture -> CORE ACTIVE
-        ↓
-OP017 exact-candidate deterministic verification
-        ↓
-merge only on all-green read-only evidence
-```
-
-L001 remains `CONTROL_FAILURE` until the exact v2 candidate passes verification and the activation is integrated.
-
-## OP017 — exact v2 verification
-
-Operational Contract:
-
-`docs/operations/OP017-verify-d040-phase-b-v2-candidate.md`
-
-Status: `READY`.
-
-OP017 requires the exact current v2 HEAD, Markdown-only diff, Protocol `1.13.0`, ACTIVE/routed `ASSURANCE.md`, and these gates:
+Canonical Core is now:
 
 ```text
-uv run --locked pytest -q tests/test_assurance_audit_contract.py
-uv run --locked pytest -q
-uv run --locked ruff check .
-uv run --locked ruff format --check .
+Protocol-Version: 1.13.0
+ASSURANCE.md: ACTIVE
+ASSURANCE routed in GOVERNANCE Source Map / Context Router
 ```
 
-The operation is read-only and must return `BLOCKED` on any failed gate or candidate mutation.
+The original candidate PR #81 is closed/unmerged historical blocked evidence. PR #85, the attempted mechanical refresh of the old candidate, was closed without merge after GitHub reported it non-mergeable. The clean v2 path superseded both.
+
+## T011
+
+T011 — Assurance active-routing deterministic verification — is `ACCEPTED` and integrated.
+
+- reviewed executor HEAD: `c231eec0cf5e96b676df9932402a3166fa4589c2`;
+- acceptance PR #83 merged;
+- implementation PR #84 merged;
+- T011 proved both staged and active assurance routing without creating a second mutable current-protocol authority.
 
 ## Learning state
 
-L001 — `verification.regression.protocol_version_drift` — remains `CONTROL_FAILURE` pending v2 PASS and activation integration.
+L001 — `verification.regression.protocol_version_drift` — returns to `VERIFIED` in the current Markdown recovery change.
+
+Recovery basis:
+
+```text
+D040 single authority
++ T010 parser/validator readiness
++ T011 active-routing readiness
++ exact v2 OP017 PASS without mutation
++ exact tested PR #87 integration
+= systemic control verified end-to-end
+```
 
 L002 — `task.handoff.identity_mismatch` — remains `ANALYZED`, separate and non-blocking.
 
-## CodeGraph / Context7
+## OpenCode worktree preflight
 
-CodeGraph project initialization remains the next separate capability operation after D040 Phase B is integrated and cleaned. `.codegraph/` must remain local generated state and canonical `.gitignore` should exclude it.
+New host-specific preflight:
 
-Context7 remains an optional executor-host external documentation capability, not Governance authority, deterministic verification, or required repository state.
+`docs/OPENCODE-WORKTREE-PREFLIGHT.md`
+
+When the selected executor host is OpenCode and delegated work may use Git worktrees outside the OpenCode session working directory, ChatGPT must surface this preflight **before** the executor bootstrap prompt.
+
+On the current workstation convention, the trusted repository-specific root is:
+
+```text
+~/projects/agent-governance-worktrees/**
+```
+
+The intended OpenCode behavior is a narrow `permission.external_directory` allow for that trusted root only. Do not use blanket external-directory allowance. OpenCode host configuration remains workstation state, not product/correctness authority.
+
+This host adaptation does not prescribe use of OpenCode or worktrees; D041 executor-process autonomy remains unchanged.
+
+## OP018 — completion-branch cleanup
+
+Operational Contract:
+
+`docs/operations/OP018-retire-d040-t011-completion-branches.md`
+
+Status: `DRAFT` until the PR integrating this checkpoint, L001 recovery, OpenCode preflight and OP018 is opened/recorded/merged.
+
+OP018 is a bounded cleanup for:
+
+- merged T011 acceptance/implementation branches;
+- merged D040 v2 control/activation branches;
+- the branch integrating this recovery/preflight change;
+- closed superseded PR #81 branch only if exact no-later-work/supersession conditions are proven;
+- abandoned temporary `docs/d040-candidate-refresh-operation` only if Git proves it has no unique commits.
+
+Ambiguous branches remain `REVIEW`; cleanup returns `PARTIAL` rather than guessing.
+
+## CodeGraph next
+
+After OP018 closes the D040/T011 branch backlog, CodeGraph project initialization is the next separate capability operation.
+
+Required outcome for that later scope:
+
+```text
+CodeGraph initialized locally for agent-governance
+.codegraph/ remains generated local state
+canonical .gitignore excludes .codegraph/
+Git remains clean after initialization
+CodeGraph is executor capability, not Governance authority/correctness dependency
+```
+
+Context7 remains an optional executor-host external documentation capability and requires no repository state when already supplied by the host.
+
+## Executor bootstrap policy
+
+D041:
+
+```text
+Governance owns requested outcome + boundaries + acceptance
+Executor owns implementation process + internal orchestration
+```
+
+D042 requires canonical remote freshness before persisted contract load.
+
+D043 normal launches omit explicit `AGENTS.md` reload unless the immediately governing integrated change modified `AGENTS.md`.
+
+This recovery/preflight change does **not** modify `AGENTS.md`, so the next executor launch uses the normal D043 form. The OpenCode worktree permission step is Human/Orchestrator preflight outside the transport-only executor prompt.
 
 ## Next Action
 
-1. Open/review the v2 activation PR from `docs/d040-phase-b-assurance-activation-v2` to `develop`.
-2. Verify its effective diff is Markdown-only and limited to the intended D040 Phase-B activation/checkpoint surfaces.
-3. Execute OP017 against the exact current v2 candidate HEAD.
-4. If OP017 is `DONE` with all gates PASS and `REPO_MUTATION: NONE`, merge exactly the tested candidate HEAD.
-5. Persist L001 recovery evidence/status only after activation integration.
-6. Retire the v2 activation branch plus obsolete historical D040/T011 branches through persisted cleanup operations.
-7. Then initialize CodeGraph as a separate executor-owned capability task/operation.
+1. Open/review/merge the Markdown recovery/preflight PR from `docs/opencode-worktree-bootstrap-and-l001-recovery`.
+2. Record that merged PR identity in OP018 and mark OP018 `READY` before execution.
+3. If the selected executor host for OP018 is OpenCode, surface `docs/OPENCODE-WORKTREE-PREFLIGHT.md` and ensure the narrow trusted worktree-root permission is configured/approved before presenting the OP018 bootstrap prompt.
+4. Execute OP018 and independently verify final remote branch state.
+5. Then persist and execute the separate CodeGraph initialization / `.gitignore` scope.
+6. Do not start real-system assurance adapters/providers unless a later explicit decision/Task Contract authorizes them.
 
 ## Next Chat Minimum Load
 
 After repository bootstrap and this checkpoint:
 
-1. load OP017 + exact v2 candidate diff + D040 + T011-R1 for verification/review;
-2. after v2 integration, load L001 + exact OP017 result + merged activation PR identity;
-3. load branch-cleanup policy for post-integration cleanup;
-4. for CodeGraph work, load current `.gitignore`, D041 and the separate CodeGraph contract created for that scope;
-5. load L002 only on a concrete identity conflict or explicit separate control-selection work.
+1. while this Markdown recovery/preflight PR is pending, load L001 + OP018 + `docs/OPENCODE-WORKTREE-PREFLIGHT.md`;
+2. for OP018 execution/result review, load OP018 + branch-cleanup policy + canonical PR/branch metadata;
+3. for CodeGraph activation, load current `.gitignore`, D041, `docs/LOCAL-DEVELOPMENT-TOOLCHAIN.md` and the new persisted CodeGraph contract;
+4. load L002 only on a concrete identity conflict or explicit separate control-selection work.
 
 ## Do Not
 
-- Do not merge the original blocked PR #81.
-- Do not merge the v2 candidate without exact-candidate green OP017 evidence.
-- Do not mark L001 `VERIFIED` before activation integration.
-- Do not create another mutable exact-current protocol-version authority.
+- Do not reopen or merge historical blocked PR #81.
+- Do not mark L001 CONTROL_FAILURE after the verified recovery unless the fingerprint recurs or new evidence invalidates the control.
+- Do not delete ambiguous/superseded branches without exact Git evidence.
+- Do not use blanket OpenCode `external_directory` allowance to suppress worktree prompts.
+- Do not put workstation OpenCode configuration into product correctness semantics.
+- Do not initialize CodeGraph inside OP018.
 - Do not write directly to `develop` or `main`.
 - Do not prescribe executor-internal methodology/tool routing.
 - Do not add an unconditional `read AGENTS.md` directive to normal executor launch prompts.
-- Do not initialize CodeGraph inside D040 Phase B.
 - Preserve prior procedural audit history.
