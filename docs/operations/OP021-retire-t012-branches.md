@@ -1,7 +1,7 @@
 # OP021 — Retire T012 branches
 
 Operation ID: OP021  
-Status: DRAFT  
+Status: READY  
 Type: post-integration cleanup  
 Base branch: `develop`
 
@@ -13,15 +13,11 @@ Retire only the completed T012 topic branches after their integration is proven 
 
 - PR #90 — T012 acceptance;
 - PR #91 — T012 implementation;
-- the PR integrating this OP021 and OP019, recorded here before execution.
+- PR #92 — OP021 + OP019 integration.
 
 Delete a target branch only when its PR is merged, its current remote HEAD equals the reviewed PR head, and no later unique work exists. Otherwise retain it and return `PARTIAL`.
 
-## Integration PR
-
-- PR: `<record after opening>`
-
-OP021 becomes `READY` only after that PR is recorded here and merged.
+PR #92 MUST be merged before OP021 execution begins.
 
 ## References
 
@@ -30,6 +26,7 @@ OP021 becomes `READY` only after that PR is recorded here and merged.
 - `docs/BRANCH-CLEANUP.md`
 - `docs/OPERATION-CONTRACTS.md`
 - `docs/POST-INTEGRATION-CLEANUP-PROMPT.md`
+- canonical PR records for #90, #91 and #92
 
 ## Authorized operations
 
