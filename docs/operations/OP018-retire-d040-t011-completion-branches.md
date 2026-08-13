@@ -1,7 +1,7 @@
 # OP018 — Retire D040/T011 completion branches
 
 Operation ID: OP018  
-Status: DRAFT  
+Status: READY  
 Type: bounded post-integration / superseded-branch cleanup  
 Base branch: `develop`
 
@@ -9,7 +9,7 @@ Base branch: `develop`
 
 Retire the completed D040 Phase-B / T011 topic branches after Protocol `1.13.0` activation, while preserving `main`, `develop`, Git/PR audit history, repository content and any branch that cannot be proven safe.
 
-This operation also retires the Markdown branch that integrates L001 recovery and the OpenCode worktree preflight once that PR is merged and recorded below.
+This operation also retires the Markdown branch that integrates L001 recovery and the OpenCode worktree preflight once PR #88 is merged.
 
 ## Durable cleanup set
 
@@ -21,7 +21,7 @@ The executor derives exact branch names, reviewed heads and merge/closure state 
 - PR #84 — T011 executable implementation;
 - PR #86 — D040 Phase-B v2 verification-control planning (`OP017`);
 - PR #87 — D040 Phase-B v2 activation;
-- the PR integrating this OP018 + L001 recovery + OpenCode worktree preflight, recorded here before OP018 becomes `READY`.
+- PR #88 — L001 recovery, OpenCode worktree preflight and this OP018 contract.
 
 For each merged PR target, ordinary merged-branch freeze rules apply:
 
@@ -29,6 +29,8 @@ For each merged PR target, ordinary merged-branch freeze rules apply:
 merged PR + reviewed head == current remote branch HEAD + no unique later work
 => eligible for retirement
 ```
+
+PR #88 MUST be merged before OP018 execution begins. If it is not merged, return `BLOCKED`.
 
 ### Superseded historical candidate
 
@@ -60,17 +62,14 @@ It may be retired only if the executor proves from Git that it contains no uniqu
 - `docs/decisions/D040-atomic-protocol-migration-and-single-version-authority.md`
 - `docs/reviews/T011-R1.md`
 - `docs/learning/L001-protocol-version-baseline-drift.md`
-- canonical Git/GitHub records for PRs #81, #83, #84, #86, #87 and the integration PR recorded below
+- `docs/OPENCODE-WORKTREE-PREFLIGHT.md`
+- canonical Git/GitHub records for PRs #81, #83, #84, #86, #87 and #88
 
 ## Integration PR for this contract
 
-Status: `DRAFT` until populated.
-
-- PR: `<record after opening>`
+- PR: `#88`
 - Purpose: integrate L001 recovery, OpenCode worktree preflight and OP018
-- Source branch/head: derive from that merged PR and canonical GitHub state at execution time
-
-OP018 becomes `READY` only after this section names the actual PR and that PR is merged.
+- Source branch/head identity: derive from PR #88 and canonical GitHub state at execution time
 
 ## Authorized operations
 
