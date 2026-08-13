@@ -1,4 +1,4 @@
-"""Deterministic staged D036 policy examples; Core Markdown remains authority."""
+"""Deterministic D036 policy examples; Core Markdown remains authority."""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from datetime import datetime
 from pathlib import Path
 
 import pytest
-from _helpers import CORE_REQUIRED_MODULES, protocol_version_from
+from _helpers import ASSURANCE_ROUTE, protocol_version_from, required_core_modules_from
 
 PROFILES = (
     "EVIDENCE_REVIEW",
@@ -109,6 +109,37 @@ def composed_outcome(case: dict[str, object]) -> tuple[str, str, bool]:
     return case["audit"], case["security"], method_authorized
 
 
+def assurance_activation_state(assurance: Path) -> str | None:
+    declarations = [
+        line.split(":", 1)[1].strip()
+        for line in assurance.read_text(encoding="utf-8").splitlines()
+        if line.startswith("Activation-State:")
+    ]
+    if len(declarations) != 1 or declarations[0] not in {"STAGED", "ACTIVE"}:
+        return None
+    return declarations[0]
+
+
+def assert_assurance_routing_state(governance: Path, assurance: Path) -> None:
+    version = protocol_version_from(governance)
+    state = assurance_activation_state(assurance)
+    governance_text = governance.read_text(encoding="utf-8")
+    required_modules = required_core_modules_from(governance)
+
+    assert version is not None
+    assert state is not None
+    routed = ASSURANCE_ROUTE in governance_text
+    required = "ASSURANCE.md" in required_modules
+    if state == "STAGED":
+        assert version == "1.12.0"
+        assert routed is False
+        assert required is False
+    else:
+        assert tuple(map(int, version.split("."))) >= (1, 13, 0)
+        assert routed is True
+        assert required is True
+
+
 def test_scope_is_explicit_complete_and_cannot_expand_from_capability(
     cases: dict[str, object],
 ) -> None:
@@ -205,21 +236,29 @@ def test_security_execution_and_audit_planes_do_not_expand_each_other(
     }
 
 
-def test_staged_assurance_and_single_protocol_authority_alignment(
+def test_assurance_routing_is_state_derived_with_single_protocol_authority(
     repo_root: Path, tmp_path: Path
 ) -> None:
     governance = repo_root / "governance-core" / "GOVERNANCE.md"
     assurance = repo_root / "governance-core" / "ASSURANCE.md"
-    governance_text = governance.read_text(encoding="utf-8")
     assurance_text = assurance.read_text(encoding="utf-8")
-    version = protocol_version_from(governance)
-    assert version is not None
     assert "Assurance-Audit-Version: 1.0.0" in assurance_text
-    assert "Activation-State: STAGED" in assurance_text
-    if "Activation-State: STAGED" in assurance_text:
-        assert version == "1.12.0"
-        assert "ASSURANCE.md" not in CORE_REQUIRED_MODULES
-        assert ".agent-governance/ASSURANCE.md" not in governance_text
+    assert_assurance_routing_state(governance, assurance)
+
+    staged_governance = tmp_path / "staged-governance.md"
+    staged_assurance = tmp_path / "staged-assurance.md"
+    staged_governance.write_text("Protocol-Version: 1.12.0\n", encoding="utf-8")
+    staged_assurance.write_text("Activation-State: STAGED\n", encoding="utf-8")
+    assert_assurance_routing_state(staged_governance, staged_assurance)
+
+    active_governance = tmp_path / "active-governance.md"
+    active_assurance = tmp_path / "active-assurance.md"
+    active_governance.write_text(
+        f"Protocol-Version: 1.13.0\n- assurance -> `{ASSURANCE_ROUTE}`\n",
+        encoding="utf-8",
+    )
+    active_assurance.write_text("Activation-State: ACTIVE\n", encoding="utf-8")
+    assert_assurance_routing_state(active_governance, active_assurance)
 
     missing = tmp_path / "missing.md"
     malformed = tmp_path / "malformed.md"
