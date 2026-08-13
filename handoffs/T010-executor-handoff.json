@@ -1,0 +1,123 @@
+{
+  "task_id": "T010",
+  "status": "DONE",
+  "task_contract_path": "docs/tasks/T010-d036-deterministic-assurance-audit-contract.md",
+  "branch": "test/d036-deterministic-assurance-audit-contract",
+  "implementation_head_sha": "bc517cbb02c5620dc2aa37c9506c54a7b346e669",
+  "implementation_head_sha_note": "D029 implementation anchor. This handoff is committed in a handoff-only successor; the visible executor response reports the final pushed branch HEAD.",
+  "base_branch": "develop",
+  "base_sha": "b043434b1ba58276e907d93242974e9e393c4ed5",
+  "files_changed": [
+    "tests/_helpers.py",
+    "tests/fixtures/assurance_audit/policy_cases.json",
+    "tests/test_assurance_audit_contract.py",
+    "tests/test_canonical_layout.py",
+    "tests/test_execution_control_contract.py",
+    "tests/test_security_verification_contract.py",
+    "handoffs/T010-executor-handoff.json"
+  ],
+  "implementation_summary": "Added normalized synthetic assurance-audit fixtures and a test-local deterministic evaluator covering scope, profile ceilings, evidence/finding states, severity/confidence independence, coverage truth, remediation separation, temporal posture, D035/D033/D034 composition, staged ASSURANCE alignment and provider neutrality. Removed the duplicated mutable SOURCE_PROTOCOL_VERSION authority and strengthened protocol_version_from to accept exactly one valid SemVer declaration from authoritative Core.",
+  "assurance_audit_contract": {
+    "fixture": "tests/fixtures/assurance_audit/policy_cases.json",
+    "test_module": "tests/test_assurance_audit_contract.py",
+    "fixture_families": [
+      "A scope and authorization",
+      "B assessment profile ceiling",
+      "C evidence graph and finding states",
+      "D severity and confidence independence",
+      "E coverage accounting and bounded conclusions",
+      "F audit versus remediation",
+      "G temporal posture",
+      "H security and execution composition",
+      "I staged Core and D040 protocol-authority alignment"
+    ],
+    "finding_states": [
+      "PASS",
+      "FAIL",
+      "PARTIAL",
+      "NOT_APPLICABLE",
+      "NOT_ASSESSED",
+      "INCONCLUSIVE",
+      "ACCEPTED_EXCEPTION"
+    ],
+    "protocol_alignment": {
+      "authoritative_protocol_version_at_implementation": "1.12.0",
+      "authority_path": "governance-core/GOVERNANCE.md",
+      "duplicated_current_literal_removed": true,
+      "parser_rejects_missing_malformed_or_duplicate_declarations": true,
+      "assurance_version": "1.0.0",
+      "assurance_activation_state": "STAGED",
+      "assurance_required_or_routed": false
+    },
+    "test_local_boundary": "Evaluator logic consumes explicit normalized JSON facts and fixed fixture timestamps only. No production audit engine, real-system inspection, external provider, scanner, network operation, model call, credential access, remediation action or privileged/destructive/remote/persistent operation was introduced."
+  },
+  "verification": {
+    "commands": [
+      "uv run --locked pytest -q tests/test_assurance_audit_contract.py",
+      "uv run --locked pytest -q",
+      "uv run --locked ruff check .",
+      "uv run --locked ruff format --check ."
+    ],
+    "results": {
+      "focused_pytest": "10 passed in 0.04s; 10 collected, 0 failed, 0 skipped",
+      "full_pytest": "154 passed in 0.86s; 154 collected, 0 failed, 0 skipped",
+      "ruff_check": "All checks passed!",
+      "ruff_format_check": "13 files already formatted"
+    },
+    "runtime": {
+      "uv": "uv 0.11.33",
+      "python": "Python 3.13.14",
+      "pytest": "pytest 9.1.1",
+      "ruff": "ruff 0.16.2",
+      "runtime_harness": "N/A: T010 is deterministic policy-contract test scaffolding with no production or real-target runtime boundary."
+    },
+    "network_required": {
+      "provisioning_network": false,
+      "test_runtime_network": false,
+      "credentials_required": false,
+      "model_or_llm_calls": false,
+      "external_provider_required": false,
+      "real_system_execution": false
+    }
+  },
+  "dependencies_or_config_changes": {
+    "packages_added": [],
+    "pyproject_toml_changed": false,
+    "uv_lock_changed": false,
+    "python_version_changed": false,
+    "global_config_changed": false,
+    "proof": "git diff --exit-code b043434b1ba58276e907d93242974e9e393c4ed5..bc517cbb02c5620dc2aa37c9506c54a7b346e669 -- pyproject.toml uv.lock .python-version '*.md' exited 0."
+  },
+  "scope_exclusions": {
+    "markdown_changed": false,
+    "production_runtime_changed": false,
+    "protocol_1_13_activated": false,
+    "assurance_routing_activated": false,
+    "d035_changed": false,
+    "external_provider_or_scanner_added": false,
+    "network_test_added": false,
+    "credential_or_secret_used": false,
+    "privileged_destructive_remote_or_persistent_operation_executed": false,
+    "model_or_llm_behavior_added": false,
+    "dependency_or_config_changed": false,
+    "root_consumer_footprint_created": false,
+    "pull_request_opened": false
+  },
+  "changed_line_budget": {
+    "implementation_additions": 338,
+    "implementation_deletions": 16,
+    "authored_total": 354,
+    "contract_limit": null,
+    "explanation": "One reviewable deterministic work unit implements required fixture families A-I and the coupled D040 protocol-authority migration below the 400-line work-unit guard."
+  },
+  "rollback": "Revert implementation commit bc517cbb02c5620dc2aa37c9506c54a7b346e669 to remove only T010 assurance fixtures/tests and protocol-helper migration. Revert the handoff-only successor separately if needed.",
+  "git_status": {
+    "branch_created_from": "origin/develop@b043434b1ba58276e907d93242974e9e393c4ed5",
+    "branch_ancestry_verified": true,
+    "pre_handoff_in_scope_state": "Implementation committed; only the authorized handoff JSON pending.",
+    "preserved_local_state": ".codegraph/ remains untracked, unread, unmodified and unstaged per launch instruction."
+  },
+  "unresolved_issues": [],
+  "recommended_next_task": "ChatGPT remote review and acceptance of T010, followed only after integration/clean state by the separately owned Markdown activation phase.",
+  "chatgpt_read_path": "handoffs/T010-executor-handoff.json"
+}

@@ -26,8 +26,6 @@ REPO_ROOT_MARKERS: tuple[str, ...] = (
 CONSUMER_FOOTPRINT_DIR: str = ".agent-coordination"
 CONSUMER_FOOTPRINT_ALIAS_DIR: str = ".agent-governance"
 
-SOURCE_PROTOCOL_VERSION: str = "1.12.0"
-
 CORE_REQUIRED_MODULES: tuple[str, ...] = (
     "ADAPTERS.md",
     "COEXISTENCE.md",
@@ -154,13 +152,20 @@ def iter_markdown_files(root: Path) -> Iterable[Path]:
 
 
 def protocol_version_from(core_governance: Path) -> str | None:
-    """Return the `Protocol-Version` declared in `GOVERNANCE.md`."""
+    """Return the single valid SemVer `Protocol-Version` declaration."""
 
     if not core_governance.exists():
         return None
-    for line in core_governance.read_text(encoding="utf-8").splitlines():
-        if line.startswith("Protocol-Version:"):
-            return line.split(":", 1)[1].strip()
+    declarations = [
+        line.split(":", 1)[1].strip()
+        for line in core_governance.read_text(encoding="utf-8").splitlines()
+        if line.startswith("Protocol-Version:")
+    ]
+    if len(declarations) != 1:
+        return None
+    version = declarations[0]
+    if re.fullmatch(r"(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)", version):
+        return version
     return None
 
 

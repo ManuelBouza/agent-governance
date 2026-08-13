@@ -1,0 +1,70 @@
+{
+  "scope_cases": [
+    {
+      "id": "complete-bounded-scope",
+      "scope": {"subject": "service-a", "environment": "test", "resources": ["component-a"], "methods": ["artifact-review"], "maximum_profile": "EVIDENCE_REVIEW", "unavailable_evidence": ["runtime-state"], "exclusions": ["component-b"]},
+      "requested": {"resources": ["component-a"], "methods": ["artifact-review"], "profile": "EVIDENCE_REVIEW"},
+      "credentials_available": true,
+      "reachable_resources": ["component-a", "component-b"],
+      "tool_capabilities": ["artifact-review", "active-probe"],
+      "expected": "READY"
+    },
+    {
+      "id": "missing-subject-blocks",
+      "scope": {"subject": "", "environment": "test", "resources": ["component-a"], "methods": ["artifact-review"], "maximum_profile": "EVIDENCE_REVIEW", "unavailable_evidence": [], "exclusions": []},
+      "requested": {"resources": ["component-a"], "methods": ["artifact-review"], "profile": "EVIDENCE_REVIEW"},
+      "expected": "BLOCKED"
+    },
+    {
+      "id": "reachability-cannot-expand",
+      "scope": {"subject": "service-a", "environment": "test", "resources": ["component-a"], "methods": ["artifact-review"], "maximum_profile": "EVIDENCE_REVIEW", "unavailable_evidence": [], "exclusions": ["component-b"]},
+      "requested": {"resources": ["component-b"], "methods": ["artifact-review"], "profile": "EVIDENCE_REVIEW"},
+      "credentials_available": true,
+      "reachable_resources": ["component-b"],
+      "expected": "BLOCKED"
+    }
+  ],
+  "profile_cases": [
+    {"id": "review", "authorized": "EVIDENCE_REVIEW", "requested": "EVIDENCE_REVIEW", "generic_security_audit": false, "capability_available": false, "expected": true},
+    {"id": "observe", "authorized": "AUTHENTICATED_OBSERVE", "requested": "AUTHENTICATED_OBSERVE", "generic_security_audit": false, "capability_available": false, "expected": true},
+    {"id": "safe-active", "authorized": "SAFE_ACTIVE", "requested": "SAFE_ACTIVE", "generic_security_audit": false, "capability_available": true, "expected": true},
+    {"id": "intrusive-explicit", "authorized": "INTRUSIVE_AUTHORIZED", "requested": "INTRUSIVE_AUTHORIZED", "generic_security_audit": false, "capability_available": true, "expected": true},
+    {"id": "generic-does-not-escalate", "authorized": "EVIDENCE_REVIEW", "requested": "INTRUSIVE_AUTHORIZED", "generic_security_audit": true, "capability_available": true, "expected": false}
+  ],
+  "finding_cases": [
+    {"id": "pass", "expected_state": "enabled", "observed_state": "enabled", "method": "deterministic-check", "evidence": "artifact:a", "source": "control-set@1", "status": "PASS", "expected": "PASS"},
+    {"id": "fail", "expected_state": "enabled", "observed_state": "disabled", "method": "deterministic-check", "evidence": "artifact:b", "source": "control-set@1", "status": "FAIL", "expected": "FAIL"},
+    {"id": "partial", "expected_state": "all-enabled", "observed_state": "some-enabled", "method": "deterministic-check", "evidence": "artifact:c", "source": "control-set@1", "status": "PARTIAL", "expected": "PARTIAL"},
+    {"id": "not-applicable", "expected_state": "not-required", "observed_state": "absent", "method": "scope-analysis", "evidence": "scope:c", "source": "control-set@1", "status": "NOT_APPLICABLE", "expected": "NOT_APPLICABLE"},
+    {"id": "not-assessed", "expected_state": "enabled", "observed_state": null, "method": null, "evidence": null, "source": "control-set@1", "status": "NOT_ASSESSED", "expected": "NOT_ASSESSED"},
+    {"id": "inconclusive", "expected_state": "enabled", "observed_state": "conflicting", "method": "artifact-review", "evidence": "artifact:d", "source": "control-set@1", "status": "INCONCLUSIVE", "expected": "INCONCLUSIVE"},
+    {"id": "accepted-exception", "expected_state": "enabled", "observed_state": "disabled", "method": "deterministic-check", "evidence": "artifact:e", "source": "control-set@1", "status": "ACCEPTED_EXCEPTION", "exception": {"human_approved": true, "scope": "component-a", "evaluate_at": "2026-08-12T00:00:00Z", "expires_at": "2026-08-13T00:00:00Z"}, "expected": "ACCEPTED_EXCEPTION"},
+    {"id": "missing-evidence", "expected_state": "enabled", "observed_state": null, "method": "artifact-review", "evidence": null, "source": "control-set@1", "status": "PASS", "expected": "INCONCLUSIVE"},
+    {"id": "opinion-only", "expected_state": "enabled", "observed_state": "claimed-enabled", "method": "opinion", "evidence": null, "source": null, "status": "PASS", "expected": "INCONCLUSIVE"}
+  ],
+  "risk_cases": [
+    {"id": "high-low", "severity": "HIGH", "confidence": "LOW", "expected_severity": "HIGH", "expected_confidence": "LOW", "verification_needed": true},
+    {"id": "low-high", "severity": "LOW", "confidence": "HIGH", "expected_severity": "LOW", "expected_confidence": "HIGH", "verification_needed": false}
+  ],
+  "coverage_cases": [
+    {"id": "complete-bounded", "scope": "component-a", "methods": ["artifact-review"], "source_versions": ["control-set@1"], "assessed_at": "2026-08-12T00:00:00Z", "cells": ["PASS", "NOT_APPLICABLE"], "expected_complete": true, "expected_conclusion": "BOUNDED_NO_MATERIAL_FINDING"},
+    {"id": "not-assessed-gap", "scope": "component-a", "methods": ["artifact-review"], "source_versions": ["control-set@1"], "assessed_at": "2026-08-12T00:00:00Z", "cells": ["PASS", "NOT_ASSESSED"], "expected_complete": false, "expected_conclusion": "GAPS_REMAIN"},
+    {"id": "inconclusive-gap", "scope": "component-a", "methods": ["artifact-review"], "source_versions": ["control-set@1"], "assessed_at": "2026-08-12T00:00:00Z", "cells": ["PASS", "INCONCLUSIVE"], "expected_complete": false, "expected_conclusion": "GAPS_REMAIN"}
+  ],
+  "remediation_cases": [
+    {"id": "finding-only", "finding": "FAIL", "remediation_authorized": false, "capability_available": true, "recommendation_present": true, "expected": false},
+    {"id": "separate-authorization", "finding": "FAIL", "remediation_authorized": true, "capability_available": false, "recommendation_present": true, "expected": true}
+  ],
+  "temporal_cases": [
+    {"id": "applicable-advisory", "historical_report": "COMPLETED", "current_posture": "CURRENT", "signal": {"kind": "ADVISORY", "applicable": true, "observed_at": "2026-08-13T00:00:00Z", "result": "STALE"}, "expected_historical": "COMPLETED", "expected_posture": "STALE"},
+    {"id": "applicable-drift", "historical_report": "COMPLETED", "current_posture": "CURRENT", "signal": {"kind": "DRIFT", "applicable": true, "observed_at": "2026-08-13T00:00:00Z", "result": "VIOLATED"}, "expected_historical": "COMPLETED", "expected_posture": "VIOLATED"},
+    {"id": "non-applicable", "historical_report": "COMPLETED", "current_posture": "CURRENT", "signal": {"kind": "ADVISORY", "applicable": false, "observed_at": "2026-08-13T00:00:00Z", "result": "STALE"}, "expected_historical": "COMPLETED", "expected_posture": "CURRENT"}
+  ],
+  "composition_cases": [
+    {"id": "audit-pass-security-block", "audit": "PASS", "security": "BLOCK", "execution": "ALLOW_TASK", "profile": "EVIDENCE_REVIEW", "exception_valid": false, "expected_audit": "PASS", "expected_security": "BLOCK", "expected_method_authorized": true},
+    {"id": "security-pass-no-method-authority", "audit": "NOT_ASSESSED", "security": "PASS", "execution": "DENY", "profile": "SAFE_ACTIVE", "exception_valid": false, "expected_audit": "NOT_ASSESSED", "expected_security": "PASS", "expected_method_authorized": false},
+    {"id": "execution-cannot-create-pass", "audit": "INCONCLUSIVE", "security": "PASS", "execution": "ALLOW_EXPLICIT", "profile": "SAFE_ACTIVE", "exception_valid": false, "expected_audit": "INCONCLUSIVE", "expected_security": "PASS", "expected_method_authorized": true},
+    {"id": "intrusive-requires-explicit-execution", "audit": "NOT_ASSESSED", "security": "PASS", "execution": "ALLOW_TASK", "profile": "INTRUSIVE_AUTHORIZED", "exception_valid": false, "expected_audit": "NOT_ASSESSED", "expected_security": "PASS", "expected_method_authorized": false},
+    {"id": "exception-does-not-authorize", "audit": "ACCEPTED_EXCEPTION", "security": "HUMAN_EXCEPTION", "execution": "DENY", "profile": "EVIDENCE_REVIEW", "exception_valid": true, "expected_audit": "ACCEPTED_EXCEPTION", "expected_security": "HUMAN_EXCEPTION", "expected_method_authorized": false}
+  ]
+}
