@@ -1,58 +1,52 @@
 # Current ChatGPT Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O058  
+Checkpoint-Sequence: O059  
 Canonical-Branch: `develop`  
 Chat-Closure: CONTINUE_ALLOWED
 
 ## Current Frontier
 
-T006, T008, T009 and T010 are `ACCEPTED`, integrated and post-integration-cleaned. L002 remains `ANALYZED` and separate.
+T006, T008, T009 and T010 are `ACCEPTED`, integrated and post-integration-cleaned. D041, D042 and D043 are integrated and cleaned. L002 remains `ANALYZED` and separate.
 
-D036 — Existing-System Assurance Audit Mode — is `ACCEPTED` with Core module `governance-core/ASSURANCE.md` still staged. D040 controls atomic protocol migration/single-version authority. T010 completed D040 Phase A.
+D036 — Existing-System Assurance Audit Mode — is `ACCEPTED`. D040 controls atomic protocol migration/single-version authority. T010 completed D040 Phase A and removed the independently mutable current-protocol literal from executor-owned verification.
 
-D041 executor-process autonomy, D042 remote-baseline freshness and D043 host-native repository-instruction loading are integrated and their cleanup operations OP008–OP011 are complete. Canonical remote branch inventory after OP011 is `develop`, `main`.
+Canonical `develop` before this candidate is `cc703f3e2abd71d73be91d602e484175ef35cd46`.
 
-Current `develop` is `b68dfe0d43b691e471462eb62a910d4a01a00999`.
+## D040 Phase B activation candidate
 
-## D040 Phase B — current work
+Current candidate branch:
 
-D040 Phase B is now the active frontier.
+`docs/d040-phase-b-assurance-activation`
 
-Required activation result:
+PR:
+
+`#81`
+
+Candidate intent:
 
 ```text
 GOVERNANCE.md -> Protocol 1.13.0
 ASSURANCE.md  -> ACTIVE
-source-map/router/readiness -> ASSURANCE
+source map/router/invariants -> ASSURANCE
+architecture -> CORE ACTIVE
         ↓
-exact candidate verification
+OP012 exact-candidate deterministic verification
         ↓
-full deterministic suite green
-without current-version literal synchronization
-        ↓
-merge activation
-        ↓
-L001 -> VERIFIED
+merge only if all gates PASS without mutation
 ```
 
-There is no repository CI workflow capable of supplying the required pre-merge deterministic evidence automatically.
+L001 remains `CONTROL_FAILURE` in the candidate. Do not mark it `VERIFIED` before OP012 proves the exact candidate and the activation is integrated.
 
-Therefore OP012 is being persisted before activation so the Agente de IA Ejecutor can verify the exact future Markdown activation candidate read-only, without mutating it.
-
-## OP012 — D040 Phase-B candidate verification
+## OP012 — exact candidate verification
 
 Operational Contract:
 
 `docs/operations/OP012-verify-d040-phase-b-activation-candidate.md`
 
-Status: `READY` after this planning PR is integrated.
+Status: `READY`.
 
-Durable candidate branch:
-
-`docs/d040-phase-b-assurance-activation`
-
-OP012 verifies the exact remote candidate HEAD, requires a Markdown-only diff and runs:
+OP012 must verify the exact current remote HEAD of `docs/d040-phase-b-assurance-activation` and requires:
 
 ```text
 uv run --locked pytest -q tests/test_assurance_audit_contract.py
@@ -61,26 +55,25 @@ uv run --locked ruff check .
 uv run --locked ruff format --check .
 ```
 
-OP012 MUST NOT modify/repair/commit/push candidate content. Any need for non-Markdown correction becomes `BLOCKED` and requires a new Task Contract.
+The operation is read-only. It MUST NOT repair, format, commit or push candidate content. Any required non-Markdown correction blocks the activation and requires a new Task Contract.
 
-## OP013 — verification-prep cleanup
+## OP014 — activation-branch cleanup
 
 Operational Contract:
 
-`docs/operations/OP013-retire-d040-phase-b-verification-prep-branch.md`
+`docs/operations/OP014-retire-d040-phase-b-assurance-activation-branch.md`
 
-OP013 remains `DRAFT` until the PR integrating OP012/OP013/checkpoint is durably recorded and OP013 is marked `READY`.
+Status: `READY` but executable only after PR #81 is successfully merged.
 
-## D040 / D036 staged state
+OP014 retires only the merged PR #81 source branch.
 
-Until the activation candidate is created:
+## Assurance state in this candidate
 
-- canonical Protocol remains `1.12.0`;
-- `governance-core/ASSURANCE.md` remains `Assurance-Audit-Version: 1.0.0`, `Activation-State: STAGED`;
-- `ASSURANCE.md` is not yet a routed required Core module;
-- L001 remains `CONTROL_FAILURE`.
-
-T010-R1 confirms the test helper now derives current protocol identity from `governance-core/GOVERNANCE.md` and no independent mutable exact-current-version literal remains.
+- `governance-core/GOVERNANCE.md`: `Protocol-Version: 1.13.0`;
+- `governance-core/ASSURANCE.md`: `Assurance-Audit-Version: 1.0.0`, `Activation-State: ACTIVE`;
+- `ASSURANCE.md` is routed in the Source Map and Context Router;
+- assurance claims remain evidence-first and bounded;
+- activation does not grant live-system, scanner/provider, intrusive-assessment or remediation authority.
 
 ## Executor bootstrap policy
 
@@ -93,48 +86,59 @@ Executor owns implementation process + internal orchestration
 
 D042 requires canonical remote freshness before contract load.
 
-D043 removes unconditional `read AGENTS.md` from normal delegated prompts. Add an explicit AGENTS reload only when the governing integrated change modified `AGENTS.md`.
-
-Neither this verification-prep change nor the planned D040 activation modifies `AGENTS.md`, so normal OP012/OP013 launches do not require an explicit AGENTS reload line.
+D043 removes unconditional `read AGENTS.md` from normal delegated prompts. PR #81 does not modify `AGENTS.md`, so OP012 does not require an explicit AGENTS reload line.
 
 ## Learning state
 
-L001 — `verification.regression.protocol_version_drift` — remains `CONTROL_FAILURE` until the exact Protocol `1.13.0` activation candidate passes OP012 without test/helper version synchronization and is integrated.
+L001 — `verification.regression.protocol_version_drift` — `CONTROL_FAILURE` pending exact-candidate verification and activation integration.
+
+Recovery requires the Protocol `1.13.0` candidate to pass all OP012 gates without any executor-side current-version synchronization and then be integrated without introducing a second version authority.
 
 L002 — `task.handoff.identity_mismatch` — `ANALYZED`, non-blocking and separate.
 
+## CodeGraph next
+
+CodeGraph project initialization remains deliberately separate from D040 Phase B.
+
+After D040 Phase B is integrated and OP014 cleanup closes, prepare a separate executor-owned change/operation to:
+
+- initialize CodeGraph locally for this repository;
+- add `.codegraph/` to canonical `.gitignore`;
+- verify CodeGraph is usable;
+- verify generated `.codegraph/` state remains local/untracked;
+- keep CodeGraph as executor capability, not Governance authority, correctness dependency or product state.
+
 ## Next Action
 
-1. Review/open the OP012/OP013/checkpoint planning PR from `docs/d040-phase-b-verification-prep`.
-2. Persist that PR identity in OP013, mark OP013 `READY`, merge the planning PR and freeze its source branch.
-3. Execute OP013 and verify planning-branch cleanup.
-4. Create fresh Markdown branch `docs/d040-phase-b-assurance-activation` from then-current `develop`.
-5. Apply only the D040 Phase-B Markdown activation: Protocol `1.13.0`, ASSURANCE activation/routing, architecture/checkpoint updates. Do not mark L001 `VERIFIED` yet.
-6. Run OP012 against the exact activation-candidate remote HEAD.
-7. If OP012 is `DONE` with all gates PASS and no mutation, persist final activation evidence/L001 `VERIFIED` on the same candidate branch, review exact diff, then merge.
-8. If OP012 is not green, do not merge activation; create a new Task Contract for any required non-Markdown correction.
-9. After activation integration, perform post-integration branch cleanup through a separately persisted Operational Contract.
-10. Do not start real-system audit adapters/providers until a later explicit decision/Task Contract authorizes them.
+1. Review exact PR #81 changed paths/diff and stabilize candidate HEAD.
+2. Launch OP012 against that exact remote HEAD using D042/D043 bootstrap.
+3. If OP012 is `DONE`, all four gates are PASS, candidate is Markdown-only and `REPO_MUTATION: NONE`, merge exact tested PR #81 HEAD.
+4. Persist L001 recovery evidence/status in a follow-up Markdown record from resulting `develop`; do not mutate the tested candidate before merge.
+5. Execute OP014 and verify remote/local activation-branch cleanup.
+6. Then create the separate CodeGraph initialization work.
+7. Do not start real-system assurance adapters/providers until a later explicit decision/Task Contract authorizes them.
 
 ## Next Chat Minimum Load
 
 After repository bootstrap and this checkpoint:
 
-1. while verification-prep PR/OP013 is pending, load OP012, OP013 and D040;
-2. for activation drafting, load D040, T010-R1, `governance-core/GOVERNANCE.md`, `governance-core/ASSURANCE.md`, `docs/ARCHITECTURE-ASSURANCE-AUDIT.md`, and L001;
-3. for OP012 result review, load exact candidate diff + OP012 response + relevant deterministic evidence;
-4. load L002 only on a concrete handoff-identity conflict or explicit separate control-selection work.
+1. for OP012 review/execution, load OP012 + exact PR #81 diff + D040 + T010-R1;
+2. after OP012 PASS/merge, load L001 + exact verification result + merged PR #81 identity;
+3. for OP014, load its Operational Contract plus branch-cleanup policy;
+4. for CodeGraph work, load the current `.gitignore`, D041 and the separate CodeGraph contract/decision created for that scope;
+5. load L002 only on a concrete handoff-identity conflict or explicit separate control-selection work.
 
 ## Do Not
 
 - Do not write directly to `develop` or `main`.
-- Do not merge Protocol `1.13.0` activation without exact candidate deterministic PASS evidence.
-- Do not mark L001 `VERIFIED` before that evidence exists.
-- Do not mutate the activation candidate during OP012 verification.
+- Do not merge PR #81 without exact-candidate OP012 PASS evidence.
+- Do not mark L001 `VERIFIED` before activation integration.
+- Do not mutate the candidate during OP012 verification.
 - Do not accept a red intermediate `develop`.
 - Do not create another mutable exact-current protocol-version authority.
 - Do not prescribe executor-internal methodology/tool routing.
 - Do not add an unconditional `read AGENTS.md` directive to normal launch prompts.
+- Do not initialize CodeGraph as part of D040 Phase B.
 - Do not infer intrusive/live assessment authorization from D036/T010.
 - Do not add scanner/provider/model/network dependencies to this phase.
 - Do not fold L002 into D036/D040.
