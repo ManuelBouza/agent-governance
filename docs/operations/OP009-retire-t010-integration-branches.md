@@ -1,13 +1,13 @@
 # OP009 — Retire T010 integration branches
 
 Operation ID: OP009  
-Status: DRAFT  
+Status: READY  
 Type: post-integration branch cleanup  
 Base branch: `develop`
 
 ## Objective
 
-Retire the merged source branches used for T010 acceptance, T010 implementation integration, and this OP009 cleanup contract after all three PR identities are durably recorded, while preserving `main`, `develop`, the still-pending D041/OP008 branch and repository content.
+Retire the merged source branches used for T010 acceptance, T010 implementation integration, and this OP009 cleanup contract, while preserving `main`, `develop`, the still-pending D041/OP008 branch and repository content.
 
 ## Durable targets
 
@@ -15,9 +15,9 @@ The sole retirement targets are the source branches of these merged PRs:
 
 - T010 acceptance PR #75;
 - T010 implementation PR #76;
-- the PR integrating this OP009 contract.
+- OP009 cleanup-contract PR #77.
 
-The third PR identity MUST be persisted here before OP009 becomes `READY`.
+The executor MUST derive each exact source branch and reviewed head SHA from canonical GitHub PR state. Chat/terminal text is not deletion authority.
 
 ## Controlling references
 
@@ -26,7 +26,7 @@ The third PR identity MUST be persisted here before OP009 becomes `READY`.
 - `docs/BRANCHING.md`
 - `docs/BRANCH-CLEANUP.md`
 - `docs/POST-INTEGRATION-CLEANUP-PROMPT.md`
-- merged Git/GitHub records for the durable targets
+- merged Git/GitHub records for PR #75, PR #76 and PR #77
 
 ## Authorized operations
 
