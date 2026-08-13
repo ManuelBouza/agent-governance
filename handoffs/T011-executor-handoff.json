@@ -1,0 +1,74 @@
+{
+  "task_id": "T011",
+  "status": "DONE",
+  "task_contract_path": "docs/tasks/T011-assurance-active-routing-verification.md",
+  "branch": "test/assurance-active-routing-verification",
+  "implementation_head_sha": "b83b04d3562d5cdd2d5a820e7230a3552bd70616",
+  "implementation_head_sha_note": "Implementation anchor. This handoff is committed in a handoff-only successor; the executor response reports the final pushed branch HEAD.",
+  "base_branch": "develop",
+  "base_sha": "eecf676934d619606b5e64a9a6519b2ad47970cc",
+  "files_changed": [
+    "tests/_helpers.py",
+    "tests/test_assurance_audit_contract.py",
+    "handoffs/T011-executor-handoff.json"
+  ],
+  "implementation_summary": "Made assurance required-Core membership derive from GOVERNANCE.md routing and updated deterministic assurance verification to validate both staged Protocol 1.12.0 unrouted state and active Protocol 1.13.0-or-later routed state without introducing a second mutable current-version authority.",
+  "state_model": {
+    "protocol_authority": "governance-core/GOVERNANCE.md",
+    "staged": {
+      "protocol_version": "1.12.0",
+      "routed": false,
+      "required_core": false
+    },
+    "active": {
+      "minimum_protocol_version": "1.13.0",
+      "routed": true,
+      "required_core": true
+    },
+    "mutable_current_version_authority_reintroduced": false
+  },
+  "verification": {
+    "implementation_branch": {
+      "focused_pytest": "10 passed in 0.02s",
+      "full_pytest": "154 passed in 0.66s",
+      "ruff_check": "All checks passed!",
+      "ruff_format_check": "13 files already formatted"
+    },
+    "candidate_composition": {
+      "candidate_branch": "docs/d040-phase-b-assurance-activation",
+      "candidate_head": "1207637673619b40234556d0b37cac8401ffc83a",
+      "method": "Checked out exact detached candidate and overlaid only the two uncommitted T011 test/helper changes; candidate branch was not modified or pushed.",
+      "focused_pytest": "10 passed in 0.02s",
+      "full_pytest": "154 passed in 0.61s",
+      "ruff_check": "All checks passed!",
+      "ruff_format_check": "13 files already formatted",
+      "result": "PASS"
+    },
+    "commands": [
+      "uv run --locked pytest -q tests/test_assurance_audit_contract.py",
+      "uv run --locked pytest -q",
+      "uv run --locked ruff check .",
+      "uv run --locked ruff format --check ."
+    ],
+    "runtime_harness": "N/A: deterministic test/helper correction has no production runtime boundary. Exact PR #81 candidate composition is the applicable end-to-end verification.",
+    "git_diff_check": "PASS"
+  },
+  "scope_confirmation": {
+    "markdown_changed": false,
+    "governance_core_changed": false,
+    "pr_81_modified": false,
+    "dependencies_or_lockfiles_changed": false,
+    "production_runtime_changed": false,
+    "provider_model_network_or_live_system_behavior_added": false,
+    "codegraph_or_sdd_state_initialized": false
+  },
+  "changed_line_budget": {
+    "implementation_additions": 63,
+    "implementation_deletions": 11,
+    "authored_total": 74
+  },
+  "rollback": "Revert implementation commit b83b04d3562d5cdd2d5a820e7230a3552bd70616 to remove the T011 helper and assurance-routing test changes; revert the handoff-only successor separately if needed.",
+  "preserved_local_state": ".codegraph/ remained untracked, unread, unmodified and unstaged.",
+  "unresolved_issues": [],
+  "chatgpt_read_path": "handoffs/T011-executor-handoff.json"
+}

@@ -44,6 +44,8 @@ CORE_REQUIRED_MODULES: tuple[str, ...] = (
     "SKILLS.md",
 )
 
+ASSURANCE_ROUTE: str = ".agent-governance/ASSURANCE.md"
+
 SOURCE_MAINTENANCE_PATHS: tuple[str, ...] = (
     "docs/ORCHESTRATOR-CHECKPOINTS.md",
     "docs/orchestrator/CHECKPOINT.md",
@@ -167,6 +169,17 @@ def protocol_version_from(core_governance: Path) -> str | None:
     if re.fullmatch(r"(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)", version):
         return version
     return None
+
+
+def required_core_modules_from(core_governance: Path) -> tuple[str, ...]:
+    """Return required Core modules, including state-derived routing."""
+
+    if not core_governance.exists():
+        return CORE_REQUIRED_MODULES
+    governance_text = core_governance.read_text(encoding="utf-8")
+    if ASSURANCE_ROUTE in governance_text:
+        return (*CORE_REQUIRED_MODULES, "ASSURANCE.md")
+    return CORE_REQUIRED_MODULES
 
 
 def looks_like_path(token: str) -> bool:
