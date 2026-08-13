@@ -1,7 +1,7 @@
 # OP008 — Retire executor-process-autonomy planning branch
 
 Operation ID: OP008  
-Status: DRAFT  
+Status: READY  
 Type: post-integration branch cleanup  
 Base branch: `develop`
 
@@ -11,9 +11,11 @@ Retire the merged Markdown planning branch that integrates D041 executor process
 
 ## Durable target
 
-The PR integrating this OP008 contract and D041 planning change MUST be recorded here before OP008 becomes `READY`.
+- PR: `#74`
+- Purpose: D041 executor-process-autonomy planning integration
+- Source branch/head identity: derive from merged PR #74 and canonical Git/GitHub state at execution time.
 
-Its merged source branch is the sole retirement target of this operation.
+The merged source branch of PR #74 is the sole retirement target of this operation.
 
 ## Controlling references
 
@@ -22,7 +24,7 @@ Its merged source branch is the sole retirement target of this operation.
 - `docs/BRANCHING.md`
 - `docs/BRANCH-CLEANUP.md`
 - `docs/POST-INTEGRATION-CLEANUP-PROMPT.md`
-- merged Git/GitHub record for the durable target
+- merged Git/GitHub record for PR #74
 
 ## Authorized operations
 
