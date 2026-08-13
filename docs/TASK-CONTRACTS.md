@@ -33,14 +33,23 @@ Likewise, review MUST NOT require the executor's private orchestration trace unl
 
 Executor-native workflows remain subordinate implementation mechanisms: they may not redefine Task Contract semantics, acquire Governance acceptance authority, or introduce tracked/generated repository state outside authorized scope.
 
-## Remote baseline freshness invariant
+## Remote baseline freshness and repository-instruction loading
 
-Under D042, the executor MUST load `AGENTS.md` and the Task Contract from a local baseline that is current with the canonical remote base branch.
+Under D042, the executor MUST load the Task Contract from a local baseline that is current with the canonical remote base branch.
+
+Under D043, compatible executor hosts are expected to load applicable repository-level instructions such as `AGENTS.md` through their native session/repository bootstrap. Agent Governance therefore does not repeat an unconditional `read AGENTS.md` directive in every launch prompt.
 
 ```text
+normal launch:
 synchronize canonical remote
     -> verify safe local base == current origin/<base-branch>
-    -> read AGENTS.md
+    -> read Task Contract
+    -> execute
+
+launch after governing AGENTS.md change:
+synchronize canonical remote
+    -> verify safe local base == current origin/<base-branch>
+    -> reload current AGENTS.md
     -> read Task Contract
     -> execute
 ```
@@ -48,6 +57,10 @@ synchronize canonical remote
 A currently checked-out older topic branch, or a stale local branch merely named `develop`, is not sufficient evidence of `current develop`.
 
 The executor chooses the concrete compatible Git workflow for synchronization. It MUST preserve local/uncommitted work and MUST stop/escalate rather than destructively overwrite, discard or guess if the current remote baseline cannot be established safely.
+
+The conditional `AGENTS.md` reload is determined by canonical Git history. ChatGPT includes it only when the integrated change governing the delegated execution modified `AGENTS.md` and a running executor session may hold a pre-change instruction snapshot.
+
+If an executor host does not natively load repository instructions, its adapter/session bootstrap must provide equivalent loading before it is treated as a compatible Agente de IA Ejecutor. Repeating `read AGENTS.md` in every Task prompt is not the fallback mechanism.
 
 ## Location and naming
 
@@ -81,7 +94,7 @@ Each task should contain:
 A concise description of the observable result required.
 
 ### Controlling references
-Only the repository files/decisions needed to interpret the task correctly. `AGENTS.md` is always controlling.
+Only the repository files/decisions needed to interpret the task correctly. `AGENTS.md` remains controlling repository policy even when its load is supplied natively by the executor host rather than repeated in the launch prompt.
 
 ### Authorized scope
 Artifacts and behavior the executor is allowed to modify or create.
@@ -120,7 +133,8 @@ Before launching an executor:
 3. the planning change is merged into `develop`;
 4. the task status is `READY` only when all known prerequisite decisions are resolved;
 5. the executor synchronizes the canonical remote and establishes a safe local baseline equal to the current remote base branch containing that exact contract;
-6. only then may the executor create/use the implementation topic branch from that current baseline.
+6. if the governing integrated change modified `AGENTS.md`, ChatGPT includes the D043 reload line and the executor reloads current `AGENTS.md` from that baseline;
+7. only then may the executor create/use the implementation topic branch from that current baseline.
 
 This creates two durable stages:
 
@@ -146,39 +160,39 @@ A reviewer must be able to distinguish the original task from later authorized r
 2. ChatGPT creates the Task Contract on a planning branch.
 3. The Task Contract is reviewed and integrated into `develop`.
 4. ChatGPT launches the executor with the canonical minimal launch prompt defined below.
-5. The executor synchronizes the canonical remote, verifies a safe current base baseline, and only then creates/uses the authorized implementation topic branch.
-6. The executor chooses its internal implementation process and performs only authorized non-Markdown work.
-7. Material task changes require a persisted ChatGPT revision before execution continues.
-8. The executor runs required verification and persists its non-Markdown handoff under `handoffs/`.
-9. The executor commits and pushes the implementation branch, including the current handoff artifact.
-10. The executor returns only status, handoff path, branch, and pushed HEAD.
-11. ChatGPT reads the Task Contract, handoff, and remote Git diff/evidence.
-12. Rework repeats on the same task branch using durable review/revision instructions.
-13. After ChatGPT acceptance, the implementation proceeds through PR to `develop`.
-14. ChatGPT may update lifecycle/acceptance metadata without rewriting original execution semantics.
-15. After accepted task content/handoff and acceptance records are integrated, any delegated post-integration branch retirement MUST be governed by an integrated Operational Contract under `docs/OPERATION-CONTRACTS.md` and launched only through `docs/POST-INTEGRATION-CLEANUP-PROMPT.md`.
-16. Operational task closure is complete only after required remote/local branch cleanup is verified.
+5. The executor synchronizes the canonical remote and verifies a safe current base baseline.
+6. If the governing integrated change modified `AGENTS.md`, the executor reloads current `AGENTS.md` when explicitly instructed by the conditional D043 line.
+7. The executor creates/uses the authorized implementation topic branch.
+8. The executor chooses its internal implementation process and performs only authorized non-Markdown work.
+9. Material task changes require a persisted ChatGPT revision before execution continues.
+10. The executor runs required verification and persists its non-Markdown handoff under `handoffs/`.
+11. The executor commits and pushes the implementation branch, including the current handoff artifact.
+12. The executor returns only status, handoff path, branch, and pushed HEAD.
+13. ChatGPT reads the Task Contract, handoff, and remote Git diff/evidence.
+14. Rework repeats on the same task branch using durable review/revision instructions.
+15. After ChatGPT acceptance, the implementation proceeds through PR to `develop`.
+16. ChatGPT may update lifecycle/acceptance metadata without rewriting original execution semantics.
+17. After accepted task content/handoff and acceptance records are integrated, any delegated post-integration branch retirement MUST be governed by an integrated Operational Contract under `docs/OPERATION-CONTRACTS.md` and launched only through `docs/POST-INTEGRATION-CLEANUP-PROMPT.md`.
+18. Operational task closure is complete only after required remote/local branch cleanup is verified.
 
 ## Canonical minimal executor launch prompt
 
 Every normal source-product executor launch MUST use the same structural contract. The launch prompt is transport/bootstrap only; it MUST NOT become a second task specification.
 
-The prompt contains exactly these semantic parts:
+The prompt contains these semantic parts:
 
 1. **Role** — identify the abstract `Agente de IA Ejecutor` role and canonical repository.
 2. **Repository freshness/baseline** — require synchronization of the canonical remote and a safe local baseline current with the Task Contract base branch, normally `origin/develop`.
-3. **Bootstrap** — instruct the executor to read `AGENTS.md` from that current baseline first.
+3. **Conditional repository-instruction reload** — include an explicit `AGENTS.md` reload only when the governing integrated change modified `AGENTS.md`; omit it otherwise.
 4. **Authoritative task pointer** — provide exactly one controlling Task Contract path and state that the Task Contract plus its referenced repository policies are the complete execution specification.
 5. **Completion contract** — require the contract-defined verification/handoff, commit and push, then require only the minimal status/handoff/branch/HEAD response.
 
-Canonical template:
+Normal canonical template:
 
 ```text
 Operate as the Agente de IA Ejecutor for <owner>/<repository>.
 
 Synchronize the canonical remote and ensure the local <base-branch> baseline used for bootstrap is current with origin/<base-branch>. Preserve local/uncommitted work; if a safe current baseline cannot be established, stop and report BLOCKED rather than using stale repository state.
-
-From that current baseline, read AGENTS.md first.
 
 Then load and execute the authoritative Task Contract:
 <task-contract-path>
@@ -193,7 +207,13 @@ BRANCH: <branch>
 HEAD: <pushed-commit-sha>
 ```
 
-For normal launches, substitute only repository identity, base branch and Task Contract path. The output placeholders remain the generic completion schema; the concrete handoff path/branch are resolved from the Task Contract. The executor chooses the concrete safe Git commands used to establish current remote identity.
+If and only if the governing integrated change modified `AGENTS.md`, insert this line after the remote-freshness paragraph and before the Task Contract pointer:
+
+```text
+AGENTS.md changed in the governing integrated change; reload current AGENTS.md from this baseline before loading the Task Contract.
+```
+
+For normal launches, substitute only repository identity, base branch and Task Contract path. The output placeholders remain the generic completion schema; the concrete handoff path/branch are resolved from the Task Contract. The executor chooses the concrete safe Git commands used to establish current remote identity. The conditional D043 reload line is included only when canonical Git history requires it.
 
 ### Launch-prompt non-duplication invariant
 
@@ -209,11 +229,12 @@ The launch prompt MUST NOT duplicate task semantics that belong in Git, includin
 - provider/product-specific implementation instructions;
 - task-specific safety/security restrictions;
 - protocol/module versions;
-- executor-internal methodology, sub-agent topology, SDD mode, Skill routing, or tool choice.
+- executor-internal methodology, sub-agent topology, SDD mode, Skill routing, or tool choice;
+- routine repository-instruction reads already supplied by the compatible host.
 
-Standing repository rules such as Markdown ownership also remain in `AGENTS.md`/referenced policy and SHOULD NOT be re-stated task-by-task in the launch prompt.
+Standing repository rules such as Markdown ownership remain in `AGENTS.md`/referenced policy and SHOULD NOT be re-stated task-by-task in the launch prompt.
 
-The generic D042 remote-freshness/bootstrap requirement is allowed in the prompt because it determines which persisted repository state is being loaded; it is not task-specific semantics.
+The generic D042 remote-freshness requirement is allowed in the prompt because it determines which persisted repository state is being loaded; it is not task-specific semantics. The D043 reload line is also allowed when required because it refreshes changed repository instructions rather than adding task semantics.
 
 If any task-specific fact is necessary to execute safely or correctly, persist it in the Task Contract or its controlling repository policy before launch rather than extending the chat/terminal prompt.
 
@@ -222,7 +243,8 @@ If any task-specific fact is necessary to execute safely or correctly, persist i
 The prompt does not supersede or supplement missing Task Contract semantics.
 
 ```text
-launch prompt = role + repository + remote freshness + bootstrap + task pointer + completion contract
+normal launch prompt = role + repository + remote freshness + task pointer + completion contract
+conditional delta     = AGENTS.md reload only after AGENTS.md change
 Task Contract + referenced Git policy = execution specification
 ```
 
@@ -238,7 +260,7 @@ Post-integration branch retirement is not another implementation launch and MUST
 
 Before delegating cleanup, ChatGPT MUST persist the complete concrete operation in an integrated `docs/operations/OPNNN-*.md` Operational Contract governed by `docs/OPERATION-CONTRACTS.md`.
 
-The cleanup bootstrap prompt then contains only repository/base/remote-freshness/bootstrap context plus exactly one Operational Contract path. All concrete targets, resolved-review exceptions, safety semantics, and required evidence live in Git.
+The cleanup bootstrap prompt then contains only repository/base/remote-freshness context plus exactly one Operational Contract path, with the same conditional D043 `AGENTS.md` reload rule. All concrete targets, resolved-review exceptions, safety semantics, and required evidence live in Git.
 
 ```text
 normal task launch -> Task Contract pointer
