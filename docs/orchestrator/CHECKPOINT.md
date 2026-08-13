@@ -1,7 +1,7 @@
 # Current ChatGPT Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT
-Checkpoint-Sequence: O066
+Checkpoint-Sequence: O067
 Canonical-Branch: `develop`
 Chat-Closure: CONTINUE_ALLOWED
 
@@ -15,12 +15,14 @@ The active product frontier is the Consumer Governance Skill, still `DESIGN-APPR
 
 T013 stopped validly before implementation because its required outcome included committed Markdown templates while executor ownership forbids committed Markdown edits. The blocker is recorded in `docs/reviews/T013-B1.md`.
 
-ChatGPT now owns and integrates the required Markdown templates:
+ChatGPT owns the integrated Markdown templates:
 - `governance-skill/assets/MISSION.template.md`;
 - `governance-skill/assets/WORKPLAN.template.md`;
 - `governance-skill/assets/TASK.template.md`.
 
 T014 is the executable successor and owns only authorized non-Markdown implementation/tests/assets/handoff for safe consumer `bootstrap` and structural `validate`.
+
+OP026 retired `docs/t013-fix`. The blocked T013 branch remains only to preserve its unique blocker handoff. Independent GitHub comparison shows its only unique path is `handoffs/T013-executor-handoff.json`, with no implementation. OP027 is the required cleanup before T014.
 
 L002 remains separate and non-blocking.
 
@@ -32,8 +34,8 @@ The existing narrow external-worktree permission is treated as stable workstatio
 
 ## Next Action
 
-1. Merge PR #96 containing the T013 blocker resolution, ChatGPT-owned Markdown templates, T014 and OP026.
-2. Execute OP026 and independently verify remote branches return to `develop`, `main`.
+1. Integrate OP027.
+2. Execute OP027 and independently verify remote branches return to `develop`, `main`.
 3. Launch T014 from current `develop` containing the exact successor Task Contract.
 4. Review T014 remote handoff/diff/evidence before acceptance/integration.
 5. Do not author final `governance-skill/SKILL.md` until deterministic package/tooling and trigger/eval release gates are accepted.
@@ -41,7 +43,7 @@ The existing narrow external-worktree permission is treated as stable workstatio
 ## Next Chat Minimum Load
 
 After normal bootstrap:
-- while PR #96/OP026 is pending, load OP026 and T014;
+- while OP027 is pending, load OP027 and T014;
 - for T014 review, load T014, exact executor handoff/diff, the Consumer Skill v1 release gate and the three integrated Markdown templates;
 - load Maintainer Skill material only on a concrete cross-skill conflict.
 
