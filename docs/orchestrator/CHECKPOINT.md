@@ -1,7 +1,7 @@
 # Current ChatGPT Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O051  
+Checkpoint-Sequence: O052  
 Canonical-Branch: `develop`  
 Chat-Closure: CONTINUE_ALLOWED
 
@@ -9,48 +9,42 @@ Chat-Closure: CONTINUE_ALLOWED
 
 T006, T008 and T009 are `ACCEPTED`, integrated and post-integration-cleaned. L002 remains `ANALYZED` and separate.
 
-D036 — Existing-System Assurance Audit Mode — is `ACCEPTED`. PR #73 carries the staged portable assurance module, D040 migration control and T010 readiness contract.
+D036 — Existing-System Assurance Audit Mode — is `ACCEPTED`. PR #73 integrated the staged portable assurance module, D040 migration control and T010 readiness contract. OP007 then retired its planning branch.
 
-During PR #73 planning, an attempted Markdown-owned Protocol bump to `1.13.0` reproduced fingerprint `verification.regression.protocol_version_drift` because executor-owned tests still held a mutable exact-current `1.12.0` literal. The mismatch was detected before merge and reverted; canonical `develop` remained Protocol `1.12.0` and green.
+T010 remains the next executable implementation task, but before launching it the Human identified an executor-host integration ambiguity: source-maintenance policy could be read as constraining the executor's proprietary orchestration methodology rather than only Governance authority/repository boundaries.
 
-L001 is therefore `CONTROL_FAILURE` under D039, not `VERIFIED`. D040 is the stronger selected prevention control.
+D041 resolves that ambiguity.
 
-## D040 — atomic protocol migration / single version authority
+## D041 — executor process autonomy
 
 Decision:
 
-`docs/decisions/D040-atomic-protocol-migration-and-single-version-authority.md`
+`docs/decisions/D041-executor-process-autonomy.md`
 
 Core rule:
 
 ```text
-Core Protocol-Version = single current-version authority
-
-test helper = parser / validator / compatibility verifier
-             != second current-version authority
+Governance owns requested outcome + boundaries + acceptance
+Executor owns implementation process + internal orchestration
 ```
 
-Protocol changes crossing Markdown/executable ownership use two phases:
+The Agente de IA Ejecutor may independently choose and compose compatible direct work, planning, SDD/specification workflows, sub-agents/workers, Skills, code-graph/navigation tools, testing/review helpers or other executor-native mechanisms.
 
-1. verification readiness while the current protocol remains unchanged;
-2. Markdown activation only after the deterministic suite can consume the new state without a red intermediate baseline.
+Agent Governance MUST NOT prescribe internal methodology, agent type, delegation topology or tool routing unless the method itself is material to an accepted product/safety/security/reproducibility/ownership invariant.
 
-## D036 staged Core state in PR #73
+Worker topology and private orchestration traces are not Governance acceptance evidence by default. Review remains based on the persisted Task Contract, remote Git state, required verification and handoff.
 
-PR #73 must leave `governance-core/GOVERNANCE.md` byte-equivalent to current `develop` at Protocol `1.12.0`.
+D026/D030/D031 remain authority/coexistence boundaries; they do not prohibit executor-internal use of SDD or other host capabilities that operate without unauthorized tracked state or overlapping Governance authority.
 
-It adds:
+## D040 / D036 staged state
 
-- staged `governance-core/ASSURANCE.md` version `1.0.0` with `Activation-State: STAGED`;
-- revised `docs/ARCHITECTURE-ASSURANCE-AUDIT.md` describing D040 Phase A/B activation;
-- D040;
-- L001 `CONTROL_FAILURE` recurrence/control analysis;
-- `docs/tasks/T010-d036-deterministic-assurance-audit-contract.md`;
-- `docs/operations/OP007-retire-d036-t010-planning-branch.md`.
+Canonical Protocol remains `1.12.0`.
 
-`ASSURANCE.md` is not yet an active routed/required Core module. Staging does not authorize real-system auditing, live access, scanners/providers or remediation.
+`governance-core/ASSURANCE.md` remains version `1.0.0`, `Activation-State: STAGED`, and is not yet routed as an active required Core module.
 
-## T010 — READY AFTER PR #73 + OP007
+L001 remains `CONTROL_FAILURE` until T010 plus subsequent D040 Phase-B activation prove the stronger single-version-authority control end-to-end.
+
+## T010 — NEXT EXECUTABLE AFTER D041 PLANNING CLEANUP
 
 Task Contract:
 
@@ -64,40 +58,28 @@ Expected handoff:
 
 `handoffs/T010-executor-handoff.json`
 
-T010 responsibilities:
+T010 responsibilities remain unchanged:
 
 1. deterministic synthetic D036 assurance semantics covering scope/authorization, profile ceilings, evidence/finding states, severity-confidence separation, coverage accounting, audit/remediation separation, temporal posture and D035/D033/D034 composition;
 2. implement D040 by eliminating the independently authored mutable exact-current protocol literal as a second authority while preserving deterministic malformed/version/module validation.
 
 T010 runs while authoritative Protocol remains `1.12.0` and `ASSURANCE.md` remains staged/not routed.
 
-T010 MUST NOT edit Markdown, bump/activate Protocol `1.13.0`, access real systems, make authenticated/live queries, run scanners/active tests, call models, fetch live advisories, integrate providers or perform remediation mutations.
+D041 changes only the executor-process boundary: the executor decides how to realize T010 using its available compatible tooling. Governance does not route it to SDD, General Task, particular workers, Skills or CodeGraph.
 
-## Post-T010 D036 activation
-
-After T010 is accepted, integrated and post-integration-cleaned, ChatGPT performs D040 Phase B as a separate Markdown-only change from current green `develop`:
-
-- bump `governance-core/GOVERNANCE.md` to Protocol `1.13.0`;
-- route/load `ASSURANCE.md` where applicable;
-- change `ASSURANCE.md` from `STAGED` to active;
-- update architecture/checkpoint;
-- verify the deterministic suite remains compatible without exact-current literal synchronization.
-
-If Phase B requires new executable behavior, stop and persist a new Task Contract rather than creating a red canonical intermediate state.
-
-L001 returns to `VERIFIED` only after this activation proves the D040 prevention control end-to-end.
-
-## OP007 — READY AFTER PR #73 INTEGRATION
+## OP008 — DRAFT UNTIL D041 PR IDENTITY IS PERSISTED
 
 Operational Contract:
 
-`docs/operations/OP007-retire-d036-t010-planning-branch.md`
+`docs/operations/OP008-retire-executor-process-autonomy-branch.md`
 
-Durable target: PR #73. OP007 derives the exact merged source branch and reviewed head from GitHub and retires only that branch. It preserves `main`, `develop`, future T010 work and repository content.
+OP008 will retire only the merged D041 Markdown planning branch. Its integrating PR identity must be persisted before status becomes `READY`.
 
 ## Persisted executor-instruction invariant
 
-`prompt = bootstrap transport only`; persisted Task/Operational Contract plus referenced Git policy is the complete instruction.
+`prompt = bootstrap transport only`; persisted Task/Operational Contract plus referenced Git policy is the complete external execution specification.
+
+The prompt and contract MUST NOT prescribe executor-internal methodology/tool routing unless materially required by an accepted invariant.
 
 ## Learning state
 
@@ -107,21 +89,21 @@ L002 — `task.handoff.identity_mismatch` — `ANALYZED`, non-blocking and separ
 
 ## Next Action
 
-1. Review PR #73 and verify `GOVERNANCE.md` has no final diff, all remaining files are Markdown, and staged/D040 semantics are internally consistent.
-2. Update PR #73 metadata to the staged migration design and integrate it; freeze its source branch.
-3. Execute OP007 using only its persisted Operational Contract pointer; independently verify remote/local inventories.
-4. Launch T010 using only its persisted Task Contract pointer.
-5. Review/accept/integrate/clean T010.
-6. Perform D040 Phase-B Markdown activation to Protocol `1.13.0`; prove the full deterministic suite remains green and then re-evaluate L001.
+1. Review/integrate the D041 Markdown planning PR and freeze its source branch.
+2. Execute OP008 using only its persisted Operational Contract pointer; independently verify remote/local inventories.
+3. Launch T010 using only its persisted Task Contract pointer. Do not add instructions about SDD, workers, Skills, CodeGraph or internal orchestration.
+4. Review/accept/integrate/clean T010.
+5. Perform D040 Phase-B Markdown activation to Protocol `1.13.0`; prove the full deterministic suite remains green and then re-evaluate L001.
+6. Treat CodeGraph project initialization as a separate capability/repository-state question; do not mix it into T010 unless separately authorized.
 7. Do not start real-system audit adapters/providers until a later explicit decision/Task Contract authorizes them.
 
 ## Next Chat Minimum Load
 
 After `AGENTS.md` and this checkpoint:
 
-1. if PR #73 is not integrated, load D036, D040, L001, `docs/ARCHITECTURE-ASSURANCE-AUDIT.md`, staged `governance-core/ASSURANCE.md` and T010;
-2. if OP007 is pending, load `docs/operations/OP007-retire-d036-t010-planning-branch.md` plus branch-cleanup policy;
-3. for T010 execution/review load T010, D040, L001, D036/`ASSURANCE.md`, D035/`SECURITY.md`, D033/D034/`EXECUTION-CONTROL.md`, and D037 as required by the contract;
+1. if the D041 planning PR is not integrated, load D041 and `docs/TASK-CONTRACTS.md`;
+2. if OP008 is pending, load `docs/operations/OP008-retire-executor-process-autonomy-branch.md` plus branch-cleanup policy;
+3. for T010 execution/review load T010, D041, D040, L001, D036/`ASSURANCE.md`, D035/`SECURITY.md`, D033/D034/`EXECUTION-CONTROL.md`, and D037 as required by the contract;
 4. after T010 closes, load D040 + T010 acceptance evidence + staged `ASSURANCE.md` for Phase-B activation;
 5. load L002 only on a concrete handoff-identity conflict or explicit separate control-selection work;
 6. do not reload older task history absent regression/audit need.
@@ -129,8 +111,9 @@ After `AGENTS.md` and this checkpoint:
 ## Do Not
 
 - Do not write directly to `develop` or `main`.
+- Do not prescribe SDD, General Task, a worker topology, Skill routing or CodeGraph use to the executor unless a future accepted invariant materially requires it.
+- Do not inspect private executor orchestration as an acceptance requirement unless explicitly contracted.
 - Do not merge a Protocol `1.13.0` bump before T010 readiness closes.
-- Do not launch T010 before PR #73 is integrated and OP007 closes.
 - Do not infer intrusive/live assessment authorization from D036/T010.
 - Do not add scanner/provider/model/network dependencies to T010.
 - Do not treat audit findings as remediation authority.
