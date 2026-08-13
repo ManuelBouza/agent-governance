@@ -1,116 +1,80 @@
 # Current ChatGPT Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O062  
+Checkpoint-Sequence: O063  
 Canonical-Branch: `develop`  
 Chat-Closure: CONTINUE_ALLOWED
 
 ## Current Frontier
 
-D040 Phase B is integrated.
+D040 Phase B is integrated and operationally closed. Protocol `1.13.0` is active, `ASSURANCE.md` is ACTIVE/routed, and L001 `verification.regression.protocol_version_drift` is `VERIFIED`.
 
-Exact successful activation evidence:
-
-- OP017 verified candidate HEAD `43a783ff5e8f810eaa8cf62aedca482feedc71d3`;
-- `MARKDOWN_ONLY: YES`;
-- focused pytest: PASS;
-- full pytest: PASS;
-- Ruff check: PASS;
-- Ruff format-check: PASS;
-- `REPO_MUTATION: NONE`;
-- PR #87 merged exactly that tested candidate into `develop` as `85ccfac49e2e4a635f66c43fbedf95d54f7a6d29`.
-
-Canonical Core is now:
+OP018 completed the D040/T011 cleanup. Canonical remote branch inventory after independent verification was exactly:
 
 ```text
-Protocol-Version: 1.13.0
-ASSURANCE.md: ACTIVE
-ASSURANCE routed in GOVERNANCE Source Map / Context Router
+develop
+main
 ```
 
-The original candidate PR #81 is closed/unmerged historical blocked evidence. PR #85, the attempted mechanical refresh of the old candidate, was closed without merge after GitHub reported it non-mergeable. The clean v2 path superseded both.
+L002 remains `ANALYZED`, separate and non-blocking.
 
-## T011
+## CodeGraph activation sequence
 
-T011 — Assurance active-routing deterministic verification — is `ACCEPTED` and integrated.
+CodeGraph is the active next capability scope.
 
-- reviewed executor HEAD: `c231eec0cf5e96b676df9932402a3166fa4589c2`;
-- acceptance PR #83 merged;
-- implementation PR #84 merged;
-- T011 proved both staged and active assurance routing without creating a second mutable current-protocol authority.
+Repository inspection shows root `.gitignore` currently contains local AI runtime state for `.atl/` but does not yet ignore `.codegraph/`.
 
-## Learning state
-
-L001 — `verification.regression.protocol_version_drift` — returns to `VERIFIED` in the current Markdown recovery change.
-
-Recovery basis:
+The activation is intentionally split:
 
 ```text
-D040 single authority
-+ T010 parser/validator readiness
-+ T011 active-routing readiness
-+ exact v2 OP017 PASS without mutation
-+ exact tested PR #87 integration
-= systemic control verified end-to-end
+T012
+  -> canonically ignore .codegraph/
+  -> prove generated state stays outside Git
+  -> accept / integrate / clean
+        ↓
+local activation operation
+  -> initialize CodeGraph in the canonical local checkout
+  -> verify usable
+  -> verify Git remains clean
 ```
 
-L002 — `task.handoff.identity_mismatch` — remains `ANALYZED`, separate and non-blocking.
+This avoids treating an index created inside a disposable implementation worktree as durable activation for the checkout used by future executor sessions.
 
-## OpenCode worktree preflight
+## T012
 
-New host-specific preflight:
+Task Contract:
 
-`docs/OPENCODE-WORKTREE-PREFLIGHT.md`
+`docs/tasks/T012-codegraph-local-state-ignore.md`
 
-When the selected executor host is OpenCode and delegated work may use Git worktrees outside the OpenCode session working directory, ChatGPT must surface this preflight **before** the executor bootstrap prompt.
+Status: `READY` after this planning change is integrated.
 
-On the current workstation convention, the trusted repository-specific root is:
+Tracked implementation scope is limited to root `.gitignore` plus the required executor handoff. CodeGraph remains optional executor-local capability, not Governance authority, product/runtime state or correctness dependency.
+
+Required verification includes Git ignore evidence plus full pytest/Ruff gates.
+
+## OP020 — planning cleanup
+
+Operational Contract:
+
+`docs/operations/OP020-retire-t012-planning-branch.md`
+
+OP020 remains `DRAFT` until the planning PR identity is recorded and merged.
+
+## OpenCode preflight
+
+When the selected executor host is OpenCode and the delegated execution may use repository-external worktrees, surface `docs/OPENCODE-WORKTREE-PREFLIGHT.md` before the executor bootstrap prompt.
+
+Current workstation convention:
 
 ```text
 ~/projects/agent-governance-worktrees/**
 ```
 
-The intended OpenCode behavior is a narrow `permission.external_directory` allow for that trusted root only. Do not use blanket external-directory allowance. OpenCode host configuration remains workstation state, not product/correctness authority.
-
-This host adaptation does not prescribe use of OpenCode or worktrees; D041 executor-process autonomy remains unchanged.
-
-## OP018 — completion-branch cleanup
-
-Operational Contract:
-
-`docs/operations/OP018-retire-d040-t011-completion-branches.md`
-
-Status: `DRAFT` until the PR integrating this checkpoint, L001 recovery, OpenCode preflight and OP018 is opened/recorded/merged.
-
-OP018 is a bounded cleanup for:
-
-- merged T011 acceptance/implementation branches;
-- merged D040 v2 control/activation branches;
-- the branch integrating this recovery/preflight change;
-- closed superseded PR #81 branch only if exact no-later-work/supersession conditions are proven;
-- abandoned temporary `docs/d040-candidate-refresh-operation` only if Git proves it has no unique commits.
-
-Ambiguous branches remain `REVIEW`; cleanup returns `PARTIAL` rather than guessing.
-
-## CodeGraph next
-
-After OP018 closes the D040/T011 branch backlog, CodeGraph project initialization is the next separate capability operation.
-
-Required outcome for that later scope:
-
-```text
-CodeGraph initialized locally for agent-governance
-.codegraph/ remains generated local state
-canonical .gitignore excludes .codegraph/
-Git remains clean after initialization
-CodeGraph is executor capability, not Governance authority/correctness dependency
-```
-
-Context7 remains an optional executor-host external documentation capability and requires no repository state when already supplied by the host.
+Use the narrow OpenCode `permission.external_directory` allowlist for that trusted root only. Host configuration remains workstation state and is not part of task semantics.
 
 ## Executor bootstrap policy
 
-D041:
+D041 remains:
 
 ```text
 Governance owns requested outcome + boundaries + acceptance
@@ -119,37 +83,36 @@ Executor owns implementation process + internal orchestration
 
 D042 requires canonical remote freshness before persisted contract load.
 
-D043 normal launches omit explicit `AGENTS.md` reload unless the immediately governing integrated change modified `AGENTS.md`.
-
-This recovery/preflight change does **not** modify `AGENTS.md`, so the next executor launch uses the normal D043 form. The OpenCode worktree permission step is Human/Orchestrator preflight outside the transport-only executor prompt.
+D043 normal launches omit explicit `AGENTS.md` reload unless the immediately governing integrated change modified `AGENTS.md`. This planning change does not modify `AGENTS.md`.
 
 ## Next Action
 
-1. Open/review/merge the Markdown recovery/preflight PR from `docs/opencode-worktree-bootstrap-and-l001-recovery`.
-2. Record that merged PR identity in OP018 and mark OP018 `READY` before execution.
-3. If the selected executor host for OP018 is OpenCode, surface `docs/OPENCODE-WORKTREE-PREFLIGHT.md` and ensure the narrow trusted worktree-root permission is configured/approved before presenting the OP018 bootstrap prompt.
-4. Execute OP018 and independently verify final remote branch state.
-5. Then persist and execute the separate CodeGraph initialization / `.gitignore` scope.
-6. Do not start real-system assurance adapters/providers unless a later explicit decision/Task Contract authorizes them.
+1. Open/review the T012 planning PR from `docs/t012-codegraph-ignore-readiness`.
+2. Record the actual PR identity in OP020, mark OP020 `READY`, merge the planning PR and freeze its source branch.
+3. If OpenCode will execute OP020, apply the OpenCode worktree preflight before launch.
+4. Execute OP020 and independently verify planning-branch cleanup.
+5. If OpenCode will execute T012, apply the same preflight before launch.
+6. Launch T012 from current `develop` containing the exact Task Contract.
+7. Review remote handoff/diff/evidence; accept/integrate/clean T012 under normal workflow.
+8. Only after `.codegraph/` ignore is canonical and T012 is closed, persist the separate local CodeGraph initialization operation.
+9. Context7 remains optional host documentation capability and requires no repository change.
 
 ## Next Chat Minimum Load
 
 After repository bootstrap and this checkpoint:
 
-1. while this Markdown recovery/preflight PR is pending, load L001 + OP018 + `docs/OPENCODE-WORKTREE-PREFLIGHT.md`;
-2. for OP018 execution/result review, load OP018 + branch-cleanup policy + canonical PR/branch metadata;
-3. for CodeGraph activation, load current `.gitignore`, D041, `docs/LOCAL-DEVELOPMENT-TOOLCHAIN.md` and the new persisted CodeGraph contract;
-4. load L002 only on a concrete identity conflict or explicit separate control-selection work.
+1. while T012 planning is pending, load T012 + OP020 + current `.gitignore` + D041;
+2. for T012 review, load exact handoff/diff + T012;
+3. after T012 closure, load current `.gitignore`, `docs/LOCAL-DEVELOPMENT-TOOLCHAIN.md` and the new local CodeGraph activation operation;
+4. load L002 only on a concrete identity conflict or explicit separate work.
 
 ## Do Not
 
-- Do not reopen or merge historical blocked PR #81.
-- Do not mark L001 CONTROL_FAILURE after the verified recovery unless the fingerprint recurs or new evidence invalidates the control.
-- Do not delete ambiguous/superseded branches without exact Git evidence.
-- Do not use blanket OpenCode `external_directory` allowance to suppress worktree prompts.
-- Do not put workstation OpenCode configuration into product correctness semantics.
-- Do not initialize CodeGraph inside OP018.
+- Do not initialize durable CodeGraph state in a disposable task worktree and call that canonical activation.
+- Do not commit `.codegraph/` content.
+- Do not make CodeGraph a product/runtime/correctness dependency.
+- Do not prescribe CodeGraph as the executor's mandatory internal navigation method.
+- Do not put OpenCode workstation configuration into repository correctness semantics.
+- Do not use blanket OpenCode external-directory permission.
 - Do not write directly to `develop` or `main`.
-- Do not prescribe executor-internal methodology/tool routing.
 - Do not add an unconditional `read AGENTS.md` directive to normal executor launch prompts.
-- Preserve prior procedural audit history.
