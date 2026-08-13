@@ -1,0 +1,29 @@
+{
+  "skill_id": null,
+  "name": null,
+  "capability": null,
+  "discovery_source": null,
+  "provenance_tier": null,
+  "canonical_source": {
+    "owner": null,
+    "repository": null,
+    "path": null
+  },
+  "revision": null,
+  "digest": null,
+  "version": null,
+  "license": null,
+  "risk": null,
+  "required_tools": [],
+  "permissions": [],
+  "dependencies": [],
+  "audit": {
+    "result": null,
+    "exceptions": []
+  },
+  "approval": {
+    "authority": null,
+    "date": null
+  },
+  "status": null
+}
