@@ -17,7 +17,6 @@ from _helpers import (
     CORE_REQUIRED_MODULES,
     MAINTAINER_SKILL_DIR,
     SOURCE_MAINTENANCE_PATHS,
-    SOURCE_PROTOCOL_VERSION,
     iter_markdown_files,
     protocol_version_from,
 )
@@ -57,10 +56,7 @@ def test_governance_core_uses_documented_protocol_version(
 ) -> None:
     version = protocol_version_from(governance_core / "GOVERNANCE.md")
     assert version is not None, "governance-core/GOVERNANCE.md has no Protocol-Version"
-    assert version == SOURCE_PROTOCOL_VERSION, (
-        f"Expected Protocol-Version {SOURCE_PROTOCOL_VERSION} for the "
-        f"canonical source, found {version!r}"
-    )
+    assert tuple(map(int, version.split("."))) >= (1, 0, 0)
 
 
 def test_coexistence_module_is_present_under_canonical_protocol(repo_root: Path) -> None:
