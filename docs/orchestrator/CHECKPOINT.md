@@ -1,7 +1,7 @@
 # Current ChatGPT Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT
-Checkpoint-Sequence: O080
+Checkpoint-Sequence: O081
 Canonical-Branch: `develop`
 Chat-Closure: CONTINUE_ALLOWED
 
@@ -13,13 +13,15 @@ T014-T017 Consumer Governance v1 implementation/eval sequence is accepted, integ
 
 Optional ecosystem guidance is integrated. Gentle AI and Caveman are optional/recommended only, never dependencies or authority sources. Caveman is preferred as a discovered Skill when Gentle AI is already the selected orchestration layer.
 
-OP039 established the approved Caveman `v2.0.0` user Skill, Gentle discovery PASS, no same-name shadowing, preserved `gentle-orchestrator`, and no repository mutation. OP041/OP043 established that only two legacy Caveman host fragments remain: the Caveman plugin entry in `/home/manuel/.config/opencode/opencode.json` and the delimited Caveman block in `/home/manuel/.config/opencode/AGENTS.md`.
+OP039 established the approved Caveman `v2.0.0` user Skill, Gentle discovery PASS, no same-name shadowing, preserved `gentle-orchestrator`, and no repository mutation. OP041/OP043 established that two legacy Caveman host fragments remain: the Caveman plugin entry in `/home/manuel/.config/opencode/opencode.json` and the delimited Caveman block in `/home/manuel/.config/opencode/AGENTS.md`.
 
-OP044 completed read-only policy provenance. The blocking policy is `USER_CONTROLLED`, sourced from project `/home/manuel/projects/agent-governance/opencode.json` `permission.edit`, with deny rules affecting `opencode.json` and Markdown files. The Human Owner explicitly authorized the narrow ephemeral permission exception needed to complete only the two previously authorized host edits.
+OP044 completed read-only policy provenance and classified the blocking edit policy as `USER_CONTROLLED`. The Human Owner authorized a narrow ephemeral cleanup attempt through OP046. OP046 returned BLOCKED because OpenCode denied both exact process-local edit exceptions. The returned state still showed Caveman Skill match PASS, Gentle discovery PASS, no shadowing, `gentle-orchestrator` preserved, persistent policy preserved, repository mutation NONE, and both legacy fragments still present.
 
-OP046 persists that Human authorization and remains the next host-cleanup operation. OP047 is completed and independently verified; remote branches returned to exactly `develop`, `main`.
+The Human Owner then explicitly accepted retaining those two legacy fragments rather than continuing permission work solely to remove them. `docs/CAVEMAN-HOST-STATE.md` records the resulting accepted host state. OP046 is therefore closed as BLOCKED / NOT REQUIRED FOR CURRENT ACCEPTANCE and must not be retried absent concrete evidence of a real host conflict.
 
-The Human Owner identified that Operational Contract completion responses were not sufficiently self-describing when they contained only an operation ID. `docs/OPERATIONAL-CONTRACTS.md` now defines a required short `DESCRIPTION` field immediately after `OPERATION` for Operational Contract completion responses. OP046 has been revised to use this shape. OP048 retires the Markdown branch carrying this convention after integration.
+Operational Contract completion responses now include the required short `DESCRIPTION` field defined by `docs/OPERATIONAL-CONTRACTS.md`. OP048 is completed and independently verified; remote branches returned to exactly `develop`, `main`.
+
+OP049 retires the Markdown branch that records the accepted Caveman host state after integration.
 
 L002 remains separate and non-blocking.
 
@@ -33,20 +35,19 @@ The existing narrow external-worktree permission is treated as stable workstatio
 
 ## Next Action
 
-1. Integrate the ChatGPT-owned operational-response description convention, revised OP046, OP048, and this checkpoint into `develop`.
-2. Execute OP048 and independently verify remote branches return to `develop`, `main`.
-3. Execute OP046 through OpenCode using only the Human-authorized narrow process-local permission exception and review its self-describing completion response.
-4. If OP046 is DONE, close Caveman host configuration as optional v2.0.0 user Skill, Gentle-discoverable, with no legacy plugin/global-AGENTS integration and unchanged persistent policy.
-5. If OP046 remains BLOCKED/PARTIAL, resolve only the exact reported permission/configuration conflict; do not broaden permissions, product dependencies, or repository scope.
+1. Integrate `docs/CAVEMAN-HOST-STATE.md`, OP049, and this checkpoint into `develop`.
+2. Execute OP049 and independently verify remote branches return to exactly `develop`, `main`.
+3. Treat the Caveman/Gentle host configuration line as closed. Do not retry OP046 or alter permissions solely to remove the retained legacy fragments.
+4. Reopen this line only if concrete evidence shows duplicate Caveman activation, unintended runtime/provider routing, Gentle interference, `gentle-orchestrator` modification, or another material host conflict caused by a retained fragment.
+5. Continue from the next product-maintenance priority selected by the Human Owner or the durable repository frontier.
 
 ## Next Chat Minimum Load
 
 After normal bootstrap:
-- while the operational-response convention integration/cleanup is pending, load `docs/OPERATIONAL-CONTRACTS.md` and `docs/operations/OP048-retire-operational-description-branch.md`;
-- while OP046 remains pending, load `docs/operations/OP046-complete-caveman-cleanup.md`;
-- for OP046 completion review, load only OP046 plus the returned host evidence;
+- while the host-state Markdown integration/cleanup is pending, load `docs/CAVEMAN-HOST-STATE.md` and `docs/operations/OP049-retire-caveman-host-state-branch.md`;
+- after OP049 is complete, no Caveman/Gentle host history needs to be loaded unless a concrete host conflict or ecosystem integration question requires it;
 - load release/status records only for a concrete release/promotion question.
 
 ## Do Not
 
-Do not omit the Operational Contract `DESCRIPTION` field in newly authored completion shapes, persist the temporary permission exception, broaden host edit permissions, make Gentle AI or Caveman mandatory, modify `gentle-orchestrator` for Caveman, install Caveman Proxy/Engine/Core as a requirement, change provider endpoints, mutate repository content during host repair, expose secrets, make model/provider output a correctness authority, track `.codegraph/`, or write directly to `develop`/`main`.
+Do not retry OP046 absent new material host-conflict evidence, broaden or persist host edit permissions merely to remove accepted legacy fragments, omit the Operational Contract `DESCRIPTION` field in newly authored completion shapes, make Gentle AI or Caveman mandatory, modify `gentle-orchestrator` for Caveman, install Caveman Proxy/Engine/Core as a requirement, change provider endpoints, expose secrets, make model/provider output a correctness authority, track `.codegraph/`, or write directly to `develop`/`main`.
