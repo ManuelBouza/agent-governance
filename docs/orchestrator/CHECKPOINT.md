@@ -1,7 +1,7 @@
 # Current ChatGPT Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT
-Checkpoint-Sequence: O070
+Checkpoint-Sequence: O071
 Canonical-Branch: `develop`
 Chat-Closure: CONTINUE_ALLOWED
 
@@ -13,9 +13,11 @@ T014 Consumer Governance deterministic package/tooling foundation is accepted, i
 
 T015 Consumer Governance trigger/eval corpus is accepted, integrated and cleaned up. The accepted deterministic corpus contains 36 fixed cases with balanced train/validation positive/negative/near-miss partitions, Consumer-vs-Maintainer separation, synthetic coexistence coverage, source independence and fail-closed grading. Runtime model activation accuracy is not claimed.
 
-The Consumer Governance Skill remains `DESIGN-APPROVED / NOT YET RELEASED`. The release gate now permits ChatGPT-owned final `governance-skill/SKILL.md` authoring, but the accepted T015 test suite still contains a sequencing assertion that the final file must not exist. That assertion was valid before T015 acceptance and is now transitional rather than a permanent product invariant.
+T016 Consumer Skill final-authoring test transition is independently reviewed and accepted at final head `9992da9635c00b4fe255dd36ce00ac8c36af1642`, implementation anchor `4f7eb324083ddb8b43590bc066708bd4501dbe19`, base `792e8c0845e0254af9f5d0fbf8106d3297523cae`. The accepted transition removes only the obsolete pre-authoring assertion that `governance-skill/SKILL.md` must be absent and preserves permanent source-checkout isolation for `.agent-governance/` and `.agent-coordination/`.
 
-T016 is the narrow executable test-maintenance transition that removes only that obsolete pre-authoring absence assertion while preserving permanent source-checkout isolation for `.agent-governance/` and `.agent-coordination/`. T016 does not authorize final Skill content, runtime changes, corpus changes or release.
+The Consumer Governance Skill remains `DESIGN-APPROVED / NOT YET RELEASED`. After T016 acceptance and implementation are integrated and OP034 cleanup is complete, ChatGPT may author final `governance-skill/SKILL.md` on a fresh Markdown branch using the accepted package/tooling, functional contract, release gate and fixed trigger corpus.
+
+Final Skill presence is not release approval. A focused release review must compare the final Skill routing against actual implemented runtime/CLI capabilities and fail closed on any mandatory route to an unavailable surface. Model/provider output is never release authority.
 
 L002 remains separate and non-blocking.
 
@@ -27,20 +29,21 @@ The existing narrow external-worktree permission is treated as stable workstatio
 
 ## Next Action
 
-1. Integrate T016 planning Markdown and retire its planning branch through a persisted cleanup operation.
-2. Launch T016 from current `develop` and independently review its exact test-only diff/handoff.
-3. Accept and integrate T016 only if it removes the obsolete `SKILL.md` absence guard without weakening permanent source-footprint isolation or other T015 guarantees.
-4. Author final `governance-skill/SKILL.md` on a fresh ChatGPT-owned Markdown branch using the accepted package/tooling, functional contract and fixed trigger corpus.
-5. Perform a focused Consumer Governance Skill v1 release review. That review must fail closed on any mismatch between final Skill routing, actually implemented CLI/runtime surfaces, accepted trigger boundaries and release contracts; model/provider output is never release authority.
+1. Integrate T016-R1/OP034 acceptance Markdown before the executable implementation.
+2. Integrate the reviewed T016 implementation only if its PR head remains exactly `9992da9635c00b4fe255dd36ce00ac8c36af1642`.
+3. Execute OP034 and independently verify remote branches return to `develop`, `main`.
+4. Author final `governance-skill/SKILL.md` on a fresh ChatGPT-owned Markdown branch from current `develop`.
+5. Perform a focused Consumer Governance Skill v1 release review against the functional/package/release contracts, accepted trigger corpus, final Skill content and actual `governance-skill/scripts/governance.py` command surface.
+6. If the focused release review identifies missing mandatory CLI/runtime surfaces, persist bounded successor Task Contracts before release approval rather than overstating readiness.
 
 ## Next Chat Minimum Load
 
 After normal bootstrap:
-- while T016 is pending, load T016 and its exact executor handoff/diff;
-- before final Skill authoring, load `docs/CONSUMER-GOVERNANCE-SKILL-V1-RELEASE-GATE.md`, `docs/GOVERNANCE-SKILL-CONTRACT.md`, `docs/GOVERNANCE-SKILL-PACKAGE.md`, accepted T014/T015 review records and the fixed T015 corpus;
-- during release review, inspect the final `governance-skill/SKILL.md`, actual `governance-skill/scripts/governance.py` command surface and focused deterministic tests/evals;
+- while T016 integration/cleanup is pending, load T016-R1, OP034, exact T016 handoff/diff and PR identities;
+- before final Skill authoring, load `docs/CONSUMER-GOVERNANCE-SKILL-V1-RELEASE-GATE.md`, `docs/GOVERNANCE-SKILL-CONTRACT.md`, `docs/GOVERNANCE-SKILL-PACKAGE.md`, accepted T014/T015/T016 review records and the fixed T015 corpus;
+- during release review, inspect final `governance-skill/SKILL.md`, actual `governance-skill/scripts/governance.py` command surface and focused deterministic tests/evals;
 - load Maintainer Skill material only on a concrete Consumer-vs-Maintainer conflict.
 
 ## Do Not
 
-Do not weaken executor Markdown ownership, ask the Human to perform delegable operational steps, treat T015 corpus integrity as runtime model accuracy, integrate a final Skill that routes to nonexistent mandatory runtime capabilities without recording the release blocker, create live consumer runtime footprints in this source checkout, install live external SDD/Skills for evals, make model/provider output a correctness authority, track `.codegraph/`, or write directly to `develop`/`main`.
+Do not weaken executor Markdown ownership, ask the Human to perform delegable operational steps, treat deterministic corpus integrity as runtime model accuracy, claim final Skill presence equals release readiness, route mandatory v1 operations to nonexistent runtime capabilities without recording the blocker, create live consumer runtime footprints in this source checkout, install live external SDD/Skills for evals, make model/provider output a correctness authority, track `.codegraph/`, or write directly to `develop`/`main`.
