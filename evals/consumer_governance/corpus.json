@@ -1,0 +1,468 @@
+{
+  "schema_version": 1,
+  "authority_policy": "observed_project_facts_only",
+  "cases": [
+    {
+      "id": "cg-pos-train-001",
+      "partition": "train",
+      "category": "positive",
+      "expected_activation": true,
+      "surface_tags": ["bootstrap_install", "source_independence"],
+      "synthetic": true,
+      "source_independent": true,
+      "prompt": "Install Agent Governance in this disposable application repository and initialize its consumer state.",
+      "coexistence": null
+    },
+    {
+      "id": "cg-pos-train-002",
+      "partition": "train",
+      "category": "positive",
+      "expected_activation": true,
+      "surface_tags": ["validate_reconstruct"],
+      "synthetic": true,
+      "source_independent": true,
+      "prompt": "Validate this adopted Agent Governance instance and reconstruct its current frontier without prior chat history.",
+      "coexistence": null
+    },
+    {
+      "id": "cg-pos-train-003",
+      "partition": "train",
+      "category": "positive",
+      "expected_activation": true,
+      "surface_tags": ["mission_state_event_handoff"],
+      "synthetic": true,
+      "source_independent": true,
+      "prompt": "Record the approved mission, append its governance event, and prepare the next executor handoff.",
+      "coexistence": null
+    },
+    {
+      "id": "cg-pos-train-004",
+      "partition": "train",
+      "category": "positive",
+      "expected_activation": true,
+      "surface_tags": ["coexistence_inspection", "gentle_ai_like", "managed_preservation"],
+      "synthetic": true,
+      "source_independent": true,
+      "prompt": "Inspect Agent Governance coexistence with this synthetic capability registry before bootstrap; preserve every registry-owned file.",
+      "coexistence": {
+        "shape": "gentle_ai_like",
+        "existing_capabilities": ["sdd", "testing", "skill_registry"],
+        "managed_surfaces": [".synthetic-registry/catalog.json"],
+        "governance_overlap": false,
+        "expected_behaviors": ["reuse_existing_capabilities", "preserve_managed_surfaces"]
+      }
+    },
+    {
+      "id": "cg-pos-train-005",
+      "partition": "train",
+      "category": "positive",
+      "expected_activation": true,
+      "surface_tags": ["governance_skill_discovery_audit"],
+      "synthetic": true,
+      "source_independent": true,
+      "prompt": "Resolve and audit the exact Consumer Governance Skill artifact discovered for this adopting repository.",
+      "coexistence": null
+    },
+    {
+      "id": "cg-pos-train-006",
+      "partition": "train",
+      "category": "positive",
+      "expected_activation": true,
+      "surface_tags": ["sequential_disclosure_readiness", "spec_kit_like", "managed_preservation"],
+      "synthetic": true,
+      "source_independent": true,
+      "prompt": "Check governance readiness and disclose only the current task plus its referenced native plan.",
+      "coexistence": {
+        "shape": "spec_kit_like",
+        "existing_capabilities": ["spec", "plan", "tasks"],
+        "managed_surfaces": [".synthetic-spec/current-plan.txt"],
+        "governance_overlap": false,
+        "expected_behaviors": ["adapt_existing_capabilities", "preserve_managed_surfaces"]
+      }
+    },
+    {
+      "id": "cg-pos-validation-001",
+      "partition": "validation",
+      "category": "positive",
+      "expected_activation": true,
+      "surface_tags": ["bootstrap_install", "no_sdd", "no_unsolicited_sdd"],
+      "synthetic": true,
+      "source_independent": true,
+      "prompt": "Bootstrap Agent Governance here; no SDD exists, so continue without proposing or installing one.",
+      "coexistence": {
+        "shape": "no_sdd",
+        "existing_capabilities": [],
+        "managed_surfaces": [],
+        "governance_overlap": false,
+        "expected_behaviors": ["refuse_unsolicited_sdd"]
+      }
+    },
+    {
+      "id": "cg-pos-validation-002",
+      "partition": "validation",
+      "category": "positive",
+      "expected_activation": true,
+      "surface_tags": ["validate_reconstruct", "source_independence"],
+      "synthetic": true,
+      "source_independent": true,
+      "prompt": "Using only the installed consumer package, validate and reconstruct this repository's governance state.",
+      "coexistence": null
+    },
+    {
+      "id": "cg-pos-validation-003",
+      "partition": "validation",
+      "category": "positive",
+      "expected_activation": true,
+      "surface_tags": ["mission_state_event_handoff"],
+      "synthetic": true,
+      "source_independent": true,
+      "prompt": "Advance the Agent Governance state after checking the incoming handoff and append the accepted transition.",
+      "coexistence": null
+    },
+    {
+      "id": "cg-pos-validation-004",
+      "partition": "validation",
+      "category": "positive",
+      "expected_activation": true,
+      "surface_tags": ["coexistence_inspection", "openspec_like", "managed_preservation"],
+      "synthetic": true,
+      "source_independent": true,
+      "prompt": "Inspect coexistence, retain the synthetic change artifacts as native evidence, and avoid regenerating their specs.",
+      "coexistence": {
+        "shape": "openspec_like",
+        "existing_capabilities": ["specs", "bounded_change"],
+        "managed_surfaces": ["synthetic-changes/change-7/spec.json"],
+        "governance_overlap": false,
+        "expected_behaviors": ["reuse_existing_capabilities", "preserve_managed_surfaces"]
+      }
+    },
+    {
+      "id": "cg-pos-validation-005",
+      "partition": "validation",
+      "category": "positive",
+      "expected_activation": true,
+      "surface_tags": ["coexistence_inspection", "custom_sdd", "managed_conflict", "managed_preservation"],
+      "synthetic": true,
+      "source_independent": true,
+      "prompt": "Classify this custom workflow's ownership and stop if its managed orchestration authority conflicts with Governance.",
+      "coexistence": {
+        "shape": "custom_sdd",
+        "existing_capabilities": ["requirements", "work_queue"],
+        "managed_surfaces": [".synthetic-flow/authority.json"],
+        "governance_overlap": true,
+        "expected_behaviors": ["adapt_existing_capabilities", "fail_closed_conflict", "preserve_managed_surfaces"]
+      }
+    },
+    {
+      "id": "cg-pos-validation-006",
+      "partition": "validation",
+      "category": "positive",
+      "expected_activation": true,
+      "surface_tags": ["governance_skill_discovery_audit", "sequential_disclosure_readiness"],
+      "synthetic": true,
+      "source_independent": true,
+      "prompt": "Audit the candidate Governance Skill revision, then check current-task disclosure readiness.",
+      "coexistence": null
+    },
+    {
+      "id": "cg-neg-train-001",
+      "partition": "train",
+      "category": "negative",
+      "expected_activation": false,
+      "surface_tags": ["generic_planning"],
+      "synthetic": true,
+      "source_independent": true,
+      "prompt": "Draft a delivery plan for adding CSV export to the application.",
+      "coexistence": null
+    },
+    {
+      "id": "cg-neg-train-002",
+      "partition": "train",
+      "category": "negative",
+      "expected_activation": false,
+      "surface_tags": ["generic_coding"],
+      "synthetic": true,
+      "source_independent": true,
+      "prompt": "Implement pagination in the existing HTTP endpoint.",
+      "coexistence": null
+    },
+    {
+      "id": "cg-neg-train-003",
+      "partition": "train",
+      "category": "negative",
+      "expected_activation": false,
+      "surface_tags": ["generic_testing"],
+      "synthetic": true,
+      "source_independent": true,
+      "prompt": "Add unit tests for the invoice total calculator.",
+      "coexistence": null
+    },
+    {
+      "id": "cg-neg-train-004",
+      "partition": "train",
+      "category": "negative",
+      "expected_activation": false,
+      "surface_tags": ["generic_refactoring"],
+      "synthetic": true,
+      "source_independent": true,
+      "prompt": "Refactor the parser into smaller pure functions without changing behavior.",
+      "coexistence": null
+    },
+    {
+      "id": "cg-neg-train-005",
+      "partition": "train",
+      "category": "negative",
+      "expected_activation": false,
+      "surface_tags": ["generic_release"],
+      "synthetic": true,
+      "source_independent": true,
+      "prompt": "Prepare version 2.4.1 release notes and tag checklist.",
+      "coexistence": null
+    },
+    {
+      "id": "cg-neg-train-006",
+      "partition": "train",
+      "category": "negative",
+      "expected_activation": false,
+      "surface_tags": ["generic_sdd"],
+      "synthetic": true,
+      "source_independent": true,
+      "prompt": "Run the normal spec-to-plan-to-tasks workflow for this feature.",
+      "coexistence": null
+    },
+    {
+      "id": "cg-neg-validation-001",
+      "partition": "validation",
+      "category": "negative",
+      "expected_activation": false,
+      "surface_tags": ["generic_skill_install_search"],
+      "synthetic": true,
+      "source_independent": true,
+      "prompt": "Find and install a formatting Skill for Python code.",
+      "coexistence": null
+    },
+    {
+      "id": "cg-neg-validation-002",
+      "partition": "validation",
+      "category": "negative",
+      "expected_activation": false,
+      "surface_tags": ["source_product_maintenance", "consumer_vs_maintainer"],
+      "synthetic": true,
+      "source_independent": true,
+      "prompt": "Update source-product branch policy tests for the Agent Governance maintainers.",
+      "coexistence": null
+    },
+    {
+      "id": "cg-neg-validation-003",
+      "partition": "validation",
+      "category": "negative",
+      "expected_activation": false,
+      "surface_tags": ["ordinary_application_implementation"],
+      "synthetic": true,
+      "source_independent": true,
+      "prompt": "Fix the shopping cart's stale quantity display.",
+      "coexistence": null
+    },
+    {
+      "id": "cg-neg-validation-004",
+      "partition": "validation",
+      "category": "negative",
+      "expected_activation": false,
+      "surface_tags": ["generic_planning"],
+      "synthetic": true,
+      "source_independent": true,
+      "prompt": "Estimate milestones and dependencies for a database migration.",
+      "coexistence": null
+    },
+    {
+      "id": "cg-neg-validation-005",
+      "partition": "validation",
+      "category": "negative",
+      "expected_activation": false,
+      "surface_tags": ["generic_coding", "generic_testing"],
+      "synthetic": true,
+      "source_independent": true,
+      "prompt": "Implement a date formatter and test its leap-year cases.",
+      "coexistence": null
+    },
+    {
+      "id": "cg-neg-validation-006",
+      "partition": "validation",
+      "category": "negative",
+      "expected_activation": false,
+      "surface_tags": ["generic_sdd", "generic_release"],
+      "synthetic": true,
+      "source_independent": true,
+      "prompt": "Close the current generic SDD change and prepare its application release.",
+      "coexistence": null
+    },
+    {
+      "id": "cg-near-train-001",
+      "partition": "train",
+      "category": "near_miss",
+      "expected_activation": false,
+      "surface_tags": ["generic_spec_plan_tasks"],
+      "synthetic": true,
+      "source_independent": true,
+      "prompt": "Turn these requirements into a spec, implementation plan, and task list.",
+      "coexistence": null
+    },
+    {
+      "id": "cg-near-train-002",
+      "partition": "train",
+      "category": "near_miss",
+      "expected_activation": false,
+      "surface_tags": ["governed_repo_feature_test"],
+      "synthetic": true,
+      "source_independent": true,
+      "prompt": "This repository already uses Governance; add the requested cache feature and its tests.",
+      "coexistence": null
+    },
+    {
+      "id": "cg-near-train-003",
+      "partition": "train",
+      "category": "near_miss",
+      "expected_activation": false,
+      "surface_tags": ["generic_skill_install"],
+      "synthetic": true,
+      "source_independent": true,
+      "prompt": "Install a local code-review Skill from our approved internal catalog.",
+      "coexistence": null
+    },
+    {
+      "id": "cg-near-train-004",
+      "partition": "train",
+      "category": "near_miss",
+      "expected_activation": false,
+      "surface_tags": ["maintainer_only", "consumer_vs_maintainer"],
+      "synthetic": true,
+      "source_independent": true,
+      "prompt": "Maintain the reusable Governance product's deterministic test harness.",
+      "coexistence": null
+    },
+    {
+      "id": "cg-near-train-005",
+      "partition": "train",
+      "category": "near_miss",
+      "expected_activation": false,
+      "surface_tags": ["existing_sdd_continuation", "openspec_like", "managed_preservation"],
+      "synthetic": true,
+      "source_independent": true,
+      "prompt": "Continue the existing synthetic change by completing its next ordinary design artifact.",
+      "coexistence": {
+        "shape": "openspec_like",
+        "existing_capabilities": ["specs", "bounded_change"],
+        "managed_surfaces": ["synthetic-changes/change-9/design.json"],
+        "governance_overlap": false,
+        "expected_behaviors": ["preserve_managed_surfaces"]
+      }
+    },
+    {
+      "id": "cg-near-train-006",
+      "partition": "train",
+      "category": "near_miss",
+      "expected_activation": false,
+      "surface_tags": ["generic_registry_lookup"],
+      "synthetic": true,
+      "source_independent": true,
+      "prompt": "Look up available database migration tools in the project registry.",
+      "coexistence": null
+    },
+    {
+      "id": "cg-near-validation-001",
+      "partition": "validation",
+      "category": "near_miss",
+      "expected_activation": false,
+      "surface_tags": ["equivalent_governance_overlap", "managed_conflict", "custom_sdd", "managed_preservation"],
+      "synthetic": true,
+      "source_independent": true,
+      "prompt": "Use the existing orchestration Skill to own approvals and lifecycle authority; do not invoke Consumer Governance.",
+      "coexistence": {
+        "shape": "custom_sdd",
+        "existing_capabilities": ["orchestration", "approval_gate"],
+        "managed_surfaces": [".synthetic-orchestrator/policy.json"],
+        "governance_overlap": true,
+        "expected_behaviors": ["fail_closed_conflict", "preserve_managed_surfaces"]
+      }
+    },
+    {
+      "id": "cg-near-validation-002",
+      "partition": "validation",
+      "category": "near_miss",
+      "expected_activation": false,
+      "surface_tags": ["existing_sdd_continuation", "spec_kit_like", "managed_preservation"],
+      "synthetic": true,
+      "source_independent": true,
+      "prompt": "Continue implementing the next task already listed by the synthetic planning workflow.",
+      "coexistence": {
+        "shape": "spec_kit_like",
+        "existing_capabilities": ["spec", "plan", "tasks"],
+        "managed_surfaces": [".synthetic-spec/tasks.json"],
+        "governance_overlap": false,
+        "expected_behaviors": ["preserve_managed_surfaces"]
+      }
+    },
+    {
+      "id": "cg-near-validation-003",
+      "partition": "validation",
+      "category": "near_miss",
+      "expected_activation": false,
+      "surface_tags": ["generic_registry_lookup", "gentle_ai_like", "managed_preservation"],
+      "synthetic": true,
+      "source_independent": true,
+      "prompt": "Search the synthetic capability catalog for an ordinary linting helper.",
+      "coexistence": {
+        "shape": "gentle_ai_like",
+        "existing_capabilities": ["skill_registry"],
+        "managed_surfaces": [".synthetic-registry/catalog.json"],
+        "governance_overlap": false,
+        "expected_behaviors": ["preserve_managed_surfaces"]
+      }
+    },
+    {
+      "id": "cg-near-validation-004",
+      "partition": "validation",
+      "category": "near_miss",
+      "expected_activation": false,
+      "surface_tags": ["governed_repo_feature_test", "no_sdd", "no_unsolicited_sdd"],
+      "synthetic": true,
+      "source_independent": true,
+      "prompt": "In this governed repository with no SDD, write the requested validator tests without installing extra workflow tooling.",
+      "coexistence": {
+        "shape": "no_sdd",
+        "existing_capabilities": [],
+        "managed_surfaces": [],
+        "governance_overlap": false,
+        "expected_behaviors": ["refuse_unsolicited_sdd"]
+      }
+    },
+    {
+      "id": "cg-near-validation-005",
+      "partition": "validation",
+      "category": "near_miss",
+      "expected_activation": false,
+      "surface_tags": ["maintainer_only", "consumer_vs_maintainer"],
+      "synthetic": true,
+      "source_independent": true,
+      "prompt": "Review a source-maintainer release branch for changes to Governance Core packaging.",
+      "coexistence": null
+    },
+    {
+      "id": "cg-near-validation-006",
+      "partition": "validation",
+      "category": "near_miss",
+      "expected_activation": false,
+      "surface_tags": ["generic_spec_plan_tasks", "custom_sdd", "managed_preservation"],
+      "synthetic": true,
+      "source_independent": true,
+      "prompt": "Use this team's custom requirements queue to produce its normal plan and tasks.",
+      "coexistence": {
+        "shape": "custom_sdd",
+        "existing_capabilities": ["requirements", "work_queue"],
+        "managed_surfaces": [".synthetic-flow/queue.json"],
+        "governance_overlap": false,
+        "expected_behaviors": ["adapt_existing_capabilities", "preserve_managed_surfaces"]
+      }
+    }
+  ]
+}
