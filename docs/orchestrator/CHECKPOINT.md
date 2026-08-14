@@ -1,7 +1,7 @@
 # Current ChatGPT Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT
-Checkpoint-Sequence: O069
+Checkpoint-Sequence: O070
 Canonical-Branch: `develop`
 Chat-Closure: CONTINUE_ALLOWED
 
@@ -9,15 +9,13 @@ Chat-Closure: CONTINUE_ALLOWED
 
 D040 Phase B is closed. Protocol `1.13.0` is active and L001 is `VERIFIED`.
 
-T012/OP019 CodeGraph work is closed. CodeGraph remains local executor capability only; `.codegraph/` is ignored and untracked.
+T014 Consumer Governance deterministic package/tooling foundation is accepted, integrated and cleaned up.
 
-T013 is closed as a valid contract blocker. Its Markdown ownership contradiction was corrected without weakening executor ownership.
+T015 Consumer Governance trigger/eval corpus is accepted, integrated and cleaned up. The accepted deterministic corpus contains 36 fixed cases with balanced train/validation positive/negative/near-miss partitions, Consumer-vs-Maintainer separation, synthetic coexistence coverage, source independence and fail-closed grading. Runtime model activation accuracy is not claimed.
 
-T014 Consumer Governance deterministic package/tooling foundation is accepted, integrated and cleaned up. It provides vendor-neutral package assets, safe `bootstrap`, structural read-only `validate`, collision refusal, rollback of owned roots, source independence and deterministic tests.
+The Consumer Governance Skill remains `DESIGN-APPROVED / NOT YET RELEASED`. The release gate now permits ChatGPT-owned final `governance-skill/SKILL.md` authoring, but the accepted T015 test suite still contains a sequencing assertion that the final file must not exist. That assertion was valid before T015 acceptance and is now transitional rather than a permanent product invariant.
 
-T015 Consumer Governance trigger/eval corpus has completed executor implementation and independent ChatGPT review at final head `56b787677a5df029534a6ca6320606adfbec2812`, implementation anchor `cbf682321eadf9e6e7a7d9ae86114726583c0187`, base `0d924ca26cbe511fe9954ae2ed1237f2c747e751`. T015-R1 accepts the deterministic corpus gate: 36 fixed cases, balanced train/validation positive/negative/near-miss partitions, Consumer-vs-Maintainer separation, synthetic coexistence coverage, source independence and fail-closed deterministic grading. Runtime model activation accuracy is explicitly not claimed.
-
-The Consumer Governance Skill remains `DESIGN-APPROVED / NOT YET RELEASED`. Final `governance-skill/SKILL.md` remains un-authored until T015 acceptance and implementation are integrated. After that integration and OP032 cleanup, the release sequence may advance to ChatGPT-owned final `governance-skill/SKILL.md` authoring followed by focused release review. Probabilistic/model-backed trigger trials, if required for release evidence, remain separately bounded and cannot replace deterministic or Human authority.
+T016 is the narrow executable test-maintenance transition that removes only that obsolete pre-authoring absence assertion while preserving permanent source-checkout isolation for `.agent-governance/` and `.agent-coordination/`. T016 does not authorize final Skill content, runtime changes, corpus changes or release.
 
 L002 remains separate and non-blocking.
 
@@ -29,19 +27,20 @@ The existing narrow external-worktree permission is treated as stable workstatio
 
 ## Next Action
 
-1. Integrate T015-R1/OP032 acceptance Markdown before the executable implementation.
-2. Integrate the reviewed T015 implementation only if its PR head remains exactly `56b787677a5df029534a6ca6320606adfbec2812`.
-3. Execute OP032 and independently verify remote branches return to `develop`, `main`.
-4. Author final `governance-skill/SKILL.md` on a fresh ChatGPT-owned Markdown branch using the accepted package/tooling and trigger corpus as controlling inputs.
-5. Perform the focused Consumer Governance Skill v1 release review; authorize any separate model-backed release-eval task only if the release-review contract requires it.
+1. Integrate T016 planning Markdown and retire its planning branch through a persisted cleanup operation.
+2. Launch T016 from current `develop` and independently review its exact test-only diff/handoff.
+3. Accept and integrate T016 only if it removes the obsolete `SKILL.md` absence guard without weakening permanent source-footprint isolation or other T015 guarantees.
+4. Author final `governance-skill/SKILL.md` on a fresh ChatGPT-owned Markdown branch using the accepted package/tooling, functional contract and fixed trigger corpus.
+5. Perform a focused Consumer Governance Skill v1 release review. That review must fail closed on any mismatch between final Skill routing, actually implemented CLI/runtime surfaces, accepted trigger boundaries and release contracts; model/provider output is never release authority.
 
 ## Next Chat Minimum Load
 
 After normal bootstrap:
-- while T015 integration is pending, load T015-R1, OP032, exact T015 handoff/diff and PR identities;
-- after T015 cleanup, load `docs/CONSUMER-GOVERNANCE-SKILL-V1-RELEASE-GATE.md`, `docs/GOVERNANCE-SKILL-CONTRACT.md`, `docs/GOVERNANCE-SKILL-PACKAGE.md`, accepted T014/T015 review records and the fixed T015 corpus before authoring final `governance-skill/SKILL.md`;
+- while T016 is pending, load T016 and its exact executor handoff/diff;
+- before final Skill authoring, load `docs/CONSUMER-GOVERNANCE-SKILL-V1-RELEASE-GATE.md`, `docs/GOVERNANCE-SKILL-CONTRACT.md`, `docs/GOVERNANCE-SKILL-PACKAGE.md`, accepted T014/T015 review records and the fixed T015 corpus;
+- during release review, inspect the final `governance-skill/SKILL.md`, actual `governance-skill/scripts/governance.py` command surface and focused deterministic tests/evals;
 - load Maintainer Skill material only on a concrete Consumer-vs-Maintainer conflict.
 
 ## Do Not
 
-Do not weaken executor Markdown ownership, ask the Human to perform delegable operational steps, merge an implementation head other than the reviewed T015 head, claim deterministic corpus integrity proves runtime model activation accuracy, author final Consumer `SKILL.md` before T015 integration/cleanup, create live consumer runtime footprints in this source checkout, install live external SDD/Skills for evals, make model/provider output a correctness authority, track `.codegraph/`, or write directly to `develop`/`main`.
+Do not weaken executor Markdown ownership, ask the Human to perform delegable operational steps, treat T015 corpus integrity as runtime model accuracy, integrate a final Skill that routes to nonexistent mandatory runtime capabilities without recording the release blocker, create live consumer runtime footprints in this source checkout, install live external SDD/Skills for evals, make model/provider output a correctness authority, track `.codegraph/`, or write directly to `develop`/`main`.
