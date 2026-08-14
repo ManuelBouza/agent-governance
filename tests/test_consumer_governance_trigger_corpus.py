@@ -251,7 +251,6 @@ def test_malformed_json_cli_fails_closed(repo_root: Path, tmp_path: Path) -> Non
     assert json.loads(result.stdout)["status"] == "fail"
 
 
-def test_t015_creates_no_skill_or_source_consumer_footprint(repo_root: Path) -> None:
-    assert not (repo_root / "governance-skill" / "SKILL.md").exists()
+def test_source_checkout_has_no_live_consumer_footprint(repo_root: Path) -> None:
     assert not (repo_root / ".agent-governance").exists()
     assert not (repo_root / ".agent-coordination").exists()

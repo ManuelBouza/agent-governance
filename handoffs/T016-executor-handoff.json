@@ -1,0 +1,48 @@
+{
+  "task_id": "T016",
+  "status": "DONE",
+  "executor_identity": "Agente de IA Ejecutor (OpenCode)",
+  "task_contract_path": "docs/tasks/T016-consumer-skill-final-authoring-test-transition.md",
+  "branch": "test/consumer-skill-final-authoring-transition",
+  "base_branch": "develop",
+  "base_sha": "792e8c0845e0254af9f5d0fbf8106d3297523cae",
+  "implementation_anchor_sha": "4f7eb324083ddb8b43590bc066708bd4501dbe19",
+  "changed_paths": [
+    "handoffs/T016-executor-handoff.json",
+    "tests/test_consumer_governance_trigger_corpus.py"
+  ],
+  "implementation_summary": "Removed only the completed T015 sequencing assertion that governance-skill/SKILL.md must be absent, while retaining explicit permanent assertions that the source checkout contains no live .agent-governance or .agent-coordination footprint.",
+  "verification": {
+    "commands": [
+      "uv run --locked pytest -q tests/test_consumer_governance_trigger_corpus.py",
+      "uv run --locked pytest -q",
+      "uv run --locked ruff check .",
+      "uv run --locked ruff format --check .",
+      "git diff --check"
+    ],
+    "results": {
+      "focused_pytest": "30 passed in 0.22s",
+      "full_pytest": "224 passed in 3.54s",
+      "ruff_check": "All checks passed!",
+      "ruff_format_check": "17 files already formatted",
+      "diff_check": "PASS"
+    },
+    "runtime_harness": "N/A: test-only release-gate transition with no runtime boundary."
+  },
+  "scope_confirmation": {
+    "markdown_changed": false,
+    "skill_md_changed": false,
+    "corpus_or_grader_changed": false,
+    "governance_core_changed": false,
+    "consumer_runtime_changed": false,
+    "package_assets_changed": false,
+    "dependencies_lockfiles_or_config_changed": false
+  },
+  "limitations": [
+    "This task does not validate or author final governance-skill/SKILL.md content.",
+    "Final Skill content/readiness remains owned by the later focused release review."
+  ],
+  "rollback": "Revert implementation commit 4f7eb324083ddb8b43590bc066708bd4501dbe19 to restore only the pre-authoring absence assertion; revert the handoff-only successor separately if needed.",
+  "unresolved_issues": [],
+  "chatgpt_read_path": "handoffs/T016-executor-handoff.json"
+}
