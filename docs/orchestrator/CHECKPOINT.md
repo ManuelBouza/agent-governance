@@ -1,7 +1,7 @@
 # Current ChatGPT Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT
-Checkpoint-Sequence: O073
+Checkpoint-Sequence: O074
 Canonical-Branch: `develop`
 Chat-Closure: CONTINUE_ALLOWED
 
@@ -13,15 +13,15 @@ T014 Consumer Governance deterministic package/tooling foundation is accepted, i
 
 T015 Consumer Governance trigger/eval corpus is accepted, integrated and cleaned up. The accepted deterministic corpus contains 36 fixed cases with balanced train/validation positive/negative/near-miss partitions, Consumer-vs-Maintainer separation, synthetic coexistence coverage, source independence and fail-closed grading. Runtime model activation accuracy is not claimed.
 
-T016 Consumer Skill final-authoring test transition is accepted, integrated and cleaned up. The obsolete pre-authoring assertion that `governance-skill/SKILL.md` must be absent is retired while permanent source-checkout isolation for `.agent-governance/` and `.agent-coordination/` remains enforced.
+T016 Consumer Skill final-authoring test transition is accepted, integrated and cleaned up. Permanent source-checkout isolation for `.agent-governance/` and `.agent-coordination/` remains enforced.
 
-Final `governance-skill/SKILL.md` is integrated. Focused release review `CONSUMER-GOVERNANCE-SKILL-V1-R1` remains the last recorded release decision and is BLOCKED on the missing deterministic CLI v1 surfaces.
+T017 Consumer Governance remaining CLI v1 surfaces is accepted, integrated and cleaned up. The stable deterministic runtime surface is exactly `bootstrap`, `validate`, `state`, `event`, `skill`, `ecosystem`, and `archive`.
 
-T017 is independently reviewed and ACCEPTED in `docs/reviews/T017-R1.md`. Remote evidence shows exact base `ddaa256d1bcdc1c101c446e731cafb400b5a99b6`, implementation anchor `ee540cf842d11b74ccfea7873a0f51a5347dffa4`, final executor head `6a6343a78ebce5fb585722840b6d728d9d1fab93`, authorized runtime/test/handoff paths only, and the complete stable seven-command surface: `bootstrap`, `validate`, `state`, `event`, `skill`, `ecosystem`, `archive`.
+Focused release review `CONSUMER-GOVERNANCE-SKILL-V1-R2` is ACCEPTED / RELEASE-APPROVED. The prior R1 runtime-completeness blocker is closed. Final `governance-skill/SKILL.md` routing is aligned to the integrated seven-command CLI while preserving activation boundaries, non-authority, source independence, progressive disclosure, coexistence, Skill supply-chain controls and read/mutation safety.
 
-T017 acceptance is not release approval. The implementation and acceptance records must be integrated and OP036 must retire both branches before rerunning the focused Consumer Governance Skill v1 release review against the actual integrated runtime.
+Consumer Governance Skill v1 is release-approved. Release approval does not claim runtime model activation accuracy and does not make model/provider output, registries, marketplaces, host precedence, Gentle AI, Caveman or any other optional ecosystem tool an authority source.
 
-Gentle AI and Caveman are ecosystem integrations only: optional and recommended when useful, never dependencies for Agent Governance correctness, bootstrap, validation, execution, verification or release acceptance. Caveman should be treated as an optional Skill when used with Gentle AI rather than as a required proxy/runtime layer.
+Gentle AI and Caveman remain optional/recommended ecosystem integrations only. Agent Governance correctness, bootstrap, validation, execution, verification and release acceptance must not depend on either. When Caveman is used with Gentle AI, prefer Caveman as an optional discovered Skill rather than a required proxy/runtime layer.
 
 L002 remains separate and non-blocking.
 
@@ -33,21 +33,18 @@ The existing narrow external-worktree permission is treated as stable workstatio
 
 ## Next Action
 
-1. Integrate T017-R1, OP036 and this checkpoint into `develop`.
-2. Integrate the exact accepted T017 executor head `6a6343a78ebce5fb585722840b6d728d9d1fab93` into `develop` without rewriting the executor branch.
-3. Execute OP036 and independently verify remote branches return to `develop`, `main`.
-4. Rerun the focused Consumer Governance Skill v1 release review against the final Skill, accepted trigger corpus, package/functional/release contracts, T014-T017 accepted reviews and the actual integrated seven-command runtime.
-5. Transition release status only if every deterministic v1 release-gate invariant closes without unresolved blockers.
-6. After the Consumer release decision, formalize Gentle AI and Caveman as optional/recommended ecosystem coexistence guidance without introducing either as a required dependency.
+1. Integrate the Consumer Governance Skill v1 release-approval Markdown branch into `develop`.
+2. Execute OP037 and independently verify remote branches return to `develop`, `main`.
+3. Formalize Gentle AI and Caveman ecosystem coexistence guidance as optional/recommended integrations without making either a dependency or authority source.
+4. Keep Consumer release claims bounded to deterministic release evidence; any runtime/model-backed trigger evaluation remains separately authorized work.
 
 ## Next Chat Minimum Load
 
 After normal bootstrap:
-- while T017 integration/cleanup is pending, load `docs/reviews/T017-R1.md`, `handoffs/T017-executor-handoff.json` and `docs/operations/OP036-retire-t017-integration-branches.md`;
-- for final release review, load `docs/CONSUMER-GOVERNANCE-SKILL-V1-RELEASE-GATE.md`, `docs/GOVERNANCE-SKILL-CONTRACT.md`, `docs/GOVERNANCE-SKILL-PACKAGE.md`, accepted T014/T015/T016/T017 reviews, fixed trigger corpus, final `governance-skill/SKILL.md`, current Consumer status and actual `governance-skill/scripts/governance.py` runtime surface;
-- for ecosystem guidance, load only the concrete Gentle AI/Caveman coexistence sources needed to document optional/recommended integration; do not make either a product dependency;
+- while release-approval integration/cleanup is pending, load `docs/reviews/CONSUMER-GOVERNANCE-SKILL-V1-R2.md`, `governance-skill/STATUS.md`, final `governance-skill/SKILL.md`, and `docs/operations/OP037-retire-consumer-v1-release-approval-branch.md`;
+- for ecosystem guidance, load only the concrete Gentle AI/Caveman coexistence sources needed to document optional/recommended integration and current project coexistence contracts;
 - load Maintainer Skill material only on a concrete Consumer-vs-Maintainer conflict.
 
 ## Do Not
 
-Do not weaken executor Markdown ownership, ask the Human to perform delegable operational steps, treat deterministic corpus integrity as runtime model accuracy, claim T017 acceptance or final Skill presence alone equals release readiness, create live consumer runtime footprints in this source checkout, install live external SDD/Skills for evals, make Gentle AI or Caveman mandatory, route correctness authority through Caveman, make model/provider output a correctness authority, track `.codegraph/`, or write directly to `develop`/`main`.
+Do not weaken executor Markdown ownership, ask the Human to perform delegable operational steps, treat deterministic corpus integrity as runtime model accuracy, create live consumer runtime footprints in this source checkout, install live external SDD/Skills for evals, make Gentle AI or Caveman mandatory, route correctness authority through Caveman, make model/provider output a correctness authority, track `.codegraph/`, or write directly to `develop`/`main`.

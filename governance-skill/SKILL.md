@@ -42,36 +42,43 @@ Start with the smallest context required for the requested governance operation:
 
 Reconstruct stale or missing conversational context from repository state; do not depend on prior chat memory as authority.
 
-## Operation routing
+## Deterministic CLI v1
 
-### Bootstrap or validate
-
-Before mutation, inspect relevant existing capability/instruction surfaces and stop on unresolved managed-file or governance/orchestration collisions. Never silently overwrite `.agent-governance/`, `.agent-coordination/`, third-party managed files, or an existing governance/orchestration Skill.
-
-The packaged deterministic CLI currently provides:
+The packaged deterministic surface is exactly:
 
 ```text
 python governance-skill/scripts/governance.py bootstrap <target>
 python governance-skill/scripts/governance.py validate <target>
+python governance-skill/scripts/governance.py state <target> [--refresh]
+python governance-skill/scripts/governance.py event <target> --actor <role> --event <event> [event fields]
+python governance-skill/scripts/governance.py skill <target> --approval <record> --candidate <facts>
+python governance-skill/scripts/governance.py ecosystem <target> --facts <facts> [--update]
+python governance-skill/scripts/governance.py archive <target> [--prepare]
 ```
+
+Treat read-only/check behavior as default. Use mutation flags such as `--refresh`, `--update`, or `--prepare` only after reviewing the derived result and confirming the governing operation authorizes mutation. Do not infer strategy from deterministic output.
+
+## Operation routing
+
+### Bootstrap and validate
+
+Before mutation, inspect relevant existing capability/instruction surfaces and stop on unresolved managed-file or governance/orchestration collisions. Never silently overwrite `.agent-governance/`, `.agent-coordination/`, third-party managed files, or an existing governance/orchestration Skill.
 
 Use `bootstrap` only for an existing adopting-repository directory after coexistence/collision preflight. It creates the managed Governance Core and coordination skeleton and validates the result. Use `validate` for read-only structural validation of an installed consumer instance.
 
-Do not claim that the packaged CLI currently implements other operation-specific subcommands unless the installed artifact actually exposes them.
+### State, handoff, events, mission, archive, and sequential execution
 
-### State reconstruction, handoff, events, mission, archive, and sequential execution
+For cold start or state validation, begin with STATE + GOVERNANCE, then replay only the required EXCHANGE delta and controlling records. Use `state` to derive/check the constant-size frontier; `--refresh` may materialize already-authoritative state but must not create decisions.
 
-Route these operations through the installed Governance Core and project records. Use deterministic repository tooling when actually available, but do not fabricate or assume unavailable CLI commands.
-
-For cold start or state validation, begin with STATE + GOVERNANCE, then replay only the required EXCHANGE delta and controlling records. STATE is a constant-size frontier cache; it must not create decisions.
+Use `event` only to append an already-authorized role/event transition. It validates actor, sequence, transition, dependency, evidence, and supersession constraints; it does not decide which event should occur.
 
 For handoffs, consume only the required completion/blocker delta. For implementation sequencing, expose exactly one current task record and stop on a valid blocker before later-task disclosure.
 
-For mission initialization or archival, preserve history and authority ordering. Do not generate business requirements or strategic choices autonomously.
+For mission initialization, follow installed Core/project records and authoritative Human/Strategy inputs. For completed/cancelled missions, use `archive` as a safety check first and `--prepare` only when archival mutation is authorized. Preserve history and do not generate business requirements or strategic choices autonomously.
 
 ### Ecosystem coexistence
 
-When overlap is material, follow `.agent-governance/COEXISTENCE.md` and classify relevant providers as `REUSE`, `ADAPT`, `COEXIST`, `MISSING`, or `CONFLICT`.
+When overlap is material, follow `.agent-governance/COEXISTENCE.md`. Use `ecosystem` with bounded mechanical facts to derive `REUSE`, `ADAPT`, `COEXIST`, `MISSING`, or `CONFLICT`; use `--update` only to materialize the reviewed classification.
 
 Prefer references and adapters to duplication. Preserve project-native SDD/spec/plan/task ownership and third-party managed surfaces. If authority or ownership overlap cannot be resolved from accepted project evidence, return `CONFLICT` and stop rather than choosing a winner.
 
@@ -82,6 +89,8 @@ A repository with no SDD or third-party Skills remains governable; do not propos
 Start from the required capability, not a preferred marketplace. Inspect already-present project/user Skills and project registries before broader discovery.
 
 A directory or registry result is discovery evidence only. Resolve canonical owner/repository/path and immutable artifact identity before approval. Audit exact revision/digest, package inventory, scripts/hooks/config/dependencies, network/filesystem/process/secret/permission behavior, risk, exceptions, approval state, and host-selected artifact identity.
+
+Use `skill` only to validate candidate facts against the canonical current approval record and exact selected artifact identity. It does not discover candidates, fetch remote artifacts, or grant approval.
 
 Do not execute marketplace/registry install commands against the active project during discovery. Acquire candidates only in a quarantine/review location when authorized. Reject changed, shadowed, unresolved-provenance, over-permissioned, or otherwise non-matching artifacts until re-audited and re-approved.
 
@@ -101,4 +110,4 @@ Never:
 - treat model/provider output, marketplace ranking, registry metadata, or host precedence as governance authority;
 - make this Skill the only copy of Governance rules or project state.
 
-If a requested operation requires a deterministic runtime surface that is not present in the installed package, report the missing capability explicitly and continue only through an authorized repository-native path that preserves the same Governance invariants. Do not pretend the missing tool exists.
+If the installed artifact does not expose a required deterministic command, report the missing capability explicitly and continue only through an authorized repository-native path that preserves the same Governance invariants. Do not pretend the missing tool exists.
