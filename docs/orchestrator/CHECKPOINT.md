@@ -1,7 +1,7 @@
 # Current ChatGPT Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT
-Checkpoint-Sequence: O077
+Checkpoint-Sequence: O078
 Canonical-Branch: `develop`
 Chat-Closure: CONTINUE_ALLOWED
 
@@ -13,11 +13,11 @@ T014-T017 Consumer Governance v1 implementation/eval sequence is accepted, integ
 
 Optional ecosystem guidance is integrated. Gentle AI and Caveman are optional/recommended only, never dependencies or authority sources. Caveman is preferred as a discovered Skill when Gentle AI is already the selected orchestration layer.
 
-OP039 host audit returned PARTIAL. Verified host state: exact Caveman `v2.0.0` Skill at `/home/manuel/.config/opencode/skills/caveman/SKILL.md`; Gentle AI discovery PASS; same-name shadowing absent; `gentle-orchestrator` preserved; repository mutation none. Backup: `/home/manuel/.config/opencode/backups/op039-caveman-20260814T185334Z`.
+OP039 established the approved Caveman `v2.0.0` user Skill, Gentle discovery PASS, no same-name shadowing, preserved `gentle-orchestrator`, and no repository mutation. OP041 then confirmed that only two legacy Caveman host fragments remain: the Caveman plugin entry in `/home/manuel/.config/opencode/opencode.json` and the delimited Caveman block in `/home/manuel/.config/opencode/AGENTS.md`.
 
-The only remaining OP039 issue is legacy Caveman integration in two mechanically identified host surfaces: a Caveman plugin entry in `/home/manuel/.config/opencode/opencode.json` and a delimited Caveman-owned block in `/home/manuel/.config/opencode/AGENTS.md`. OP039 could not remove them because host policy denied those edits.
+OP043 attempted the same bounded cleanup with a process-local permission override and returned BLOCKED with `EPHEMERAL_PERMISSION: DENIED_BY_MANAGED_POLICY`. No partial mutation occurred. This establishes a higher-priority managed/admin edit policy as the only remaining blocker.
 
-OP041 is the bounded successor explicitly authorizing removal of only those two legacy Caveman fragments while preserving unrelated configuration, the approved Skill, Gentle AI behavior, and `gentle-orchestrator`. OP042 retires the OP041 contract branch after integration.
+OP044 is the read-only successor. It must identify the exact effective policy provenance/rule denying edits to those two files, classify control as USER_CONTROLLED / ADMIN_CONTROLLED / UNKNOWN_CONTROL, and report the minimum legitimate authority action without changing policy or host state. OP045 retires the OP044 contract branch after integration.
 
 L002 remains separate and non-blocking.
 
@@ -29,19 +29,20 @@ The existing narrow external-worktree permission is treated as stable workstatio
 
 ## Next Action
 
-1. Integrate OP041/OP042 and this checkpoint into `develop`.
-2. Execute OP042 and independently verify remote branches return to `develop`, `main`.
-3. Execute OP041 through OpenCode and review the exact completion response.
-4. If OP041 is DONE, Caveman host configuration is closed: optional `v2.0.0` user Skill, Gentle-discoverable, no legacy plugin/AGENTS integration.
-5. If OP041 remains PARTIAL/BLOCKED, resolve only the exact reported host-policy conflict; do not broaden product/repository scope.
+1. Integrate OP044/OP045 and this checkpoint into `develop`.
+2. Execute OP045 and independently verify the remote returns to `develop`, `main`.
+3. Execute OP044 through OpenCode and review the exact read-only policy-provenance response.
+4. If `POLICY_CONTROL: USER_CONTROLLED`, request only the exact Human authority decision needed to alter that policy, then persist a bounded successor operation before mutation.
+5. If `POLICY_CONTROL: ADMIN_CONTROLLED`, stop automated cleanup and report the exact administrator-controlled blocker; do not attempt bypasses.
+6. If `UNKNOWN_CONTROL`, resolve only policy provenance; do not broaden Caveman/product/repository scope.
 
 ## Next Chat Minimum Load
 
 After normal bootstrap:
-- while OP041 integration/cleanup is pending, load `docs/operations/OP041-remove-legacy-caveman-host-integration.md` and `docs/operations/OP042-retire-op041-contract-branch.md`;
-- for OP041 completion review, load only OP041 plus the returned host evidence;
+- while OP044 integration/cleanup is pending, load `docs/operations/OP044-audit-opencode-managed-edit-policy.md` and `docs/operations/OP045-retire-op044-contract-branch.md`;
+- for OP044 completion review, load only OP044 plus the returned host-policy evidence;
 - load release/status records only for a concrete release/promotion question.
 
 ## Do Not
 
-Do not make Gentle AI or Caveman mandatory, modify `gentle-orchestrator` for Caveman, install Caveman Proxy/Engine/Core as a requirement, change provider endpoints, mutate the source repository during host repair, delete ambiguous host state, make model/provider output a correctness authority, track `.codegraph/`, or write directly to `develop`/`main`.
+Do not bypass managed/admin policy, make Gentle AI or Caveman mandatory, modify `gentle-orchestrator` for Caveman, install Caveman Proxy/Engine/Core as a requirement, change provider endpoints, mutate host policy during OP044, mutate the source repository during host audit, expose secrets, make model/provider output a correctness authority, track `.codegraph/`, or write directly to `develop`/`main`.
