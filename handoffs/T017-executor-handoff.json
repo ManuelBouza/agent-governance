@@ -1,0 +1,67 @@
+{
+  "task_id": "T017",
+  "status": "DONE",
+  "executor_identity": "Agente de IA Ejecutor (OpenCode)",
+  "task_contract_path": "docs/tasks/T017-consumer-governance-remaining-cli-v1.md",
+  "branch": "feat/consumer-governance-cli-v1",
+  "base_branch": "develop",
+  "base_sha": "ddaa256d1bcdc1c101c446e731cafb400b5a99b6",
+  "implementation_anchor_sha": "ee540cf842d11b74ccfea7873a0f51a5347dffa4",
+  "changed_paths": [
+    "governance-skill/scripts/governance.py",
+    "handoffs/T017-executor-handoff.json",
+    "tests/test_consumer_governance_cli_v1.py"
+  ],
+  "implementation_summary": "Completed the stable deterministic Consumer Governance CLI v1 with state reconstruction, locked append-only events, exact Skill artifact approval validation, bounded ecosystem classification, and coherent mission archival/reset while preserving bootstrap and validate compatibility.",
+  "command_surface": [
+    "bootstrap",
+    "validate",
+    "state",
+    "event",
+    "skill",
+    "ecosystem",
+    "archive"
+  ],
+  "behavior": {
+    "state": "Derives constant-size frontier from WORKPLAN metadata and effective EXCHANGE replay; refresh requires --refresh.",
+    "event": "Validates actors, transitions, evidence, dependencies, supersession, and monotonic sequence under an advisory exclusive lock before durable append.",
+    "skill": "Requires canonical current approval, immutable identity, approved envelopes, contained artifacts, and matching deterministic SHA-256 content digests.",
+    "ecosystem": "Requires contained mechanical evidence and controlling records/events, preserves managed surfaces, and updates CAPABILITIES only with --update.",
+    "archive": "Validates authoritative terminal state and coherent STATE, publishes an atomic historical snapshot, then prepares a clean active mission instance without deleting history."
+  },
+  "verification": {
+    "commands": [
+      "uv run --locked pytest -q tests/test_consumer_governance_cli.py tests/test_consumer_governance_cli_v1.py",
+      "uv run --locked pytest -q",
+      "uv run --locked ruff check .",
+      "uv run --locked ruff format --check .",
+      "git diff --check",
+      "uv run --locked python governance-skill/scripts/governance.py --help"
+    ],
+    "results": {
+      "focused_pytest": "75 passed in 8.88s",
+      "full_pytest": "259 passed in 10.09s",
+      "ruff_check": "All checks passed!",
+      "ruff_format_check": "18 files already formatted",
+      "diff_check": "PASS",
+      "cli_surface": "PASS: exactly bootstrap, validate, state, event, skill, ecosystem, archive"
+    }
+  },
+  "scope_confirmation": {
+    "markdown_changed": false,
+    "governance_core_changed": false,
+    "skill_md_changed": false,
+    "package_assets_changed": false,
+    "maintainer_skill_changed": false,
+    "live_consumer_footprint_created": false,
+    "network_or_provider_used": false
+  },
+  "dependencies_or_config_changes": [],
+  "limitations": [
+    "EXCHANGE concurrency uses POSIX advisory flock semantics; cooperating CLI writers are serialized, while external writers that ignore the lock remain outside the adapter's control.",
+    "Skill validation verifies local candidate and selected-host content digests; canonical remote source retrieval remains an upstream discovery/audit responsibility."
+  ],
+  "rollback": "Revert implementation commit ee540cf842d11b74ccfea7873a0f51a5347dffa4 to remove the T017 CLI implementation and focused tests; revert the handoff-only successor separately if needed.",
+  "unresolved_issues": [],
+  "chatgpt_read_path": "handoffs/T017-executor-handoff.json"
+}
