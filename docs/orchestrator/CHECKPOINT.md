@@ -1,7 +1,7 @@
 # Current ChatGPT Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT
-Checkpoint-Sequence: O074
+Checkpoint-Sequence: O075
 Canonical-Branch: `develop`
 Chat-Closure: CONTINUE_ALLOWED
 
@@ -17,11 +17,11 @@ T016 Consumer Skill final-authoring test transition is accepted, integrated and 
 
 T017 Consumer Governance remaining CLI v1 surfaces is accepted, integrated and cleaned up. The stable deterministic runtime surface is exactly `bootstrap`, `validate`, `state`, `event`, `skill`, `ecosystem`, and `archive`.
 
-Focused release review `CONSUMER-GOVERNANCE-SKILL-V1-R2` is ACCEPTED / RELEASE-APPROVED. The prior R1 runtime-completeness blocker is closed. Final `governance-skill/SKILL.md` routing is aligned to the integrated seven-command CLI while preserving activation boundaries, non-authority, source independence, progressive disclosure, coexistence, Skill supply-chain controls and read/mutation safety.
+Focused release review `CONSUMER-GOVERNANCE-SKILL-V1-R2` is ACCEPTED / RELEASE-APPROVED. Consumer Governance Skill v1 is release-approved. Release approval remains bounded to deterministic evidence and does not claim runtime model activation accuracy.
 
-Consumer Governance Skill v1 is release-approved. Release approval does not claim runtime model activation accuracy and does not make model/provider output, registries, marketplaces, host precedence, Gentle AI, Caveman or any other optional ecosystem tool an authority source.
+OP037 is completed and independently verified; remote branches returned to exactly `develop`, `main`.
 
-Gentle AI and Caveman remain optional/recommended ecosystem integrations only. Agent Governance correctness, bootstrap, validation, execution, verification and release acceptance must not depend on either. When Caveman is used with Gentle AI, prefer Caveman as an optional discovered Skill rather than a required proxy/runtime layer.
+Optional ecosystem guidance is authored in `docs/OPTIONAL-ECOSYSTEM-INTEGRATIONS.md`. Gentle AI and Caveman are explicitly optional and recommended when useful, never dependencies or authority sources. Gentle AI may remain the selected orchestration layer in projects that already use it. When Caveman is used with Gentle AI, prefer Caveman as an optional discovered Skill rather than a required proxy/runtime layer. Agent Governance correctness, bootstrap, validation, execution, verification and release acceptance remain independent of both.
 
 L002 remains separate and non-blocking.
 
@@ -33,16 +33,16 @@ The existing narrow external-worktree permission is treated as stable workstatio
 
 ## Next Action
 
-1. Integrate the Consumer Governance Skill v1 release-approval Markdown branch into `develop`.
-2. Execute OP037 and independently verify remote branches return to `develop`, `main`.
-3. Formalize Gentle AI and Caveman ecosystem coexistence guidance as optional/recommended integrations without making either a dependency or authority source.
-4. Keep Consumer release claims bounded to deterministic release evidence; any runtime/model-backed trigger evaluation remains separately authorized work.
+1. Integrate the ChatGPT-owned optional ecosystem guidance Markdown branch into `develop`.
+2. Execute OP038 and independently verify remote branches return to `develop`, `main`.
+3. Keep Gentle AI and Caveman recommendations explicitly optional; do not add runtime/package dependencies or authority semantics for either.
+4. After ecosystem-guidance cleanup, select the next product frontier from current repository state; do not promote `develop` to `main` or publish/tag a release without the repository's authorized release workflow.
 
 ## Next Chat Minimum Load
 
 After normal bootstrap:
-- while release-approval integration/cleanup is pending, load `docs/reviews/CONSUMER-GOVERNANCE-SKILL-V1-R2.md`, `governance-skill/STATUS.md`, final `governance-skill/SKILL.md`, and `docs/operations/OP037-retire-consumer-v1-release-approval-branch.md`;
-- for ecosystem guidance, load only the concrete Gentle AI/Caveman coexistence sources needed to document optional/recommended integration and current project coexistence contracts;
+- while ecosystem-guidance integration/cleanup is pending, load `docs/OPTIONAL-ECOSYSTEM-INTEGRATIONS.md` and `docs/operations/OP038-retire-optional-ecosystem-guidance-branch.md`;
+- load current release/status records only if a concrete release/promotion question arises;
 - load Maintainer Skill material only on a concrete Consumer-vs-Maintainer conflict.
 
 ## Do Not
