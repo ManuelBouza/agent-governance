@@ -8,7 +8,7 @@ Define how an `Agente de IA Ejecutor` returns implementation status and verifica
 
 The executor's chat/terminal response is transport only. The authoritative execution result MUST be persisted in Git and pushed to the canonical remote before the executor reports completion, blocking, or partial progress.
 
-D029 defines the non-self-referential Git identity model used by this contract.
+D029 defines the non-self-referential Git identity model used by this contract. D048 defines the normal-task remote-publication timing boundary.
 
 ## Canonical location
 
@@ -58,29 +58,50 @@ For backward compatibility, an existing `head_sha` field MAY be interpreted as t
 
 1. ChatGPT persists the Task Contract and integrates it into `develop`.
 2. The executor creates/uses the task branch from the `develop` revision containing that contract.
-3. The executor performs the authorized work.
+3. The executor performs the authorized work locally on the task branch.
 4. The executor runs required verification.
 5. The executor commits the final implementation/test/eval state that the verification evidence describes.
 6. The executor records that commit as `implementation_head_sha` in the task handoff artifact under `handoffs/`.
 7. The executor commits the handoff artifact; this may create a handoff-only successor commit.
-8. The executor pushes the topic branch to the canonical remote.
-9. The executor's visible response contains only status, handoff path, branch, and the actual pushed branch HEAD.
-10. ChatGPT fetches the remote branch at that visible HEAD, reads the handoff there, verifies that `implementation_head_sha` is an ancestor, and reviews the implementation diff/evidence before accepting or requesting rework.
+8. For a normal task, only after steps 3-7 are complete does the executor perform the one planned final push of the complete topic-branch state to the canonical remote.
+9. The executor verifies that the remote topic branch resolves to the pushed final HEAD.
+10. The executor's visible response contains only status, handoff path, branch, and the actual pushed branch HEAD.
+11. ChatGPT fetches the remote branch at that visible HEAD, reads the handoff there, verifies that `implementation_head_sha` is an ancestor, and reviews the implementation diff/evidence before accepting or requesting rework.
 
 If implementation changes after the handoff was generated, the executor MUST rerun affected verification as required, create a new implementation commit, update `implementation_head_sha`, and regenerate the handoff. A handoff-only metadata/finalization commit does not require a new implementation anchor.
+
+## Remote publication timing invariant
+
+For a normal task that is still executing toward its intended terminal result, intermediate progress MUST remain local. The executor MUST NOT push an intermediate topic-branch state merely as a progress checkpoint.
+
+The normal sequence is:
+
+`local implementation -> verification -> implementation commit -> final handoff -> handoff/finalization commit -> one planned final push -> remote HEAD verification -> terminal response`
+
+A pre-completion remote push is allowed only when:
+
+- the controlling Task Contract or referenced workflow explicitly requires an intermediate remote checkpoint, such as an RF1 baseline awaiting Orchestrator approval; or
+- the executor is actually terminating the invocation with `BLOCKED` or `PARTIAL` and can safely publish a remotely auditable terminal handoff before returning that status.
+
+Writing `status = PARTIAL` into an intermediate handoff does not create checkpoint authority when the same invocation is continuing toward `DONE`.
+
+This is a publication-timing rule, not a history-rewrite rule. If Orchestrator review later requires rework, or a post-push handoff-only correction is legitimately required, a later authorized corrective push may occur on the same task branch. Do not reset, force-push, or erase prior remote history merely to simulate a single physical push.
 
 ## Commit/push invariant
 
 A normal executor handoff is not complete while the authoritative state exists only on the executor's local machine.
 
-Before returning status, the executor MUST ensure:
+Before the planned final push, the executor MUST ensure:
 - all in-scope implementation/test/eval changes intended for review are committed;
+- required verification is complete for the implementation anchor described by the handoff;
 - the handoff artifact is committed;
-- the topic branch is pushed to the canonical remote;
+- no unreported in-scope working-tree changes would make the handoff misleading.
+
+After that push and before returning status, the executor MUST ensure:
+- the topic branch is present on the canonical remote;
 - the visible reported `HEAD` equals the pushed topic-branch HEAD;
 - `implementation_head_sha` is an ancestor of that visible HEAD;
-- the handoff file is readable at that visible HEAD;
-- the working tree contains no unreported in-scope changes that would make the handoff misleading.
+- the handoff file is readable at that visible HEAD.
 
 If pushing is impossible because of credentials/connectivity/permissions, persist a `BLOCKED` handoff locally if possible and report the inability to create a remotely auditable state. ChatGPT cannot accept a normal implementation from chat-only evidence.
 
@@ -93,7 +114,7 @@ When `docs/REFACTORING-WORKFLOW.md` requires RF1 baseline approval before struct
 - return a minimal `PARTIAL` pointer for ChatGPT baseline review;
 - do not begin RF3 until ChatGPT has persisted/communicated baseline acceptance according to the Task Contract/workflow.
 
-This checkpoint freezes evidence without inventing a third governance role.
+This checkpoint is an explicit D048 exception and freezes evidence without inventing a third governance role.
 
 ## Visible response pattern
 
@@ -117,11 +138,13 @@ Additional narrative should be minimal. The repository handoff is authoritative.
 
 The executor MUST persist the handoff after running the required verification and before claiming the task is DONE/BLOCKED/PARTIAL.
 
-The normal sequence is:
+For a normal task, the planned sequence is:
 
-`implementation commit -> handoff JSON referencing implementation commit -> handoff/finalization commit -> push -> visible final HEAD`
+`implementation commit -> handoff JSON referencing implementation commit -> handoff/finalization commit -> one final push -> remote HEAD verification -> visible final HEAD`
 
-Additional handoff-only correction commits are allowed when they do not change implementation/test/eval state and the JSON continues to identify the correct implementation anchor.
+Intermediate remote publication while the invocation continues toward `DONE` is not part of this sequence unless explicitly contracted.
+
+Additional post-push handoff-only correction commits are allowed when legitimately required by review/finalization and when they do not change implementation/test/eval state and the JSON continues to identify the correct implementation anchor.
 
 ## Audit invariant
 
