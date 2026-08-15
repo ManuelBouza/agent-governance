@@ -75,8 +75,9 @@ def test_inventory_is_canonical_complete_and_honest(
 
     assert paths == sorted(paths)
     assert "baselines/repository-context-source-v1.json" not in paths
+    volatile = report[tool.VOLATILE_EXECUTION_METADATA_KEY]
     assert (
-        report["source_git_revision"]
+        volatile["source_git_revision"]
         == subprocess.run(
             ["git", "rev-parse", "HEAD"],
             cwd=measured_repository,
@@ -108,11 +109,19 @@ def test_inventory_is_canonical_complete_and_honest(
             "target": "docs/guide.md",
         },
     ]
+    assert (
+        report[tool.TRACKED_CONTENT_DIGEST_KEY]
+        == tool.canonical_payload(report)[tool.TRACKED_CONTENT_DIGEST_KEY]
+    )
 
     (measured_repository / "unusual.data").write_text("changed\n", encoding="utf-8")
     changed = tool.build_report(measured_repository)
-    assert changed["source_git_revision"] == report["source_git_revision"]
-    assert changed["tracked_content_digest"] != report["tracked_content_digest"]
+    assert (
+        changed[tool.VOLATILE_EXECUTION_METADATA_KEY]["source_git_revision"]
+        == volatile["source_git_revision"]
+    )
+    assert changed[tool.TRACKED_CONTENT_DIGEST_KEY] != report[tool.TRACKED_CONTENT_DIGEST_KEY]
+    assert tool.canonical_identity_digest(changed) != tool.canonical_identity_digest(report)
 
 
 def test_repeated_runs_are_byte_identical_and_baseline_self_excludes(
@@ -136,6 +145,99 @@ def test_repeated_runs_are_byte_identical_and_baseline_self_excludes(
         path.relative_to(measured_repository): path.read_bytes()
         for path in measured_repository.rglob("*.md")
     }
+    parsed = json.loads(first)
+    canonical = tool.canonical_payload(parsed)
+    assert tool.VOLATILE_EXECUTION_METADATA_KEY not in canonical
+    assert tool.TRACKED_CONTENT_DIGEST_KEY in canonical
+
+
+def test_canonical_identity_survives_finalization_boundary(repo_root: Path, tmp_path: Path) -> None:
+    """AC-CTX-1 finalization boundary regression.
+
+    When HEAD advances solely because the canonical baseline/handoff file
+    is committed, the canonical baseline identity remains stable while the
+    volatile execution metadata legitimately differs.
+    """
+    tool = load_measurement_tool(repo_root)
+
+    repository = tmp_path / "finalization-fixture"
+    (repository / "docs" / "orchestrator").mkdir(parents=True)
+    (repository / "AGENTS.md").write_text("# Agents\n", encoding="utf-8")
+    (repository / "docs" / "orchestrator" / "CHECKPOINT.md").write_text(
+        "# Checkpoint\n", encoding="utf-8"
+    )
+    (repository / "src.txt").write_text("hello\n", encoding="utf-8")
+
+    git(repository, "init", "-q")
+    git(repository, "add", ".")
+    git(
+        repository,
+        "-c",
+        "user.name=Test",
+        "-c",
+        "user.email=test@example.invalid",
+        "commit",
+        "-qm",
+        "fixture content",
+    )
+
+    baseline_path = repository / tool.DEFAULT_BASELINE
+    tool.write_report(repository, baseline_path)
+    before_revision = subprocess.run(
+        ["git", "rev-parse", "HEAD"],
+        cwd=repository,
+        check=True,
+        capture_output=True,
+        text=True,
+        timeout=30,
+    ).stdout.strip()
+    before_report = json.loads(baseline_path.read_bytes())
+
+    git(repository, "add", ".")
+    git(
+        repository,
+        "-c",
+        "user.name=Test",
+        "-c",
+        "user.email=test@example.invalid",
+        "commit",
+        "-qm",
+        "finalize baseline",
+    )
+    after_revision = subprocess.run(
+        ["git", "rev-parse", "HEAD"],
+        cwd=repository,
+        check=True,
+        capture_output=True,
+        text=True,
+        timeout=30,
+    ).stdout.strip()
+
+    assert after_revision != before_revision
+
+    after_report = tool.build_report(repository)
+    after_persisted = json.loads(baseline_path.read_bytes())
+
+    assert (
+        before_report[tool.TRACKED_CONTENT_DIGEST_KEY]
+        == after_report[tool.TRACKED_CONTENT_DIGEST_KEY]
+    )
+    assert tool.canonical_identity_digest(before_report) == tool.canonical_identity_digest(
+        after_report
+    )
+    tool.validate_canonical_identity(before_report, after_report, after_persisted)
+
+    assert (
+        before_report[tool.VOLATILE_EXECUTION_METADATA_KEY]["source_git_revision"]
+        == before_revision
+    )
+    assert (
+        after_report[tool.VOLATILE_EXECUTION_METADATA_KEY]["source_git_revision"] == after_revision
+    )
+    assert (
+        before_report[tool.VOLATILE_EXECUTION_METADATA_KEY]["source_git_revision"]
+        != after_report[tool.VOLATILE_EXECUTION_METADATA_KEY]["source_git_revision"]
+    )
 
 
 def test_bootstrap_footprint_and_largest_files_are_physical_only(

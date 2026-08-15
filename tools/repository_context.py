@@ -1,4 +1,29 @@
-"""Measure deterministic physical context properties of a tracked Git tree."""
+"""Measure deterministic physical context properties of a tracked Git tree.
+
+Provenance/finalization contract
+--------------------------------
+
+The canonical baseline produced by :func:`build_report` separates
+**deterministic canonical payload** from **volatile execution metadata**:
+
+* The canonical payload comprises every top-level key of the report except
+  :data:`VOLATILE_EXECUTION_METADATA_KEY`. It is fully deterministic given an
+  unchanged tracked Git tree and remains stable across the
+  commit/finalization boundary that persists the baseline/handoff file
+  itself. :data:`TRACKED_CONTENT_DIGEST_KEY` is the deterministic content
+  identity derived from the measured tracked files only.
+
+* :data:`VOLATILE_EXECUTION_METADATA_KEY` records per-execution provenance
+  such as the Git revision observed at measurement time. It is explicitly
+  documented as NOT part of canonical baseline identity and MAY legitimately
+  differ across runs even when canonical identity is identical.
+
+This separation is what makes AC-CTX-1 satisfiable: the committed canonical
+baseline can be regenerated or deterministically validated without byte
+drift caused solely by the commit that persists the baseline/handoff, while
+the required source Git revision is still preserved as explicitly volatile
+execution metadata.
+"""
 
 from __future__ import annotations
 
@@ -19,6 +44,9 @@ MARKDOWN_LINK = re.compile(r"(?<!!)\[[^]]*\]\(([^)\s]+)(?:\s+[^)]*)?\)")
 MARKDOWN_CODE_PATH = re.compile(r"`([^`\n]+)`")
 MARKDOWN_HEADING = re.compile(r"^#{1,6}(?:[ \t]+|$)", re.MULTILINE)
 URI_SCHEME = re.compile(r"^[A-Za-z][A-Za-z0-9+.-]*:")
+
+TRACKED_CONTENT_DIGEST_KEY = "tracked_content_digest"
+VOLATILE_EXECUTION_METADATA_KEY = "volatile_execution_metadata"
 
 
 class MeasurementError(Exception):
@@ -133,8 +161,20 @@ def _metric_totals(records: list[dict[str, object]]) -> dict[str, object]:
     }
 
 
-def build_report(root: Path, *, excluded_paths: set[str] | None = None) -> dict[str, object]:
-    """Build canonical measurement data from files selected by the Git index."""
+def build_report(
+    root: Path,
+    *,
+    excluded_paths: set[str] | None = None,
+    source_git_revision: str | None = None,
+) -> dict[str, object]:
+    """Build canonical measurement data from files selected by the Git index.
+
+    See the module docstring for the provenance/finalization contract.
+
+    ``source_git_revision`` overrides the implicit ``git rev-parse HEAD``
+    derivation; when ``None``, the current HEAD is recorded as volatile
+    execution metadata.
+    """
     root = root.resolve()
     excluded = {PurePosixPath(DEFAULT_BASELINE).as_posix()}
     excluded.update(PurePosixPath(path).as_posix() for path in (excluded_paths or set()))
@@ -177,7 +217,8 @@ def build_report(root: Path, *, excluded_paths: set[str] | None = None) -> dict[
     text_records = [record for record in records if record["text_encoding"] == "utf-8"]
     largest = sorted(text_records, key=lambda item: (-int(item["byte_size"]), str(item["path"])))
     content_identity = [{"path": record["path"], "sha256": record["sha256"]} for record in records]
-    revision = _git(root, "rev-parse", "HEAD").decode("ascii").strip()
+    if source_git_revision is None:
+        source_git_revision = _git(root, "rev-parse", "HEAD").decode("ascii").strip()
     return {
         "bootstrap_physical_footprint": {
             "description": "Physical UTF-8 footprint of source cold-start router files; no token or observed-load claim.",
@@ -204,7 +245,6 @@ def build_report(root: Path, *, excluded_paths: set[str] | None = None) -> dict[
             "observed_runtime_context_metrics": False,
         },
         "report_schema_version": SCHEMA_VERSION,
-        "source_git_revision": revision,
         "structural_markdown_references": {
             "description": "Static resolvable local Markdown links and code-span paths to tracked files; not observed RFO, TMC, CAR, or runtime loads.",
             "edge_count": len(edge_counts),
@@ -215,8 +255,50 @@ def build_report(root: Path, *, excluded_paths: set[str] | None = None) -> dict[
             "reference_count": sum(edge_counts.values()),
         },
         "totals": {"by_category": by_category, "repository": _metric_totals(records)},
-        "tracked_content_digest": hashlib.sha256(canonical_json(content_identity)).hexdigest(),
+        TRACKED_CONTENT_DIGEST_KEY: hashlib.sha256(canonical_json(content_identity)).hexdigest(),
+        VOLATILE_EXECUTION_METADATA_KEY: {
+            "description": (
+                "Per-execution provenance; NOT part of canonical baseline identity "
+                "and MAY legitimately differ across runs even when canonical "
+                "baseline identity is identical."
+            ),
+            "source_git_revision": source_git_revision,
+        },
     }
+
+
+def canonical_payload(report: dict[str, object]) -> dict[str, object]:
+    """Return the canonical baseline portion of a report.
+
+    The canonical payload comprises every top-level key except
+    :data:`VOLATILE_EXECUTION_METADATA_KEY`. Two reports with equal canonical
+    payloads have identical canonical baseline identity and are stable across
+    the commit/finalization boundary that persists the baseline/handoff file.
+    """
+    return {key: value for key, value in report.items() if key != VOLATILE_EXECUTION_METADATA_KEY}
+
+
+def canonical_identity_digest(report: dict[str, object]) -> str:
+    """Return the SHA-256 of :func:`canonical_payload`."""
+    return hashlib.sha256(canonical_json(canonical_payload(report))).hexdigest()
+
+
+def validate_canonical_identity(*reports: dict[str, object]) -> None:
+    """Assert that every supplied report shares the same canonical identity.
+
+    Volatile execution metadata is explicitly excluded from the comparison.
+    Raises :class:`MeasurementError` if at least one report differs in
+    canonical payload or if no reports are supplied.
+    """
+    if not reports:
+        raise MeasurementError("validate_canonical_identity requires at least one report")
+    reference = canonical_identity_digest(reports[0])
+    for index, report in enumerate(reports[1:], start=1):
+        current = canonical_identity_digest(report)
+        if current != reference:
+            raise MeasurementError(
+                f"canonical identity mismatch at report index {index}: {reference} != {current}"
+            )
 
 
 def _relative_output(root: Path, output: Path) -> str | None:
