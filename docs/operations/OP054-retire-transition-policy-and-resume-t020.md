@@ -4,24 +4,24 @@ Operation ID: OP054
 Status: READY  
 Type: branch cleanup with D045 preauthorized continuation  
 Authorized base: `develop`  
-Receipt anchor: PR #TBD
+Receipt anchor: PR #126
 
 ## Objective
 
-After the PR integrating D045 and `docs/CHAINED-EXECUTOR-TRANSITIONS.md` is merged into `develop`, retire exactly its Markdown source branch `docs/chained-executor-transitions`, publish the normal durable Operational receipt, and — only if all deterministic cleanup conditions pass — continue in the same executor invocation with the already-authorized T020 rework governed by the existing T020 Task Contract plus `docs/reviews/T020-R1.md`.
+After PR #126 integrating D045 and `docs/CHAINED-EXECUTOR-TRANSITIONS.md` is merged into `develop`, retire exactly its Markdown source branch `docs/chained-executor-transitions`, publish the normal durable Operational receipt, and — only if all deterministic cleanup conditions pass — continue in the same executor invocation with the already-authorized T020 rework governed by the existing T020 Task Contract plus `docs/reviews/T020-R1.md`.
 
 This contract exists to exercise D045 immediately and remove the Human acknowledgement round-trip between a safe cleanup and already-authorized executor rework.
 
 ## Durable target identity
 
-The Stage-A cleanup covers exactly the PR that integrates this contract:
+The Stage-A cleanup covers exactly PR #126:
 
 - base: `develop`;
 - source branch: `docs/chained-executor-transitions`;
-- reviewed head: derive from the authoritative merged PR record after integration;
-- integration commit: derive from the authoritative merged PR record after integration.
+- reviewed head: derive from the authoritative merged PR #126 record after integration;
+- integration commit: derive from the authoritative merged PR #126 record after integration.
 
-The authoritative derivation rule is to read that merged PR from GitHub after integration and use its recorded source branch, `head_sha`, base, and integration identity. No chat-carried SHA substitutes for that record.
+The authoritative derivation rule is to read merged PR #126 from GitHub after integration and use its recorded source branch, `head_sha`, base, and integration identity. No chat-carried SHA substitutes for that record.
 
 ## Controlling references
 
@@ -35,15 +35,15 @@ The authoritative derivation rule is to read that merged PR from GitHub after in
 - `docs/TASK-CONTRACTS.md`
 - `docs/tasks/T020-self-contained-build-artifact-and-identity.md`
 - `docs/reviews/T020-R1.md`
-- the merged PR integrating this contract
+- merged PR #126
 
 ## Stage-A authorized operations
 
-- Read the authoritative merged PR identity and current remote/local branch state.
+- Read authoritative PR #126 identity and current remote/local branch state.
 - Delete exactly remote branch `docs/chained-executor-transitions` if all cleanup safety checks pass.
 - In accessible local checkouts/worktrees, safely switch away, prune tracking refs, and remove only the matching local branch when no unrepresented work exists.
 - Re-read remote/local inventories.
-- Publish the final Stage-A durable receipt to the configured PR anchor before any Stage-B work.
+- Publish the final Stage-A durable receipt to PR #126 before any Stage-B work.
 
 ## Stage-A explicit exclusions
 
@@ -57,9 +57,9 @@ The authoritative derivation rule is to read that merged PR from GitHub after in
 ## Stage-A preconditions and safety invariants
 
 - This contract, D045, and the chained-transition procedure are reachable from current `origin/develop`.
-- The integrating PR is merged into `develop`.
-- The current remote head of `docs/chained-executor-transitions`, if present, exactly equals the PR's reviewed head.
-- Before first mutation, the executor establishes ability to publish a top-level receipt comment to the configured PR anchor.
+- PR #126 is merged into `develop`.
+- The current remote head of `docs/chained-executor-transitions`, if present, exactly equals PR #126's reviewed head.
+- Before first mutation, the executor establishes ability to publish a top-level receipt comment to PR #126.
 - `develop`, `main`, and active T020 implementation branch remain unchanged by Stage A.
 - Local/uncommitted work is preserved.
 
@@ -69,7 +69,7 @@ Stage A passes only when:
 
 - `docs/chained-executor-transitions` is absent remotely after cleanup;
 - `develop`, `main`, and `feat/t020-self-contained-governance-artifact` remain present and unchanged by cleanup;
-- the retired branch was already absent or matched the merged PR reviewed head immediately before deletion;
+- the retired branch was already absent or matched PR #126's reviewed head immediately before deletion;
 - accessible local branches are reported;
 - exceptions are explicit;
 - no repository files were modified;
@@ -77,7 +77,7 @@ Stage A passes only when:
 
 ## Stage-A stop / escalation
 
-Return `BLOCKED` before mutation when the integrating PR cannot be resolved/merged, receipt publication capability is unavailable, reviewed-head identity mismatches, local work cannot be preserved safely, or requested action would exceed scope.
+Return `BLOCKED` before mutation when PR #126 cannot be resolved/merged, receipt publication capability is unavailable, reviewed-head identity mismatches, local work cannot be preserved safely, or requested action would exceed scope.
 
 If mutation succeeds but final receipt publication fails, return `PARTIAL`, stop the chain, and perform no broader compensating action.
 
