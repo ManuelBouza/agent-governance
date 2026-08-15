@@ -4,16 +4,16 @@ Operation ID: OP055
 Status: READY  
 Type: post-integration branch cleanup  
 Authorized base: `develop`  
-Receipt anchor: PR #TBD
+Receipt anchor: PR #128
 
 ## Objective
 
-After the T020-R2 acceptance PR and T020 implementation PR #127 are both merged into `develop`, retire exactly their source branches while preserving `develop` and `main`.
+After T020-R2 acceptance PR #128 and T020 implementation PR #127 are both merged into `develop`, retire exactly their source branches while preserving `develop` and `main`.
 
 ## Durable targets
 
-1. T020-R2 acceptance PR: derive source branch, reviewed head and integration identity from the authoritative merged PR that contains this contract.
-2. T020 implementation PR #127: `feat/t020-self-contained-governance-artifact`; derive reviewed head and integration identity from authoritative merged PR #127 and require its reviewed head to equal accepted T020 HEAD `0aad8ce78b52a4bd2a4851663d675048215a539c`.
+1. PR #128 — `docs/t020-r2-acceptance`: derive reviewed head and integration identity from authoritative merged PR #128.
+2. PR #127 — `feat/t020-self-contained-governance-artifact`: derive reviewed head and integration identity from authoritative merged PR #127 and require its reviewed head to equal accepted T020 HEAD `0aad8ce78b52a4bd2a4851663d675048215a539c`.
 
 No chat-carried branch or SHA substitutes for those merged PR records.
 
@@ -26,16 +26,16 @@ No chat-carried branch or SHA substitutes for those merged PR records.
 - `docs/OPERATIONAL-CONTRACTS.md`
 - `docs/reviews/T020-R2.md`
 - PR #127
-- the merged PR integrating this Operational Contract
+- PR #128
 
 ## Authorized operations
 
-- Read the two authoritative merged PR records and current remote/local refs.
+- Read authoritative merged PR #127/#128 records and current remote/local refs.
 - Verify each surviving target source branch remains exactly at its merged PR reviewed head with no unique later work.
 - Delete exactly the two target remote branches when eligible.
 - Safely remove matching accessible-local branches/tracking refs when no unrepresented work exists.
 - Re-read remote/local inventories.
-- Publish the final durable completion receipt to the configured anchor.
+- Publish the final durable completion receipt to PR #128.
 
 ## Explicit exclusions
 
@@ -49,10 +49,10 @@ No chat-carried branch or SHA substitutes for those merged PR records.
 ## Preconditions and safety invariants
 
 - This contract is reachable from current `origin/develop`.
-- Both target PRs are merged into `develop`.
+- PR #127 and PR #128 are both merged into `develop`.
 - PR #127 recorded head equals accepted T020 HEAD `0aad8ce78b52a4bd2a4851663d675048215a539c`.
 - Each surviving target branch equals its authoritative merged-PR head immediately before deletion.
-- Before first mutation, durable receipt publication capability to the configured anchor is established.
+- Before first mutation, durable receipt publication capability to PR #128 is established.
 - `develop` and `main` are never moved or deleted.
 - Local/uncommitted work is preserved.
 
