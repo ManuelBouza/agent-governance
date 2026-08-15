@@ -3,7 +3,9 @@
   "status": "DONE",
   "task_contract_path": "docs/tasks/T020-self-contained-build-artifact-and-identity.md",
   "branch": "feat/t020-self-contained-governance-artifact",
-  "implementation_head_sha": "9ba7c83595488e917ecfd9c6d53ae9cd4776d5ed",
+  "implementation_head_sha": "d1d478da36a8c05c14181126abb34aa999aa632d",
+  "reviewed_head_sha": "a50b4bbb572c44e0715fda2b49955f36bbf043d2",
+  "reviewed_implementation_head_sha": "9ba7c83595488e917ecfd9c6d53ae9cd4776d5ed",
   "base_branch": "develop",
   "base_sha": "cdd60bfeca9065618518713541b25b9979d39f08",
   "files_changed": [
@@ -13,9 +15,9 @@
     "src/agent_governance/artifact.py",
     "tests/test_governance_artifact.py"
   ],
-  "implementation_summary": "Added a deterministic build boundary that emits one self-contained Governance Skill root containing generated canonical Core, the shared deterministic runtime, existing Skill assets and routing files, an identity schema, and generated digest metadata. The launcher now selects artifact-local runtime/Core paths before retaining the accepted source-layout fallback. Artifact-only tests build from a disposable source snapshot, delete that source, and exercise bootstrap, validate, state, and the exact seven-command surface in an unrelated repository.",
+  "implementation_summary": "Retained the reviewed deterministic self-contained Governance Skill build and corrected both bounded T020-R1 findings. The builder now packages an explicit allowlist of required Consumer Skill files, assets, and script instead of copying the complete source Skill subtree, excluding STATUS.md and equivalent source-product overlays. Artifact-only tests build from disposable source, delete that source, and successfully execute bootstrap, validate, state, event, skill, ecosystem, and archive in an unrelated repository while preserving identity and isolation evidence.",
   "architecture": {
-    "artifact_root": "The output directory is the complete Skill boundary; core/, runtime/, assets/, scripts/, Skill routing files, identity schema, and artifact-identity.json all live below it.",
+    "artifact_root": "The output directory is the complete Skill boundary; an explicit nine-file Consumer Skill allowlist, generated core/, runtime/, identity schema, and artifact-identity.json all live below it. Source lifecycle/status overlays such as governance-skill/STATUS.md are outside the package boundary.",
     "canonical_core": "governance-core/*.md is copied only during builds into artifact core/; no hand-maintained duplicate Core exists under governance-skill/.",
     "runtime_resolution": "governance-skill/scripts/governance.py resolves runtime/agent_governance and core/ inside a built artifact first, then preserves T018/T019 source checkout resolution for source tests and development.",
     "identity": "Build metadata separates build schema, Skill version, protocol version, installed-footprint version, source commit, sorted per-file SHA-256/size inventory, payload digest, and identity digest. Skill and installed-footprint versions are explicit strict-SemVer build inputs because source has no authoritative values for them; protocol version comes from canonical GOVERNANCE.md.",
@@ -36,30 +38,30 @@
       "git diff --check"
     ],
     "results": {
-      "focused_artifact_packaging": "3 passed; independent verification completed in 0.68s wall time",
-      "t018_characterization": "2 passed; independent verification completed in 0.35s wall time",
-      "t018_and_consumer_regression": "77 passed; independent verification completed in 7.41s wall time",
-      "t019_shared_engine_structure": "1 passed; independent verification completed in 0.24s wall time",
-      "full_deterministic_suite": "265 passed; independent verification completed in 7.94s wall time",
+      "focused_artifact_packaging": "3 passed in 0.92s; proves exact Consumer source allowlist, STATUS.md absence, reproducible identity, staged-source deletion, and successful artifact-only execution of all seven commands",
+      "t018_characterization": "2 passed in 0.21s",
+      "t018_and_consumer_regression": "77 passed in 7.97s",
+      "t019_shared_engine_structure": "1 passed in 0.02s",
+      "full_deterministic_suite": "265 passed in 9.29s",
       "ruff_check": "All checks passed!",
       "ruff_format_check": "3 files already formatted",
       "py_compile": "PASS",
       "identity_schema_json_parse": "PASS",
       "diff_check": "PASS",
-      "diagnostic_history": "Initial artifact state operation correctly failed on unresolved mission input; fixture was corrected to configure a synthetic mission and verify stale detection plus explicit refresh without changing runtime behavior."
+      "diagnostic_history": "Original T020 fixture correction for synthetic mission state remains intact. T020-R1 added no runtime semantic workaround: it reuses accepted Consumer v1 valid fixtures for event lifecycle, Skill approval, ecosystem update, and archive preparation."
     },
-    "runtime": "Artifact isolation test stages disposable canonical inputs, builds the Skill, deletes the complete staged source tree, confirms engine/Core/assets resolve strictly below artifact root with no sibling source directories, then bootstraps and validates an unrelated repository, exercises state stale/refresh behavior, and verifies the exact seven-command CLI surface.",
+    "runtime": "Artifact isolation test stages disposable canonical inputs, builds the Skill, deletes the complete staged source tree, confirms engine/Core/assets resolve strictly below artifact root with no sibling source directories, then successfully executes bootstrap, validate, state stale/refresh, event start/progress/done, exact Skill approval validation, ecosystem inventory update, and completed-mission archive preparation. Help output still proves the exact seven-command surface.",
     "network_required": false
   },
   "dependencies_or_config_changes": [
     "Added schemas/governance-artifact-identity.schema.json; no dependencies, lockfile, pyproject, host configuration, permissions, providers, or models changed."
   ],
-  "git_status": "Verified implementation is committed at implementation_head_sha. This handoff is finalized in a metadata-only successor commit on the same topic branch; the interactive completion reports the pushed successor HEAD.",
+  "git_status": "Verified T020-R1 implementation is committed at implementation_head_sha. This handoff is finalized in a metadata-only successor commit on the existing topic branch; the interactive completion reports the pushed successor HEAD.",
   "unresolved_issues": [],
   "risks": [
     "Build caller supplies Skill and installed-footprint SemVer because current source has no authoritative release values; release orchestration must provide accepted values.",
     "--source-commit supports exported source trees and validates full lowercase hexadecimal identity, but exact provenance remains release-pipeline evidence; per-file payload digests always identify actual built bytes."
   ],
-  "recommended_next_task": "ChatGPT reviews the pushed remote Task Contract, handoff, complete diff, artifact-isolation evidence, and implementation identity before acceptance.",
+  "recommended_next_task": "ChatGPT reviews the pushed remote T020 contract, T020-R1 authority, handoff, complete diff, artifact-only seven-command evidence, and implementation identity before acceptance.",
   "chatgpt_read_path": "handoffs/T020-executor-handoff.json"
 }
