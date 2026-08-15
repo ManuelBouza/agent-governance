@@ -1,0 +1,61 @@
+{
+  "task_id": "T019",
+  "status": "DONE",
+  "task_contract_path": "docs/tasks/T019-extract-shared-deterministic-engine.md",
+  "branch": "refactor/t019-shared-governance-engine",
+  "implementation_head_sha": "f5032c30fe4f97b09e566deb3ef12af9e78e9e4f",
+  "base_branch": "develop",
+  "base_sha": "9148be3c11c85d2bc7e0c43e3e8e86f110b2682f",
+  "files_changed": [
+    "governance-skill/scripts/governance.py",
+    "handoffs/T019-executor-handoff.json",
+    "src/agent_governance/__init__.py",
+    "src/agent_governance/engine.py",
+    "tests/test_shared_governance_engine.py"
+  ],
+  "implementation_summary": "Extracted the deterministic Consumer Governance implementation into src/agent_governance/engine.py. The existing governance-skill launcher now resolves and delegates to that shared engine, retains only source-layout/package-path adaptation and RF1 compatibility forwarding, and preserves the sibling governance-core plus governance-skill/assets lookup. Added focused structural coverage proving the launcher does not contain command implementations and loads the shared engine.",
+  "architecture": {
+    "shared_engine": "src/agent_governance/engine.py owns parser dispatch and all seven deterministic command implementations.",
+    "compatibility_launcher": "governance-skill/scripts/governance.py resolves src from the normal source root or current source checkout, preserves launcher-relative package paths, and delegates execution to agent_governance.engine.",
+    "package_boundary": "Bootstrap still receives <launcher-package>/governance-core and <launcher-package>/governance-skill/assets; Core was not relocated or bundled.",
+    "single_implementation_proof": "Focused AST coverage asserts bootstrap/archive/state/event/skill/ecosystem/validate/parser implementation functions live in the shared engine while the launcher contains only source resolution, package-path adaptation, compatibility bootstrap forwarding, and main delegation."
+  },
+  "verification": {
+    "commands": [
+      "uv run --locked ruff check --fix src/agent_governance/__init__.py src/agent_governance/engine.py governance-skill/scripts/governance.py tests/test_shared_governance_engine.py",
+      "uv run --locked ruff format src/agent_governance/__init__.py src/agent_governance/engine.py governance-skill/scripts/governance.py tests/test_shared_governance_engine.py",
+      "uv run --locked pytest -q tests/test_shared_governance_engine.py",
+      "uv run --locked pytest -q tests/test_consumer_v1_characterization.py",
+      "uv run --locked pytest -q tests/test_consumer_governance_cli.py tests/test_consumer_governance_cli_v1.py tests/test_consumer_v1_characterization.py",
+      "uv run --locked pytest -q tests/test_consumer_governance_cli.py tests/test_consumer_governance_cli_v1.py tests/test_consumer_v1_characterization.py tests/test_shared_governance_engine.py",
+      "uv run --locked pytest -q",
+      "uv run --locked ruff check src/agent_governance/__init__.py src/agent_governance/engine.py governance-skill/scripts/governance.py tests/test_shared_governance_engine.py",
+      "uv run --locked ruff format --check src/agent_governance/__init__.py src/agent_governance/engine.py governance-skill/scripts/governance.py tests/test_shared_governance_engine.py",
+      "python3 -m py_compile src/agent_governance/__init__.py src/agent_governance/engine.py governance-skill/scripts/governance.py tests/test_shared_governance_engine.py",
+      "git diff --check"
+    ],
+    "results": {
+      "ruff_normalization": "PASS; first run reformatted 2 files, second run reported 4 files unchanged",
+      "focused_shared_engine": "1 passed in 0.03s",
+      "t018_characterization": "2 passed in 0.12s",
+      "t018_frozen_consumer_v1_baseline": "77 passed in 7.57s",
+      "combined_affected_suite": "78 passed in 8.02s",
+      "full_deterministic_suite": "262 passed in 8.75s",
+      "ruff_check": "All checks passed!",
+      "ruff_format_check": "4 files already formatted",
+      "py_compile": "PASS",
+      "diff_check": "PASS",
+      "diagnostic_rerun_history": "Initial RF1 run exposed three direct launcher-internal test seams (3 failed, 74 passed). Thin forwarding for those immutable seams was added; final unchanged RF1 rerun passed 77 tests."
+    },
+    "runtime": "Unchanged subprocess suites exercised all seven launcher commands, including copied standalone state execution and copied governance-skill bootstrap with missing/restored sibling Core. Focused structural test imported the launcher and confirmed delegation to src/agent_governance/engine.py.",
+    "network_required": false
+  },
+  "dependencies_or_config_changes": [],
+  "git_status": "All authorized implementation and handoff changes committed; topic branch pushed with no unreported in-scope changes.",
+  "unresolved_issues": [],
+  "risks": [
+    "Copied launchers resolve the shared engine through the current working source checkout, matching the frozen RF1 source/test execution environment. Self-contained distribution remains intentionally deferred to T020."
+  ],
+  "recommended_next_task": "ChatGPT RF2 review and acceptance; T020 must not begin before this extraction is accepted.",
+  "chatgpt_read_path": "handoffs/T019-executor-handoff.json"
+}
