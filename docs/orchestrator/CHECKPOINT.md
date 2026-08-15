@@ -1,112 +1,87 @@
 # Current ChatGPT Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O093  
+Checkpoint-Sequence: O094  
 Canonical-Branch: `develop`  
 Chat-Closure: CONTINUE_ALLOWED
 
 ## Current Frontier
 
-D044 and `docs/UNIFIED-GOVERNANCE-REFACTOR-PLAN.md` remain the unified Governance architecture/program authority. D046/ICAE remains the prospective assurance method.
+D044 and `docs/UNIFIED-GOVERNANCE-REFACTOR-PLAN.md` remain the unified Governance architecture/program authority. D046/ICAE and D047/RCAB govern prospective assurance/context work. T018-T020 and T030 remain accepted/integrated baselines.
 
-T030 is **ACCEPTED AND INTEGRATED**. T030-R2 accepted exact executor HEAD `53b54d806a8a71a0d861a5db485dbf8b24e2ca1a`, implementation anchor `b20f1f5ed8481dd916ab12c13f7ca11c8a830375`; implementation PR #132 merged after acceptance PR #133 with exact-head protection.
+T031 is **ACCEPTED** by `docs/reviews/T031-R1.md` at exact executor HEAD `a14ca59e3c454092d7fea8a727499bbd0294da13`, implementation anchor `e243bf682151c270770c35335a587724e6317b24`. Implementation PR #135 is the only accepted T031 integration candidate.
 
-Canonical `develop` before the current RCAB Markdown gate is `b2cd6974a04ec173e7aace29aab865f4643b04a1`.
+## OP059 — CLOSED
 
-## OP058 — CLOSED
-
-Durable receipt on PR #133, comment `5303857540`, reports:
+The durable OP059 receipt on PR #134 reports:
 
 - `STATUS: DONE`;
-- `BASE_SHA: b2cd6974a04ec173e7aace29aab865f4643b04a1`;
-- retired `docs/t030-r2-acceptance` and `infra/t030-repository-context-baseline`;
-- remote/local remaining `develop, main`;
+- `BASE_SHA: eb46e991c459b0ce1d372a05cd88887e9514651e`;
+- retired `docs/rcab-v1-context-gate`;
+- remote/local remaining `develop, main` before Stage B;
 - `EXCEPTIONS: none`.
 
-ChatGPT independently verified the remote branch inventory is exactly `develop, main`. T030 is operationally closed.
+Stage B then created only the authorized T031 topic branch from that canonical base.
 
-## Accepted RCAB baseline
+## T031-R1 acceptance
 
-T030-R2 freezes the first source physical baseline:
+Comparison from reviewed base `develop@eb46e991c459b0ce1d372a05cd88887e9514651e` to accepted HEAD is three commits ahead, zero behind, with exact merge-base.
 
-- tracked files: `293`;
-- repository physical size: `1,794,973` bytes / `36,710` lines;
-- Markdown: `230` files / `1,323,735` bytes / `26,441` lines;
-- Python: `26` files / `252,427` bytes / `6,883` lines;
-- mandatory source cold-start (`AGENTS.md` + checkpoint): `21,471` bytes / `298` lines / `2` files;
-- structural Markdown graph: `927` distinct edges / `1,294` references.
+Net diff is exactly four authorized non-Markdown files:
 
-These remain physical/static measurements, not token/RFO/TMC/CAR observations.
+- `baselines/repository-context-manifest-v1.json`;
+- `handoffs/T031-executor-handoff.json`;
+- `tests/test_repository_context.py`;
+- `tools/repository_context.py`.
 
-## D047 / RCAB v1 policy gate
+AC-RCAB-1 through AC-RCAB-6 pass. The handoff records 24 focused tests, 9 artifact-isolation/separation tests, 289 full deterministic tests, Ruff/format/py_compile/manifest/JSON/diff PASS, no network requirement and no dependency/configuration changes.
 
-D047 selects the smallest post-baseline architecture:
+The committed manifest reports current mandatory bootstrap/router footprint `2 files / 21,543 bytes / 331 lines` against T030-R2 reference `2 / 21,471 / 298`. Byte growth is 72 bytes (~0.335%), below the D047 5% warning threshold; warning is correctly inactive.
 
-1. `docs/CONTEXT-MAP.md` is the compact human-readable registry for stable source routes;
-2. a generated `baselines/repository-context-manifest-v1.json` will be a deterministic projection/evidence artifact, never authority;
-3. the current frontier remains exclusively in this checkpoint rather than being duplicated into the map/manifest.
+D029 identity is valid: `implementation_head_sha = e243bf68...`; later commits modify only the handoff. No implementation/test/eval change occurs after the implementation anchor.
 
-The context map registers only stable routes: cold-start, unified-program, ICAE/RCAB, task-governance and operation-governance. Dynamic task/review/handoff/history files remain on-demand through the checkpoint plus current contract.
+## T031 intermediate push / D048 / L005
 
-## Bootstrap/router ratchet
+T031 published an intermediate handoff commit `419e82ea...` with `status = PARTIAL`, then final successor `a14ca59e...` with `status = DONE`. The final successor changes only handoff metadata.
 
-RCAB v1 applies the first warning only to the mandatory `bootstrap` + `router` cohort.
+Existing policy described verification -> handoff -> push ordering but did not explicitly prohibit an intermediate remote push while the same invocation continued toward `DONE`. This is recorded as L005 `workflow.premature_remote_publication`, a policy-precision gap rather than retroactive T031 rejection.
 
-Accepted reference: `2` files / `21,471` UTF-8 bytes / `298` lines.
+D048 now makes the prospective invariant explicit: normal task progress stays local until verification + implementation commit + final handoff/finalization are complete, followed by one planned final push, remote HEAD verification and terminal response.
 
-Tooling must always report delta. A non-blocking warning occurs when:
+Exceptions require either an explicitly contracted intermediate checkpoint or a genuinely terminal `BLOCKED/PARTIAL` outcome. A handoff field saying `PARTIAL` does not itself authorize a checkpoint while execution continues toward `DONE`.
 
-- mandatory cohort file count exceeds `2`; or
-- aggregate UTF-8 bytes exceed `105%` of the accepted T030-R2 reference.
+`docs/EXECUTOR-HANDOFFS.md` carries the operational rule. L005 is `CONTROL_PLANNED`, not `VERIFIED`; representative future normal-task and explicit-checkpoint executions are needed for verification.
 
-The 5% band is review sensitivity only; it is not a token estimate, safety/model-capacity limit or merge blocker.
+## PR #136 / PR #135 / OP060
 
-No absolute size warning is selected for `focused`, `task`, `evidence`, `generated-data` or `exempt-on-demand` in RCAB v1. Large on-demand files remain report-only evidence.
+PR #136 is the Markdown-only T031 acceptance + publication-policy gate. When this checkpoint is read from `develop`, T031-R1, D048, L005 and the updated handoff policy are integrated.
 
-No numeric warning authorizes automatic Markdown decomposition.
+PR #135 is the T031 implementation PR. Before integration, ChatGPT must re-read it and require its head to remain exactly `a14ca59e3c454092d7fea8a727499bbd0294da13`. No later candidate is covered by T031-R1.
 
-## T031
+`docs/operations/OP060-retire-t031-branches-and-start-t021.md` is the post-integration cleanup/continuation contract. After both PRs merge, Stage A retires exactly `docs/t031-r1-acceptance-push-policy` and `infra/t031-context-manifest-ratchet`, requires remote `develop, main`, and publishes a durable receipt to PR #136. Only then may D045 Stage B re-bootstrap current `develop` and execute already-READY T021.
 
-`docs/tasks/T031-rcab-context-manifest-and-ratchet.md` is READY under deterministic ICAE assurance.
+T021 is the first representative normal task expected to follow D048's single planned final push boundary and may provide L005 good-path evidence, but one success alone does not necessarily establish full systemic verification.
 
-T031 is limited to source-only implementation/tests/manifest/handoff. It must:
+## T021
 
-- parse only the explicit machine-readable registry in `docs/CONTEXT-MAP.md`;
-- generate a reproducible registered-content projection;
-- deterministically reject malformed/conflicting/missing registry targets and stale/tampered projection state;
-- emit the D047 bootstrap warning without failing solely on warning status;
-- preserve T030 behavior and T020 Consumer artifact isolation;
-- avoid Markdown, dependencies/network/retrieval infrastructure, hard source budgets and source splits.
+`docs/tasks/T021-consumer-profile-abstraction-zero-drift.md` remains READY under deterministic ICAE assurance. T030/T031 RCAB prerequisites are now satisfied subject only to exact T031 integration/cleanup.
 
-Acceptance criteria are `AC-RCAB-1` through `AC-RCAB-6`.
-
-T021 remains READY but waits for accepted T031 so the unified refactor proceeds with RCAB v1 implemented rather than policy-only.
-
-## PR #134 / OP059
-
-PR #134 is the Markdown-only RCAB v1 policy gate. Its allowed scope is D047, `docs/CONTEXT-MAP.md`, T031, RCAB architecture update, OP059 and this checkpoint.
-
-`docs/operations/OP059-retire-rcab-gate-and-start-t031.md` uses D045 after PR #134 merges:
-
-- Stage A retires exactly `docs/rcab-v1-context-gate`, requires remote `develop, main`, publishes the durable receipt to PR #134 and preserves repository content;
-- only after Stage A passes, Stage B re-bootstraps from current canonical `develop`, proves D047/map/T031 are present, then executes T031 on its expected implementation branch.
-
-No Human acknowledgement is required between eligible stages. No T021 work is authorized in that invocation.
+T021 remains a zero-Consumer-drift profile-abstraction refactor. It must not implement source-maintainer profile behavior or change model-mediated Skill activation semantics.
 
 ## EGLL / ICAE
 
 L003 `task.done_requires_rework` and L004 `workflow.procedural_nonconformance` remain `CONTROL_PLANNED`, not `VERIFIED`.
 
-T030/OP057 provide useful good-path/containment evidence but do not replace representative future bad/good replay for those systemic controls.
+L005 `workflow.premature_remote_publication` is also `CONTROL_PLANNED`. Do not conflate the T031 policy gap with L004's stale rework-bootstrap class.
 
 ## Next Action
 
-1. Review PR #134 against base `b2cd6974a04ec173e7aace29aab865f4643b04a1`; require Markdown-only scope exactly D047, context map, T031 contract, context architecture, OP059 and O093.
-2. If clean, integrate PR #134 into `develop`.
-3. Launch one executor invocation pointing only to `docs/operations/OP059-retire-rcab-gate-and-start-t031.md` using the normal D045 Operational bootstrap.
-4. When it ends, read the OP059 durable Stage-A receipt directly from PR #134 and independently verify cleanup postconditions.
-5. Review returned T031 HEAD/handoff/diff/evidence under D047 + T031. Accept only if AC-RCAB-1 through AC-RCAB-6 pass and warning-only behavior is demonstrably non-blocking.
-6. After T031 acceptance/integration/cleanup, continue T021, then T022 -> MG1 -> T023/T024 and remaining D044 dependency order.
+1. If PR #136 is not yet integrated, review its aggregate diff against `develop@eb46e991...`; require Markdown-only scope limited to T031-R1/lifecycle, D048, L005, handoff publication policy, OP060 and O094, then integrate it.
+2. Re-read PR #135 and require head exactly `a14ca59e3c454092d7fea8a727499bbd0294da13`; if exact, integrate it into `develop`.
+3. Launch one executor invocation pointing only to `docs/operations/OP060-retire-t031-branches-and-start-t021.md` using the canonical D045 Operational bootstrap.
+4. Read the OP060 durable Stage-A receipt directly from PR #136 and independently verify cleanup before reviewing returned T021.
+5. Review T021 under its Task Contract plus current D048/Executor-Handoffs policy.
+6. Continue T022 -> MG1 -> T023/T024 and remaining D044 dependency order.
 7. Do not launch T026 without its explicit decision gate.
 
 ## Next Chat Minimum Load
@@ -114,13 +89,13 @@ T030/OP057 provide useful good-path/containment evidence but do not replace repr
 After normal bootstrap load:
 
 - D044 and `docs/UNIFIED-GOVERNANCE-REFACTOR-PLAN.md`;
-- D046, D047, `docs/AGENT-CAPABILITY-ENGINEERING.md`, `docs/CONTEXT-ARCHITECTURE.md`, and `docs/CONTEXT-MAP.md`;
-- T031 and OP059 while RCAB v1 implementation remains open;
-- accepted T030-R2 baseline/review only when verifying projection/ratchet evidence;
-- T021 when T031 acceptance permits continuation.
+- D046/D047 only when ICAE/RCAB reasoning is material;
+- T031-R1, D048/L005, PR #135 identity and OP060 while T031 integration/cleanup remains open;
+- T021 once OP060 Stage B begins;
+- `docs/EXECUTOR-HANDOFFS.md` when evaluating remote-publication timing.
 
-L003/L004 need only be reloaded for systemic-control implementation/replay or a new recurrence.
+L003/L004 need only be reloaded for their systemic-control implementation/replay or a new matching recurrence.
 
 ## Do Not
 
-Do not reinterpret physical bytes/lines as exact token/load metrics; impose universal source LOC/line/token/byte limits; block solely on the RCAB v1 bootstrap-growth warning; auto-split normative Markdown; let the generated manifest become authority; infer semantic routes in executable tooling; add vector/embedding/remote retrieval infrastructure without evidence; launch T021 before T031 acceptance; mark L003/L004 VERIFIED without replay; launch T026 without its gate; delegate committed Markdown; or write directly to `develop`/`main`.
+Do not integrate a T031 head other than exact `a14ca59e...`; reset/force-push/erase the T031 intermediate remote history; treat L005 as retroactive T031 rejection; push intermediate normal-task progress without explicit checkpoint authority under D048; reinterpret bytes/lines as exact token/load metrics; impose universal source limits; auto-split normative Markdown; let generated manifests become authority; launch T026 without its gate; delegate committed Markdown; or write directly to `develop`/`main`.
