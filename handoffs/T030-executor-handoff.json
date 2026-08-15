@@ -1,0 +1,118 @@
+{
+  "task_id": "T030",
+  "status": "DONE",
+  "task_contract_path": "docs/tasks/T030-repository-context-baseline-and-measure-linter.md",
+  "branch": "infra/t030-repository-context-baseline",
+  "implementation_head_sha": "43e23a5294a6bf575411f1289dae6a666508d115",
+  "base_branch": "develop",
+  "base_sha": "45c2681476fe2c7c853931fae6bc410f0b6666d4",
+  "files_changed": [
+    "baselines/repository-context-source-v1.json",
+    "handoffs/T030-executor-handoff.json",
+    "tests/test_repository_context.py",
+    "tools/repository_context.py"
+  ],
+  "implementation_summary": "Added a source-only standard-library Git-index measurement tool, focused deterministic coverage, and a canonical accepted-baseline candidate. The report inventories tracked worktree bytes in stable path order, records physical text/binary metrics and SHA-256 identities, aggregates category totals, reports largest UTF-8 text files and the AGENTS.md plus Orchestrator checkpoint bootstrap footprint, and labels resolvable Markdown links/code-span paths as static structural references rather than observed runtime context.",
+  "architecture": {
+    "source_boundary": "tools/repository_context.py is outside src/agent_governance, governance-core, governance-skill, and the explicit T020 Consumer artifact inputs.",
+    "inventory": "git ls-files --cached selects tracked paths; the tool reads current worktree bytes, handles symlinks and non-UTF-8/binary content deterministically, and records source_git_revision plus a tracked_content_digest over ordered path/content identities.",
+    "determinism": "Sorted paths and edges plus compact sort-key JSON produce byte-identical output for unchanged tracked content. baselines/repository-context-source-v1.json and an in-repository output path are explicitly excluded to prevent self-reference.",
+    "measurement_semantics": "Raw bytes are canonical. Character, line, and Markdown heading counts exist only for UTF-8 text. Static resolvable local Markdown links and code-span paths are structural graph evidence only and are explicitly not observed RFO, TMC, CAR, token counts, or runtime loads.",
+    "enforcement": "Measure-only operation has no size budget, warning threshold, split/refactor behavior, document mutation, network access, or Consumer runtime effect."
+  },
+  "acceptance_evidence": [
+    {
+      "criterion": "AC-CTX-1",
+      "evidence_type": "deterministic/reproducibility",
+      "tests": [
+        "tests/test_repository_context.py::test_inventory_is_canonical_complete_and_honest",
+        "tests/test_repository_context.py::test_repeated_runs_are_byte_identical_and_baseline_self_excludes",
+        "tests/test_repository_context.py::test_cli_output_is_stable_and_tool_stays_outside_consumer_package"
+      ],
+      "result": "PASS: canonical inventory ordering, repeated in-memory/output identity, source revision, content-digest sensitivity, baseline exclusion, and stable CLI output are asserted."
+    },
+    {
+      "criterion": "AC-CTX-2",
+      "evidence_type": "deterministic/negative-control",
+      "tests": [
+        "tests/test_repository_context.py::test_inventory_is_canonical_complete_and_honest",
+        "tests/test_repository_context.py::test_bootstrap_footprint_and_largest_files_are_physical_only"
+      ],
+      "result": "PASS: binary and unusual UTF-8 handling are asserted; output declares observed_runtime_context_metrics false and contains no token_count/RFO/TMC/CAR metric fields."
+    },
+    {
+      "criterion": "AC-CTX-3",
+      "evidence_type": "deterministic",
+      "tests": [
+        "tests/test_repository_context.py::test_bootstrap_footprint_and_largest_files_are_physical_only"
+      ],
+      "result": "PASS: exact AGENTS.md and docs/orchestrator/CHECKPOINT.md physical-byte sum and file inventory are asserted without a target or enforcement threshold."
+    },
+    {
+      "criterion": "AC-CTX-4",
+      "evidence_type": "package/isolation",
+      "tests": [
+        "tests/test_repository_context.py::test_cli_output_is_stable_and_tool_stays_outside_consumer_package",
+        "tests/test_governance_artifact.py::test_repeated_builds_have_identical_verified_identity",
+        "tests/test_governance_artifact.py::test_artifact_runs_without_source_or_sibling_dependencies"
+      ],
+      "result": "PASS: source-only placement is asserted; T020 exact payload allowlist and artifact-only seven-command execution remain green."
+    },
+    {
+      "criterion": "AC-CTX-5",
+      "evidence_type": "negative-control",
+      "tests": [
+        "tests/test_repository_context.py::test_repeated_runs_are_byte_identical_and_baseline_self_excludes",
+        "tests/test_repository_context.py::test_bootstrap_footprint_and_largest_files_are_physical_only"
+      ],
+      "result": "PASS: all fixture Markdown bytes remain unchanged across writes and a 1 MiB text file is measured successfully as the largest file without failure or enforcement."
+    }
+  ],
+  "verification": {
+    "commands": [
+      "uv run --locked pytest -q tests/test_repository_context.py",
+      "uv run --locked pytest -q tests/test_governance_artifact.py",
+      "uv run --locked pytest -q",
+      "uv run --locked ruff check tools/repository_context.py tests/test_repository_context.py",
+      "uv run --locked ruff format --check tools/repository_context.py tests/test_repository_context.py",
+      "python3 -m py_compile tools/repository_context.py tests/test_repository_context.py",
+      "python3 tools/repository_context.py --source-root . --output baselines/repository-context-source-v1.json",
+      "cp baselines/repository-context-source-v1.json /tmp/opencode/T030-baseline-first.json && python3 tools/repository_context.py --source-root . --output baselines/repository-context-source-v1.json && cmp /tmp/opencode/T030-baseline-first.json baselines/repository-context-source-v1.json",
+      "python3 -m json.tool baselines/repository-context-source-v1.json >/dev/null",
+      "git diff --check",
+      "git diff --name-only 45c2681476fe2c7c853931fae6bc410f0b6666d4 -- '*.md' pyproject.toml uv.lock governance-core governance-skill src/agent_governance"
+    ],
+    "results": {
+      "focused_repository_context": "4 passed in 0.42s",
+      "t020_artifact_isolation": "3 passed in 0.85s",
+      "full_deterministic_suite": "269 passed in 11.53s",
+      "ruff_check": "All checks passed!",
+      "ruff_format_check": "2 files already formatted",
+      "py_compile": "PASS",
+      "baseline_generation": "PASS",
+      "baseline_repeated_run_identity": "PASS",
+      "baseline_json_parse": "PASS",
+      "diff_check": "PASS",
+      "forbidden_scope_diff": "PASS: empty output"
+    },
+    "runtime": "Direct CLI execution writes the machine-readable report atomically, unchanged reruns compare byte-identical, binary and large tracked files are measured without decoding failure or size enforcement, and source Markdown bytes remain unchanged in negative-control coverage.",
+    "network_required": false
+  },
+  "dependencies_or_config_changes": [],
+  "git_status": "Verified source tool/tests are committed at implementation_head_sha. The accepted baseline and this handoff are finalized together in a metadata successor commit after measuring the staged final handoff; the interactive completion reports the pushed successor HEAD.",
+  "unresolved_issues": [],
+  "risks": [
+    "source_git_revision records the current HEAD while tracked_content_digest identifies measured staged/worktree content; parent should regenerate the accepted baseline if any measured tracked file changes before commit.",
+    "Structural Markdown references intentionally cover only resolvable local inline links and code-span paths to tracked files; they do not claim comprehensive prose references or observed context loading."
+  ],
+  "recommended_next_task": "ChatGPT reviews the pushed remote T030 contract, handoff, complete diff, accepted baseline identity, deterministic evidence, and source-only isolation before acceptance.",
+  "chatgpt_read_path": "handoffs/T030-executor-handoff.json",
+  "skill_resolution": {
+    "loaded": [
+      "/home/manuel/.config/opencode/skills/go-testing/SKILL.md",
+      "/home/manuel/.config/opencode/skills/work-unit-commits/SKILL.md"
+    ],
+    "application": "Used disposable Git fixtures, focused behavioral/edge-case tests, exact command evidence, one coherent source-plus-tests-plus-baseline work unit, and an explicit rollback boundary.",
+    "rollback_boundary": "Remove tools/repository_context.py, tests/test_repository_context.py, baselines/repository-context-source-v1.json, and handoffs/T030-executor-handoff.json; no Consumer or source policy behavior must be reverted."
+  }
+}
