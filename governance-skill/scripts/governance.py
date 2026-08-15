@@ -8,7 +8,12 @@ from pathlib import Path
 
 
 def _source_root() -> Path:
-    candidates = (Path(__file__).resolve().parents[2], Path.cwd().resolve())
+    skill = Path(__file__).resolve().parents[1]
+    runtime = skill / "runtime"
+    if (runtime / "agent_governance" / "engine.py").is_file():
+        return runtime
+
+    candidates = (skill.parent, Path.cwd().resolve())
     for root in candidates:
         source = root / "src"
         if (source / "agent_governance" / "engine.py").is_file():
@@ -27,6 +32,9 @@ _validate = _engine._validate
 
 def _package_paths() -> tuple[Path, Path]:
     skill = Path(__file__).resolve().parents[1]
+    artifact_core = skill / "core"
+    if artifact_core.is_dir():
+        return artifact_core, skill / "assets"
     return skill.parent / "governance-core", skill / "assets"
 
 
