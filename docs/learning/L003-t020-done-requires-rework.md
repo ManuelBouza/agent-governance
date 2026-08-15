@@ -1,84 +1,70 @@
 # L003 — T020 DONE required acceptance rework
 
 Learning ID: L003  
-State: ANALYZED  
+State: CONTROL_PLANNED  
 Fingerprint: `task.done_requires_rework`
 
 ## Detection
 
 Detected during Orchestrator review of T020 executor HEAD `a50b4bbb572c44e0715fda2b49955f36bbf043d2` after the executor reported `STATUS: DONE`.
 
-T020-R1 records two bounded acceptance/verification gaps:
+T020-R1 recorded two bounded acceptance/verification gaps:
 
-1. the artifact builder copied the complete `governance-skill/` source subtree and therefore included source-product lifecycle/status metadata `STATUS.md` in the Consumer distribution payload; and
-2. artifact-only verification executed `bootstrap`, `validate`, and `state`, but treated `--help` command enumeration as evidence for `event`, `skill`, `ecosystem`, and `archive` instead of executing representative valid operations from the isolated artifact.
+1. the artifact builder copied the complete `governance-skill/` source subtree and included source-product lifecycle/status `STATUS.md` in the Consumer distribution payload; and
+2. artifact-only verification executed `bootstrap`, `validate`, and `state`, but used `--help` command enumeration instead of executing representative valid `event`, `skill`, `ecosystem`, and `archive` operations.
 
-The implementation was not integrated into `develop` before detection.
+The defective candidate was not integrated. T020-R2 later accepted the corrected candidate and PR #127 integrated it into `develop`.
 
 ## Factual evidence
 
 - Task Contract: `docs/tasks/T020-self-contained-build-artifact-and-identity.md`.
-- Reviewed executor HEAD: `a50b4bbb572c44e0715fda2b49955f36bbf043d2`.
-- Reviewed implementation commit: `9ba7c83595488e917ecfd9c6d53ae9cd4776d5ed`.
-- Durable review: `docs/reviews/T020-R1.md`.
-- Reviewed build implementation: `src/agent_governance/artifact.py` on the T020 branch.
-- Reviewed isolation coverage: `tests/test_governance_artifact.py` on the T020 branch.
-- Executor handoff: `handoffs/T020-executor-handoff.json` on the T020 branch.
+- Reviewed defective HEAD: `a50b4bbb572c44e0715fda2b49955f36bbf043d2`.
+- Durable rework review: `docs/reviews/T020-R1.md`.
+- Durable acceptance review: `docs/reviews/T020-R2.md`.
+- Corrected accepted executor HEAD: `0aad8ce78b52a4bd2a4851663d675048215a539c`.
+- Implementation PR: #127.
+- Final executor handoff: `handoffs/T020-executor-handoff.json`.
 
-## Immediate containment
+## Immediate control integrated in T020
 
-T020 remains unaccepted and unintegrated.
+T020 itself now contains regression controls for the two concrete defects:
 
-T020-R1 authorizes only bounded correction of the packaging boundary and direct artifact-only execution evidence for all seven Consumer v1 commands. The existing T018/T019 baseline, T020 task scope, protocol semantics, Consumer behavior and Markdown ownership remain frozen.
+- positive Consumer artifact payload selection with source-only `STATUS.md` excluded; and
+- direct artifact-only execution evidence for all seven Consumer v1 commands after source deletion.
 
-The exact corrected tests required by T020-R1 become regression controls for these concrete failure modes.
+These controls contain the observed T020 failure but do not by themselves close the broader systemic assurance gap.
 
 ## Causal/systemic analysis
 
-### Observed facts
+Two reusable gaps were identified:
 
-The handoff reported T020 `DONE` and summarized artifact-only operation coverage at a broader semantic level than the actual focused test demonstrated. Separately, the builder selected its Consumer distribution payload by copying an entire source subtree rather than by an explicit distribution allowlist/boundary.
+1. **distribution-boundary gap** — broad source-subtree selection can leak source-only/lifecycle material into distribution;
+2. **acceptance-evidence traceability gap** — a `DONE` handoff can contain green tests while overstating which acceptance criterion those tests directly prove.
 
-### Contributing conditions
+Contributing conditions included semantic rather than machine-explicit package boundaries, absence of acceptance-criterion-to-evidence mapping, and no structured evidence-type distinction between command visibility and successful execution.
 
-- The Task Contract defined the desired artifact boundary semantically but did not enumerate a machine-checkable Consumer payload allowlist.
-- The handoff format records commands/results but does not require an explicit acceptance-criterion-to-evidence mapping.
-- A parser/command-surface check could be summarized as if it were equivalent to successful command execution because the evidence taxonomy is not structurally encoded.
-- T008's EGLL MVP can represent `task.done_requires_rework` once a normalized review outcome is supplied, but it is not wired into the live Task review/handoff path.
+These are system/process gaps, not agent-product or individual blame.
 
-### Systemic gaps
+## Selected systemic control
 
-Two reusable gaps are present:
+D046/ICAE selects the prospective control direction:
 
-1. **distribution-boundary gap** — packaging work can accidentally include source-only/lifecycle material when builders copy source subtrees rather than selecting the intended distributable payload;
-2. **acceptance-evidence traceability gap** — a `DONE` handoff can contain green tests yet still overstate which acceptance criterion those tests directly prove.
+- material acceptance criteria use stable identifiers when ambiguity is plausible;
+- executor handoffs/reviews map each material criterion to exact supporting verification evidence;
+- evidence type is explicit where weaker evidence could be mistaken for a stronger claim (`surface-present` vs `executed-successfully`, package/isolation, negative-control, reproducibility, etc.);
+- package/distribution work uses positive boundaries/allowlists or an equivalent explicit boundary where broad copying could leak source-only material;
+- deterministic validation should eventually expose missing/malformed required evidence mappings without pretending to judge semantic adequacy that belongs to Orchestrator review;
+- live review/EGLL integration should emit `task.done_requires_rework` when a durable post-`DONE` review is `REWORK_REQUIRED`.
 
-These are process/assurance gaps, not agent-product or individual blame.
-
-## Control decision boundary
-
-Do not expand T020 retroactively beyond T020-R1. The immediate exact controls belong inside the existing T020 scope:
-
-- explicit Consumer artifact payload selection with regression proof that `STATUS.md` is excluded; and
-- representative artifact-only execution for all seven Consumer v1 commands after source removal.
-
-Broader systemic controls require separate persisted design/Task authority after T020 is accepted. They should be coordinated with the planned ICAE methodology gate rather than smuggled into T020.
-
-The future control should evaluate at least:
-
-- stable acceptance-criterion identifiers in Task Contracts where useful;
-- an explicit handoff/review evidence map from each material acceptance criterion to the exact verifier/test/eval that proves it;
-- evidence-type distinction such as `surface-present`, `executed-successfully`, `negative-control`, `reproducibility`, and `review-only` so weaker evidence cannot silently satisfy a stronger claim;
-- package/distribution tasks declaring a distributable allowlist or equivalent positive boundary when broad subtree copying could leak source-only material;
-- deterministic validation that required evidence-map entries exist and reference actual recorded verification output;
-- EGLL integration that automatically emits `task.done_requires_rework` when a durable review disposition is `REWORK_REQUIRED` after executor `DONE`.
-
-Automation must not pretend to judge semantic adequacy that still requires Orchestrator review. It should make missing/overbroad evidence claims mechanically visible, while acceptance authority remains with Governance.
+T021 and T030 apply criterion/evidence traceability prospectively in their contracts. This is initial policy adoption/evidence, not completion of the systemic control.
 
 ## Verification / recurrence status
 
-L003 is `ANALYZED`, not `VERIFIED`.
+L003 is `CONTROL_PLANNED`, not `VERIFIED`.
 
-The concrete T020 regression controls are not yet accepted/integrated, and the broader acceptance-evidence/EGLL integration control has not yet been contracted.
+`VERIFIED` requires the selected systemic control to be implemented and, for automatically detectable parts, replay evidence showing both:
 
-If the same `task.done_requires_rework` class recurs after a future systemic control reaches `VERIFIED`, recurrence must be evaluated under D039 as potential `CONTROL_FAILURE`.
+1. a representative bad state produces the expected failure/fingerprint; and
+2. a compliant state does not.
+
+If the same failure class recurs after the systemic control reaches `VERIFIED`, evaluate the recurrence as potential `CONTROL_FAILURE` under D039.

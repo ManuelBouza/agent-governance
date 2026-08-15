@@ -3,12 +3,17 @@
 ## Identity
 
 - Task ID: `T021`
-- Status: `BLOCKED`
+- Status: `READY`
 - Type: `refactor`
 - Base branch: `develop`
 - Expected topic branch: `refactor/t021-consumer-profile-abstraction`
 - Expected executor handoff: `handoffs/T021-executor-handoff.json`
-- Readiness note: Remains `BLOCKED` until T020 is ACCEPTED.
+- Readiness note: T020 is ACCEPTED/integrated and OP055 is DONE. D046/ICAE is the prospective assurance gate for T021+.
+- Assurance-Class: `deterministic`
+- Baseline: `T018 Consumer v1 characterization + accepted T020 artifact-isolation baseline`
+- Verification-Planes: `static, deterministic, package`
+- Release-Impact: `compatibility`
+- Context-Impact: `none`
 
 ## Objective
 
@@ -19,9 +24,13 @@ Introduce an explicit runtime profile abstraction with `consumer` as the only ac
 - `AGENTS.md`
 - `docs/TASK-CONTRACTS.md`
 - `docs/decisions/D044-unified-governance-skill-architecture.md`
+- `docs/decisions/D046-agent-capability-engineering-and-context-architecture.md`
+- `docs/AGENT-CAPABILITY-ENGINEERING.md`
 - `docs/UNIFIED-GOVERNANCE-REFACTOR-PLAN.md`
 - `docs/REFACTORING-WORKFLOW.md`
 - `docs/GOVERNANCE-SKILL-CONTRACT.md`
+- `docs/tasks/T018-consumer-v1-characterization-and-package-baseline.md`
+- `docs/tasks/T020-self-contained-build-artifact-and-identity.md`
 
 ## Authorized scope
 
@@ -39,30 +48,44 @@ Introduce an explicit runtime profile abstraction with `consumer` as the only ac
 - Source-maintainer profile implementation.
 - Changes to Skill Markdown activation/description.
 - Changes to consumer CLI commands or repository footprint.
+- RCAB repository-context tooling, document splitting, or context-budget enforcement.
 
 ## Invariants / constraints
 
 - The T018 Consumer v1 characterization remains the behavioral baseline.
+- The accepted T020 self-contained artifact boundary remains intact.
 - `consumer` is an implementation profile, not a new normative authority.
 - No profile default may grant source-maintenance permissions.
 - The built artifact remains self-contained.
+- This task changes no model-mediated Skill description/activation surface. Under ICAE, model evals are therefore not required for acceptance. If implementation requires changing such a surface, stop/escalate rather than expanding scope.
 
 ## Acceptance criteria
 
-- Consumer behavior is identical with the profile abstraction enabled.
-- Profile routing has a fail-closed default for unsupported/ambiguous profile values.
-- All Consumer v1, artifact-isolation, and regression tests pass.
+### AC-T021-1 — zero Consumer drift
+Consumer behavior is identical with the profile abstraction enabled against the frozen T018 baseline.
+
+### AC-T021-2 — fail-closed profile routing
+Unsupported or ambiguous profile values are rejected rather than routed with broader permissions.
+
+### AC-T021-3 — artifact compatibility
+The accepted T020 artifact remains self-contained and all Consumer v1/artifact regression behavior passes.
 
 ## Verification requirements
 
 - Run T018 characterization unchanged.
-- Run focused profile routing/isolation tests.
-- Run T020 artifact-isolation tests and the full deterministic suite.
+- Run focused profile routing/isolation tests, including negative controls for unsupported/ambiguous profile values.
+- Run T020 artifact-isolation tests.
+- Run the full deterministic suite.
+- Run applicable static/Ruff/compile checks.
+
+The handoff MUST map `AC-T021-1` through `AC-T021-3` to the exact verifier/test evidence that proves each criterion; green-suite summaries alone are not sufficient traceability.
 
 ## Stop / escalation conditions
 
 - Profile abstraction requires changing the Consumer Skill contract or activation semantics.
 - An ambiguous context would be routed with broader permissions rather than fail closed.
+- The refactor requires weakening/changing T018 or T020 accepted baselines.
+- Model-mediated behavior would need to change to complete the task.
 
 ## Expected handoff
 

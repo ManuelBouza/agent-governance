@@ -1,0 +1,119 @@
+# Source Repository Context Architecture
+
+Status: ACTIVE
+Controlling decision: `docs/decisions/D046-agent-capability-engineering-and-context-architecture.md`
+Consumer precursor: `governance-core/CONTEXT.md`
+
+## Purpose
+
+Apply progressive context loading to the Agent Governance source repository without creating a second authority or copying Consumer lifecycle semantics into source maintenance.
+
+The primary rule is:
+
+> **Budget the load path, not just the file.**
+
+A large on-demand evidence file can be healthy. A smaller file forced into every bootstrap can be expensive. Fragmenting one concern across many mandatory reads can be worse than keeping one cohesive file.
+
+## Load classes
+
+Agent-relevant source artifacts may be classified as:
+
+- `bootstrap` — exposed in nearly every applicable source-maintenance session;
+- `router` — identifies the current frontier or the next exact context to load;
+- `focused` — authority/context for one concern;
+- `task` — the current Task/Operational Contract or review authority;
+- `evidence` — handoffs, receipts, eval results and history loaded only when needed;
+- `generated-index` — reproducible discovery metadata, never authority;
+- `generated-data` — machine-readable outputs/fixtures/reports not intended for unconditional model loading;
+- `exempt-on-demand` — potentially large material whose normal load path is explicitly bounded.
+
+Classification controls measurement and routing expectations. It MUST NOT transfer authority between files or roles.
+
+## Measurement
+
+Tokenizer-neutral physical baselines use UTF-8 bytes. Other deterministic diagnostics may include characters, lines, Markdown headings, reference counts, file type and content digests.
+
+Token counts are valid measurements only when their tokenizer, host/model, or runtime observation source is identified. A bytes/characters heuristic MUST NOT be labelled as an exact token count.
+
+Useful contextual metrics include:
+
+- **Bootstrap Context Cost (BCC)** — repository context loaded before task-specific focused context is selected;
+- **Task Minimum Context (TMC)** — unavoidable bootstrap/router context plus the current task and exact controlling references;
+- **Retrieval Fan-Out (RFO)** — distinct repository artifacts actually loaded for a task;
+- **Navigation Depth (ND)** — routing/reference hops from bootstrap/router to the target;
+- **Context Amplification Ratio (CAR)** — compare observed load to an explicitly defined minimum/relevant baseline.
+
+Static reference-graph fan-out is not the same as actual RFO. Do not claim actual load metrics without a load trace or an explicit deterministic load model.
+
+## Budget adoption
+
+The source repository begins with **measure -> accepted baseline -> warning/ratchet -> selective hard enforcement**.
+
+No source-repository universal hard size budget is authorized before the baseline task establishes measurements. A later budget must identify its load class, metric, rationale and exception semantics.
+
+The existing Consumer budgets in `governance-core/CONTEXT.md` remain unchanged and MUST NOT be silently reinterpreted as source-repository limits.
+
+## Discovery and indexes
+
+The preferred lightweight architecture is:
+
+```text
+canonical Git + Markdown authority
+        -> compact context map / direct routes
+        -> generated machine-readable projection when useful
+```
+
+A future human/agent-readable context map may declare semantic routing. A generated manifest may project paths, classifications, metrics, hashes and structural references.
+
+Generated indexes/manifests:
+
+- MUST be reproducible and canonically ordered;
+- MUST identify the Git/content revision they represent;
+- MUST be verifiably fresh if committed/used as a gate;
+- MUST NOT duplicate or supersede normative authority;
+- MUST NOT require embeddings/vector infrastructure for initial operation.
+
+Do not create a context map or generated manifest merely to satisfy this document. First measure the current repository and design the smallest useful projection from evidence.
+
+## Markdown decomposition
+
+A budget warning triggers cohesion/retrieval review; it does not trigger an automatic split.
+
+Split Markdown only when coherent responsibilities can be loaded independently and the resulting navigation remains direct. Prefer:
+
+```text
+stable-entry.md       -> concise authority/router for the concern
+concern/
+  focused-a.md
+  focused-b.md
+```
+
+when preserving the stable path materially improves compatibility. Do not keep a full duplicate summary at the old path.
+
+Normative Markdown MUST NOT be automatically split or rewritten solely from an LLM recommendation or numeric threshold. ChatGPT Orchestrator retains Markdown/authority review.
+
+## Code and structured data
+
+Code MUST NOT be split solely by LOC/bytes. Evaluate cohesion, responsibilities, complexity, coupling, public surface, change coupling, test boundaries and retrieval fan-out together.
+
+JSON/JSONL/evidence/generated data MAY grow physically when normal reads are bounded. Append-only history should support delta/query reads instead of unconditional full-context loading.
+
+## Deterministic context checks
+
+Once their semantics are explicitly represented, suitable hard checks include broken registered references, stale generated manifests, forbidden recursive includes, duplicate canonical authority identities, and source/distribution boundary leaks.
+
+Size, fan-out and navigation metrics start as evidence/warnings unless a later accepted baseline/decision makes a particular regression mechanically blocking.
+
+Semantic duplication/responsibility analysis may use model assistance as advisory evidence only.
+
+## Source/distribution boundary
+
+Source context tooling and source indexes are source-only unless a later explicit distribution decision says otherwise.
+
+In particular, repository-context measurement/lint tooling MUST NOT be placed inside a runtime path that T020 packages into the Consumer artifact. Context tooling must not alter the accepted self-contained Consumer payload or introduce source-maintenance overlays into distribution.
+
+## EGLL
+
+Material context regressions or incidents may become EGLL cases when they represent a reusable failure/control class. A warning alone is not automatically a learning incident.
+
+Possible fingerprints must be selected from observed evidence, not predeclared as ceremony. Mechanically decidable context failures should eventually be promoted to deterministic controls with bad-case/good-case replay.

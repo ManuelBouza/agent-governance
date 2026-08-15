@@ -1,59 +1,87 @@
 # Current ChatGPT Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O088  
+Checkpoint-Sequence: O089  
 Canonical-Branch: `develop`  
 Chat-Closure: CONTINUE_ALLOWED
 
 ## Current Frontier
 
-D044 and `docs/UNIFIED-GOVERNANCE-REFACTOR-PLAN.md` remain the active architecture/program authority. T018/T019 remain ACCEPTED baselines. D039/EGLL remains active. D045 chained executor transitions is ACCEPTED and integrated.
+D044 and `docs/UNIFIED-GOVERNANCE-REFACTOR-PLAN.md` remain the active unified Governance architecture/program authority. T018/T019 remain accepted behavioral/refactor baselines.
 
-OP054 Stage A is DONE. Durable receipt on PR #126 records `BASE_SHA: bc5bff41f115158a49dfce1c57c0cef646604678`, `STATUS: DONE`, retirement of `docs/chained-executor-transitions`, remaining `develop`, `feat/t020-self-contained-governance-artifact`, `main`, and `EXCEPTIONS: none`. ChatGPT independently verified Stage A before T020 acceptance review.
+T020 is ACCEPTED and integrated through implementation PR #127 at `develop@1b47ddef590558b198375d1c98abc0e6b48fc714`. T020-R2 accepted exact executor HEAD `0aad8ce78b52a4bd2a4851663d675048215a539c`. The artifact has an explicit positive Consumer payload boundary, excludes source-only `STATUS.md`, remains source-independent/self-contained, and artifact-only verification directly executes all seven Consumer v1 commands.
 
-## T020 — ACCEPTED, integration pending
+OP055 is DONE. Durable receipt on PR #128 records `BASE_SHA: 1b47ddef590558b198375d1c98abc0e6b48fc714`, retirement of `docs/t020-r2-acceptance` and `feat/t020-self-contained-governance-artifact`, `REMOTE_REMAINING: develop, main`, `LOCAL_REMAINING: develop, main`, and `EXCEPTIONS: none`. ChatGPT independently verified the canonical remote exposes only `develop` and `main`.
 
-Task Contract: `docs/tasks/T020-self-contained-build-artifact-and-identity.md`  
-R1: `docs/reviews/T020-R1.md`  
-R2: `docs/reviews/T020-R2.md`  
-Accepted executor HEAD: `0aad8ce78b52a4bd2a4851663d675048215a539c`  
-Accepted implementation commit: `d1d478da36a8c05c14181126abb34aa999aa632d`  
-Implementation PR: #127
+The prior O088 checkpoint temporarily lagged the actual T020 integration. D022 already requires reconciliation against authoritative Git when checkpoint text is stale; this stale snapshot is corrected here and is not independently classified as a new EGLL incident.
 
-T020-R2 closes both R1 findings. The Consumer build boundary is now an explicit positive allowlist and excludes source lifecycle/status `STATUS.md`. Artifact-only isolation deletes staged source and directly executes representative valid `bootstrap`, `validate`, `state`, `event`, `skill`, `ecosystem`, and `archive` operations while runtime/Core/assets resolve below the artifact root.
+## D046 / ICAE
 
-Reported final verification: focused artifact 3 passed; T018 characterization 2 passed; Consumer/T018 regression 77 passed; T019 structural 1 passed; full deterministic 265 passed; Ruff/format/py_compile/schema parse/diff checks PASS; no network.
+D046 adopts **ICAE — Ingeniería de Capacidades Agénticas dirigida por Especificación, Contrato y Evaluación** prospectively for T021+ and new work. T018–T020 remain grandfathered under their accepted contracts.
 
-Only exact HEAD `0aad8ce78b52a4bd2a4851663d675048215a539c` may be integrated. Source-branch advancement before merge invalidates acceptance.
+ICAE is risk-routed assurance, not a second lifecycle. Mechanically decidable hard invariants require deterministic enforcement/evidence; model-mediated behavior requires appropriate repeated evals; architecture/authority remains Human/Orchestrator-governed; model graders are evidence only.
 
-## EGLL learning
+Material acceptance criteria use criterion-to-evidence traceability where ambiguity is plausible. Evidence must prove the actual property claimed; command/surface presence cannot substitute for successful execution.
 
-L003 `task.done_requires_rework` and L004 `workflow.procedural_nonconformance` remain ANALYZED. T020 now supplies the concrete local regression controls for its two observed defects, but the broader systemic controls — acceptance-criterion/evidence traceability, live EGLL review integration, and fail-closed durable review-to-rework sequencing — are not yet implemented and must be addressed prospectively through the post-T020 ICAE gate.
+## RCAB — source context architecture
 
-Do not mark L003/L004 VERIFIED yet.
+`docs/CONTEXT-ARCHITECTURE.md` defines Repository Context Architecture & Budgeting as an ICAE assurance dimension.
 
-## OP055 — READY after both T020 PRs merge
+Core rule: **budget the load path, not just the file**.
 
-`docs/operations/OP055-retire-t020-acceptance-and-implementation-branches.md` will retire exactly the T020-R2 acceptance branch and implementation branch after both integration PRs are merged. It must verify PR #127 head equals the exact accepted T020 HEAD and restore the remote to exactly `develop`, `main`.
+Do not impose a universal LOC/line/token maximum. Do not automatically split normative Markdown. Consumer budgets in `governance-core/CONTEXT.md` remain unchanged; source-repository hard budgets wait for a measured baseline.
 
-## Methodology gate
+No large-document split is authorized yet for `AGENTS.md`, `GOVERNANCE.md`, `TASK-CONTRACTS.md`, `TESTING-AND-EVALUATION.md`, `engine.py`, or other candidates solely from the research snapshot.
 
-The completed deep research selected COMPOSE and the internal ICAE methodology. After T020 is integrated and OP055 closes, persist ICAE prospectively before T021 becomes READY.
+## T030 — READY
 
-The ICAE gate must incorporate the L003/L004 systemic-control plan without reopening T020 or retroactively invalidating T018-T020. T021-T029 remain dependency-gated. T026 remains intentionally BLOCKED pending its separate persistence decision.
+Task Contract: `docs/tasks/T030-repository-context-baseline-and-measure-linter.md`  
+Expected branch: `infra/t030-repository-context-baseline`  
+Expected handoff: `handoffs/T030-executor-handoff.json`
+
+T030 is the first RCAB executable step and is measure-only. It creates deterministic, offline, source-only context measurement tooling plus the first accepted source context baseline. It must not enforce budgets, split files, add dependencies/network/model services, or enter the T020 Consumer artifact boundary.
+
+T030 deliberately runs before source-document decomposition so subsequent context-map/budget/split decisions are evidence-based.
+
+## T021 — READY, launch after T030 baseline
+
+Task Contract: `docs/tasks/T021-consumer-profile-abstraction-zero-drift.md`.
+
+T020 acceptance has satisfied T021's architecture dependency. D046 reclassifies T021 prospectively as a deterministic zero-drift refactor with T018 + T020 baselines. No model eval is required unless implementation would change a model-mediated activation/routing surface; such a change is outside T021 and requires escalation.
+
+T021 remains the next unified-refactor implementation after the context baseline gate. T030 is cross-cutting measurement and does not change T021 semantics.
+
+## EGLL
+
+L003 `task.done_requires_rework` and L004 `workflow.procedural_nonconformance` are `CONTROL_PLANNED` under D046.
+
+T020 integrated the immediate local regression controls. The selected systemic control direction is acceptance-criterion/evidence traceability plus positive distribution boundaries (L003), and fail-closed durable review-to-rework transition enforcement (L004), with live EGLL integration where mechanically supportable.
+
+Neither learning is `VERIFIED` until the systemic controls are implemented and bad-case/good-case replay proves them.
 
 ## Next Action
 
-1. Integrate the Markdown T020-R2 acceptance PR if its diff remains limited to T020-R2, T020 lifecycle metadata, OP055 and this checkpoint.
-2. Re-read PR #127 immediately before merge and require `head_sha == 0aad8ce78b52a4bd2a4851663d675048215a539c`; then integrate it into `develop`.
-3. Execute OP055 and independently verify its durable receipt and final remote inventory exactly `develop`, `main`.
-4. Persist the ICAE methodology/assurance gate and L003/L004 systemic-control plan before T021 becomes READY.
-5. Continue T021-T029 only in dependency order. Do not launch T026 without its explicit gate.
+1. Review and integrate the D046/ICAE/RCAB Markdown gate if its diff remains limited to methodology/context policy, T030, prospective T021 lifecycle/assurance metadata, L003/L004 control planning, and this checkpoint.
+2. Retire the gate branch through the normal integrated Operational Contract process.
+3. Launch T030 from current `develop`; accept only deterministic measure-only evidence with source/Consumer isolation preserved.
+4. After T030 acceptance, use its measured baseline to decide the smallest context map/manifest and any warning/ratchet policy. Do not split source documents before that evidence unless an independent urgent defect requires it.
+5. Execute T021 under its updated deterministic ICAE contract after the T030 baseline gate.
+6. Continue T022 -> MG1 -> T023/T024 and the remaining D044 program in dependency order.
+7. Do not launch T026 without its explicit decision gate.
 
 ## Next Chat Minimum Load
 
-After normal bootstrap load D044, the unified refactor plan, T020-R2/OP055 while T020 closure is pending, and L003/L004 only when ICAE/control disposition is being handled. After OP055, do not reload T020 implementation details absent a regression/audit dispute.
+After normal bootstrap load:
+
+- D044 and `docs/UNIFIED-GOVERNANCE-REFACTOR-PLAN.md`;
+- D046 and `docs/AGENT-CAPABILITY-ENGINEERING.md`;
+- `docs/CONTEXT-ARCHITECTURE.md` while T030/context-baseline work is active;
+- T030 until its acceptance/closure;
+- T021 when preparing/launching the unified-refactor continuation;
+- L003/L004 only when systemic assurance-control implementation or recurrence is material.
+
+Do not reload T020 implementation details or OP054/OP055 history absent a regression/audit/receipt dispute.
 
 ## Do Not
 
-Do not merge PR #127 if its head moves from the accepted SHA, accept T020 from executor `DONE` alone, treat `--help` as execution evidence, reintroduce broad source-subtree packaging, mark L003/L004 VERIFIED before systemic controls are integrated/replay-proven, start T021 before ICAE, launch T026 without its gate, delegate committed Markdown, or write directly to `develop`/`main`.
+Do not create a second ICAE/RCAB lifecycle, impose universal line/LOC/token hard limits, call bytes/4 a token count, auto-split normative Markdown, treat generated indexes as authority, introduce vector/embedding infrastructure without evidence, place source context tooling inside the Consumer packaged runtime, mark L003/L004 VERIFIED before control replay, reopen T018–T020, change T021 into model-mediated/profile-source work, launch T026 without its gate, delegate committed Markdown, or write directly to `develop`/`main`.
