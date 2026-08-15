@@ -37,6 +37,34 @@ LOCAL_REMAINING: develop, main
 
 Operation-specific evidence fields follow this required prefix.
 
+## Durable GitHub receipt envelope
+
+For every operation governed by the durable-receipt rule in `docs/OPERATION-CONTRACTS.md`, the executor MUST publish the final completion response as a top-level comment on the contract-defined GitHub receipt anchor before claiming `DONE`.
+
+The comment MUST use this envelope exactly:
+
+```text
+AGENT-GOVERNANCE-OPERATION-RECEIPT v1
+CONTRACT: <docs/operations/OPNNN-*.md>
+BASE_SHA: <canonical base SHA used for execution>
+
+STATUS: DONE | BLOCKED | PARTIAL
+OPERATION: OP###
+DESCRIPTION: <stable operation description>
+<all operation-specific completion fields in contract-defined order>
+```
+
+Rules:
+
+- `CONTRACT` MUST equal the integrated Operational Contract path actually executed.
+- `BASE_SHA` MUST identify the canonical base commit established during bootstrap before the operation begins.
+- The block beginning with `STATUS` MUST be the exact completion response required by the Operational Contract; no required field may be omitted.
+- The interactive response returned to the caller MUST reproduce that same completion block. It is a convenience copy, not the durable authority.
+- ChatGPT MUST read the receipt from GitHub and match `CONTRACT`, `BASE_SHA`, `OPERATION`, required fields, and final status before closing the operation.
+- A receipt comment is execution evidence only. It does not substitute for ChatGPT's independent verification or Human authority.
+
+If the executor cannot publish to the configured receipt anchor before mutation, it MUST stop before mutation and report `BLOCKED`. If mutation has already occurred and final receipt publication unexpectedly fails, the executor MUST stop further mutation and report `PARTIAL` through the available interactive channel.
+
 ## Scope
 
 This convention applies to new Operational Contracts and to any existing READY operation before its next execution when ChatGPT can safely revise its completion shape without changing operation authority, mutation scope, or acceptance criteria.

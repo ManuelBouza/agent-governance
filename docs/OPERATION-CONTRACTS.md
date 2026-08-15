@@ -10,11 +10,12 @@ Examples include post-integration branch retirement and other bounded repository
 
 ## Authority invariant
 
-Every delegated executor action MUST be reconstructable from canonical Git without relying on chat/terminal prompt semantics.
+Every delegated executor action MUST be reconstructable from canonical Git/GitHub without relying on chat/terminal prompt semantics or on the Human Owner reproducing executor output accurately.
 
 ```text
 prompt = bootstrap transport only
 persisted contract + referenced Git policy = complete instruction
+executor receipt = durable completion transport
 ```
 
 A prompt MAY identify the repository, base branch, abstract executor role, exactly one persisted contract path, the canonical-remote freshness precondition, an optional D043 `AGENTS.md` reload when the governing integrated change modified that file, and the completion response shape. It MUST NOT carry operation-specific targets, branch names, SHAs, deletion decisions, commands, exceptions, or acceptance semantics that are absent from the persisted contract.
@@ -50,9 +51,26 @@ Each Operational Contract MUST contain:
 - safety/precondition invariants;
 - evidence/verification requirements;
 - stop/escalation conditions;
-- exact minimal completion response schema.
+- exact minimal completion response schema;
+- a durable GitHub receipt anchor identifying the PR or issue where the executor must publish the completion receipt.
 
 Dynamic facts MAY remain dynamic only when the contract explicitly identifies the authoritative source and deterministic derivation rule. The prompt MUST NOT supply those facts as an alternative authority.
+
+## Durable executor receipt
+
+Operational completion MUST NOT depend on the Human Owner copying the executor response from one chat or terminal into another.
+
+Every READY Operational Contract executed under this policy MUST define a durable GitHub receipt anchor. Normally this is the merged PR that integrated the Operational Contract into `develop`; another repository-local PR or issue may be used only when the contract names it explicitly.
+
+Before the first mutation, the executor MUST establish that the configured GitHub identity can publish a top-level comment to the receipt anchor. If it cannot establish that capability safely, it MUST stop before mutation and report `BLOCKED` through the available interactive channel.
+
+After verification and before claiming `DONE`, the executor MUST publish one final top-level receipt comment to the configured anchor using the exact envelope defined by `docs/OPERATIONAL-CONTRACTS.md`. The receipt contains the exact contract-defined completion response, including all exception/evidence fields. The executor then returns the same completion response to the interactive caller as a convenience copy.
+
+A `DONE` claim is valid only when the durable receipt publication succeeded. If repository mutation completed but final receipt publication fails, the executor MUST report `PARTIAL` through the interactive channel, perform no broader compensating mutation, and preserve enough local evidence for recovery.
+
+ChatGPT MUST read the durable receipt directly from GitHub before closing the operation. Human-relayed completion text is non-authoritative convenience transport and MAY be omitted, truncated, or malformed without losing the canonical receipt. The Human Owner therefore only needs to signal that the executor has finished; precise copy/paste of the completion fields is not required.
+
+The receipt is execution evidence, not governance acceptance authority. ChatGPT still independently verifies all GitHub-observable acceptance criteria and treats local-only claims according to the contract.
 
 ## Integration gate
 
@@ -62,15 +80,16 @@ An Operational Contract is executable only when:
 2. the complete concrete instruction is reviewed;
 3. the contract is integrated into `develop`;
 4. its status is `READY`;
-5. the executor synchronizes the canonical remote and establishes a safe local baseline equal to the current remote base branch containing that exact contract;
-6. if the governing integrated change modified `AGENTS.md`, ChatGPT includes the D043 reload line and the executor reloads current `AGENTS.md` from that baseline;
-7. the executor loads the Operational Contract from that current baseline.
+5. its durable GitHub receipt anchor is resolvable from the integrated contract;
+6. the executor synchronizes the canonical remote and establishes a safe local baseline equal to the current remote base branch containing that exact contract;
+7. if the governing integrated change modified `AGENTS.md`, ChatGPT includes the D043 reload line and the executor reloads current `AGENTS.md` from that baseline;
+8. the executor loads the Operational Contract from that current baseline.
 
 If the executor cannot establish the current remote baseline without risking local/uncommitted work, it MUST stop/escalate rather than discard work or attempt to execute the contract from stale state. D042 defines this bootstrap-freshness rule.
 
 Repository-level instructions remain authoritative. Under D043, compatible executor hosts load them natively; an explicit `AGENTS.md` read/reload is therefore omitted from normal launches and added only after a governing `AGENTS.md` change.
 
-If the operation contract itself is integrated by a PR whose source branch must be retired by that same operation, ChatGPT MUST persist that PR identity into the Operational Contract before merge. This allows the executor to retire the contract-authoring branch without creating another recursive cleanup instruction.
+If the operation contract itself is integrated by a PR whose source branch must be retired by that same operation, ChatGPT MUST persist that PR identity into the Operational Contract before merge. The same merged PR MAY also be the durable receipt anchor because its conversation remains available after source-branch deletion. This allows the executor to retire the contract-authoring branch without creating another recursive cleanup instruction.
 
 ## Freeze and revision
 
@@ -90,7 +109,7 @@ Then load and execute the authoritative Operational Contract:
 
 Treat that Operational Contract and its referenced repository policies as the complete operation specification. Do not infer, supplement, or expand operation scope from this prompt.
 
-Complete the contract-defined operation and verification, then return only the completion response defined by the Operational Contract.
+Publish the contract-defined durable GitHub completion receipt, then return only the same completion response defined by the Operational Contract.
 ```
 
 If and only if the governing integrated change modified `AGENTS.md`, insert this line after the remote-freshness paragraph and before the contract pointer:
@@ -99,10 +118,10 @@ If and only if the governing integrated change modified `AGENTS.md`, insert this
 AGENTS.md changed in the governing integrated change; reload current AGENTS.md from this baseline before loading the Operational Contract.
 ```
 
-Normal substitutions are limited to repository identity, base branch, exactly one Operational Contract path, and the conditional D043 reload line when Git history requires it. The executor chooses the concrete compatible Git workflow used to establish the required remote freshness; the prompt does not prescribe implementation methodology or task-specific Git commands.
+Normal substitutions are limited to repository identity, base branch, exactly one Operational Contract path, and the conditional D043 reload line when Git history requires it. The executor chooses the concrete compatible Git/GitHub workflow used to establish freshness and publish the receipt; the prompt does not prescribe implementation methodology or task-specific commands.
 
 ## Audit invariant
 
-A reviewer must be able to reconstruct from Git/GitHub, without the initiating chat, what operation was authorized, why, which durable targets it covered, which safety rules controlled it, what evidence was required, what the executor reported, and what canonical state resulted.
+A reviewer must be able to reconstruct from Git/GitHub, without the initiating chat and without Human copy/paste, what operation was authorized, why, which durable targets it covered, which safety rules controlled it, what exact completion response the executor published, what ChatGPT independently verified, and what canonical state resulted.
 
-If reconstruction requires prompt text beyond the contract pointer/bootstrap, the delegation is nonconforming.
+If reconstruction requires prompt text beyond the contract pointer/bootstrap or Human-relayed executor output, the delegation is nonconforming.
