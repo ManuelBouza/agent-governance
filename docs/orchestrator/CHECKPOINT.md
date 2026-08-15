@@ -1,7 +1,7 @@
 # Current ChatGPT Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT
-Checkpoint-Sequence: O085
+Checkpoint-Sequence: O086
 Canonical-Branch: `develop`
 Chat-Closure: CONTINUE_ALLOWED
 
@@ -11,51 +11,83 @@ D040 Phase B remains closed. Protocol `1.13.0` is active and L001 remains `VERIF
 
 T014-T018 remain ACCEPTED. Consumer Governance Skill v1 and the T018 characterization suite remain the behavioral/rollback baseline for the unified architecture program.
 
-D044 and `docs/UNIFIED-GOVERNANCE-REFACTOR-PLAN.md` define the active T018-T029 program. `governance-core/` remains the single normative authority. The architecture continues toward one shared deterministic engine, one canonical Governance Skill source with isolated `consumer` / `source-maintainer` profiles, and generated self-contained distribution artifacts. Full source-persistence convergence remains separately gated.
+D044 and `docs/UNIFIED-GOVERNANCE-REFACTOR-PLAN.md` define the active T018-T029 program. `governance-core/` remains the single normative authority. T019 is ACCEPTED and integrated through PR #122. The frozen T018/T019 behavior baseline remains unchanged.
 
-T019 is ACCEPTED and integrated. PR #122 integrated the shared deterministic engine through squash commit `e2525c54f4de5703b1614bc303346cb044e24a60`; the accepted frozen T018/T019 behavior baseline remains unchanged. T020 is `READY` and must produce a reproducible self-contained artifact that removes source-tree runtime dependency while preserving Consumer v1 behavior and installed-footprint semantics.
+OP051 is DONE. PR #124 integrated the direct Operational Contract receipt policy at `develop@cdd60bfeca9065618518713541b25b9979d39f08`.
 
-OP051 is DONE. The executor reported retirement of `refactor/t019-shared-governance-engine` and `docs/t019-accept-t020-ready`, with remote remaining `develop`, `main`, local remaining `develop`, `main`, `origin`, and `EXCEPTIONS: none`. ChatGPT independently verified the GitHub remote exposed exactly `develop`, `main` while `develop` remained unchanged at `ac630ae6de016080247a671111c019dfc7c9b382`. The complete legacy Human-relayed OP051 completion was durably recorded on PR #123 as conversation comment `#issuecomment-5302282691`.
+OP052 is DONE. Its executor-published durable receipt is PR #124 conversation comment `#issuecomment-5302310344`, with `BASE_SHA: cdd60bfeca9065618518713541b25b9979d39f08`, `STATUS: DONE`, retired `docs/direct-operation-receipts`, remote remaining `develop, main`, local remaining `develop, main`, and `EXCEPTIONS: none`. ChatGPT independently verified the remote inventory was exactly `develop`, `main` and canonical `develop` remained unchanged. The OP052 gate for T020 is satisfied.
 
-A transport gap was identified from OP051: the Operational Contract audit invariant already required reconstructing what the executor reported from Git/GitHub, but prior policy did not define a direct durable completion channel. PR #124 introduces the direct operational-receipt rule: every READY Operational Contract must name a durable GitHub receipt anchor; the executor must establish receipt-publication capability before mutation, publish the exact contract-defined completion response directly to that anchor before claiming DONE, and then return the same block interactively only as a convenience copy. ChatGPT must read the receipt directly from GitHub before closure. Human copy/paste is no longer completion authority.
+## T020 — REWORK_REQUIRED
 
-OP052 is `READY` on PR #124 and is the first operation governed by the new direct-receipt rule. After PR #124 merges, OP052 retires only `docs/direct-operation-receipts`, publishes its final receipt directly to PR #124, and restores the canonical remote inventory to `develop`, `main`. T020 must not begin until PR #124 is integrated and OP052 passes or a concrete receipt/cleanup exception is durably resolved.
+Task Contract: `docs/tasks/T020-self-contained-build-artifact-and-identity.md`  
+Executor branch: `feat/t020-self-contained-governance-artifact`  
+Reviewed executor HEAD: `a50b4bbb572c44e0715fda2b49955f36bbf043d2`  
+Durable review: `docs/reviews/T020-R1.md`
 
-T021-T029 remain dependency-gated. T026 remains intentionally BLOCKED pending T025 semantic-equivalence evidence and a later accepted persistence/Markdown-ownership decision. MG1, MG2, and MG3 remain ChatGPT-owned Markdown gates at their defined points.
+T020-R1 found two bounded acceptance gaps:
 
-The Caveman/Gentle host configuration line remains closed. L002 remains separate and non-blocking.
+1. the artifact builder copied the complete `governance-skill/` source subtree and therefore included source-product lifecycle/status `STATUS.md` in the Consumer artifact; the generated payload must use an explicit intended Consumer boundary and regress against that leakage;
+2. artifact-only isolation executed `bootstrap`, `validate`, and `state`, but only enumerated `event`, `skill`, `ecosystem`, and `archive` through `--help`; representative valid executions for all seven Consumer v1 commands are required after staged source deletion.
+
+The main T020 architecture remains provisionally acceptable and must be preserved: artifact-local runtime/Core resolution, generated canonical Core rather than duplicate authority, separated identity dimensions/digests, same-input identity reproducibility, real staged-source deletion, and unchanged T018/T019/Consumer semantics.
+
+T020 is not ACCEPTED and its implementation MUST NOT be integrated before R1 rework passes remote review.
+
+## D039 / EGLL learning
+
+D039 and `docs/GOVERNANCE-LEARNING.md` remain ACTIVE for source-maintenance recurrence prevention.
+
+L003 — `docs/learning/L003-t020-done-requires-rework.md` — is `ANALYZED` with fingerprint `task.done_requires_rework`. It records that executor `DONE` reached review with a too-broad distribution payload and incomplete direct acceptance evidence. Exact T020 regression controls are part of R1; broader acceptance-evidence traceability/EGLL integration remains separately gated and must not expand T020.
+
+L004 — `docs/learning/L004-chat-only-t020-rework-directive.md` — is `ANALYZED` with fingerprint `workflow.procedural_nonconformance`. The Orchestrator initially sent the concrete T020 correction through chat before persisting T020-R1. Under `docs/TASK-CONTRACTS.md`, that chat directive was non-authoritative. T020-R1 is now the durable rework authority.
+
+The current T008 EGLL detector MVP is not a live review pipeline: it deterministically classifies normalized cases, including `task.done_requires_rework`, but it does not automatically ingest real Task handoffs/review dispositions or enforce the review-to-rework transition. L003/L004 preserve that systemic gap for a separately contracted control, coordinated with the post-T020 ICAE methodology gate.
+
+## PR #125 / OP053
+
+PR #125 persists T020-R1, L003, L004, OP053 and this checkpoint. It is Markdown-only and does not modify T020 executable content.
+
+`docs/operations/OP053-retire-t020-r1-egll-learning-branch.md` is READY with durable receipt anchor PR #125. After PR #125 is merged, OP053 retires only `docs/t020-r1-egll-learning` and explicitly preserves `develop`, `main`, and active T020 branch `feat/t020-self-contained-governance-artifact`.
+
+## Methodology adoption boundary
+
+The completed deep research recommends `COMPOSE` and the internal ICAE methodology. Do not expand current T020 to adopt ICAE retroactively.
+
+After T020 is ACCEPTED/integrated, persist the ICAE methodology prospectively before promoting T021 to READY. That gate should incorporate L003/L004 control planning: acceptance-criterion/evidence traceability, explicit distribution boundaries where material, and fail-closed durable review-to-rework sequencing without granting automation Governance acceptance authority.
+
+T021-T029 remain dependency-gated. T026 remains intentionally BLOCKED pending T025 semantic-equivalence evidence and a later accepted persistence/Markdown-ownership decision. MG1, MG2 and MG3 remain ChatGPT-owned Markdown gates.
 
 ## Delegation rule
 
-All delegated executor work is initiated through an integrated Task Contract or Operational Contract and the canonical minimal launch prompt defined by repository policy.
+All delegated executor work is initiated or revised through integrated durable Task/Operational Contract or review authority. A chat prompt is transport/bootstrap only and MUST NOT carry missing task/rework semantics.
 
-Committed Markdown remains ChatGPT-owned. Executors MUST NOT edit committed Markdown to bypass lifecycle gates, accepted characterization baselines, MG1-MG3, cleanup authority, or durable-receipt requirements.
+Committed Markdown remains ChatGPT-owned. Executors MUST NOT edit committed Markdown to bypass lifecycle gates, reviews, accepted characterization baselines, cleanup authority, or durable-receipt requirements.
 
-Operational completion under the new policy is read from the contract-defined GitHub receipt anchor. The Human Owner may signal that execution finished but does not need to reproduce the completion fields accurately.
+Operational completion is read from the contract-defined GitHub receipt anchor. Human copy/paste is convenience only.
 
 ## Next Action
 
-1. Review and integrate PR #124 into `develop`; this persists OP051=`DONE`, the direct Operational Contract receipt policy, OP052=`READY`, and O085.
-2. Launch `docs/operations/OP052-retire-direct-receipt-policy-branch.md` from a safe current `origin/develop` baseline.
-3. Read OP052's executor-published durable receipt directly from PR #124 and independently verify the canonical remote returns to exactly `develop`, `main` with canonical branches unchanged.
-4. Launch T020 only after OP052 passes, from a safe current `origin/develop` baseline containing the exact READY T020 Task Contract and accepted T019 references.
-5. Review T020 handoff, built-artifact isolation evidence, reproducibility/identity evidence, remote diff, and full regression before accepting or integrating T020.
-6. Continue subsequent tasks only in dependency order defined by `docs/UNIFIED-GOVERNANCE-REFACTOR-PLAN.md`; perform MG1, MG2, and MG3 as ChatGPT-owned Markdown gates.
-7. Do not launch T026 unless T025 is ACCEPTED and a separate accepted decision authorizes live source persistence convergence and resolves Markdown ownership/write semantics.
+1. Review PR #125 against `develop@cdd60bfeca9065618518713541b25b9979d39f08`; if scope remains Markdown-only and coherent, integrate it.
+2. Execute OP053 from current `origin/develop`; read the final durable receipt directly from PR #125 and independently verify only `docs/t020-r1-egll-learning` was retired while `develop`, `main`, and active T020 branch remain intact.
+3. Resume T020 only from a safe executor state reconciled with current canonical `develop` containing `docs/reviews/T020-R1.md`. The executor must consume T020-R1 as the durable rework instruction. If corrective work was already performed from the earlier chat-only directive, do not treat that as sufficient authority: reconcile against T020-R1, rerun required verification, refresh the handoff, commit/push, and return for re-review.
+4. Re-review only the T020 correction delta plus the complete required evidence. Accept/integrate T020 only if every T020-R1 acceptance condition passes and the frozen T018/T019 baseline remains intact.
+5. After T020 acceptance/integration, persist ICAE and the L003/L004 systemic-control plan before T021 becomes READY.
+6. Continue T021-T029 only in dependency order. Do not launch T026 without its explicit decision gate.
 
 ## Next Chat Minimum Load
 
 After normal bootstrap, load:
 
-- `docs/decisions/D044-unified-governance-skill-architecture.md`;
+- D044;
 - `docs/UNIFIED-GOVERNANCE-REFACTOR-PLAN.md`;
 - `docs/tasks/T020-self-contained-build-artifact-and-identity.md`;
-- while direct-receipt cleanup is pending, `docs/operations/OP052-retire-direct-receipt-policy-branch.md`;
-- `docs/OPERATION-CONTRACTS.md` and `docs/OPERATIONAL-CONTRACTS.md` when an Operational Contract is being launched or reviewed;
-- additional controlling files only when a concrete conflict requires them.
+- `docs/reviews/T020-R1.md` while T020 rework is open;
+- L003/L004 and `docs/GOVERNANCE-LEARNING.md` only when learning/control disposition is material;
+- OP053 and Operational Contract policy while cleanup is pending;
+- additional history only for a concrete conflict.
 
-After OP052 completes, do not reload OP051/T019 branch-cleanup history unless a concrete receipt, branch, packaging, or accepted-baseline dispute requires it.
+After OP053 closes, do not reload OP051/OP052 cleanup history absent a receipt/branch dispute.
 
 ## Do Not
 
-Do not depend on Human copy/paste as authoritative Operational Contract completion transport, accept an operation as DONE without reading its required durable GitHub receipt, weaken or reinterpret the accepted T018/T019 behavior baseline to make packaging easier, treat source-tree lookup as acceptable final distribution behavior, create a hand-maintained duplicate Core authority inside the Skill, copy source-only policy/history/state into consumer artifacts, begin T020 before its READY lifecycle is canonical and OP052 cleanup is satisfied, leave the executor checkout on a stale merged topic branch, delete branches outside Operational Contract scope, maintain a second independent Governance runtime/Skill product, silently migrate governed repositories on Skill/plugin update, require live source `.agent-coordination/` before the T025/T026 decision gate, delegate committed Markdown edits, retry closed Caveman/Gentle permission work absent new evidence, change provider endpoints, expose secrets, make model/provider output a correctness authority, track `.codegraph/`, or write directly to `develop`/`main`.
+Do not accept T020 from executor `DONE` alone, treat command enumeration as command-execution evidence, allow broad source-subtree copying to define a Consumer distribution boundary without explicit review, use chat-only rework semantics as authority, mark L003/L004 VERIFIED before their selected controls are integrated and replay-proven, expand T020 into ICAE/EGLL infrastructure, weaken T018/T019 baselines, copy source-only policy/history/state into Consumer artifacts, create a second Core/runtime authority, silently migrate governed repositories, launch T026 without its gate, delegate committed Markdown edits, expose secrets, make model/provider output a correctness authority, track `.codegraph/`, or write directly to `develop`/`main`.
