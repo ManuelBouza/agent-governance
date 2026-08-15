@@ -3,7 +3,7 @@
 ## Identity
 
 - Task ID: `T021`
-- Status: `READY`
+- Status: `IN_PROGRESS`
 - Type: `refactor`
 - Base branch: `develop`
 - Expected topic branch: `refactor/t021-consumer-profile-abstraction`
@@ -90,3 +90,17 @@ The handoff MUST map `AC-T021-1` through `AC-T021-3` to the exact verifier/test 
 ## Expected handoff
 
 Before claiming `DONE`, `BLOCKED`, or `PARTIAL`, persist the executor handoff at `handoffs/T021-executor-handoff.json` according to `docs/EXECUTOR-HANDOFFS.md`, commit and push all authorized non-Markdown work, and return only the canonical completion fields required by `docs/TASK-CONTRACTS.md`.
+
+## Review / rework lifecycle
+
+### T021-R1 — REWORK_REQUIRED
+
+`docs/reviews/T021-R1.md` reviewed submitted executor HEAD `969e2130ca9abb27c6ae5ad830923582f45b8a2f` and found `AC-T021-2` incomplete.
+
+The submitted `engine.main()` accepts directly constructed unsupported `Profile` instances because it validates only object type plus `grants_source_maintenance`, while the current `Profile` implementation returns `False` for that property regardless of unsupported `name`.
+
+Rework authority is exclusively the unchanged Task Contract plus `docs/reviews/T021-R1.md`.
+
+T021 rework is temporarily sequenced behind T032 because the canonical full deterministic suite is already red on clean `develop` due the unrelated RCAB generated-snapshot/live-currentness coupling recorded as L006. T021 MUST NOT absorb that RCAB repair into its scope.
+
+After T032 is accepted/integrated and canonical full deterministic regression is green, T021 rework must re-bootstrap current `develop`, safely reconcile the existing T021 topic branch, implement only the T021-R1 fail-closed correction, rerun the complete verification matrix, finalize the handoff, and follow D048's publication boundary.
