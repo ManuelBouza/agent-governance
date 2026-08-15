@@ -1,39 +1,30 @@
-# OP050 — Retire T018 and planning branches
+# OP051 — Retire T019 and lifecycle branches
 
-Operation ID: OP050
-Status: DONE
+Operation ID: OP051
+Status: READY
 Type: branch cleanup
 Authorized base: `develop`
 
-## Completion / lifecycle
-
-OP050 completed before T019 execution. The executor reported all three target branches retired, remote remaining `develop, main`, local remaining `develop, main, origin`, and no exceptions. ChatGPT independently re-read GitHub after completion and verified the canonical remote exposed exactly `develop` and `main`; `develop` remained unchanged at `9148be3c11c85d2bc7e0c43e3e8e86f110b2682f`. No repository-content mutation was attributed to the cleanup operation.
-
 ## Objective
 
-After PR #121 is integrated into `develop`, retire exactly the merged topic branches left by MG0/T018 acceptance and restore the canonical remote branch inventory to `develop`, `main` before T019 begins.
+After PR #123 is integrated into `develop`, retire exactly the merged T019 implementation branch and the T019-acceptance/T020-readiness lifecycle branch, restoring the canonical remote branch inventory to `develop`, `main` before T020 begins.
 
 ## Durable target identities
 
 The operation covers exactly these merged PR source branches:
 
-1. PR #119
+1. PR #122
    - base: `develop`
-   - source branch: `docs/unified-governance-refactor-plan`
-   - reviewed head: `c3b043db8b72437c4679e776ba120c24c05ca8cb`
-   - integration commit: `f8782e93c446bab1f16bc9022bb3ec868dff7fc5`
-2. PR #120
+   - source branch: `refactor/t019-shared-governance-engine`
+   - reviewed head: `fd71070f4b3ed08826fdde99ad34d81916bec21e`
+   - integration commit: `e2525c54f4de5703b1614bc303346cb044e24a60`
+2. PR #123
    - base: `develop`
-   - source branch: `test/t018-consumer-v1-characterization`
-   - reviewed head: `fe66bda778147648c30e3ed3c7c11c11f547ca00`
-   - integration commit: `85bdb75537eab98bf8b1bd1f603809a33ab23603`
-3. PR #121
-   - base: `develop`
-   - source branch: `docs/t018-accept-t019-ready`
-   - reviewed head: derive from the authoritative merged PR #121 GitHub record after integration
-   - integration commit: derive from the authoritative merged PR #121 GitHub record after integration
+   - source branch: `docs/t019-accept-t020-ready`
+   - reviewed head: derive from the authoritative merged PR #123 GitHub record after integration
+   - integration commit: derive from the authoritative merged PR #123 GitHub record after integration
 
-PR #121 is deliberately resolved dynamically because this Operational Contract is authored on its own source branch. The authoritative derivation rule is: read merged PR #121 from GitHub after integration and use its recorded `head_sha` and merge/integration identity. No chat-carried SHA may substitute for that record.
+PR #123 is deliberately resolved dynamically because this Operational Contract is authored on its own source branch. The authoritative derivation rule is: read merged PR #123 from GitHub after integration and use its recorded `head_sha` and merge/integration identity. No chat-carried SHA may substitute for that record.
 
 ## Controlling references
 
@@ -42,14 +33,13 @@ PR #121 is deliberately resolved dynamically because this Operational Contract i
 - `docs/BRANCH-CLEANUP.md`
 - `docs/OPERATION-CONTRACTS.md`
 - `docs/OPERATIONAL-CONTRACTS.md`
-- PR #119
-- PR #120
-- PR #121
+- PR #122
+- PR #123
 
 ## Preconditions and safety invariants
 
 - This contract is reachable from current `origin/develop` before execution.
-- PRs #119, #120, and #121 are all merged into `develop`, not merely closed.
+- PRs #122 and #123 are both merged into `develop`, not merely closed.
 - For every target branch that still exists remotely, its current remote HEAD must equal the reviewed PR `head_sha` from the authoritative PR record.
 - A missing target remote branch is already-retired and is not an error.
 - `develop` and `main` are long-lived protected targets for this operation and MUST NOT be moved or deleted.
@@ -59,12 +49,11 @@ PR #121 is deliberately resolved dynamically because this Operational Contract i
 
 ## Authorized operations
 
-- Read the authoritative PR #119, #120, and #121 merge/head records.
+- Read the authoritative PR #122 and #123 merge/head records.
 - Re-read current remote branch identities.
 - Delete exactly these remote branches when their safety checks pass:
-  - `docs/unified-governance-refactor-plan`
-  - `test/t018-consumer-v1-characterization`
-  - `docs/t018-accept-t019-ready`
+  - `refactor/t019-shared-governance-engine`
+  - `docs/t019-accept-t020-ready`
 - In every accessible local checkout/worktree, switch away from a retiring branch when safe, prune remote-tracking refs, and remove only the matching local branches after confirming no unrepresented work.
 - Re-read the remote branch inventory after cleanup.
 
@@ -92,7 +81,7 @@ PASS requires:
 
 Return `BLOCKED` or `PARTIAL` without deleting the affected branch when:
 
-- any target PR is not merged into `develop`;
+- either target PR is not merged into `develop`;
 - current remote branch HEAD differs from the merged PR reviewed head;
 - the authoritative PR identity cannot be resolved;
 - unique/unrepresented local work may exist;
@@ -107,8 +96,8 @@ Return only:
 
 ```text
 STATUS: DONE | BLOCKED | PARTIAL
-OPERATION: OP050
-DESCRIPTION: Retire merged T018 planning and implementation branches
+OPERATION: OP051
+DESCRIPTION: Retire merged T019 implementation and lifecycle branches
 RETIRED: <comma-separated retired/already-absent target branches, or none>
 REMOTE_REMAINING: <comma-separated remote branches>
 LOCAL_REMAINING: <comma-separated local branches visible in accessible checkouts>

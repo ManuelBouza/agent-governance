@@ -3,12 +3,24 @@
 ## Identity
 
 - Task ID: `T019`
-- Status: `READY`
+- Status: `ACCEPTED`
 - Type: `refactor`
 - Base branch: `develop`
 - Expected topic branch: `refactor/t019-shared-governance-engine`
 - Expected executor handoff: `handoffs/T019-executor-handoff.json`
-- Readiness note: T018 is ACCEPTED; its RF1 characterization baseline is frozen and integrated through PR #120 / commit `85bdb75537eab98bf8b1bd1f603809a33ab23603`. Execution remains subject to this READY lifecycle change being integrated into current `develop`.
+- Lifecycle note: T018 RF1 remained frozen throughout execution. T019 was remotely reviewed and accepted after RF5, then integrated through PR #122 at `e2525c54f4de5703b1614bc303346cb044e24a60`.
+
+## Acceptance / lifecycle
+
+- Submitted executor HEAD: `fd71070f4b3ed08826fdde99ad34d81916bec21e`.
+- Implementation commit before handoff finalization: `f5032c30fe4f97b09e566deb3ef12af9e78e9e4f`.
+- Execution base: `9148be3c11c85d2bc7e0c43e3e8e86f110b2682f`.
+- Integration: PR #122, squash commit `e2525c54f4de5703b1614bc303346cb044e24a60`.
+- Scope reviewed: `governance-skill/scripts/governance.py`, `src/agent_governance/__init__.py`, `src/agent_governance/engine.py`, `tests/test_shared_governance_engine.py`, and `handoffs/T019-executor-handoff.json` only.
+- Structural result: the launcher is a thin compatibility shim; deterministic command implementations live in `src/agent_governance/engine.py` as the single editable engine implementation.
+- Frozen baseline result: T018 characterization `2 passed`; Consumer v1 frozen baseline `77 passed`; combined affected suite `78 passed`; full deterministic suite `262 passed`; Ruff/format/py_compile/diff checks PASS; no network, dependency, configuration, Markdown, protocol, footprint, or CLI-surface drift.
+- Diagnostic note: the first post-extraction RF1 run exposed three direct launcher-internal seams. The executor did not weaken or rewrite the frozen tests; thin forwarding restored compatibility and the unchanged RF1 suite passed completely.
+- Deferred boundary: self-contained distribution and removal of source-checkout engine lookup are intentionally T020 scope, not a T019 defect.
 
 ## Objective
 
