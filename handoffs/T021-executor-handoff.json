@@ -1,0 +1,201 @@
+{
+  "task_id": "T021",
+  "status": "DONE",
+  "task_contract_path": "docs/tasks/T021-consumer-profile-abstraction-zero-drift.md",
+  "branch": "refactor/t021-consumer-profile-abstraction",
+  "implementation_head_sha": "30bea773560e013811b90366e77735e6f7530e48",
+  "base_branch": "develop",
+  "base_sha": "53b9c39c1111f4b871ef73b7447510195f672ea2",
+  "files_changed": [
+    "src/agent_governance/profile.py",
+    "src/agent_governance/engine.py",
+    "governance-skill/scripts/governance.py",
+    "tests/test_profile_abstraction.py",
+    "handoffs/T021-executor-handoff.json"
+  ],
+  "implementation_summary": "Introduced an explicit runtime profile abstraction module (src/agent_governance/profile.py) with consumer as the only active profile. Profile.resolve_profile fail-closes on unsupported or ambiguous values; Profile.grants_source_maintenance always returns False so no profile default grants source-maintenance permissions. Threaded the resolved consumer profile through engine.main via a new optional profile parameter, and updated the thin launcher to resolve and pass the profile. The artifact builder bundles profile.py automatically via the existing _copy_tree_files runtime copy. Added focused deterministic tests mapping AC-T021-1 through AC-T021-3 to exact evidence with evidence types. No Markdown edits, no governance-core protocol semantics changes, no CLI command or footprint changes, no Skill activation surface changes, no source-maintainer profile implementation.",
+  "architecture": {
+    "profile_module": "src/agent_governance/profile.py defines ProfileError, ACTIVE_PROFILES={consumer}, DEFAULT_PROFILE=consumer, a frozen Profile dataclass with is_consumer/is_source_maintainer/grants_source_maintenance properties (all False for source-maintenance), and resolve_profile(name=None) that returns Profile('consumer') for None or 'consumer' and raises ProfileError for any unsupported or ambiguous value (empty, wrong case, whitespace, non-string, non-active).",
+    "engine_integration": "src/agent_governance/engine.py imports Profile, ProfileError, resolve_profile from agent_governance.profile. main() accepts an optional profile: Profile | None parameter; if None, resolves the default consumer profile inside the try block. Validates isinstance(profile, Profile) and profile.grants_source_maintenance is False before command dispatch. ProfileError added to the except clause alongside GovernanceError and OSError.",
+    "launcher_plumbing": "governance-skill/scripts/governance.py main() resolves the consumer profile via _engine.resolve_profile() and passes it to _engine.main(argv, package_paths=..., profile=profile). No new top-level functions added; launcher function set unchanged from T019 structural assertion.",
+    "artifact_compatibility": "The artifact builder (_copy_tree_files of src/agent_governance/*.py into artifact runtime/agent_governance/) automatically bundles profile.py. No changes to artifact.py were needed. The T020 artifact isolation test proves the artifact bootstraps and runs all seven commands from the artifact-only environment with profile.py present.",
+    "zero_drift": "The profile parameter has no behavioral effect for consumer. Consumer behavior is identical with the profile abstraction enabled: the same bootstrap, validate, state, event, skill, ecosystem, and archive code paths execute. Profile validation (isinstance + grants_source_maintenance) is defense-in-depth that never triggers for the consumer profile."
+  },
+  "acceptance_criterion_evidence": {
+    "AC-T021-1": {
+      "description": "zero Consumer drift: Consumer behavior is identical with the profile abstraction enabled against the frozen T018 baseline.",
+      "tests": [
+        {
+          "test": "tests/test_profile_abstraction.py::test_default_profile_resolves_to_consumer",
+          "evidence_type": "deterministic-assertion",
+          "result": "PASS — resolve_profile() returns Profile(name='consumer') with is_consumer=True, is_source_maintainer=False, grants_source_maintenance=False"
+        },
+        {
+          "test": "tests/test_profile_abstraction.py::test_explicit_consumer_matches_default",
+          "evidence_type": "deterministic-assertion",
+          "result": "PASS — resolve_profile('consumer') == resolve_profile(None)"
+        },
+        {
+          "test": "tests/test_profile_abstraction.py::test_engine_exports_profile_symbols",
+          "evidence_type": "deterministic-assertion",
+          "result": "PASS — engine module exports resolve_profile, Profile, ProfileError as callable/accessible attributes through the launcher"
+        },
+        {
+          "test": "tests/test_profile_abstraction.py::test_engine_main_accepts_consumer_profile_without_behavior_change",
+          "evidence_type": "executed-successfully",
+          "result": "PASS — subprocess bootstrap with profile abstraction enabled creates canonical .agent-governance/ and .agent-coordination/ footprints identically to pre-refactor behavior"
+        },
+        {
+          "test": "tests/test_consumer_v1_characterization.py (T018 frozen baseline, 2 tests)",
+          "evidence_type": "deterministic-assertion",
+          "result": "2 passed — T018 characterization unchanged against frozen baseline"
+        },
+        {
+          "test": "tests/test_consumer_governance_cli.py + tests/test_consumer_governance_cli_v1.py + tests/test_consumer_v1_characterization.py (77 tests)",
+          "evidence_type": "deterministic-assertion",
+          "result": "77 passed — Full consumer v1 CLI regression suite unchanged against frozen T018 baseline"
+        },
+        {
+          "test": "tests/test_shared_governance_engine.py (T019 structural test, 1 test)",
+          "evidence_type": "deterministic-assertion",
+          "result": "1 passed — T019 structural assertion that launcher is thin and delegates to shared engine still holds (launcher function set unchanged)"
+        }
+      ]
+    },
+    "AC-T021-2": {
+      "description": "fail-closed profile routing: Unsupported or ambiguous profile values are rejected rather than routed with broader permissions.",
+      "tests": [
+        {
+          "test": "tests/test_profile_abstraction.py::test_resolve_profile_rejects_unsupported_or_ambiguous_values[source-maintainer]",
+          "evidence_type": "negative-control",
+          "result": "PASS — 'source-maintainer' raises ProfileError (not active in T021)"
+        },
+        {
+          "test": "tests/test_profile_abstraction.py::test_resolve_profile_rejects_unsupported_or_ambiguous_values[maintainer]",
+          "evidence_type": "negative-control",
+          "result": "PASS — 'maintainer' raises ProfileError"
+        },
+        {
+          "test": "tests/test_profile_abstraction.py::test_resolve_profile_rejects_unsupported_or_ambiguous_values[admin]",
+          "evidence_type": "negative-control",
+          "result": "PASS — 'admin' raises ProfileError"
+        },
+        {
+          "test": "tests/test_profile_abstraction.py::test_resolve_profile_rejects_unsupported_or_ambiguous_values[]",
+          "evidence_type": "negative-control",
+          "result": "PASS — empty string raises ProfileError"
+        },
+        {
+          "test": "tests/test_profile_abstraction.py::test_resolve_profile_rejects_unsupported_or_ambiguous_values[CONSUMER]",
+          "evidence_type": "negative-control",
+          "result": "PASS — case mismatch 'CONSUMER' raises ProfileError (case-sensitive matching)"
+        },
+        {
+          "test": "tests/test_profile_abstraction.py::test_resolve_profile_rejects_unsupported_or_ambiguous_values[Consumer]",
+          "evidence_type": "negative-control",
+          "result": "PASS — case mismatch 'Consumer' raises ProfileError"
+        },
+        {
+          "test": "tests/test_profile_abstraction.py::test_resolve_profile_rejects_unsupported_or_ambiguous_values[ consumer ]",
+          "evidence_type": "negative-control",
+          "result": "PASS — whitespace-padded ' consumer ' raises ProfileError (exact match required)"
+        },
+        {
+          "test": "tests/test_profile_abstraction.py::test_resolve_profile_rejects_unsupported_or_ambiguous_values[consumer,source-maintainer]",
+          "evidence_type": "negative-control",
+          "result": "PASS — composite value raises ProfileError"
+        },
+        {
+          "test": "tests/test_profile_abstraction.py::test_resolve_profile_rejects_unsupported_or_ambiguous_values[123]",
+          "evidence_type": "negative-control",
+          "result": "PASS — non-string integer raises ProfileError"
+        },
+        {
+          "test": "tests/test_profile_abstraction.py::test_resolve_profile_rejects_unsupported_or_ambiguous_values[True]",
+          "evidence_type": "negative-control",
+          "result": "PASS — non-string boolean raises ProfileError"
+        },
+        {
+          "test": "tests/test_profile_abstraction.py::test_resolve_profile_rejects_unsupported_or_ambiguous_values[bad_name10]",
+          "evidence_type": "negative-control",
+          "result": "PASS — non-string empty list raises ProfileError"
+        },
+        {
+          "test": "tests/test_profile_abstraction.py::test_no_active_profile_grants_source_maintenance",
+          "evidence_type": "deterministic-assertion",
+          "result": "PASS — every active profile has grants_source_maintenance=False"
+        },
+        {
+          "test": "tests/test_profile_abstraction.py::test_source_maintainer_is_not_active",
+          "evidence_type": "deterministic-assertion",
+          "result": "PASS — 'source-maintainer' is not in ACTIVE_PROFILES and raises ProfileError"
+        }
+      ]
+    },
+    "AC-T021-3": {
+      "description": "artifact compatibility: The accepted T020 artifact remains self-contained and all Consumer v1/artifact regression behavior passes.",
+      "tests": [
+        {
+          "test": "tests/test_profile_abstraction.py::test_artifact_bundles_profile_module_in_runtime",
+          "evidence_type": "deterministic-assertion",
+          "result": "PASS — built artifact contains runtime/agent_governance/profile.py with byte-identical content to source"
+        },
+        {
+          "test": "tests/test_profile_abstraction.py::test_launcher_resolves_consumer_profile_inside_artifact",
+          "evidence_type": "executed-successfully",
+          "result": "PASS — after source deletion, artifact launcher imports engine which imports profile.py; resolve_profile() returns consumer True False"
+        },
+        {
+          "test": "tests/test_governance_artifact.py (T020 artifact isolation, 3 tests)",
+          "evidence_type": "executed-successfully",
+          "result": "3 passed — T020 artifact test suite unchanged: builds artifact from disposable source, deletes source, runs all seven commands from artifact-only environment, verifies exact nine-file Skill allowlist, STATUS.md absence, reproducible identity, payload isolation"
+        }
+      ]
+    }
+  },
+  "verification": {
+    "commands": [
+      "uv run --locked pytest -q tests/test_profile_abstraction.py",
+      "uv run --locked pytest -q tests/test_consumer_v1_characterization.py",
+      "uv run --locked pytest -q tests/test_consumer_governance_cli.py tests/test_consumer_governance_cli_v1.py tests/test_consumer_v1_characterization.py",
+      "uv run --locked pytest -q tests/test_shared_governance_engine.py",
+      "uv run --locked pytest -q tests/test_governance_artifact.py",
+      "uv run --locked pytest -q tests/test_consumer_governance_cli.py tests/test_consumer_governance_cli_v1.py tests/test_consumer_v1_characterization.py tests/test_shared_governance_engine.py tests/test_profile_abstraction.py tests/test_governance_artifact.py",
+      "uv run --locked pytest -q",
+      "uv run --locked ruff check src/agent_governance/profile.py src/agent_governance/engine.py governance-skill/scripts/governance.py tests/test_profile_abstraction.py",
+      "uv run --locked ruff format --check src/agent_governance/profile.py src/agent_governance/engine.py governance-skill/scripts/governance.py tests/test_profile_abstraction.py",
+      "uv run --locked ruff check src/agent_governance/profile.py src/agent_governance/engine.py src/agent_governance/artifact.py governance-skill/scripts/governance.py tests/test_profile_abstraction.py tests/test_shared_governance_engine.py tests/test_consumer_v1_characterization.py tests/test_governance_artifact.py",
+      "python3 -m py_compile src/agent_governance/profile.py src/agent_governance/engine.py src/agent_governance/artifact.py governance-skill/scripts/governance.py tests/test_profile_abstraction.py tests/test_shared_governance_engine.py tests/test_consumer_v1_characterization.py tests/test_governance_artifact.py",
+      "git diff --check"
+    ],
+    "results": {
+      "focused_profile_abstraction": "19 passed in 0.46s",
+      "t018_characterization": "2 passed in 0.43s",
+      "t018_and_consumer_regression": "77 passed in 12.12s",
+      "t019_shared_engine_structure": "1 passed in 0.06s",
+      "t020_artifact_isolation": "3 passed in 1.88s",
+      "combined_affected_suite": "102 passed in 15.25s",
+      "full_deterministic_suite": "307 passed, 1 pre-existing failure (test_repository_context.py::test_manifest_cli_check_on_real_repository — fails on clean develop 53b9c39 too; RCAB manifest ratchet not updated for recent docs/infra commits, unrelated to T021)",
+      "ruff_check_4_files": "All checks passed!",
+      "ruff_format_check_4_files": "4 files already formatted",
+      "ruff_check_extended": "All checks passed!",
+      "py_compile": "PASS",
+      "diff_check": "PASS"
+    },
+    "runtime": "All T018 baseline, T019 structural, and T020 artifact-isolation tests pass unchanged. The profile abstraction is transparent to all seven Consumer Governance CLI commands. The artifact builder bundles profile.py automatically. The launcher resolves consumer and passes it to engine.main with no behavioral effect.",
+    "network_required": false,
+    "pre_existing_failure_note": "test_repository_context.py::test_manifest_cli_check_on_real_repository fails on the clean develop baseline (53b9c39c) before T021 changes. This is an RCAB manifest ratchet desynchronized by recent docs/infra commits (D048, T031-R1 acceptance, RCAB manifest/ratchet). It is not caused by T021 and is not in T021 scope.",
+    "diagnostic_verification": "Confirmed pre-existing failure by stashing T021 changes and running the test on clean develop: same assertion error. T021 adds 2 new tracked files (profile.py, test_profile_abstraction.py) which would further increase the manifest file count, but the failure exists independently."
+  },
+  "dependencies_or_config_changes": [],
+  "git_status": "Implementation committed at 30bea77. Final handoff committed as successor at 4ed945a. No intermediate remote publication per D048; all work completed locally.",
+  "unresolved_issues": [
+    "Pre-existing RCAB manifest ratchet failure (test_repository_context.py::test_manifest_cli_check_on_real_repository) exists on clean develop and is unrelated to T021 scope. T021 adds 2 new tracked files which would further impact the ratchet count."
+  ],
+  "risks": [
+    "from __future__ import annotations was removed from profile.py to avoid Python 3.13 dataclass + importlib.util.spec_from_file_location incompatibility (string annotation evaluation requires sys.modules registration). Python 3.13 supports str | None natively so this is safe.",
+    "The pre-existing RCAB manifest ratchet failure (test_repository_context.py) is not caused by T021 but T021's new files will further increase the manifest file count when ChatGPT updates the manifest."
+  ],
+  "recommended_next_task": "ChatGPT independently verifies the pushed remote T021 implementation, handoff, complete diff, and evidence. After independent verification, ChatGPT proceeds through PR to develop.",
+  "chatgpt_read_path": "handoffs/T021-executor-handoff.json"
+}
