@@ -54,7 +54,7 @@ This does not reduce auditability: the complete task state remains pushed before
 
 ## Enforcement boundary
 
-This decision is immediately normative in `docs/TASK-CONTRACTS.md` and `docs/EXECUTOR-HANDOFFS.md`.
+This decision is immediately normative. `docs/EXECUTOR-HANDOFFS.md` carries the operational publication sequence used by Task Contracts and handoffs; the existing Task Contract lifecycle remains compatible with this stricter timing interpretation.
 
 A future deterministic control MAY detect unexpected pre-final publication where the executor host exposes sufficient observable state, but no automation may infer private execution progress or become acceptance authority merely to enforce this rule.
 
