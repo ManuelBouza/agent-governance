@@ -1,7 +1,7 @@
 # Current ChatGPT Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O090  
+Checkpoint-Sequence: O091  
 Canonical-Branch: `develop`  
 Chat-Closure: CONTINUE_ALLOWED
 
@@ -9,71 +9,70 @@ Chat-Closure: CONTINUE_ALLOWED
 
 D044 and `docs/UNIFIED-GOVERNANCE-REFACTOR-PLAN.md` remain the active unified Governance architecture/program authority. D046/ICAE and `docs/CONTEXT-ARCHITECTURE.md` govern prospective assurance/context work. T018-T020 remain accepted baselines.
 
-T030-R1 review gate PR: #130. Gate base: `develop@45c2681476fe2c7c853931fae6bc410f0b6666d4`. When this checkpoint is read from `develop`, the T030-R1 durable review is integrated and is the sole canonical rework authority for the current T030 correction.
+T030 remains `REWORK_REQUIRED` under the integrated durable review `docs/reviews/T030-R1.md`. Executor HEAD `1322e8fbf936604c17a4120beb0092df884ad0dc` remains rejected and MUST NOT be integrated.
 
-## OP056 — CLOSED
+## T030-R1 review state
 
-OP056 Stage A is DONE. Durable receipt on PR #129, comment `#issuecomment-5303579099`, records:
+PR #130 integrated T030-R1 into `develop`. T030-R1 found AC-CTX-1 unsatisfied because the canonical baseline embeds `git rev-parse HEAD`, while the committed baseline at the submitted final HEAD records the implementation parent revision. Same-HEAD repeated-run tests do not exercise the finalization/HEAD-transition boundary.
 
-- `BASE_SHA: 45c2681476fe2c7c853931fae6bc410f0b6666d4`;
-- retirement of `docs/icae-rcab-adoption`;
-- `REMOTE_REMAINING: develop, main`;
-- `LOCAL_REMAINING: develop, main`;
-- `EXCEPTIONS: none`.
+The bounded correction remains exactly the T030-R1 authority: honest finalization/provenance semantics, finalization-aware deterministic regression evidence, regenerated baseline/handoff, and full T030 re-verification while preserving AC-CTX-2 through AC-CTX-5 and all source-only/measure-only boundaries.
 
-The authorized Stage-B transition then launched T030.
+## Stale rework bootstrap recurrence
 
-## T030 — REWORK_REQUIRED
+After T030-R1 integration, a rework invocation returned `STATUS: DONE` with the exact rejected HEAD `1322e8fbf936604c17a4120beb0092df884ad0dc`.
 
-Task Contract: `docs/tasks/T030-repository-context-baseline-and-measure-linter.md`  
-Durable review: `docs/reviews/T030-R1.md`  
-Submitted executor HEAD: `1322e8fbf936604c17a4120beb0092df884ad0dc`  
-Implementation commit: `43e23a5294a6bf575411f1289dae6a666508d115`  
-Branch: `infra/t030-repository-context-baseline`
+Remote verification established:
 
-Remote review confirmed the branch starts from exact `develop@45c268...`, is two commits ahead / zero behind, and changes only the baseline JSON, T030 handoff JSON, focused test, and source-only `tools/repository_context.py`. No Markdown, dependency/lock/configuration, Consumer Core/Skill, packaged-runtime, profile, or release drift was found.
+- the T030 branch did not advance;
+- it is diverged from current canonical `develop`, two commits ahead and one commit behind, with merge-base at the pre-review launch baseline;
+- the persisted T030 handoff is unchanged and still contains the same AC-CTX-1 evidence rejected by T030-R1;
+- no finalization-aware correction/test/baseline/handoff exists remotely.
 
-Reported verification is otherwise strong: focused context tests 4 passed; T020 artifact isolation 3 passed; full deterministic suite 269 passed; Ruff/format/py_compile/baseline JSON/diff checks PASS; no network.
+This is not a new T030 acceptance finding. It is a recurrence of L004 `workflow.procedural_nonconformance`: durable rework authority existed in Git but was not consumed from current canonical base before the old candidate was returned again.
 
-T030 is **not accepted** because AC-CTX-1 is not satisfied at the submitted final state.
+`docs/TASK-CONTRACTS.md` already requires current canonical-base bootstrap before using an implementation branch and prohibits executable work from a revision that predates the controlling Task Contract/review. No chat-only correction or Task Contract semantic rewrite is authorized.
 
-### AC-CTX-1 blocker
+L004 remains `CONTROL_PLANNED`, not `VERIFIED`. The recurrence refines the future fail-closed control to cover both durable review presence and proof that rework consumed that authority from current canonical base.
 
-The committed baseline at submitted HEAD `1322e8fb...` records:
+## PR #131 / OP057
 
-`source_git_revision = 43e23a5294a6bf575411f1289dae6a666508d115`
+PR #131 is the Markdown-only containment gate for this recurrence.
 
-The generator derives that field from `git rev-parse HEAD` and includes it in canonical JSON. The baseline was generated while HEAD still pointed to implementation parent `43e23a...`; final commit `1322e8fb...` then persisted the baseline/handoff. Regeneration at the submitted final HEAD therefore changes canonical bytes solely because HEAD advanced.
+It contains:
 
-Existing repeated-run tests keep HEAD fixed and do not exercise this finalization/identity transition. They prove a narrower property than AC-CTX-1 requires.
+- the L004 recurrence record;
+- `docs/operations/OP057-retire-t030-review-branches-and-resume-t030.md`;
+- this O091 checkpoint.
 
-T030-R1 authorizes bounded correction under the unchanged Task Contract: honest finalization/provenance semantics, finalization-aware deterministic regression evidence, regenerated baseline/handoff, and full T030 re-verification while preserving AC-CTX-2 through AC-CTX-5 and all source-only/measure-only boundaries.
+OP057 uses the existing D045 chained-transition mechanism. After PR #131 merges, Stage A retires exactly `docs/t030-r1-review` and `docs/t030-r1-bootstrap-recurrence`, preserves `develop`, `main`, and the active T030 implementation branch, publishes its durable receipt to PR #131, and requires remote inventory exactly `develop`, `infra/t030-repository-context-baseline`, `main` with `EXCEPTIONS: none`.
 
-Do not integrate executor HEAD `1322e8fb...`.
+Only after Stage A passes may Stage B re-synchronize current `origin/develop`, prove that current canonical base contains OP057, the T030 Task Contract, and T030-R1, load the Task Contract + review directly from that canonical base, safely reconcile the existing T030 branch, and execute the bounded T030-R1 correction.
 
-## EGLL / ICAE learning
-
-L003 `task.done_requires_rework` has recurred on T030 before its systemic control reached `VERIFIED`. This is a priority/escalation signal, not `CONTROL_FAILURE`.
-
-The recurrence demonstrates that criterion-to-evidence mapping improves auditability and defect localization but cannot mechanically establish semantic sufficiency of the cited evidence. Orchestrator review remains required. Reproducibility claims involving Git identity must cover the relevant finalization/identity transition when that transition can change canonical output.
-
-L004's selected durable-review control is being followed: no executor rework launch is authorized until PR #130/T030-R1 is present in `develop`. No chat-only correction is authoritative.
-
-L003 and L004 remain `CONTROL_PLANNED`, not `VERIFIED`.
+No Human acknowledgement is required between eligible Stage A and Stage B. Chat text supplies only the OP057 pointer/bootstrap.
 
 ## T021
 
-`docs/tasks/T021-consumer-profile-abstraction-zero-drift.md` remains READY under deterministic ICAE assurance, but execution waits for the T030 context baseline gate to be accepted. T030 rework does not change T021 semantics.
+`docs/tasks/T021-consumer-profile-abstraction-zero-drift.md` remains READY under deterministic ICAE assurance, but execution waits for accepted T030 baseline evidence. The T030 bootstrap recurrence does not change T021 semantics.
+
+## EGLL / ICAE
+
+L003 `task.done_requires_rework` and L004 `workflow.procedural_nonconformance` remain `CONTROL_PLANNED`.
+
+T030-R1 already recorded the L003 recurrence. The stale rework bootstrap is recorded under L004. Neither learning is `CONTROL_FAILURE` because neither systemic control has reached `VERIFIED`.
+
+Immediate D045 containment does not itself satisfy final systemic verification. Future fail-closed/replay evidence must reject stale/non-consumed review authority and accept a compliant current-canonical transition without false positive.
 
 ## Next Action
 
-1. If `docs/reviews/T030-R1.md` is not yet present on current `develop`, review and integrate PR #130. Do not launch rework before that condition holds.
-2. Once T030-R1 is on `develop`, relaunch the existing T030 task branch using only the canonical minimal Task Contract pointer. The integrated Task Contract references T030-R1; do not carry rework semantics in chat.
-3. Require the corrected candidate to close AC-CTX-1 with finalization-aware reproducibility evidence and rerun all T030 verification.
-4. Review the new pushed T030 HEAD remotely. If all AC-CTX-1 through AC-CTX-5 pass, accept and integrate T030.
-5. After T030 acceptance, use the measured baseline to decide the smallest context-map/manifest and warning/ratchet policy before any source-document decomposition.
-6. Continue T021, then T022 -> MG1 -> T023/T024 and remaining D044 dependency order.
-7. Do not launch T026 without its explicit decision gate.
+1. Review PR #131 against its gate base. Require Markdown-only scope limited to L004 recurrence, OP057, and O091; no T030 executable/acceptance-semantic, Consumer/Core/Skill/runtime, dependency/configuration, T021, release, or T026 drift.
+2. If clean, integrate PR #131 into `develop`.
+3. Launch one executor invocation pointing only to `docs/operations/OP057-retire-t030-review-branches-and-resume-t030.md` using the canonical D045 Operational bootstrap.
+4. When the invocation ends, read the OP057 durable Stage-A receipt directly from PR #131 and independently verify Stage-A branch postconditions.
+5. Review the returned new T030 branch/head/handoff/diff/evidence under the current Task Contract plus T030-R1. Reject any unchanged/stale `1322e8fb...` result.
+6. Accept/integrate T030 only if AC-CTX-1 through AC-CTX-5 all pass, including finalization-aware reproducibility evidence.
+7. After T030 acceptance, use the measured baseline to decide the smallest context-map/manifest and warning/ratchet policy before source-document decomposition.
+8. Continue T021, then T022 -> MG1 -> T023/T024 and remaining D044 dependency order.
+9. Do not launch T026 without its explicit decision gate.
 
 ## Next Chat Minimum Load
 
@@ -81,12 +80,14 @@ After normal bootstrap load:
 
 - D044 and `docs/UNIFIED-GOVERNANCE-REFACTOR-PLAN.md`;
 - D046, `docs/AGENT-CAPABILITY-ENGINEERING.md`, and `docs/CONTEXT-ARCHITECTURE.md`;
-- T030 plus `docs/reviews/T030-R1.md` while its rework/acceptance remains open;
-- L003 while this recurrence is active;
-- T021 only when T030 acceptance permits refactor continuation.
+- T030 plus `docs/reviews/T030-R1.md` while rework/acceptance remains open;
+- L004 while the stale-bootstrap recurrence is active;
+- OP057 while PR #131 cleanup/continuation remains open;
+- L003 only when acceptance-evidence/systemic-control reasoning is material;
+- T021 only when T030 acceptance permits continuation.
 
-OP056 and T020 implementation details need not be reloaded absent an audit/receipt/regression dispute.
+Do not reload T020 implementation history or OP054/OP056 absent an audit/regression/transition dispute.
 
 ## Do Not
 
-Do not accept or integrate T030 HEAD `1322e8fbf936604c17a4120beb0092df884ad0dc`; treat same-HEAD repeated runs as sufficient finalization proof; launch rework before T030-R1 is integrated; supplement rework authority through chat; mark L003/L004 VERIFIED from this recurrence; impose source hard budgets or split source documents before the accepted baseline/evidence gate; launch T021 before T030 acceptance; launch T026 without its explicit gate; delegate committed Markdown; or write directly to `develop`/`main`.
+Do not accept or integrate T030 HEAD `1322e8fbf936604c17a4120beb0092df884ad0dc`; relaunch T030 directly from a stale topic-branch contract copy; supplement T030-R1 through chat; rewrite T030 acceptance semantics; treat OP057/D045 containment as L004 `VERIFIED`; impose source hard budgets or split source documents before accepted baseline evidence; launch T021 before T030 acceptance; launch T026 without its explicit decision gate; delegate committed Markdown; or write directly to `develop`/`main`.
