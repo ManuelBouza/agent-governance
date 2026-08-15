@@ -3,12 +3,12 @@
 ## Identity
 
 - Task ID: `T020`
-- Status: `READY`
+- Status: `ACCEPTED`
 - Type: `infrastructure`
 - Base branch: `develop`
 - Expected topic branch: `feat/t020-self-contained-governance-artifact`
 - Expected executor handoff: `handoffs/T020-executor-handoff.json`
-- Readiness note: T019 is ACCEPTED and integrated through PR #122 at `e2525c54f4de5703b1614bc303346cb044e24a60`; the shared deterministic engine is now the single runtime implementation. Execution remains subject to this READY lifecycle change being integrated into current `develop` and post-integration cleanup being completed.
+- Lifecycle note: T020 was remotely reviewed through T020-R1/T020-R2 and ACCEPTED at exact executor HEAD `0aad8ce78b52a4bd2a4851663d675048215a539c`. Integration is controlled by PR #127; any source-branch advancement before integration requires re-review. The post-T020 ICAE methodology gate remains mandatory before T021 becomes READY.
 
 ## Objective
 
