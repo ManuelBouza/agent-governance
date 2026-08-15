@@ -16,6 +16,8 @@ from contextlib import contextmanager
 from pathlib import Path
 from typing import IO
 
+from agent_governance.profile import Profile, ProfileError, resolve_profile
+
 CORE_FILES = (
     "ADAPTERS.md",
     "ASSURANCE.md",
@@ -1293,9 +1295,24 @@ def _parser() -> argparse.ArgumentParser:
     return parser
 
 
-def main(argv: list[str] | None = None, *, package_paths: tuple[Path, Path]) -> int:
+def main(
+    argv: list[str] | None = None,
+    *,
+    package_paths: tuple[Path, Path],
+    profile: Profile | None = None,
+) -> int:
     args = _parser().parse_args(argv)
     try:
+        if profile is None:
+            profile = resolve_profile()
+        if not isinstance(profile, Profile):
+            raise GovernanceError(
+                f"profile must be a Profile instance, got {type(profile).__name__}"
+            )
+        if profile.grants_source_maintenance:
+            raise GovernanceError(
+                "profile grants source-maintenance permissions; consumer-only runtime"
+            )
         target = _safe_target(args.target)
         if args.command == "bootstrap":
             _bootstrap(target, package_paths)
@@ -1313,7 +1330,7 @@ def main(argv: list[str] | None = None, *, package_paths: tuple[Path, Path]) -> 
             _ecosystem(target, args.facts, args.update)
         else:
             _archive(target, args.prepare)
-    except (GovernanceError, OSError) as error:
+    except (GovernanceError, ProfileError, OSError) as error:
         print(f"error: {error}", file=sys.stderr)
         return 1
     return 0
