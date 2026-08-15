@@ -3,12 +3,12 @@
 ## Identity
 
 - Task ID: `T018`
-- Status: `READY`
+- Status: `ACCEPTED`
 - Type: `test/eval`
 - Base branch: `develop`
 - Expected topic branch: `test/t018-consumer-v1-characterization`
 - Expected executor handoff: `handoffs/T018-executor-handoff.json`
-- Readiness note: Execution is allowed only after MG0 is integrated into `develop`; `READY` does not bypass the contract integration gate.
+- Lifecycle note: RF1 baseline accepted by ChatGPT after remote review and integrated through PR #120.
 
 ## Objective
 
@@ -70,3 +70,21 @@ Freeze the release-approved Consumer Governance v1 observable behavior and chara
 ## Expected handoff
 
 Before claiming `DONE`, `BLOCKED`, or `PARTIAL`, persist the executor handoff at `handoffs/T018-executor-handoff.json` according to `docs/EXECUTOR-HANDOFFS.md`, commit and push all authorized non-Markdown work, and return only the canonical completion fields required by `docs/TASK-CONTRACTS.md`.
+
+## Acceptance record
+
+- Accepted date: 2026-08-15.
+- Executor branch: `test/t018-consumer-v1-characterization`.
+- Submitted branch HEAD reviewed: `fe66bda778147648c30e3ed3c7c11c11f547ca00`.
+- Implementation commit: `12518e36bc82692a0706d32108306cb427c3a289`.
+- Execution base: `f8782e93c446bab1f16bc9022bb3ec868dff7fc5`.
+- Handoff: `handoffs/T018-executor-handoff.json`.
+- Added characterization: `tests/test_consumer_v1_characterization.py`.
+- Focused T018 result: `2 passed`.
+- Focused Consumer v1 baseline: `77 passed`.
+- Full deterministic regression: `261 passed`.
+- Ruff check/format and `git diff --check`: PASS.
+- Network required: no.
+- Integration PR: #120.
+- Integration commit: `85bdb75537eab98bf8b1bd1f603809a33ab23603`.
+- RF1 disposition: ACCEPTED and FROZEN for T019. Existing Consumer v1 CLI tests plus the added package-boundary characterization are the immutable pre-refactor baseline for that refactor unit unless ChatGPT explicitly authorizes a correction under `docs/REFACTORING-WORKFLOW.md`.
