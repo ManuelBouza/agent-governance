@@ -9,7 +9,7 @@ Chat-Closure: CONTINUE_ALLOWED
 
 D044 and `docs/UNIFIED-GOVERNANCE-REFACTOR-PLAN.md` remain the active unified Governance architecture/program authority. D046/ICAE and `docs/CONTEXT-ARCHITECTURE.md` govern prospective assurance/context work. T018-T020 remain accepted baselines.
 
-`develop` remains at `45c2681476fe2c7c853931fae6bc410f0b6666d4` while T030-R1 is being persisted.
+T030-R1 review gate PR: #130. Gate base: `develop@45c2681476fe2c7c853931fae6bc410f0b6666d4`. When this checkpoint is read from `develop`, the T030-R1 durable review is integrated and is the sole canonical rework authority for the current T030 correction.
 
 ## OP056 — CLOSED
 
@@ -57,7 +57,7 @@ L003 `task.done_requires_rework` has recurred on T030 before its systemic contro
 
 The recurrence demonstrates that criterion-to-evidence mapping improves auditability and defect localization but cannot mechanically establish semantic sufficiency of the cited evidence. Orchestrator review remains required. Reproducibility claims involving Git identity must cover the relevant finalization/identity transition when that transition can change canonical output.
 
-L004's selected durable-review control is being followed: no executor rework launch occurs until T030-R1 is persisted and integrated in Git. No chat-only correction is authoritative.
+L004's selected durable-review control is being followed: no executor rework launch is authorized until PR #130/T030-R1 is present in `develop`. No chat-only correction is authoritative.
 
 L003 and L004 remain `CONTROL_PLANNED`, not `VERIFIED`.
 
@@ -67,8 +67,8 @@ L003 and L004 remain `CONTROL_PLANNED`, not `VERIFIED`.
 
 ## Next Action
 
-1. Review and integrate the Markdown-only T030-R1 review branch into `develop`.
-2. Only after integration, relaunch the existing T030 task branch using the canonical minimal Task Contract pointer. The integrated Task Contract references T030-R1; do not carry rework semantics in chat.
+1. If `docs/reviews/T030-R1.md` is not yet present on current `develop`, review and integrate PR #130. Do not launch rework before that condition holds.
+2. Once T030-R1 is on `develop`, relaunch the existing T030 task branch using only the canonical minimal Task Contract pointer. The integrated Task Contract references T030-R1; do not carry rework semantics in chat.
 3. Require the corrected candidate to close AC-CTX-1 with finalization-aware reproducibility evidence and rerun all T030 verification.
 4. Review the new pushed T030 HEAD remotely. If all AC-CTX-1 through AC-CTX-5 pass, accept and integrate T030.
 5. After T030 acceptance, use the measured baseline to decide the smallest context-map/manifest and warning/ratchet policy before any source-document decomposition.
