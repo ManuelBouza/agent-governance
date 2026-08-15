@@ -1,53 +1,65 @@
 # Current ChatGPT Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT
-Checkpoint-Sequence: O081
+Checkpoint-Sequence: O082
 Canonical-Branch: `develop`
 Chat-Closure: CONTINUE_ALLOWED
 
 ## Current Frontier
 
-D040 Phase B is closed. Protocol `1.13.0` is active and L001 is `VERIFIED`.
+D040 Phase B remains closed. Protocol `1.13.0` is active and L001 remains `VERIFIED`.
 
-T014-T017 Consumer Governance v1 implementation/eval sequence is accepted, integrated and cleaned up. Focused release review `CONSUMER-GOVERNANCE-SKILL-V1-R2` is ACCEPTED / RELEASE-APPROVED. Consumer Governance Skill v1 is release-approved.
+T014-T017 Consumer Governance v1 implementation/eval sequence remains accepted, integrated and cleaned up. Focused review `CONSUMER-GOVERNANCE-SKILL-V1-R2` remains ACCEPTED / RELEASE-APPROVED. The current Consumer Governance Skill v1 is the behavioral and rollback baseline for the new architecture program.
 
-Optional ecosystem guidance is integrated. Gentle AI and Caveman are optional/recommended only, never dependencies or authority sources. Caveman is preferred as a discovered Skill when Gentle AI is already the selected orchestration layer.
+The Caveman/Gentle host configuration line remains closed under the accepted host-state decision. Remote branch cleanup has already returned the canonical remote to `develop`, `main`. Do not reopen that line absent concrete host-conflict evidence.
 
-OP039 established the approved Caveman `v2.0.0` user Skill, Gentle discovery PASS, no same-name shadowing, preserved `gentle-orchestrator`, and no repository mutation. OP041/OP043 established that two legacy Caveman host fragments remain: the Caveman plugin entry in `/home/manuel/.config/opencode/opencode.json` and the delimited Caveman block in `/home/manuel/.config/opencode/AGENTS.md`.
+The Human Owner selected unified Governance Skill architecture/refactor planning as the next product-maintenance priority after reviewing two Deep Research studies. Git state and repository policy were re-read before planning; external research is supporting evidence only.
 
-OP044 completed read-only policy provenance and classified the blocking edit policy as `USER_CONTROLLED`. The Human Owner authorized a narrow ephemeral cleanup attempt through OP046. OP046 returned BLOCKED because OpenCode denied both exact process-local edit exceptions. The returned state still showed Caveman Skill match PASS, Gentle discovery PASS, no shadowing, `gentle-orchestrator` preserved, persistent policy preserved, repository mutation NONE, and both legacy fragments still present.
+D044 establishes the target architecture:
 
-The Human Owner then explicitly accepted retaining those two legacy fragments rather than continuing permission work solely to remove them. `docs/CAVEMAN-HOST-STATE.md` records the resulting accepted host state. OP046 is therefore closed as BLOCKED / NOT REQUIRED FOR CURRENT ACCEPTANCE and must not be retried absent concrete evidence of a real host conflict.
+- `governance-core/` remains the single normative authority;
+- one shared deterministic engine becomes the single runtime implementation;
+- one canonical Governance Skill source uses mutually exclusive `consumer` and `source-maintainer` profiles;
+- distribution artifacts are generated and self-contained;
+- platform wrappers or thin multiple entrypoints may be generated when packaging or measured activation quality requires them, without creating a second maintained product;
+- source-maintainer initially uses adapters over existing source-maintenance state/policy;
+- full source persistence convergence is separately gated and is not required for Skill/engine/package unification.
 
-Operational Contract completion responses now include the required short `DESCRIPTION` field defined by `docs/OPERATIONAL-CONTRACTS.md`. OP048 is completed and independently verified; remote branches returned to exactly `develop`, `main`.
+`docs/UNIFIED-GOVERNANCE-REFACTOR-PLAN.md` defines the staged program. Executor Task Contracts T018-T029 are persisted. T018 is the first executable task and freezes the Consumer v1 characterization/package baseline before structural mutation.
 
-OP049 retires the Markdown branch that records the accepted Caveman host state after integration.
+T019-T029 remain prerequisite-gated. T026 is intentionally `BLOCKED` pending T025 semantic-equivalence evidence and a separate accepted decision on source persistence/Markdown ownership. Cancellation of T026 in favor of a source-specific persistence adapter is an explicitly valid outcome.
+
+The refactor program contains ChatGPT-owned Markdown gates MG0-MG3. Executors MUST NOT edit committed Markdown to bypass those gates.
 
 L002 remains separate and non-blocking.
 
-## OpenCode delegation rule
+## Delegation rule
 
-All delegated OpenCode actions are initiated by the Orchestrator through a persisted Task/Operational Contract and an exact bootstrap prompt. The Human acts only as transport for the prompt/response unless a genuine Human decision or approval is required.
+All delegated executor work is initiated through an integrated Task Contract and the canonical minimal launch prompt in `docs/TASK-CONTRACTS.md`.
 
-Operational Contract completion responses MUST follow `docs/OPERATIONAL-CONTRACTS.md`, including a concise human-readable `DESCRIPTION` field.
-
-The existing narrow external-worktree permission is treated as stable workstation configuration; do not repeat its preflight unless evidence shows it changed or blocks execution.
+The planning/refactor sequence MUST preserve the split between ChatGPT Markdown ownership and executor non-Markdown ownership. A task is not executable from a planning branch; its controlling contract must be present in current `develop` and its prerequisites satisfied.
 
 ## Next Action
 
-1. Integrate `docs/CAVEMAN-HOST-STATE.md`, OP049, and this checkpoint into `develop`.
-2. Execute OP049 and independently verify remote branches return to exactly `develop`, `main`.
-3. Treat the Caveman/Gentle host configuration line as closed. Do not retry OP046 or alter permissions solely to remove the retained legacy fragments.
-4. Reopen this line only if concrete evidence shows duplicate Caveman activation, unintended runtime/provider routing, Gentle interference, `gentle-orchestrator` modification, or another material host conflict caused by a retained fragment.
-5. Continue from the next product-maintenance priority selected by the Human Owner or the durable repository frontier.
+1. Treat this checkpoint, D044, the unified refactor plan, and T018-T029 as the integrated MG0 planning frontier.
+2. Launch T018 only from a safe current `origin/develop` baseline containing its exact Task Contract.
+3. Review T018 evidence and freeze the RF1 characterization baseline before changing T019 to execution-active.
+4. Execute subsequent tasks only in dependency order defined by `docs/UNIFIED-GOVERNANCE-REFACTOR-PLAN.md`; independent work may overlap only where the plan explicitly allows it.
+5. Perform MG1, MG2, and MG3 as ChatGPT-owned Markdown changes at their defined gates; do not delegate those Markdown edits.
+6. Do not launch T026 unless T025 is ACCEPTED and a later accepted decision explicitly authorizes live source persistence convergence and resolves Markdown ownership/write semantics.
+7. After T029 ACCEPTED, perform a separate Orchestrator release review before any Human-authorized promotion/tag/release action.
 
 ## Next Chat Minimum Load
 
-After normal bootstrap:
-- while the host-state Markdown integration/cleanup is pending, load `docs/CAVEMAN-HOST-STATE.md` and `docs/operations/OP049-retire-caveman-host-state-branch.md`;
-- after OP049 is complete, no Caveman/Gentle host history needs to be loaded unless a concrete host conflict or ecosystem integration question requires it;
-- load release/status records only for a concrete release/promotion question.
+After normal bootstrap, load:
+
+- `docs/decisions/D044-unified-governance-skill-architecture.md`;
+- `docs/UNIFIED-GOVERNANCE-REFACTOR-PLAN.md`;
+- the currently active Task Contract only;
+- additional controlling files only when that Task Contract or a concrete conflict requires them.
+
+Do not reload Caveman/Gentle host history unless a concrete host conflict or ecosystem integration question requires it.
 
 ## Do Not
 
-Do not retry OP046 absent new material host-conflict evidence, broaden or persist host edit permissions merely to remove accepted legacy fragments, omit the Operational Contract `DESCRIPTION` field in newly authored completion shapes, make Gentle AI or Caveman mandatory, modify `gentle-orchestrator` for Caveman, install Caveman Proxy/Engine/Core as a requirement, change provider endpoints, expose secrets, make model/provider output a correctness authority, track `.codegraph/`, or write directly to `develop`/`main`.
+Do not treat the architecture program as one monolithic refactor, bypass RF1 characterization before behavior-preserving structural changes, turn generated distribution snapshots into editable authority, maintain a second independent Governance runtime/Skill product, silently migrate governed repositories on Skill/plugin update, require live source `.agent-coordination/` before the T025/T026 decision gate, delegate committed Markdown edits, retry closed Caveman/Gentle permission work absent new evidence, change provider endpoints, expose secrets, make model/provider output a correctness authority, track `.codegraph/`, or write directly to `develop`/`main`.
