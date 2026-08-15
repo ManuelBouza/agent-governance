@@ -1,0 +1,140 @@
+{
+  "task_id": "T031",
+  "status": "PARTIAL",
+  "task_contract_path": "docs/tasks/T031-rcab-context-manifest-and-ratchet.md",
+  "branch": "infra/t031-context-manifest-ratchet",
+  "implementation_head_sha": "e243bf682151c270770c35335a587724e6317b24",
+  "base_branch": "develop",
+  "base_sha": "eb46e991c459b0ce1d372a05cd88887e9514651e",
+  "files_changed": [
+    "tools/repository_context.py",
+    "tests/test_repository_context.py",
+    "baselines/repository-context-manifest-v1.json"
+  ],
+  "implementation_summary": "Extended tools/repository_context.py with RCAB-MAP-V1 registry parsing from docs/CONTEXT-MAP.md between BEGIN/END markers, deterministic manifest generation at baselines/repository-context-manifest-v1.json, blocking integrity checks (malformed/duplicate/missing/untracked/stale/tampered), and the D047 non-blocking bootstrap/router warning ratchet. The manifest projects registered entries with path, class, routes, byte_size, line_count, sha256; derives registered_content_digest from ordered path+content identities; computes bootstrap/router current totals against the accepted T030-R2 reference (2 files, 21471 bytes, 298 lines, 5% warning threshold); and surfaces warning only when cohort exceeds 2 files or aggregate UTF-8 bytes exceed 105% of reference. Warning-only run exits success unless an integrity failure is present. The manifest avoids self-reference (its own path excluded from content identity) and does not embed any Git commit SHA. T030 behavior fully preserved (all existing functions, signatures, and tests unchanged). T020 artifact isolation preserved (no schemas/ governance-core/ governance-skill/ src/agent_governance/ changes). No new dependencies, no network access, no Markdown edits. 19 focused deterministic tests added covering AC-RCAB-1..6. Full suite: 289 passed (up from 270).",
+  "architecture": {
+    "source_boundary": "tools/repository_context.py remains source-only under tools/, outside src/agent_governance, governance-core, governance-skill, and the T020 Consumer artifact boundary.",
+    "registry_parsing": "parse_registry() extractts exactly one RCAB-MAP-V1:BEGIN/END marker pair from docs/CONTEXT-MAP.md, parses the JSON code fence between them, and raises MeasurementError on malformed JSON, missing/duplicate markers, or missing END before BEGIN.",
+    "integrity_checks": "validate_registry() checks schema version, entry structure, unique paths, valid classes (bootstrap/router/focused/task/evidence/generated-index/generated-data/exempt-on-demand), valid routes, bootstrap_ratchet fields, and that every registered path exists as a tracked Git path. No semantic inference from Markdown prose, reference counts, filenames, or heuristics.",
+    "manifest_generation": "build_manifest() produces a canonical JSON projection sorted by path with: projection_schema_version, registry_digest (SHA-256 of canonical registry JSON), registered_paths (path/class/routes/byte_size/line_count/sha256), registered_content_digest (SHA-256 of ordered path+sha256 identity), and bootstrap_router (current/accepted_reference/delta/warning/ratchet_candidate). written via write_manifest() using atomic tempfile replacement and canonical_json() for byte determinism.",
+    "self_reference_avoidance": "The manifest path is excluded from its own registered_content_digest via write_manifest() excluded_paths. The manifest does not embed any Git commit SHA, volatile_execution_metadata, or timestamp. Freshness is determined by registered_content_digest, not by commit SHA.",
+    "ratchet_semantics": "_compute_ratchet() computes bootstrap+router file_count/byte_size/line_count from registered entries with class in {bootstrap, router}. Warning activates when file_count > reference.file_count or byte_size > reference.byte_size * (1 + warning_relative_growth). Warning is non-blocking. Ratchet_candidate reported (but not applied) when current footprint is below accepted reference. Delta ratios computed deterministically.",
+    "check_mode": "check_manifest() regenerates the manifest from current registry+content and compares byte-for-byte against the committed manifest. Returns (0, 'manifest OK') on match, (0, 'manifest OK (warning: ...)') on match with active warning, or (1, 'manifest is stale or tampered ...') on mismatch. Integrity failures (raised MeasurementError) cause exit 1 via CLI error handler.",
+    "cli_extension": "main() extended with --manifest (generate projection), --check-manifest PATH (check committed manifest), and --map PATH (override context map location). Default behavior (no new flags) is unchanged T030 report generation.",
+    "no_enforcement": "Generation and check do not rewrite Markdown, split files, change policy, introduce dependencies, access network, or fail solely because a focused/evidence file is physically large."
+  },
+  "acceptance_evidence": [
+    {
+      "criterion": "AC-RCAB-1",
+      "evidence_type": "deterministic/reproducibility",
+      "tests": [
+        "tests/test_repository_context.py::test_ac_rcab_1_deterministic_projection_byte_identical",
+        "tests/test_repository_context.py::test_ac_rcab_1_no_self_reference"
+      ],
+      "result": "PASS: repeated generation produces byte-identical canonical manifest output with canonical ordering and stable content identity. Manifest path excluded from registered_content_digest even when registered. No Git commit SHA or volatile_execution_metadata embedded."
+    },
+    {
+      "criterion": "AC-RCAB-2",
+      "evidence_type": "deterministic/negative-control",
+      "tests": [
+        "tests/test_repository_context.py::test_ac_rcab_2_positive_registry",
+        "tests/test_repository_context.py::test_ac_rcab_2_negative_registry_malformed",
+        "tests/test_repository_context.py::test_ac_rcab_2_negative_duplicate_paths",
+        "tests/test_repository_context.py::test_ac_rcab_2_negative_invalid_class",
+        "tests/test_repository_context.py::test_ac_rcab_2_negative_missing_target",
+        "tests/test_repository_context.py::test_ac_rcab_2_negative_multiple_markers"
+      ],
+      "result": "PASS: valid registry parses and validates without semantic inference. Malformed JSON, duplicate paths, invalid classes, missing/untracked targets, and multiple markers all fail deterministically with MeasurementError."
+    },
+    {
+      "criterion": "AC-RCAB-3",
+      "evidence_type": "deterministic/boundary",
+      "tests": [
+        "tests/test_repository_context.py::test_ac_rcab_3_warning_ratchet_below_threshold",
+        "tests/test_repository_context.py::test_ac_rcab_3_warning_ratchet_above_byte_threshold",
+        "tests/test_repository_context.py::test_ac_rcab_3_warning_ratchet_file_count_growth",
+        "tests/test_repository_context.py::test_ac_rcab_3_warning_ratchet_ratchet_candidate",
+        "tests/test_repository_context.py::test_ac_rcab_3_warning_only_exit_success"
+      ],
+      "result": "PASS: at/below-threshold does not false-positive. >5% byte growth produces warning. >2-file cohort produces warning. Ratchet candidate reported when below reference. Warning-only CLI check exits 0."
+    },
+    {
+      "criterion": "AC-RCAB-4",
+      "evidence_type": "deterministic/stale-detection",
+      "tests": [
+        "tests/test_repository_context.py::test_ac_rcab_4_stale_manifest_rejected",
+        "tests/test_repository_context.py::test_ac_rcab_4_stale_manifest_after_content_change"
+      ],
+      "result": "PASS: tampered manifest (modified digest) rejected with exit 1. Stale manifest (registered content changed) rejected with exit 1. Freshly regenerated manifest accepted with exit 0."
+    },
+    {
+      "criterion": "AC-RCAB-5",
+      "evidence_type": "package/isolation",
+      "tests": [
+        "tests/test_repository_context.py::test_ac_rcab_5_manifest_stays_outside_consumer_package",
+        "tests/test_repository_context.py::test_cli_output_is_stable_and_tool_stays_outside_consumer_package",
+        "tests/test_governance_artifact.py::test_repeated_builds_have_identical_verified_identity",
+        "tests/test_governance_artifact.py::test_artifact_runs_without_source_or_sibling_dependencies",
+        "tests/test_source_consumer_separation.py::test_source_repository_does_not_depend_on_live_consumer_state"
+      ],
+      "result": "PASS: manifest at baselines/ outside Consumer dirs (governance-core/governance-skill/src/agent_governance). Tool under tools/ outside src/agent_governance. T020 artifact isolation tests remain green (9 passed)."
+    },
+    {
+      "criterion": "AC-RCAB-6",
+      "evidence_type": "negative-control",
+      "tests": [
+        "tests/test_repository_context.py::test_ac_rcab_6_no_mutation_drift",
+        "tests/test_repository_context.py::test_manifest_does_not_embed_git_sha",
+        "tests/test_repository_context.py::test_manifest_cli_check_on_real_repository"
+      ],
+      "result": "PASS: generation/check does not rewrite Markdown. No new imports beyond stdlib (argparse/hashlib/json/os/posixpath/re/subprocess/tempfile/pathlib). No Git commit SHA embedded in manifest. Real-repository manifest passes check_manifest."
+    }
+  ],
+  "verification": {
+    "commands": [
+      "uv run --locked -- pytest -q tests/test_repository_context.py",
+      "uv run --locked -- pytest -q tests/test_governance_artifact.py tests/test_source_consumer_separation.py",
+      "uv run --locked -- pytest -q",
+      "uv run --locked -- ruff check tools/repository_context.py tests/test_repository_context.py",
+      "uv run --locked -- ruff format --check tools/repository_context.py tests/test_repository_context.py",
+      "python3 -m py_compile tools/repository_context.py tests/test_repository_context.py",
+      "python3 tools/repository_context.py --manifest --output baselines/repository-context-manifest-v1.json",
+      "python3 tools/repository_context.py --check-manifest baselines/repository-context-manifest-v1.json",
+      "python3 -m json.tool baselines/repository-context-manifest-v1.json >/dev/null",
+      "git diff --check",
+      "git diff --name-only eb46e991c459b0ce1d372a05cd88887e9514651e -- '*.md' pyproject.toml uv.lock governance-core governance-skill src/agent_governance maintainer-skill schemas opencode.json LICENSE .gitignore .python-version CONTRIBUTING.md README.md SECURITY.md"
+    ],
+    "results": {
+      "focused_repository_context": "24 passed in 1.04s",
+      "t020_artifact_isolation_and_separation": "9 passed in 1.08s",
+      "full_deterministic_suite": "289 passed in 10.13s",
+      "ruff_check": "All checks passed!",
+      "ruff_format_check": "2 files already formatted",
+      "py_compile": "PASS",
+      "manifest_generation": "PASS",
+      "manifest_check": "manifest OK (exit 0)",
+      "manifest_json_parse": "PASS",
+      "diff_check": "PASS",
+      "forbidden_scope_diff": "PASS: empty output (no Markdown, dependency/lock, Core/Skill, Consumer runtime/profile, release, package, opencode.json, LICENSE, or root-doc drift)"
+    },
+    "runtime": "Direct CLI execution writes the machine-readable manifest atomically via tempfile replacement, unchanged reruns produce byte-identical output, check_manifest regenerates and compares byte-for-byte against the committed projection, warning state is non-blocking (exit 0 with warning message), and integrity failures exit 1. The committed manifest on the real repository passes check_manifest.",
+    "network_required": false
+  },
+  "dependencies_or_config_changes": [],
+  "git_status": "Implementation committed at e243bf682151c270770c35335a587724e6317b24 containing tools/repository_context.py, tests/test_repository_context.py, and baselines/repository-context-manifest-v1.json. Handoff JSON being committed as separate finalization commit. Branch not yet pushed; parent finalizes and pushes.",
+  "unresolved_issues": [],
+  "risks": [
+    "Bootstrap/router current byte_size (21543) is above the accepted T030-R2 reference (21471) but below the 5% warning threshold (22545). No warning is emitted. This is expected — the delta reflects D047/CONTEXT-MAP.md/CONTEXT-ARCHITECTURE.md growth since T030-R2 acceptance.",
+    "The manifest does not regenerate the T030 baseline (baselines/repository-context-source-v1.json). T030 tests use fixture repos and remain green; the committed T030 baseline is a snapshot and does not include the new manifest file in its measurement. If a future task needs the T030 baseline to reflect the current tracked tree including the manifest, it can be regenerated."
+  ],
+  "recommended_next_task": "ChatGPT Orchestrator independently verifies T031: re-run the AC-RCAB-1..6 verification matrix, inspect the manifest projection, confirm forbidden-scope diff is empty, verify no Markdown/dependency/Core/Skill/Consumer drift, then push the topic branch and accept T031 per the source-change procedure. After T031 acceptance, T021 may launch per D047 sequencing.",
+  "chatgpt_read_path": "handoffs/T031-executor-handoff.json",
+  "skill_resolution": {
+    "loaded": [
+      "/home/manuel/.config/opencode/skills/go-testing/SKILL.md",
+      "/home/manuel/.config/opencode/skills/work-unit-commits/SKILL.md"
+    ],
+    "application": "Used table-driven test design pattern for registry/parser edge cases (AC-RCAB-2), disposable Git fixtures via t.TempDir() equivalent (pytest tmp_path) for isolation (AC-RCAB-1/3/4), focused behavioral/edge-case tests mapped to acceptance criteria, one coherent implementation+manifest+tests+handoff work unit, and an explicit rollback boundary. go-testing skill loaded per task contract although this is Python tooling; no Go code is touched. work-unit-commits skill guided commit splitting: implementation commit (code+manifest+tests) then handoff finalization commit.",
+    "rollback_boundary": "Revert tools/repository_context.py to eb46e991c459b0ce1d372a05cd88887e9514651e (removing parse_registry, validate_registry, build_manifest, write_manifest, check_manifest, _compute_ratchet, _measure_registered_path, _resolve_map_path, and the --manifest/--check-manifest/--map CLI extensions), remove tests/test_repository_context.py T031 test section (all test_ac_rcab_* and test_manifest_* functions plus helpers), delete baselines/repository-context-manifest-v1.json, and remove handoffs/T031-executor-handoff.json. T030 and T020 behavior is unaffected by rollback since no existing function was modified."
+  }
+}
