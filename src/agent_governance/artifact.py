@@ -14,6 +14,17 @@ from pathlib import Path
 BUILD_SCHEMA_VERSION = "1.0.0"
 IDENTITY_FILENAME = "artifact-identity.json"
 SCHEMA_SOURCE = Path("schemas/governance-artifact-identity.schema.json")
+SKILL_SOURCE_FILES = (
+    Path("SKILL.md"),
+    Path("assets/CAPABILITIES.template.json"),
+    Path("assets/EXCHANGE.template.jsonl"),
+    Path("assets/MISSION.template.md"),
+    Path("assets/SKILL-APPROVAL.template.json"),
+    Path("assets/STATE.template.json"),
+    Path("assets/TASK.template.md"),
+    Path("assets/WORKPLAN.template.md"),
+    Path("scripts/governance.py"),
+)
 SEMVER = re.compile(r"(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)")
 COMMIT = re.compile(r"[0-9a-f]{40,64}")
 
@@ -123,7 +134,8 @@ def build_artifact(
 
     temporary = Path(tempfile.mkdtemp(prefix=f".{output.name}-", dir=output.parent))
     try:
-        _copy_tree_files(skill_source, temporary)
+        for relative in SKILL_SOURCE_FILES:
+            _copy_file(skill_source / relative, temporary / relative)
         _copy_tree_files(core_source, temporary / "core", "*.md")
         _copy_tree_files(runtime_source, temporary / "runtime" / "agent_governance", "*.py")
         _copy_file(schema_source, temporary / SCHEMA_SOURCE.name)

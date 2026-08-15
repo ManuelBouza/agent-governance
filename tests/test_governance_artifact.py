@@ -10,7 +10,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-from test_consumer_governance_cli_v1 import configure_mission
+from test_consumer_governance_cli_v1 import approval_record, configure_mission, ecosystem_facts
 
 
 def load_builder(repo_root: Path):
@@ -108,6 +108,28 @@ def test_repeated_builds_have_identical_verified_identity(tmp_path: Path, repo_r
     assert identity["payload_digest"] == hashlib.sha256(canonical_json(files)).hexdigest()
     unsigned = {key: value for key, value in identity.items() if key != "identity_digest"}
     assert identity["identity_digest"] == hashlib.sha256(canonical_json(unsigned)).hexdigest()
+    expected_skill_files = {
+        "SKILL.md",
+        "assets/CAPABILITIES.template.json",
+        "assets/EXCHANGE.template.jsonl",
+        "assets/MISSION.template.md",
+        "assets/SKILL-APPROVAL.template.json",
+        "assets/STATE.template.json",
+        "assets/TASK.template.md",
+        "assets/WORKPLAN.template.md",
+        "scripts/governance.py",
+    }
+    generated_skill_files = {
+        path.relative_to(artifacts[0]).as_posix()
+        for path in artifacts[0].rglob("*")
+        if path.is_file()
+        and path.parts[-1] != "artifact-identity.json"
+        and "core" not in path.relative_to(artifacts[0]).parts
+        and "runtime" not in path.relative_to(artifacts[0]).parts
+        and path.name != "governance-artifact-identity.schema.json"
+    }
+    assert generated_skill_files == expected_skill_files
+    assert not (artifacts[0] / "STATUS.md").exists()
     for entry in files:
         path = artifacts[0] / entry["path"]
         assert path.stat().st_size == entry["size"]
@@ -202,6 +224,80 @@ def test_artifact_runs_without_source_or_sibling_dependencies(
     state = run_cli(cli, "state", consumer, "--refresh", cwd=isolated)
     assert state.returncode == 0, state.stderr
     assert json.loads(state.stdout)["protocol_version"] == "1.13.0"
+
+    for event, arguments in (
+        ("start", ("--next-action", "Execute T1")),
+        ("progress", ("--reference", "commit:abc")),
+        ("done", ("--reference", "commit:def", "--verification", "passed")),
+    ):
+        result = run_cli(
+            cli,
+            "event",
+            consumer,
+            "--actor",
+            "implementation",
+            "--event",
+            event,
+            "--task",
+            "T1",
+            *arguments,
+            cwd=isolated,
+        )
+        assert result.returncode == 0, result.stderr
+
+    approval, candidate, _facts = approval_record(consumer)
+    skill = run_cli(
+        cli,
+        "skill",
+        consumer,
+        "--approval",
+        approval.relative_to(consumer),
+        "--candidate",
+        candidate.relative_to(consumer),
+        cwd=isolated,
+    )
+    assert skill.returncode == 0, skill.stderr
+    assert json.loads(skill.stdout) == {"skill_id": "S1", "status": "VALID"}
+
+    facts = ecosystem_facts(consumer)
+    ecosystem = run_cli(
+        cli,
+        "ecosystem",
+        consumer,
+        "--facts",
+        facts.relative_to(consumer),
+        "--update",
+        cwd=isolated,
+    )
+    assert ecosystem.returncode == 0, ecosystem.stderr
+    capabilities = json.loads(
+        (consumer / ".agent-coordination" / "CAPABILITIES.json").read_text(encoding="utf-8")
+    )
+    assert [item["classification"] for item in capabilities["capabilities"]] == [
+        "REUSE",
+        "CONFLICT",
+        "MISSING",
+    ]
+
+    events = [
+        json.loads(line)
+        for line in (consumer / ".agent-coordination" / "EXCHANGE.jsonl")
+        .read_text(encoding="utf-8")
+        .splitlines()
+    ]
+    configure_mission(
+        consumer,
+        mission_status="COMPLETED",
+        tasks=(("T1", "none", "DONE"),),
+        current="none",
+        exchange=events,
+    )
+    refreshed = run_cli(cli, "state", consumer, "--refresh", cwd=isolated)
+    assert refreshed.returncode == 0, refreshed.stderr
+    archive = run_cli(cli, "archive", consumer, "--prepare", cwd=isolated)
+    assert archive.returncode == 0, archive.stderr
+    assert (consumer / ".agent-coordination" / "archive" / "M1" / "EXCHANGE.jsonl").is_file()
+
     help_result = run_cli(cli, "--help", cwd=isolated)
     assert help_result.returncode == 0
     assert "{bootstrap,validate,state,event,skill,ecosystem,archive}" in help_result.stdout
