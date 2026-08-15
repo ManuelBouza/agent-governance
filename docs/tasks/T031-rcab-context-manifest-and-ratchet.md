@@ -3,11 +3,13 @@
 ## Identity
 
 - Task ID: `T031`
-- Status: `READY`
+- Status: `ACCEPTED`
 - Type: infrastructure/test
 - Base branch: `develop`
 - Expected topic branch: `infra/t031-context-manifest-ratchet`
 - Expected executor handoff: `handoffs/T031-executor-handoff.json`
+- Current durable review: `docs/reviews/T031-R1.md`
+- Review disposition: `ACCEPTED`
 - Assurance-Class: `deterministic`
 - Baseline: `T030-R2 accepted repository-context baseline`
 - Verification-Planes: `static, deterministic, package/isolation`
