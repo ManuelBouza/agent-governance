@@ -1,182 +1,139 @@
 # Current ChatGPT Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O096  
+Checkpoint-Sequence: O097  
 Canonical-Branch: `develop`  
 Chat-Closure: CONTINUE_ALLOWED
 
 ## Current Frontier
 
-D044 and `docs/UNIFIED-GOVERNANCE-REFACTOR-PLAN.md` remain the unified Governance architecture/program authority. D046/ICAE governs prospective assurance. D047 remains the RCAB v1 warning/map policy; D049 refines committed-manifest snapshot/live-state semantics.
+D044 + `docs/UNIFIED-GOVERNANCE-REFACTOR-PLAN.md` remain the program authority. D049 controls RCAB snapshot/live semantics; D048 controls normal-task publication timing.
 
-T018-T020, T030 and T031 remain accepted/integrated baselines.
+Accepted/integrated baselines: T018-T020, T030, T031.
 
-T021 is **IN_PROGRESS / REWORK_REQUIRED** by `docs/reviews/T021-R1.md`. Submitted executor HEAD is `969e2130ca9abb27c6ae5ad830923582f45b8a2f`; implementation anchor is `30bea773560e013811b90366e77735e6f7530e48`.
+Two tasks are open and must remain sequenced:
 
-T021 rework MUST NOT resume until T032 is accepted/integrated and the canonical full deterministic baseline is green.
+```text
+T032 R1 rework + acceptance/integration
+    -> green canonical deterministic baseline
+    -> T021 R1 rework + acceptance/integration
+    -> T022
+```
 
-## OP060 — CLOSED
+T026 remains BLOCKED behind its separate explicit decision gate.
 
-Durable receipt on PR #136 reports:
+## OP061 — CLOSED
+
+Durable receipt on PR #138, comment `5304234376`:
 
 - `STATUS: DONE`;
-- `BASE_SHA: 53b9c39c1111f4b871ef73b7447510195f672ea2`;
-- retired `docs/t031-r1-acceptance-push-policy`, `docs/t031-policy-wording-fix`, and `infra/t031-context-manifest-ratchet`;
-- remote/local remaining `develop, main` before Stage B;
+- `BASE_SHA: f72d936987f4b55b62e6087fab1d93262ccee005`;
+- retired `docs/t021-r1-rcab-freshness-gate`;
+- preserved T021 at `969e2130ca9abb27c6ae5ad830923582f45b8a2f`;
+- remote/local remaining `develop, main, refactor/t021-consumer-profile-abstraction` before Stage B;
 - `EXCEPTIONS: none`.
 
-Stage B then executed T021 from that canonical base.
+Independent GitHub inspection confirms Stage B added only T032's authorized branch and T021 remains unchanged.
 
-## T021-R1 review
+## T032 submitted candidate — REWORK_REQUIRED
 
-Comparison from `develop@53b9c39...` to submitted T021 HEAD is two commits ahead, zero behind, with exact merge-base.
+Submitted HEAD: `b43b306e56c6b90969c3dd10e23ccf8e00cc8ba5`  
+Implementation anchor: `26c9b6481ffc458cf773320390a0ae19b0271c52`  
+Review: `docs/reviews/T032-R1.md`
 
-Net diff is exactly five authorized non-Markdown files:
+Scope is clean: two commits ahead / zero behind from `develop@f72d936...`; diff is exactly:
 
-- `governance-skill/scripts/governance.py`;
-- `src/agent_governance/engine.py`;
-- `src/agent_governance/profile.py`;
-- `tests/test_profile_abstraction.py`;
-- `handoffs/T021-executor-handoff.json`.
+- `tools/repository_context.py`;
+- `tests/test_repository_context.py`;
+- `baselines/repository-context-manifest-v1.json`;
+- `handoffs/T032-executor-handoff.json`.
 
-No Markdown, Core semantics, dependency/lock/configuration, source-maintainer implementation, Skill activation/description, release or RCAB tooling drift is present.
+No Markdown/T021/Core/Skill/Consumer/dependency/network/release drift.
 
-### AC-T021-1 — PASS
+### Passing boundaries
 
-T018 characterization and Consumer regressions remain green; T019 shared-engine structure remains green.
+- snapshot/live separation is correctly implemented conceptually;
+- live status derives current registry + current tracked registered files rather than the snapshot;
+- default regression no longer fails solely because a historical snapshot is older than current Markdown;
+- explicit currentness comparison remains available;
+- full deterministic suite is green: `302 passed`;
+- D047 reference remains `2 files / 21,471 bytes / 298 lines / 5% / non-blocking`;
+- source-only/package isolation remains intact.
 
-### AC-T021-2 — FAIL
+The implementation-epoch snapshot records `2 files / 23,346 bytes / 387 lines`, so its D047 warning is active. That warning is review evidence, not a blocker. This O097 checkpoint is intentionally kept router-focused; live RCAB status after integration may therefore differ from the historical snapshot, which is valid under D049.
 
-The submitted `Profile` dataclass is directly constructible with unsupported names such as `Profile("source-maintainer")` or `Profile("garbage")`.
+### T032-R1 blocker
 
-`engine.main()` validates only:
+`validate_snapshot_integrity()` does not bind the complete canonical snapshot payload. It currently recomputes `registered_content_digest` only from `path + sha256` and checks other areas mostly for presence/shape.
 
-- `isinstance(profile, Profile)`; and
-- `profile.grants_source_maintenance` is false.
+Representative alterations that can pass the current offline integrity path include registered `class/routes`, focused `byte_size/line_count`, a syntactically valid replacement `registry_digest`, and altered `bootstrap_router.current/delta/warning/ratchet_candidate`.
 
-Because the submitted `Profile.grants_source_maintenance` returns false for every instance, a directly constructed unsupported profile bypasses `resolve_profile()` and proceeds through the Consumer command path. Existing negative controls test invalid string resolution but do not test this engine-boundary bypass.
+The submitted tamper negative control changes only `registered_content_digest`, so AC-T032-3 is semantically under-proven.
 
-T021-R1 requires fail-closed validation of direct unsupported `Profile` instances while preserving Consumer zero drift.
+R1 requires:
 
-### AC-T021-3 — PASS
+- deterministic integrity binding for the complete epoch-evidence payload without self-reference;
+- exact recomputation/validation of derived bootstrap/ratchet state;
+- verifiable registry identity from snapshot-carried canonical semantics;
+- canonical entry/type/order checks;
+- canonical serialization or equivalent canonical identity;
+- independent tamper negative controls for registered metadata/metrics, registry identity and bootstrap/ratchet state;
+- historical snapshot + explicit stale + live-current behavior preserved;
+- green full deterministic and package/isolation regressions.
 
-T020 artifact isolation remains green and `profile.py` is packaged inside the self-contained runtime without source-maintainer activation.
+Do not change D049/D047 semantics to solve this.
 
-## Canonical deterministic baseline — RED before T021
+## T021 remains frozen
 
-T021's handoff reports the full suite as `307 passed, 1 pre-existing failure`:
+T021 submitted HEAD `969e2130ca9abb27c6ae5ad830923582f45b8a2f` remains `IN_PROGRESS / REWORK_REQUIRED` under `docs/reviews/T021-R1.md`.
 
-`tests/test_repository_context.py::test_manifest_cli_check_on_real_repository`
+Its blocker is independent: directly constructed unsupported `Profile` instances can bypass `resolve_profile()` at the engine boundary. Do not rework or merge T021 until corrected T032 is accepted/integrated and the canonical deterministic baseline is green.
 
-The executor reproduced the same failure on clean canonical `develop@53b9c39...` with T021 changes removed.
+## EGLL
 
-Independent review confirms the committed T031 RCAB manifest still represents its earlier registered-content snapshot while subsequent accepted Markdown gates changed registered paths including `docs/EXECUTOR-HANDOFFS.md` and `docs/orchestrator/CHECKPOINT.md`.
+- L003 `task.done_requires_rework`: `CONTROL_PLANNED`; T032-R1 is another pre-verification recurrence showing that criterion/evidence mapping does not guarantee semantic negative-control sufficiency.
+- L004 `workflow.procedural_nonconformance`: `CONTROL_PLANNED`.
+- L005 `workflow.premature_remote_publication`: `CONTROL_INTEGRATED`, not VERIFIED; T021's attempted early push was contained by Human permission rejection.
+- L006 `verification.generated_snapshot_live_coupling`: `CONTROL_PLANNED`; D049 remains sound, but T032 cannot integrate until snapshot integrity is complete.
 
-This is not T021 scope.
+No recurrence above is `CONTROL_FAILURE` because the relevant systemic control has not reached VERIFIED.
 
-## D049 / L006 / T032
+## PR #139 / OP062
 
-L006 fingerprint `verification.generated_snapshot_live_coupling` records the systemic RCAB issue.
+PR #139 is the Markdown-only T032-R1 review gate. Allowed aggregate scope:
 
-D049 separates:
-
-```text
-committed manifest = deterministic epoch snapshot evidence
-live RCAB state    = current map + current registered files
-```
-
-Explicit snapshot-vs-current stale/tampered comparison remains deterministic and available when currentness is intentionally required. Historical snapshot age alone must not poison the ordinary full deterministic regression suite.
-
-T032 `docs/tasks/T032-rcab-snapshot-live-separation.md` is READY to implement D049, refresh the RCAB snapshot epoch, preserve explicit stale/current detection, compute live warning state directly from current source, and restore a green full deterministic baseline.
-
-No T021 implementation change is authorized in T032.
-
-## D048 / L005 recurrence
-
-L005 `workflow.premature_remote_publication` is now `CONTROL_INTEGRATED`, not `VERIFIED`.
-
-During the first T021 execution, after D048 was canonical, the executor attempted:
-
-`git push -u origin refactor/t021-consumer-profile-abstraction`
-
-while its visible task state still showed independent verification/final handoff and commit/push verification as pending.
-
-GitHub inspection at that moment showed the T021 branch did not yet exist remotely. The Human Owner rejected the permission request and instructed continuation locally; the prohibited publication was therefore contained before remote mutation.
-
-Under EGLL this is a second occurrence before verification: priority is raised, but it is not labelled `CONTROL_FAILURE`. The recurrence demonstrates that normative Markdown alone is insufficient proof of publication enforcement. A stronger observable host/tool control must be evaluated before L005 can reach VERIFIED.
-
-## PR #138 / OP061
-
-PR #138 is the Markdown-only T021-R1 + RCAB freshness gate. Its intended aggregate scope is limited to:
-
-- T021-R1 and T021 lifecycle metadata;
-- D049;
-- L005/L006;
-- T032;
-- `docs/CONTEXT-ARCHITECTURE.md` D049 alignment;
-- OP061;
+- `docs/reviews/T032-R1.md`;
+- T032 lifecycle/rework metadata;
+- L003/L006 recurrence/control status;
+- `docs/operations/OP062-retire-t032-review-gate-and-resume-t032.md`;
 - this checkpoint.
 
-When this checkpoint is read from canonical `develop`, require PR #138 to have been integrated before launching OP061.
+`OP062` uses D045 after PR #139 merges:
 
-`docs/operations/OP061-retire-t021-review-gate-and-start-t032.md` uses D045:
+1. Stage A retires only `docs/t032-r1-integrity-rework`, preserves T021 and T032 implementation heads, and publishes its receipt to PR #139.
+2. If Stage A passes, Stage B reloads T032 + T032-R1 from current `develop`, safely reconciles current `develop` into the existing T032 branch without history rewrite, performs only R1 rework locally, then follows D048's one planned corrective final push.
 
-- Stage A retires exactly `docs/t021-r1-rcab-freshness-gate`;
-- preserves `refactor/t021-consumer-profile-abstraction` exactly at the T021-R1 submitted HEAD;
-- requires remote inventory `develop, main, refactor/t021-consumer-profile-abstraction` before Stage B;
-- publishes a durable receipt to PR #138;
-- only then re-bootstraps current `develop` and executes T032.
-
-No T021 rework is authorized in the OP061 invocation.
-
-## Program sequencing
-
-Current mandatory sequence:
-
-```text
-T032 repair + acceptance/integration
-    -> canonical full deterministic suite green
-    -> T021-R1 rework on reconciled current develop
-    -> T021 acceptance/integration
-    -> T022
-    -> MG1
-    -> T023/T024
-    -> remaining D044 dependency order
-```
-
-T026 remains BLOCKED behind its explicit separate decision gate.
-
-## EGLL / ICAE
-
-- L003 `task.done_requires_rework`: `CONTROL_PLANNED`, not VERIFIED.
-- L004 `workflow.procedural_nonconformance`: `CONTROL_PLANNED`, not VERIFIED.
-- L005 `workflow.premature_remote_publication`: `CONTROL_INTEGRATED`, not VERIFIED; recurrence priority raised.
-- L006 `verification.generated_snapshot_live_coupling`: `CONTROL_PLANNED`; D049/T032 selected.
-
-Do not conflate T021's AC-T021-2 implementation defect with the pre-existing L006 baseline defect.
+No T021 work is authorized in OP062.
 
 ## Next Action
 
-1. Review PR #138 against base `develop@53b9c39c1111f4b871ef73b7447510195f672ea2`; require Markdown-only scope exactly as listed above.
-2. If clean, integrate PR #138.
-3. Launch one executor invocation pointing only to `docs/operations/OP061-retire-t021-review-gate-and-start-t032.md`.
-4. Read OP061's durable receipt directly from PR #138 and independently verify cleanup/T021 branch preservation.
-5. Review returned T032 HEAD/handoff/diff/evidence under D049/T032; require the full deterministic suite green.
-6. Only after T032 acceptance/integration/cleanup may T021-R1 rework resume from current canonical `develop`.
-7. Do not launch T022 before T021 acceptance.
-8. Do not launch T026 without its explicit decision gate.
+1. Review PR #139 against `develop@f72d936987f4b55b62e6087fab1d93262ccee005`; require Markdown-only scope exactly listed above.
+2. If clean, integrate PR #139.
+3. Launch one executor invocation pointing only to `docs/operations/OP062-retire-t032-review-gate-and-resume-t032.md`.
+4. Read OP062 receipt directly from PR #139 and independently verify cleanup plus preserved T021/T032 pre-rework heads.
+5. Review returned corrected T032 HEAD against T032-R1; accept only if the complete snapshot-integrity negative-control boundary and full green regression pass.
+6. After T032 acceptance/integration/cleanup, resume T021-R1 from then-current `develop`.
+7. Do not launch T022 before T021 acceptance; do not launch T026 without its explicit gate.
 
 ## Next Chat Minimum Load
 
-After normal bootstrap load:
+After normal bootstrap:
 
-- D044 and `docs/UNIFIED-GOVERNANCE-REFACTOR-PLAN.md`;
-- D049, L006, T032 and OP061 while RCAB baseline repair is open;
+- D049, T032, T032-R1, L006 and OP062 while T032 is open;
 - T021 + T021-R1 only after T032 acceptance permits rework;
-- D048/L005 and `docs/EXECUTOR-HANDOFFS.md` when publication timing is material.
-
-D046/D047/CONTEXT-ARCHITECTURE need only be loaded when RCAB/ICAE semantics are under review.
+- D048/L005 only when publication timing is material;
+- D044/program plan when sequencing beyond T021 is material.
 
 ## Do Not
 
-Do not accept or merge T021 HEAD `969e2130...`; ask T021 to repair RCAB tooling; resume T021 before T032 restores a green baseline; weaken explicit RCAB stale/tampered detection; treat a historical generated snapshot as live authority; treat L005's second pre-verification occurrence as VERIFIED or CONTROL_FAILURE without the required evidence; push intermediate normal-task progress without D048 authority; impose universal source limits; auto-split normative Markdown; launch T022 early; launch T026 without its gate; delegate committed Markdown; or write directly to `develop`/`main`.
+Do not accept/merge T032 HEAD `b43b306e...`; weaken snapshot tamper/currentness semantics; refresh a snapshot merely because Markdown evolved unless explicitly required; treat historical snapshot age as corruption; change D047 thresholds; resume T021 early; mutate T021 during T032; push intermediate normal-task progress without D048 authority; auto-split Markdown; launch T022/T026 early; delegate committed Markdown; or write directly to `develop`/`main`.
