@@ -3,12 +3,12 @@
 ## Identity
 
 - Task ID: `T019`
-- Status: `BLOCKED`
+- Status: `READY`
 - Type: `refactor`
 - Base branch: `develop`
 - Expected topic branch: `refactor/t019-shared-governance-engine`
 - Expected executor handoff: `handoffs/T019-executor-handoff.json`
-- Readiness note: Remains `BLOCKED` until T018 is ACCEPTED and ChatGPT freezes its characterization baseline.
+- Readiness note: T018 is ACCEPTED; its RF1 characterization baseline is frozen and integrated through PR #120 / commit `85bdb75537eab98bf8b1bd1f603809a33ab23603`. Execution remains subject to this READY lifecycle change being integrated into current `develop`.
 
 ## Objective
 
@@ -21,6 +21,9 @@ Extract the deterministic Consumer Governance implementation from the monolithic
 - `docs/decisions/D044-unified-governance-skill-architecture.md`
 - `docs/UNIFIED-GOVERNANCE-REFACTOR-PLAN.md`
 - `docs/REFACTORING-WORKFLOW.md`
+- `docs/tasks/T018-consumer-v1-characterization-and-package-baseline.md`
+- `handoffs/T018-executor-handoff.json`
+- `tests/test_consumer_v1_characterization.py`
 - `governance-skill/scripts/governance.py`
 - `pyproject.toml`
 
@@ -44,6 +47,8 @@ Extract the deterministic Consumer Governance implementation from the monolithic
 ## Invariants / constraints
 
 - T018 characterization is the RF1 frozen baseline.
+- Accepted RF1 identity: T018 submitted HEAD `fe66bda778147648c30e3ed3c7c11c11f547ca00`, integrated through PR #120 at `85bdb75537eab98bf8b1bd1f603809a33ab23603`.
+- The accepted baseline comprises the unchanged existing Consumer v1 CLI tests plus `tests/test_consumer_v1_characterization.py`; it must not be weakened, removed, or reinterpreted during T019 without explicit ChatGPT authorization.
 - No duplicate editable implementation of the deterministic engine is introduced.
 - The launcher remains usable from the current source/package layout.
 - Consumer v1 observable behavior and exit semantics remain unchanged.
