@@ -1,0 +1,112 @@
+{
+  "task_id": "T032",
+  "status": "DONE",
+  "task_contract_path": "docs/tasks/T032-rcab-snapshot-live-separation.md",
+  "branch": "fix/t032-rcab-snapshot-live-separation",
+  "implementation_head_sha": "26c9b6481ffc458cf773320390a0ae19b0271c52",
+  "base_branch": "develop",
+  "base_sha": "f72d936987f4b55b62e6087fab1d93262ccee005",
+  "files_changed": [
+    "tools/repository_context.py",
+    "tests/test_repository_context.py",
+    "baselines/repository-context-manifest-v1.json",
+    "handoffs/T032-executor-handoff.json"
+  ],
+  "implementation_summary": "Implemented D049 RCAB snapshot/live separation: (1) added machine-visible epoch snapshot semantics to committed manifest (snapshot_type=epoch, snapshot_semantics=evidence_snapshot_not_live_authority, schema 1.1.0 with 1.0.0 backward compat); (2) added build_live_status() computing current registry integrity, registered content measurements, and bootstrap/router warning state directly from current docs/CONTEXT-MAP.md plus current tracked registered files, never trusting committed snapshot measurements; (3) added validate_snapshot_integrity() for internal canonical integrity validation without currentness comparison; (4) kept check_manifest() as explicit deliberate currentness comparison; (5) refactored shared projection into _compute_rcab_projection(); (6) added --live-status and --validate-snapshot CLI modes; (7) refreshed committed manifest as epoch snapshot with 1.1.0 fields; (8) replaced failing test_manifest_cli_check_on_real_repository with integrity-based test_manifest_snapshot_integrity_on_real_repository; (9) added 15 T032-specific tests mapping AC-T032-1 through AC-T032-6.",
+  "verification": {
+    "commands": [
+      "python3 -m pytest tests/test_repository_context.py -q",
+      "python3 -m pytest tests/ -q",
+      "uv run ruff check tools/repository_context.py tests/test_repository_context.py",
+      "uv run ruff format --check tools/repository_context.py tests/test_repository_context.py",
+      "python3 -c \"import py_compile; py_compile.compile('tools/repository_context.py', doraise=True); py_compile.compile('tests/test_repository_context.py', doraise=True)\"",
+      "python3 tools/repository_context.py --validate-snapshot baselines/repository-context-manifest-v1.json",
+      "python3 tools/repository_context.py --live-status > /dev/null",
+      "python3 -c \"import json; json.load(open('baselines/repository-context-manifest-v1.json'))\"",
+      "git diff --check"
+    ],
+    "results": {
+      "focused_repository_context_suite": "37 passed",
+      "full_deterministic_suite": "302 passed",
+      "ruff_check": "PASS (all checks passed)",
+      "ruff_format": "PASS (already formatted)",
+      "python_compilation": "PASS",
+      "manifest_validate_snapshot": "snapshot integrity OK",
+      "manifest_live_status_cli": "PASS",
+      "manifest_json_parse": "PASS",
+      "git_diff_check": "PASS",
+      "manifest_currentness_check_on_real_repo": "exit 1 (stale \u2014 expected: registered files evolved since T031 epoch; not a default regression failure)"
+    },
+    "runtime": "deterministic (no model/tokenizer/embeddings/telemetry)",
+    "network_required": false,
+    "acceptance_criteria_mapping": {
+      "AC-T032-1": {
+        "description": "deterministic snapshot semantics with epoch fields, byte-identical, no self-reference",
+        "tests": [
+          "test_ac_t032_1_epoch_snapshot_semantics_machine_visible",
+          "test_ac_t032_1_snapshot_integrity_validates_without_currentness",
+          "test_manifest_does_not_embed_git_sha",
+          "test_ac_rcab_1_deterministic_projection_byte_identical",
+          "test_ac_rcab_1_no_self_reference"
+        ],
+        "evidence_type": "deterministic"
+      },
+      "AC-T032-2": {
+        "description": "live status computed from current source, not from snapshot",
+        "tests": [
+          "test_ac_t032_2_live_status_from_current_source",
+          "test_ac_t032_2_live_status_recomputes_ratchet_from_current",
+          "test_live_status_on_real_repository"
+        ],
+        "evidence_type": "deterministic"
+      },
+      "AC-T032-3": {
+        "description": "explicit currentness detection preserved (fresh, stale, tampered)",
+        "tests": [
+          "test_ac_t032_3_explicit_currentness_fresh_and_stale",
+          "test_ac_t032_3_tampered_projection_detected_by_integrity",
+          "test_ac_t032_3_tampered_projection_detected_by_currentness",
+          "test_ac_rcab_4_stale_manifest_rejected",
+          "test_ac_rcab_4_stale_manifest_after_content_change"
+        ],
+        "evidence_type": "deterministic + negative_control"
+      },
+      "AC-T032-4": {
+        "description": "historical snapshot does not poison ordinary regression",
+        "tests": [
+          "test_ac_t032_4_historical_snapshot_does_not_poison_regression",
+          "test_manifest_snapshot_integrity_on_real_repository"
+        ],
+        "evidence_type": "deterministic (regression isolation)"
+      },
+      "AC-T032-5": {
+        "description": "D047 ratchet preserved (2 files / 21471 bytes / 298 lines / 5% warning, non-blocking)",
+        "tests": [
+          "test_ac_t032_5_d047_ratchet_preserved",
+          "test_ac_t032_5_warning_only_live_status_is_success",
+          "test_ac_rcab_3_warning_ratchet_below_threshold",
+          "test_ac_rcab_3_warning_ratchet_above_byte_threshold",
+          "test_ac_rcab_3_warning_ratchet_file_count_growth",
+          "test_ac_rcab_3_warning_ratchet_ratchet_candidate",
+          "test_ac_rcab_3_warning_only_exit_success"
+        ],
+        "evidence_type": "deterministic"
+      },
+      "AC-T032-6": {
+        "description": "source-only/package isolation",
+        "tests": [
+          "test_ac_t032_6_source_only_package_isolation",
+          "test_ac_rcab_5_manifest_stays_outside_consumer_package",
+          "test_ac_rcab_6_no_mutation_drift",
+          "test_snapshot_v1_0_0_backwards_compatible_integrity"
+        ],
+        "evidence_type": "deterministic + package/isolation"
+      }
+    }
+  },
+  "dependencies_or_config_changes": "none",
+  "git_status": "clean",
+  "unresolved_issues": [],
+  "recommended_next_task": "ChatGPT independent verification and finalization (PARTIAL -> DONE after review of remote branch, diff, evidence, and AC mapping). Then T021 rework may resume against the green deterministic baseline.",
+  "chatgpt_read_path": "docs/tasks/T032-rcab-snapshot-live-separation.md"
+}
