@@ -3,11 +3,13 @@
 ## Identity
 
 - Task ID: `T030`
-- Status: `READY`
+- Status: `IN_PROGRESS`
 - Type: infrastructure/test
 - Base branch: `develop`
 - Expected topic branch: `infra/t030-repository-context-baseline`
 - Expected executor handoff: `handoffs/T030-executor-handoff.json`
+- Current durable review: `docs/reviews/T030-R1.md`
+- Review disposition: `REWORK_REQUIRED`
 - Assurance-Class: `deterministic`
 - Baseline: `none — this task establishes the first accepted source-repository context baseline`
 - Verification-Planes: `static, deterministic`

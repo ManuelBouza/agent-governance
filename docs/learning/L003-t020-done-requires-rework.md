@@ -45,6 +45,26 @@ Contributing conditions included semantic rather than machine-explicit package b
 
 These are system/process gaps, not agent-product or individual blame.
 
+## Recurrence before control verification — T030-R1
+
+T030 produced a second `task.done_requires_rework` occurrence before this systemic control reached `VERIFIED`.
+
+The T030 executor handoff did use the new ICAE criterion-to-evidence structure: `AC-CTX-1` through `AC-CTX-5` were individually mapped to evidence types and exact tests. During Orchestrator review, however, `AC-CTX-1` was still found insufficiently proven: the canonical baseline embeds `git rev-parse HEAD`, but its repeated-run tests held `HEAD` fixed and did not exercise the final commit transition that persisted the baseline/handoff. The submitted baseline therefore recorded its implementation parent rather than the submitted final HEAD and would change on regeneration after finalization.
+
+Canonical review: `docs/reviews/T030-R1.md`.
+
+Under D039 this is a priority/escalation signal, **not** `CONTROL_FAILURE`, because L003 has not yet reached `VERIFIED`.
+
+The recurrence refines the control model:
+
+- criterion/evidence mapping materially improves auditability and defect localization;
+- deterministic validation can check that mappings exist and reference recorded evidence;
+- mapping presence and evidence-type labels cannot establish semantic sufficiency by themselves;
+- Orchestrator review must still determine whether the cited test/evidence actually proves the full criterion boundary;
+- reproducibility criteria involving commit identity must include the relevant finalization/identity transition in their regression evidence when that transition can change canonical output.
+
+Do not introduce an LLM or heuristic proxy that claims to decide semantic evidence sufficiency automatically.
+
 ## Selected systemic control
 
 D046/ICAE selects the prospective control direction:
@@ -56,7 +76,7 @@ D046/ICAE selects the prospective control direction:
 - deterministic validation should eventually expose missing/malformed required evidence mappings without pretending to judge semantic adequacy that belongs to Orchestrator review;
 - live review/EGLL integration should emit `task.done_requires_rework` when a durable post-`DONE` review is `REWORK_REQUIRED`.
 
-T021 and T030 apply criterion/evidence traceability prospectively in their contracts. This is initial policy adoption/evidence, not completion of the systemic control.
+T021 and T030 apply criterion/evidence traceability prospectively in their contracts. T030-R1 demonstrates both the value and the limit of that structure. This is policy adoption/evidence, not completion of the systemic control.
 
 ## Verification / recurrence status
 
