@@ -119,4 +119,4 @@ Stop and report `BLOCKED` rather than guessing if:
 
 ## Expected handoff
 
-Before claiming `DONE`, `BLOCKED`, or `PARTIAL`, persist the executor handoff at `handoffs/T030-executor-handoff.json` according to `docs/EXECUTOR-HANDOFFS.md`, commit and push all authorized non-Markdown work, and return only the canonical completion fields required by `docs/TASK-CONTRACTS.md`.
+Before claiming `DONE`, `BLOCKED`, or `PARTIAL`, persist the executor handoff at `handoffs/T030-executor-handoff.json` according to `docs/EXECUTOR-HANDOFFS.md`, commit and push all authorized work, and return only the canonical completion fields required by `docs/TASK-CONTRACTS.md`.
