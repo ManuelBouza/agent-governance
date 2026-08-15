@@ -1,0 +1,45 @@
+{
+  "task_id": "T018",
+  "status": "DONE",
+  "task_contract_path": "docs/tasks/T018-consumer-v1-characterization-and-package-baseline.md",
+  "branch": "test/t018-consumer-v1-characterization",
+  "implementation_head_sha": "12518e36bc82692a0706d32108306cb427c3a289",
+  "base_branch": "develop",
+  "base_sha": "f8782e93c446bab1f16bc9022bb3ec868dff7fc5",
+  "files_changed": [
+    "handoffs/T018-executor-handoff.json",
+    "tests/test_consumer_v1_characterization.py"
+  ],
+  "implementation_summary": "Added pre-refactor Consumer Governance v1 characterization for the current source package boundary. Existing release-approved tests remain unchanged and, together with the new tests, freeze the exact seven-command surface, representative success/failure exits, bootstrap footprint, validation, state/event/skill/ecosystem/archive behavior, and the requirement for governance-core beside governance-skill in the current source bundle.",
+  "verification": {
+    "commands": [
+      "uv run --locked pytest -q tests/test_consumer_v1_characterization.py",
+      "uv run --locked pytest -q tests/test_consumer_governance_cli.py tests/test_consumer_governance_cli_v1.py tests/test_consumer_v1_characterization.py",
+      "uv run --locked pytest -q",
+      "uv run --locked ruff check tests/test_consumer_v1_characterization.py",
+      "uv run --locked ruff format --check tests/test_consumer_v1_characterization.py",
+      "git diff --check"
+    ],
+    "results": {
+      "t018_characterization": "2 passed in 0.31s",
+      "focused_consumer_v1_baseline": "77 passed in 9.43s",
+      "full_deterministic_suite": "261 passed in 10.99s",
+      "ruff_check": "All checks passed!",
+      "ruff_format_check": "1 file already formatted",
+      "diff_check": "PASS"
+    },
+    "runtime": "Subprocess tests execute governance-skill/scripts/governance.py against disposable consumer repositories. Package-boundary characterization proves bootstrap fails with exit 1 and no partial footprint when governance-core is absent beside governance-skill, then succeeds with exit 0 when the sibling Core is restored.",
+    "network_required": false
+  },
+  "package_boundary_evidence": {
+    "resolved_core": "<source-bundle>/governance-core",
+    "resolved_assets": "<source-bundle>/governance-skill/assets",
+    "missing_sibling_core": "bootstrap exits 1, identifies <source-bundle>/governance-core/GOVERNANCE.md, and creates no managed footprint",
+    "equivalent_source_bundle": "copying governance-core beside governance-skill allows bootstrap to exit 0 and create the expected managed footprint"
+  },
+  "dependencies_or_config_changes": [],
+  "git_status": "All authorized implementation and handoff changes committed; topic branch pushed with no unreported in-scope changes.",
+  "unresolved_issues": [],
+  "recommended_next_task": "ChatGPT RF1 review and acceptance; T019 must not begin before this baseline is accepted.",
+  "chatgpt_read_path": "handoffs/T018-executor-handoff.json"
+}
