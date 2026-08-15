@@ -23,6 +23,32 @@ baseline can be regenerated or deterministically validated without byte
 drift caused solely by the commit that persists the baseline/handoff, while
 the required source Git revision is still preserved as explicitly volatile
 execution metadata.
+
+RCAB snapshot/live separation (D049)
+------------------------------------
+
+The RCAB manifest separates **committed epoch snapshot evidence** from
+**live repository currentness**.
+
+* :func:`build_manifest` generates a deterministic epoch snapshot for the
+  registered content measured at generation time. The snapshot is
+  non-authoritative evidence. Its machine-visible fields
+  (:data:`SNAPSHOT_TYPE`, :data:`SNAPSHOT_SEMANTICS`) make it impossible to
+  honestly mistake the committed JSON for live authority.
+
+* :func:`build_live_status` computes current registry integrity, registered
+  content measurements and bootstrap/router warning state directly from
+  current :data:`DEFAULT_CONTEXT_MAP` plus current tracked registered files.
+  It MUST NOT trust the committed snapshot's stored measurements.
+
+* :func:`check_manifest` is a **deliberate explicit currentness comparison**
+  of a committed snapshot against current registered content. It MAY report
+  stale/tampered when invoked intentionally. If an explicit currentness
+  comparison returns failure for stale state, that is not the default
+  invariant of the ordinary full deterministic regression suite. The
+  ordy regression suite validates snapshot canonical/internal integrity
+  via :func:`validate_snapshot_integrity` without requiring a historical
+  snapshot to equal mutable live source state.
 """
 
 from __future__ import annotations
@@ -50,7 +76,12 @@ VOLATILE_EXECUTION_METADATA_KEY = "volatile_execution_metadata"
 
 DEFAULT_CONTEXT_MAP = "docs/CONTEXT-MAP.md"
 DEFAULT_MANIFEST = "baselines/repository-context-manifest-v1.json"
-MANIFEST_SCHEMA_VERSION = "1.0.0"
+MANIFEST_SCHEMA_VERSION = "1.1.0"
+SUPPORTED_MANIFEST_SCHEMA_VERSIONS = frozenset({"1.0.0", "1.1.0"})
+SNAPSHOT_TYPE = "epoch"
+SNAPSHOT_SEMANTICS = "evidence_snapshot_not_live_authority"
+LIVE_STATUS_TYPE = "live"
+LIVE_STATUS_SEMANTICS = "computed_from_current_source_not_snapshot"
 REGISTRY_BEGIN_MARKER = "<!-- RCAB-MAP-V1:BEGIN -->"
 REGISTRY_END_MARKER = "<!-- RCAB-MAP-V1:END -->"
 BOOTSTRAP_CLASSES = frozenset({"bootstrap", "router"})
@@ -507,18 +538,21 @@ def _compute_ratchet(
     }
 
 
-def build_manifest(
+def _compute_rcab_projection(
     root: Path,
     *,
     map_path: Path | None = None,
     excluded_paths: set[str] | None = None,
 ) -> dict[str, object]:
-    """Build the canonical RCAB v1 manifest projection from the registry.
+    """Compute the shared RCAB projection from current registry and registered files.
 
-    The manifest is a reproducible, non-authoritative projection of the
-    registry embedded in ``docs/CONTEXT-MAP.md`` and the current tracked
-    content of each registered path. It does not embed a Git commit SHA
-    and its own path does not participate in the computed content identity.
+    This is the common computation used by both :func:`build_manifest` (epoch
+    snapshot) and :func:`build_live_status` (live state). It parses the
+    current registry from the context map, validates it, measures each
+    registered path, and computes the bootstrap/router ratchet.
+
+    The computation never reads a committed manifest. It derives everything
+    from current source authority.
     """
     root = root.resolve()
     map_path = root / DEFAULT_CONTEXT_MAP if map_path is None else Path(map_path).resolve()
@@ -553,11 +587,67 @@ def build_manifest(
     ratchet = _compute_ratchet(bootstrap_entries, registry["bootstrap_ratchet"])
 
     return {
-        "projection_schema_version": MANIFEST_SCHEMA_VERSION,
         "registry_digest": registry_digest,
         "registered_paths": registered_entries,
         "registered_content_digest": registered_content_digest,
         "bootstrap_router": ratchet,
+    }
+
+
+def build_manifest(
+    root: Path,
+    *,
+    map_path: Path | None = None,
+    excluded_paths: set[str] | None = None,
+) -> dict[str, object]:
+    """Build the canonical RCAB v1 epoch snapshot manifest from current source.
+
+    The manifest is a reproducible, non-authoritative projection of the
+    registry embedded in ``docs/CONTEXT-MAP.md`` and the current tracked
+    content of each registered path. It does not embed a Git commit SHA
+    and its own path does not participate in the computed content identity.
+
+    The output carries machine-visible epoch snapshot semantics
+    (:data:`SNAPSHOT_TYPE`, :data:`SNAPSHOT_SEMANTICS`) so a consumer of
+    the JSON cannot honestly mistake it for live authority.
+    """
+    projection = _compute_rcab_projection(root, map_path=map_path, excluded_paths=excluded_paths)
+    return {
+        "projection_schema_version": MANIFEST_SCHEMA_VERSION,
+        "snapshot_type": SNAPSHOT_TYPE,
+        "snapshot_semantics": SNAPSHOT_SEMANTICS,
+        "registry_digest": projection["registry_digest"],
+        "registered_paths": projection["registered_paths"],
+        "registered_content_digest": projection["registered_content_digest"],
+        "bootstrap_router": projection["bootstrap_router"],
+    }
+
+
+def build_live_status(
+    root: Path,
+    *,
+    map_path: Path | None = None,
+    excluded_paths: set[str] | None = None,
+) -> dict[str, object]:
+    """Compute live RCAB status directly from current registry and registered files.
+
+    Live status is derived entirely from the current
+    ``docs/CONTEXT-MAP.md`` registry and the current tracked content of
+    each registered path. It MUST NOT trust the committed snapshot's stored
+    measurements.
+
+    The output carries machine-visible live semantics
+    (:data:`LIVE_STATUS_TYPE`, :data:`LIVE_STATUS_SEMANTICS`) so a consumer
+    can distinguish it from a committed epoch snapshot.
+    """
+    projection = _compute_rcab_projection(root, map_path=map_path, excluded_paths=excluded_paths)
+    return {
+        "status_type": LIVE_STATUS_TYPE,
+        "status_semantics": LIVE_STATUS_SEMANTICS,
+        "registry_digest": projection["registry_digest"],
+        "registered_paths": projection["registered_paths"],
+        "registered_content_digest": projection["registered_content_digest"],
+        "bootstrap_router": projection["bootstrap_router"],
     }
 
 
@@ -587,12 +677,20 @@ def check_manifest(
     *,
     map_path: Path | None = None,
 ) -> tuple[int, str]:
-    """Check a committed manifest against deterministic regeneration.
+    """Explicitly compare a committed snapshot against current registered content.
 
-    Returns ``(exit_code, message)``. Exit code 0 means the manifest is
-    fresh and all integrity checks pass (warning state, if any, is
-    non-blocking). Exit code 1 means the manifest is stale, tampered,
-    or an integrity failure was detected.
+    Returns ``(exit_code, message)``. Exit code 0 means the committed
+    snapshot matches deterministic regeneration from the current registry
+    and registered content (fresh, all integrity checks pass; warning state,
+    if any, is non-blocking). Exit code 1 means the committed snapshot is
+    stale, tampered, or an integrity failure was detected.
+
+    This is a **deliberate explicit currentness comparison** — not the
+    default invariant of the ordinary full deterministic regression suite.
+    A historical committed snapshot that predates legitimate registered-file
+    evolution will correctly report stale here, but that does not make the
+    ordinary regression suite red. Snapshot canonical/internal integrity is
+    validated by :func:`validate_snapshot_integrity`.
     """
     root = root.resolve()
     relative = _relative_output(root, manifest_path)
@@ -615,6 +713,112 @@ def check_manifest(
             )
         return 0, "manifest OK (warning: " + "; ".join(parts) + ")"
     return 0, "manifest OK"
+
+
+def validate_snapshot_integrity(manifest_path: Path) -> dict[str, object]:
+    """Validate the internal canonical integrity of a committed snapshot.
+
+    Checks machine-decidable properties without comparing against current
+    registered content:
+
+    * manifest parses as valid JSON;
+    * ``projection_schema_version`` is a supported version;
+    * v1.1.0+ manifests carry machine-visible epoch snapshot semantics;
+    * ``registered_paths`` are present, canonically ordered and non-empty;
+    * ``registered_content_digest`` matches the digest recomputed from the
+      manifest's own ``registered_paths`` (tamper detection);
+    * ``bootstrap_router`` has required structural fields;
+    * ``registry_digest`` is a 64-character hex string.
+
+    Raises :class:`MeasurementError` on any integrity failure.
+    Returns the parsed manifest dict on success.
+    """
+    raw = manifest_path.read_bytes()
+    try:
+        committed = json.loads(raw)
+    except json.JSONDecodeError as error:
+        raise MeasurementError(f"manifest is not valid JSON: {error}") from error
+    if not isinstance(committed, dict):
+        raise MeasurementError("manifest must be a JSON object")
+
+    schema = committed.get("projection_schema_version")
+    if schema not in SUPPORTED_MANIFEST_SCHEMA_VERSIONS:
+        raise MeasurementError(
+            f"unsupported projection_schema_version: {schema!r}; "
+            f"supported: {sorted(SUPPORTED_MANIFEST_SCHEMA_VERSIONS)}"
+        )
+
+    if schema == MANIFEST_SCHEMA_VERSION:
+        snapshot_type = committed.get("snapshot_type")
+        if snapshot_type != SNAPSHOT_TYPE:
+            raise MeasurementError(
+                f"missing or invalid snapshot_type: {snapshot_type!r}; expected {SNAPSHOT_TYPE!r}"
+            )
+        snapshot_semantics = committed.get("snapshot_semantics")
+        if snapshot_semantics != SNAPSHOT_SEMANTICS:
+            raise MeasurementError(
+                f"missing or invalid snapshot_semantics: {snapshot_semantics!r}; "
+                f"expected {SNAPSHOT_SEMANTICS!r}"
+            )
+
+    registry_digest = committed.get("registry_digest")
+    if not isinstance(registry_digest, str) or len(registry_digest) != 64:
+        raise MeasurementError(f"invalid registry_digest: {registry_digest!r}")
+    try:
+        int(registry_digest, 16)
+    except ValueError as error:
+        raise MeasurementError(
+            f"registry_digest is not a hex string: {registry_digest!r}"
+        ) from error
+
+    registered_paths = committed.get("registered_paths")
+    if not isinstance(registered_paths, list) or not registered_paths:
+        raise MeasurementError("manifest must contain a non-empty 'registered_paths' list")
+
+    paths: list[str] = []
+    for entry in registered_paths:
+        if not isinstance(entry, dict):
+            raise MeasurementError(
+                f"registered path entry must be an object, got {type(entry).__name__}"
+            )
+        path = entry.get("path")
+        sha256 = entry.get("sha256")
+        if not isinstance(path, str) or not path:
+            raise MeasurementError(f"invalid registered path: {path!r}")
+        if not isinstance(sha256, str) or len(sha256) != 64:
+            raise MeasurementError(f"invalid sha256 for path {path!r}: {sha256!r}")
+        paths.append(path)
+
+    if paths != sorted(paths):
+        raise MeasurementError("registered_paths must be in canonical (sorted) order")
+
+    content_identity = [{"path": e["path"], "sha256": e["sha256"]} for e in registered_paths]
+    expected_digest = hashlib.sha256(canonical_json(content_identity)).hexdigest()
+    actual_digest = committed.get("registered_content_digest")
+    if not isinstance(actual_digest, str) or actual_digest != expected_digest:
+        raise MeasurementError(
+            f"registered_content_digest mismatch: manifest claims {actual_digest!r} "
+            f"but registered_paths compute to {expected_digest!r}"
+        )
+
+    bootstrap_router = committed.get("bootstrap_router")
+    if not isinstance(bootstrap_router, dict):
+        raise MeasurementError("manifest must contain a 'bootstrap_router' object")
+    for field in (
+        "files",
+        "current",
+        "accepted_reference",
+        "delta",
+        "warning",
+        "ratchet_candidate",
+    ):
+        if field not in bootstrap_router:
+            raise MeasurementError(f"bootstrap_router missing required field: {field}")
+    warning = bootstrap_router["warning"]
+    if not isinstance(warning, dict) or "active" not in warning or "reasons" not in warning:
+        raise MeasurementError("bootstrap_router.warning must have 'active' and 'reasons'")
+
+    return committed
 
 
 def _resolve_map_path(source_root: Path, map_arg: Path | None) -> Path | None:
@@ -658,18 +862,39 @@ def main(argv: list[str] | None = None) -> int:
         "--check-manifest",
         type=Path,
         metavar="PATH",
-        help="check a committed manifest against deterministic regeneration",
+        help="explicit currentness comparison of a committed snapshot against current registered content",
+    )
+    parser.add_argument(
+        "--validate-snapshot",
+        type=Path,
+        metavar="PATH",
+        help="validate internal integrity of a committed snapshot without comparing to current source",
+    )
+    parser.add_argument(
+        "--live-status",
+        action="store_true",
+        help="compute live RCAB status from current registry and registered files",
     )
     args = parser.parse_args(argv)
     map_path = _resolve_map_path(args.source_root, args.map)
 
     try:
+        if args.validate_snapshot is not None:
+            validate_snapshot_integrity(args.validate_snapshot)
+            print("snapshot integrity OK")
+            return 0
+
         if args.check_manifest is not None:
             exit_code, message = check_manifest(
                 args.source_root, args.check_manifest, map_path=map_path
             )
             print(message)
             return exit_code
+
+        if args.live_status:
+            status = build_live_status(args.source_root, map_path=map_path)
+            print(canonical_json(status).decode("utf-8"), end="")
+            return 0
 
         if args.manifest:
             if args.output is not None:
@@ -686,7 +911,13 @@ def main(argv: list[str] | None = None) -> int:
         )
     except (MeasurementError, OSError, UnicodeError) as error:
         parser.exit(1, f"error: {error}\n")
-    if args.output is None and not args.manifest and args.check_manifest is None:
+    if (
+        args.output is None
+        and not args.manifest
+        and args.check_manifest is None
+        and args.validate_snapshot is None
+        and not args.live_status
+    ):
         print(canonical_json(report).decode("utf-8"), end="")
     return 0
 
