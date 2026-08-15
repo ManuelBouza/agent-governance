@@ -40,7 +40,7 @@ normal task still executing
 
 Exceptions require either an explicitly contracted intermediate remote checkpoint or a genuinely terminal `BLOCKED/PARTIAL` outcome.
 
-`docs/TASK-CONTRACTS.md` and `docs/EXECUTOR-HANDOFFS.md` carry the normative rule.
+D048 is the decision authority and `docs/EXECUTOR-HANDOFFS.md` carries the operational publication sequence consumed by Task Contract handoffs.
 
 ## Verification status
 

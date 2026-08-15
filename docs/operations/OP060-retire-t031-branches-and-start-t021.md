@@ -8,7 +8,7 @@ Receipt anchor: PR #136
 
 ## Objective
 
-After T031 acceptance PR #136 and exact accepted implementation PR #135 are merged into `develop`, retire exactly their source branches, publish the normal durable Operational receipt, and — only if every deterministic cleanup/re-bootstrap condition passes — continue in the same executor invocation with the already-authorized T021 implementation.
+After T031 acceptance PR #136, exact accepted implementation PR #135, and wording-correction PR #137 are merged into `develop`, retire exactly their source branches, publish the normal durable Operational receipt, and — only if every deterministic cleanup/re-bootstrap condition passes — continue in the same executor invocation with the already-authorized T021 implementation.
 
 This operation uses D045 only to remove transport/acknowledgement latency between deterministic post-integration cleanup and one already-authorized executor Task. It does not delegate Markdown, architecture, policy, review, or acceptance authority.
 
@@ -17,7 +17,8 @@ This operation uses D045 only to remove transport/acknowledgement latency betwee
 Targets exactly:
 
 1. PR #136 source branch `docs/t031-r1-acceptance-push-policy`;
-2. PR #135 source branch `infra/t031-context-manifest-ratchet`.
+2. PR #135 source branch `infra/t031-context-manifest-ratchet`;
+3. PR #137 source branch `docs/t031-policy-wording-fix`.
 
 For each target, derive the reviewed source HEAD and merge identity from the authoritative merged PR record. Do not use chat-carried SHAs as cleanup authority.
 
@@ -27,17 +28,18 @@ Before deletion, verify:
 
 - PR #136 is merged into `develop`;
 - PR #135 is merged into `develop` and corresponds to the exact accepted T031-R1 head;
+- PR #137 is merged into `develop`;
 - each target branch is already absent or still equals its authoritative reviewed PR head;
-- no later unique work exists on either target;
+- no later unique work exists on any target;
 - `develop` and `main` identities will not be mutated;
 - receipt publication capability to PR #136 is available;
 - local/uncommitted work can be preserved.
 
-If eligible, delete only the two target branches, safely remove/prune matching accessible local/tracking state, and re-read inventories.
+If eligible, delete only the three target branches, safely remove/prune matching accessible local/tracking state, and re-read inventories.
 
 Stage A passes only when:
 
-- both targets are absent remotely;
+- all three targets are absent remotely;
 - remote branches are exactly `develop, main`;
 - local branch inventory is reported;
 - repository content is unchanged by cleanup;
@@ -72,7 +74,7 @@ When and only when Stage A passes:
 2. establish a safe local baseline equal to current `origin/develop`;
 3. verify that current canonical `develop` contains:
    - this OP060 contract;
-   - `docs/reviews/T031-R1.md` with T031 ACCEPTED;
+   - `docs/reviews/T031-R1.md` with T031 ACCEPTED and corrected publication-policy wording;
    - D048 and the updated `docs/EXECUTOR-HANDOFFS.md` publication rule;
    - `docs/tasks/T021-consumer-profile-abstraction-zero-drift.md` with status `READY`;
 4. load current `AGENTS.md` through normal repository-native bootstrap, then load T021 and its referenced authority directly from current canonical `develop`;
@@ -99,7 +101,7 @@ No Human acknowledgement is required between eligible Stage A and Stage B becaus
 
 Return `BLOCKED` before mutation/continuation if:
 
-- either PR is not merged;
+- any required PR is not merged;
 - PR #135 does not correspond to the exact accepted T031-R1 head;
 - a cleanup target advanced beyond its reviewed PR head or contains unrepresented unique work;
 - receipt publication capability is unavailable;
