@@ -1,6 +1,6 @@
 {
   "task_id": "T031",
-  "status": "PARTIAL",
+  "status": "DONE",
   "task_contract_path": "docs/tasks/T031-rcab-context-manifest-and-ratchet.md",
   "branch": "infra/t031-context-manifest-ratchet",
   "implementation_head_sha": "e243bf682151c270770c35335a587724e6317b24",
