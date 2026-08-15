@@ -3,6 +3,8 @@
 Status: ACTIVE
 Controlling decision: `docs/decisions/D046-agent-capability-engineering-and-context-architecture.md`
 Consumer precursor: `governance-core/CONTEXT.md`
+RCAB v1 policy: `docs/decisions/D047-rcab-context-map-and-ratchet-policy.md`
+Context map: `docs/CONTEXT-MAP.md`
 
 ## Purpose
 
@@ -53,6 +55,26 @@ No source-repository universal hard size budget is authorized before the baselin
 
 The existing Consumer budgets in `governance-core/CONTEXT.md` remain unchanged and MUST NOT be silently reinterpreted as source-repository limits.
 
+## RCAB v1 selected policy
+
+D047 and T030-R2 establish the first source-repository warning/ratchet policy.
+
+The mandatory source cold-start cohort is exactly the registered `bootstrap` + `router` surface in `docs/CONTEXT-MAP.md`. Its accepted T030-R2 physical reference is:
+
+- `2` files;
+- `21,471` UTF-8 bytes;
+- `298` lines.
+
+RCAB v1 always reports current delta from that reference. It emits a **non-blocking** bootstrap-growth warning when the cohort grows above two files or aggregate UTF-8 bytes exceed `105%` of the accepted reference.
+
+The 5% band is a review-sensitivity margin, not a model-capacity claim, safety threshold or token estimate. Warning state alone MUST NOT fail a task, block a merge, or trigger an automatic split.
+
+`focused`, `task`, `evidence`, `generated-data` and `exempt-on-demand` artifacts have no RCAB v1 absolute physical-size warning. Their size remains report-only evidence until observed load/routing evidence justifies a class-specific policy.
+
+The first allowed blocking RCAB checks are mechanically decidable integrity failures: malformed/ambiguous map registry, duplicate/conflicting classifications, missing registered targets, stale/non-reproducible generated projection, and source/distribution leakage already covered by package-isolation verification.
+
+The accepted reference does not silently ratchet. A lower observed footprint may be reported as a ratchet candidate, but changing the authoritative reference requires an Orchestrator-owned reviewed policy/baseline update.
+
 ## Discovery and indexes
 
 The preferred lightweight architecture is:
@@ -63,7 +85,9 @@ canonical Git + Markdown authority
         -> generated machine-readable projection when useful
 ```
 
-A future human/agent-readable context map may declare semantic routing. A generated manifest may project paths, classifications, metrics, hashes and structural references.
+`docs/CONTEXT-MAP.md` is the selected compact human-readable routing registry. It deliberately registers only stable, high-value routes. The current exact frontier remains in `docs/orchestrator/CHECKPOINT.md`.
+
+A generated manifest may project registered paths, classifications, metrics, hashes and route membership. It is discovery/evidence only.
 
 Generated indexes/manifests:
 
@@ -73,7 +97,9 @@ Generated indexes/manifests:
 - MUST NOT duplicate or supersede normative authority;
 - MUST NOT require embeddings/vector infrastructure for initial operation.
 
-Do not create a context map or generated manifest merely to satisfy this document. First measure the current repository and design the smallest useful projection from evidence.
+The RCAB v1 manifest uses registered-content identity rather than requiring the Git SHA of the commit that contains the manifest itself, avoiding a D029-like self-reference problem.
+
+Do not expand the context map into a repository-wide catalog merely because more files can be indexed. Add stable routes only when they reduce real discovery/load cost.
 
 ## Markdown decomposition
 
