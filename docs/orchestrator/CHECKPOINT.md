@@ -17,6 +17,8 @@ The prior O088 checkpoint temporarily lagged the actual T020 integration. D022 a
 
 ## D046 / ICAE
 
+PR #129 is the Markdown-only adoption gate for D046, ICAE and RCAB.
+
 D046 adopts **ICAE — Ingeniería de Capacidades Agénticas dirigida por Especificación, Contrato y Evaluación** prospectively for T021+ and new work. T018–T020 remain grandfathered under their accepted contracts.
 
 ICAE is risk-routed assurance, not a second lifecycle. Mechanically decidable hard invariants require deterministic enforcement/evidence; model-mediated behavior requires appropriate repeated evals; architecture/authority remains Human/Orchestrator-governed; model graders are evidence only.
@@ -33,7 +35,7 @@ Do not impose a universal LOC/line/token maximum. Do not automatically split nor
 
 No large-document split is authorized yet for `AGENTS.md`, `GOVERNANCE.md`, `TASK-CONTRACTS.md`, `TESTING-AND-EVALUATION.md`, `engine.py`, or other candidates solely from the research snapshot.
 
-## T030 — READY
+## T030 — READY after PR #129 integration
 
 Task Contract: `docs/tasks/T030-repository-context-baseline-and-measure-linter.md`  
 Expected branch: `infra/t030-repository-context-baseline`  
@@ -59,15 +61,26 @@ T020 integrated the immediate local regression controls. The selected systemic c
 
 Neither learning is `VERIFIED` until the systemic controls are implemented and bad-case/good-case replay proves them.
 
+## PR #129 / OP056
+
+PR #129 must remain Markdown-only and limited to D046/ICAE/RCAB, T030, prospective T021 lifecycle/assurance metadata, L003/L004 control planning, OP056 and this checkpoint.
+
+`docs/operations/OP056-retire-icae-rcab-gate-and-start-t030.md` is the post-integration D045 transition. After PR #129 merges, Stage A retires only `docs/icae-rcab-adoption`, publishes the durable receipt to PR #129, and requires remote inventory exactly `develop`, `main` with `EXCEPTIONS: none`.
+
+If and only if Stage A passes every deterministic postcondition, the same executor invocation re-synchronizes current `develop` and continues automatically to T030 under its already-integrated Task Contract. No Human acknowledgement is required between those two eligible stages.
+
+If Stage A is `BLOCKED`, `PARTIAL`, ambiguous, or its receipt cannot be published, T030 does not start.
+
 ## Next Action
 
-1. Review and integrate the D046/ICAE/RCAB Markdown gate if its diff remains limited to methodology/context policy, T030, prospective T021 lifecycle/assurance metadata, L003/L004 control planning, and this checkpoint.
-2. Retire the gate branch through the normal integrated Operational Contract process.
-3. Launch T030 from current `develop`; accept only deterministic measure-only evidence with source/Consumer isolation preserved.
-4. After T030 acceptance, use its measured baseline to decide the smallest context map/manifest and any warning/ratchet policy. Do not split source documents before that evidence unless an independent urgent defect requires it.
-5. Execute T021 under its updated deterministic ICAE contract after the T030 baseline gate.
-6. Continue T022 -> MG1 -> T023/T024 and the remaining D044 program in dependency order.
-7. Do not launch T026 without its explicit decision gate.
+1. Review PR #129 against `develop@1b47ddef590558b198375d1c98abc0e6b48fc714`; require Markdown-only scope and no Consumer/runtime/enforcement/document-split drift.
+2. If clean, integrate PR #129 to `develop`.
+3. Launch one executor invocation pointing only to `docs/operations/OP056-retire-icae-rcab-gate-and-start-t030.md`.
+4. When the invocation finishes, ChatGPT reads and independently verifies the OP056 Stage-A receipt from PR #129, then reviews the returned T030 branch/head/handoff/diff/evidence. No intermediate Human cleanup acknowledgement is required.
+5. Accept T030 only if it is deterministic measure-only tooling, establishes an honest reproducible baseline, and remains outside the Consumer artifact.
+6. After T030 acceptance, use the measured baseline to decide the smallest context map/manifest and warning/ratchet policy. Do not split source documents before that evidence unless an independent urgent defect requires it.
+7. Execute T021 under its updated deterministic ICAE contract after the T030 baseline gate.
+8. Continue T022 -> MG1 -> T023/T024 and remaining D044 dependencies. Do not launch T026 without its explicit decision gate.
 
 ## Next Chat Minimum Load
 
@@ -78,6 +91,7 @@ After normal bootstrap load:
 - `docs/CONTEXT-ARCHITECTURE.md` while T030/context-baseline work is active;
 - T030 until its acceptance/closure;
 - T021 when preparing/launching the unified-refactor continuation;
+- OP056 only while PR #129 cleanup/T030 transition remains open;
 - L003/L004 only when systemic assurance-control implementation or recurrence is material.
 
 Do not reload T020 implementation details or OP054/OP055 history absent a regression/audit/receipt dispute.
