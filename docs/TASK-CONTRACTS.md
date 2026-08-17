@@ -11,6 +11,7 @@ Task Contracts are auditable source-product maintenance records. They are intent
 ## Authority
 
 - ChatGPT Orchestrator authors and revises Task Contract Markdown.
+- Under D052-designated `orchestrator-conformance` or `mixed` work, ChatGPT may also author the narrowly scoped non-Markdown conformance/oracle assets that directly encode approved acceptance semantics.
 - The Agente de IA Ejecutor reads Task Contracts as authoritative execution scope and MUST NOT edit them.
 - The Human Owner retains final authority.
 
@@ -27,11 +28,35 @@ Task Contract = outcome + scope + invariants + acceptance + evidence
 Executor       = implementation process + internal orchestration
 ```
 
+D052 adds a material ownership boundary, not an executor methodology: when the Task Contract selects `orchestrator-conformance` or `mixed`, the approved conformance oracle is pre-authored by ChatGPT and the executor must execute rather than semantically redefine it. The executor remains free to choose its implementation/testing process and to add supplementary technical coverage.
+
 ChatGPT MUST NOT prescribe executor-specific agent types, delegation topology, SDD routing, internal planning structure, or tool selection unless the method itself is material to an accepted safety/security/reproducibility/ownership requirement or to the requested product behavior.
 
 Likewise, review MUST NOT require the executor's private orchestration trace unless a particular process artifact was explicitly part of the persisted deliverable/evidence contract. Governance evaluates remote Git state, persisted handoff and required verification evidence.
 
 Executor-native workflows remain subordinate implementation mechanisms: they may not redefine Task Contract semantics, acquire Governance acceptance authority, or introduce tracked/generated repository state outside authorized scope.
+
+## Test authorship mode
+
+D052 defines three test-authorship modes when ownership is material:
+
+- `orchestrator-conformance` — ChatGPT owns the required acceptance/conformance oracle; executor owns execution plus supplementary implementation/exploratory testing.
+- `executor-implementation` — executor owns technical test/eval implementation and execution within the ChatGPT-owned acceptance contract.
+- `mixed` — ChatGPT owns the semantic conformance oracle and executor owns implementation/exploratory tests and execution.
+
+New or materially revised Task Contracts SHOULD declare `Test-Authorship-Mode` when test ownership affects scope. Ordinary consumer/application implementation defaults conceptually to `executor-implementation`; Agent Skill/governance/policy/documentation-managed semantic products should normally use `orchestrator-conformance` or `mixed` when ChatGPT owns the correctness semantics.
+
+The mode does not change assurance-plane selection. D019/D046 still determine whether the required evidence is deterministic, property/state-machine, routing/eval, behavioral, security, portability or package/provenance evidence.
+
+### Conformance asset rule
+
+When `orchestrator-conformance` or `mixed` applies, the Task Contract or its integrated prerequisite gate SHOULD identify the exact pre-authored conformance assets needed for acceptance. Those assets may include approved assertions, corpora, expected outcomes, semantic negative controls, thresholds, golden fixtures or graders.
+
+A conformance asset is an executable projection of the controlling Core/Decision/Task Contract. It is not independent authority.
+
+The executor MAY diagnose a defect or make a purely mechanical correction only when durable task/review authority explicitly permits that correction class without changing semantics. Any expected-result, classification, threshold, security expectation, negative-control meaning, or frozen-baseline change requires persisted ChatGPT authority before execution continues.
+
+If the executor believes an Orchestrator-owned oracle is semantically defective, it reports the affected claim as blocked/`ORACLE_DEFECT`-equivalent with evidence rather than silently weakening the oracle.
 
 ## Remote baseline freshness and repository-instruction loading
 
@@ -89,6 +114,7 @@ Each task should contain:
 - Base branch
 - Expected topic branch
 - Expected executor handoff path
+- `Test-Authorship-Mode` when D052 ownership classification is material
 
 ### Objective
 A concise description of the observable result required.
@@ -96,15 +122,21 @@ A concise description of the observable result required.
 ### Controlling references
 Only the repository files/decisions needed to interpret the task correctly. `AGENTS.md` remains controlling repository policy even when its load is supplied natively by the executor host rather than repeated in the launch prompt.
 
+When D052 applies, the Task Contract SHOULD point to the exact integrated conformance/oracle assets or prerequisite gate rather than requiring the executor to reconstruct their semantics from unrelated history.
+
 ### Authorized scope
 Artifacts and behavior the executor is allowed to modify or create.
 
 Authorized scope constrains externally visible repository mutation/result, not the executor's private internal organization or compatible local tooling unless the contract explicitly states otherwise for a material reason.
 
+For D052 modes, authorized scope MUST distinguish Orchestrator-owned conformance assets from executor-owned implementation/harness/supplementary-test scope.
+
 ### Explicit exclusions
 Things the executor must not change or expand into.
 
 Exclusions should protect product scope, authority, safety, reproducibility or repository state. Avoid using exclusions to ban an executor-internal methodology/tool merely because the current host provides it.
+
+When D052 applies, semantic changes to the conformance oracle are excluded from executor authority unless a durable revision explicitly transfers a bounded correction.
 
 ### Invariants / constraints
 Architecture, compatibility, safety, ownership, or behavioral properties that must remain true.
@@ -117,63 +149,82 @@ Tests/evals that must be created or executed and the minimum evidence expected.
 
 Verification requirements define required evidence/results. They should not dictate internal execution topology unless that topology is itself part of the behavior or assurance property being verified.
 
+For D052 `orchestrator-conformance`/`mixed`, verification requirements SHOULD separate:
+
+- required execution of the pre-authored conformance oracle;
+- executor-owned supplementary implementation/exploratory verification;
+- evidence required to prove both classes ran against the submitted implementation.
+
 ### Stop / escalation conditions
 Conditions requiring the executor to stop instead of guessing or expanding scope.
+
+When D052 applies, suspected semantic oracle defects are stop/escalation conditions for the affected acceptance claim.
 
 ### Expected handoff
 The executor MUST persist its result according to `docs/EXECUTOR-HANDOFFS.md` at the task's expected handoff path before claiming `DONE`, `BLOCKED`, or `PARTIAL`.
 
-## Contract integration gate
+## Contract and conformance integration gate
 
 An executable Task Contract is not ready for execution merely because it exists on a planning branch.
 
 Before launching an executor:
-1. ChatGPT creates/updates the Task Contract on a policy-compliant planning/Markdown topic branch;
-2. ChatGPT reviews the contract and controlling Markdown/Decision Records;
-3. the planning change is merged into `develop`;
-4. the task status is `READY` only when all known prerequisite decisions are resolved;
-5. the executor synchronizes the canonical remote and establishes a safe local baseline equal to the current remote base branch containing that exact contract;
-6. if the governing integrated change modified `AGENTS.md`, ChatGPT includes the D043 reload line and the executor reloads current `AGENTS.md` from that baseline;
-7. only then may the executor create/use the implementation topic branch from that current baseline.
+1. ChatGPT creates/updates the Task Contract on a policy-compliant planning/topic branch;
+2. when D052 `orchestrator-conformance` or `mixed` requires a pre-authored oracle, ChatGPT creates/updates the designated conformance assets on that preimplementation gate and records their role in the Task Contract/gate;
+3. ChatGPT reviews the Task Contract, controlling Markdown/Decision Records, and any Orchestrator-owned conformance assets;
+4. the planning/conformance change is merged into `develop`;
+5. the task status is `READY` only when all known prerequisite decisions are resolved;
+6. the executor synchronizes the canonical remote and establishes a safe local baseline equal to the current remote base branch containing that exact contract and required conformance assets;
+7. if the governing integrated change modified `AGENTS.md`, ChatGPT includes the D043 reload line and the executor reloads current `AGENTS.md` from that baseline;
+8. only then may the executor create/use the implementation topic branch from that current baseline.
 
-This creates two durable stages:
+This creates durable specification/oracle before implementation history where D052 applies:
 
-`contract history -> implementation history`
+```text
+contract + conformance history -> implementation history
+```
 
-The executor MUST NOT begin executable work from a branch/revision that predates the controlling Task Contract or from a stale local base that has not been reconciled with the canonical remote.
+Without D052 conformance assets, the ordinary form remains:
+
+```text
+contract history -> implementation history
+```
+
+The executor MUST NOT begin executable work from a branch/revision that predates the controlling Task Contract or required pre-authored oracle, or from a stale local base that has not been reconciled with the canonical remote.
 
 ## Freeze and revision semantics
 
-The original objective, scope, exclusions, invariants, acceptance criteria, and verification meaning are the durable request.
+The original objective, scope, exclusions, invariants, acceptance criteria, verification meaning, and any D052 semantic conformance oracle are the durable request.
 
 After implementation begins:
 - the executor cannot edit the Task Contract;
 - ChatGPT must not silently rewrite the original task semantics to match implementation;
+- an executor cannot silently change an Orchestrator-owned expected result/threshold/classification to match implementation;
 - a material change requires an explicit persisted revision before execution continues;
 - lifecycle metadata and explicit review/revision/acceptance notes may be updated/appended by ChatGPT as long as the original request remains auditable.
 
-A reviewer must be able to distinguish the original task from later authorized revisions.
+A reviewer must be able to distinguish the original task/oracle from later authorized revisions.
 
 ## Lifecycle
 
 1. ChatGPT frames/researches the change.
-2. ChatGPT creates the Task Contract on a planning branch.
-3. The Task Contract is reviewed and integrated into `develop`.
-4. ChatGPT launches the executor with the canonical minimal launch prompt defined below.
-5. The executor synchronizes the canonical remote and verifies a safe current base baseline.
-6. If the governing integrated change modified `AGENTS.md`, the executor reloads current `AGENTS.md` when explicitly instructed by the conditional D043 line.
-7. The executor creates/uses the authorized implementation topic branch.
-8. The executor chooses its internal implementation process and performs only authorized non-Markdown work.
-9. Material task changes require a persisted ChatGPT revision before execution continues.
-10. The executor runs required verification and persists its non-Markdown handoff under `handoffs/`.
-11. The executor commits and pushes the implementation branch, including the current handoff artifact.
-12. The executor returns only status, handoff path, branch, and pushed HEAD.
-13. ChatGPT reads the Task Contract, handoff, and remote Git diff/evidence.
-14. Rework repeats on the same task branch using durable review/revision instructions.
-15. After ChatGPT acceptance, the implementation proceeds through PR to `develop`.
-16. ChatGPT may update lifecycle/acceptance metadata without rewriting original execution semantics.
-17. After accepted task content/handoff and acceptance records are integrated, any delegated post-integration branch retirement MUST be governed by an integrated Operational Contract under `docs/OPERATION-CONTRACTS.md` and launched only through `docs/POST-INTEGRATION-CLEANUP-PROMPT.md`.
-18. Operational task closure is complete only after required remote/local branch cleanup is verified.
+2. ChatGPT creates the Task Contract and selects D052 authorship mode when material.
+3. For `orchestrator-conformance`/`mixed`, ChatGPT authors the required conformance oracle before implementation when appropriate.
+4. The Task Contract and applicable conformance gate are reviewed and integrated into `develop`.
+5. ChatGPT launches the executor with the canonical minimal launch prompt defined below.
+6. The executor synchronizes the canonical remote and verifies a safe current base baseline.
+7. If the governing integrated change modified `AGENTS.md`, the executor reloads current `AGENTS.md` when explicitly instructed by the conditional D043 line.
+8. The executor creates/uses the authorized implementation topic branch.
+9. The executor chooses its internal implementation process and performs only authorized non-Markdown work, respecting any D052 conformance ownership boundary.
+10. Material task/oracle changes require a persisted ChatGPT revision before execution continues.
+11. The executor runs required conformance plus supplementary verification and persists its non-Markdown handoff under `handoffs/`.
+12. The executor commits and pushes the implementation branch, including the current handoff artifact.
+13. The executor returns only status, handoff path, branch, and pushed HEAD.
+14. ChatGPT reads the Task Contract, conformance baseline where applicable, handoff, and remote Git diff/evidence.
+15. Rework repeats on the same task branch using durable review/revision instructions.
+16. After ChatGPT acceptance, the implementation proceeds through PR to `develop`.
+17. ChatGPT may update lifecycle/acceptance metadata without rewriting original execution semantics.
+18. After accepted task content/handoff and acceptance records are integrated, any delegated post-integration branch retirement MUST be governed by an integrated Operational Contract under `docs/OPERATION-CONTRACTS.md` and launched only through `docs/POST-INTEGRATION-CLEANUP-PROMPT.md`.
+19. Operational task closure is complete only after required remote/local branch cleanup is verified.
 
 ## Canonical minimal executor launch prompt
 
@@ -225,6 +276,7 @@ The launch prompt MUST NOT duplicate task semantics that belong in Git, includin
 - exclusions;
 - architecture/design constraints;
 - test commands or fixture families;
+- D052 conformance corpus/expected outcomes/thresholds or oracle semantics;
 - expected implementation branch/handoff path when the Task Contract already defines them;
 - provider/product-specific implementation instructions;
 - task-specific safety/security restrictions;
@@ -236,7 +288,7 @@ Standing repository rules such as Markdown ownership remain in `AGENTS.md`/refer
 
 The generic D042 remote-freshness requirement is allowed in the prompt because it determines which persisted repository state is being loaded; it is not task-specific semantics. The D043 reload line is also allowed when required because it refreshes changed repository instructions rather than adding task semantics.
 
-If any task-specific fact is necessary to execute safely or correctly, persist it in the Task Contract or its controlling repository policy before launch rather than extending the chat/terminal prompt.
+If any task-specific fact is necessary to execute safely or correctly, persist it in the Task Contract, its D052 conformance assets, or its controlling repository policy before launch rather than extending the chat/terminal prompt.
 
 ### Launch-prompt authority invariant
 
@@ -245,14 +297,14 @@ The prompt does not supersede or supplement missing Task Contract semantics.
 ```text
 normal launch prompt = role + repository + remote freshness + task pointer + completion contract
 conditional delta     = AGENTS.md reload only after AGENTS.md change
-Task Contract + referenced Git policy = execution specification
+Task Contract + referenced Git policy + designated D052 conformance assets = execution specification
 ```
 
-If the Task Contract is missing, not `READY`, not integrated into the stated base branch, or materially incomplete, do not compensate by adding instructions to the launch prompt. Repair/persist the contract first.
+If the Task Contract is missing, not `READY`, not integrated into the stated base branch, materially incomplete, or missing a required D052 pre-authored oracle, do not compensate by adding instructions to the launch prompt. Repair/persist the contract/gate first.
 
-If the executor cannot find the Task Contract after synchronizing and verifying the current canonical base, it MUST stop/escalate; it MUST NOT fall back to a stale topic branch or chat-carried semantics.
+If the executor cannot find the Task Contract or required conformance assets after synchronizing and verifying the current canonical base, it MUST stop/escalate; it MUST NOT fall back to a stale topic branch or chat-carried semantics.
 
-If a launch prompt conflicts with the persisted Task Contract or repository policy, the executor MUST stop/escalate rather than choosing the chat-only instruction as a new task scope. Human/ChatGPT changes to objective/scope/acceptance/verification must be persisted through the normal Task Contract revision flow.
+If a launch prompt conflicts with the persisted Task Contract, D052 conformance oracle, or repository policy, the executor MUST stop/escalate rather than choosing the chat-only instruction as a new task scope. Human/ChatGPT changes to objective/scope/acceptance/verification/oracle semantics must be persisted through the normal Task Contract/revision flow.
 
 ## Canonical post-integration cleanup delegation
 
@@ -288,6 +340,7 @@ Operational Contract completion schemas are defined by each integrated Operation
 
 A reviewer must be able to reconstruct from Git alone:
 - what was requested before implementation or operation;
+- which D052 test-authorship mode/oracle applied when material;
 - any explicit revisions/review directives;
 - what the executor reported it did;
 - what actually changed.
