@@ -1,8 +1,8 @@
 # Deterministic Governance Tests
 
-This directory contains code-driven tests of the Governance Core and deterministic portions of both Agent Skills.
+This directory contains code-driven tests of the Governance Core and deterministic portions of Agent Governance.
 
-The normative testing architecture, external references, isolation rules, fixture policy, property-testing guidance, and release thresholds live in `../docs/TESTING-AND-EVALUATION.md`. The concrete language/framework decision is `../docs/decisions/D023-python-testing-stack.md`. Testing Skill/capability boundaries are defined by `../docs/TESTING-SKILL-CAPABILITIES.md` and D024. Test authorship modes are defined by D052. Source local tooling and locked commands are defined by `../docs/LOCAL-DEVELOPMENT-TOOLCHAIN.md` and D025. Ecosystem/SDD/Skill coexistence is defined by `../governance-core/COEXISTENCE.md` and D026.
+The normative testing architecture, external references, isolation rules, fixture policy, property-testing guidance, and release thresholds live in `../docs/TESTING-AND-EVALUATION.md`. The concrete language/framework decision is `../docs/decisions/D023-python-testing-stack.md`. Testing Skill/capability boundaries are defined by `../docs/TESTING-SKILL-CAPABILITIES.md` and D024. D052 authorship modes are defined by `../docs/decisions/D052-specification-owned-conformance-test-authorship.md`; oracle ownership/freeze/revision/`ORACLE_DEFECT` mechanics live in `../docs/CONFORMANCE-ORACLE-CONTRACT.md`. Source local tooling and locked commands are defined by `../docs/LOCAL-DEVELOPMENT-TOOLCHAIN.md` and D025. Ecosystem/SDD/Skill coexistence is defined by `../governance-core/COEXISTENCE.md` and D026.
 
 ## Canonical test stack
 
@@ -36,23 +36,13 @@ When available, the Maintainer Skill may route a source-maintenance task to the 
 
 Do not create or require generic pytest/testing/TDD Skills solely to run these tests. External testing/security Skills are supplemental only after applicable governance approval and cannot replace repository-owned assertions.
 
-## Authorship and execution ownership
+## D052 ownership boundary
 
-D052 separates semantic conformance authorship from technical implementation testing.
+When a Task Contract selects `orchestrator-conformance` or `mixed`, exact Orchestrator-owned deterministic oracle assets MUST be identified by that contract/gate. Their semantic lifecycle and mutation rules are defined only in `../docs/CONFORMANCE-ORACLE-CONTRACT.md`; do not duplicate or reinterpret them here.
 
-Under `orchestrator-conformance` or the Orchestrator side of `mixed`, ChatGPT may author the committed deterministic conformance assets that directly encode ChatGPT-owned acceptance semantics, including required assertions, expected decisions, semantic negative controls or golden fixture data identified by the controlling Task Contract/gate.
+The Agente de IA Ejecutor still owns execution, ordinary implementation/unit/integration/regression tests, property/fuzz/state exploration, technical harness/configuration work, supplementary cases, and verification evidence unless the Task Contract explicitly designates an asset as Orchestrator-owned oracle material.
 
-The Agente de IA Ejecutor owns:
-- execution of all required deterministic tests;
-- implementation-focused unit/integration/regression tests;
-- property/fuzz/state exploration where authorized;
-- supplementary fixtures/cases that do not redefine the approved oracle;
-- technical harness/configuration work and verification evidence;
-- all test implementation under `executor-implementation` mode.
-
-A D052 Orchestrator-owned conformance asset is an executable projection of its controlling specification, not authority. The executor may not change expected semantics merely to make the suite green. If it believes the oracle is semantically wrong, it reports an `ORACLE_DEFECT`-equivalent blocker with evidence. Mechanical harness corrections require durable authorization and must preserve semantic meaning.
-
-For behavior-preserving refactors, characterization tests accepted during RF1 become a frozen baseline for the refactor unit. D052 determines authorship when the contract explicitly selects a mode; changing an accepted baseline after implementation begins requires explicit ChatGPT authorization.
+Required Orchestrator oracle cases and supplementary Executor tests MUST remain distinguishable in evidence.
 
 ## Test style
 
