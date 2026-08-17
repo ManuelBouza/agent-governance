@@ -18,6 +18,7 @@ Use the checkpoint to determine **what is current**. Use this map to determine *
 | `unified-program` | D044 unified Governance architecture/program sequencing | `docs/decisions/D044-unified-governance-skill-architecture.md`, `docs/UNIFIED-GOVERNANCE-REFACTOR-PLAN.md` |
 | `skill-capability` | routine capability lookup, intent ownership, profile/risk/context routing, topology-neutral projection lookup | `docs/decisions/D050-canonical-capability-source-and-evaluated-skill-topology.md`, `docs/CAPABILITY-CATALOG.md` |
 | `capability-authoring` | changing capability identity/model/metadata rules or semantic clustering | `docs/decisions/D050-canonical-capability-source-and-evaluated-skill-topology.md`, `docs/CAPABILITY-SOURCE-CONTRACT.md`, `docs/CAPABILITY-CATALOG.md` |
+| `consumer-routing-design` | reviewing/changing topology-neutral Consumer L1/L2 guard, routing or projection-mapping semantics | `docs/CAPABILITY-CATALOG.md`, `docs/CONSUMER-L1-GUARD-SPEC.md`, `docs/CONSUMER-L1-ROUTING-CONTRACT.md`, `docs/CONSUMER-L2-PROJECTION-MAPPING-CONTRACT.md` |
 | `conformance-authoring` | D052 oracle ownership, freeze/revision or semantic conformance asset design | `docs/decisions/D052-specification-owned-conformance-test-authorship.md`, `docs/CONFORMANCE-ORACLE-CONTRACT.md` |
 | `icae-rcab` | assurance design, context architecture, context budgets/projections | `docs/decisions/D046-agent-capability-engineering-and-context-architecture.md`, `docs/AGENT-CAPABILITY-ENGINEERING.md`, `docs/CONTEXT-ARCHITECTURE.md`, this map |
 | `task-governance` | authoring/reviewing executor Task Contracts and handoffs | `docs/TASK-CONTRACTS.md`, `docs/EXECUTOR-HANDOFFS.md` |
@@ -27,7 +28,9 @@ The table is intentionally small. The active checkpoint and current Task/Operati
 
 For ordinary capability lookup, prefer `skill-capability`; load `CAPABILITY-SOURCE-CONTRACT.md` only when changing the capability model itself. This keeps routine routing on the compact catalog instead of the authoring contract.
 
-The capability routes deliberately exclude D051/D052 by default. Load D051 only when installation/package semantics are material and D052 only when conformance/test-authorship semantics are material.
+Use `consumer-routing-design` for stable Consumer semantic routing contracts. Add `docs/CONSUMER-V1-SEMANTIC-TRACEABILITY.md` only for v1 preservation/equivalence review, and add the progressive-disclosure/reference-candidate documents only when comparing information placement or R* boundaries. They are intentionally not part of the default stable route.
+
+The capability/routing routes deliberately exclude D051/D052 by default. Load D051 only when installation/package semantics are material and D052 only when conformance/test-authorship semantics are material.
 
 The `conformance-authoring` route deliberately excludes `docs/TASK-CONTRACTS.md` and the full testing/eval strategy by default. Add `task-governance` when binding an oracle to a concrete executable task. Load testing/eval/provider/host material only when the selected assurance plane requires it.
 
@@ -76,12 +79,27 @@ The block below is the canonical machine-readable registry for the stable routes
     {
       "path": "docs/CAPABILITY-CATALOG.md",
       "class": "focused",
-      "routes": ["skill-capability", "capability-authoring"]
+      "routes": ["skill-capability", "capability-authoring", "consumer-routing-design"]
     },
     {
       "path": "docs/CAPABILITY-SOURCE-CONTRACT.md",
       "class": "focused",
       "routes": ["capability-authoring"]
+    },
+    {
+      "path": "docs/CONSUMER-L1-GUARD-SPEC.md",
+      "class": "focused",
+      "routes": ["consumer-routing-design"]
+    },
+    {
+      "path": "docs/CONSUMER-L1-ROUTING-CONTRACT.md",
+      "class": "focused",
+      "routes": ["consumer-routing-design"]
+    },
+    {
+      "path": "docs/CONSUMER-L2-PROJECTION-MAPPING-CONTRACT.md",
+      "class": "focused",
+      "routes": ["consumer-routing-design"]
     },
     {
       "path": "docs/decisions/D052-specification-owned-conformance-test-authorship.md",
