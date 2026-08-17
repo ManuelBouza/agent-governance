@@ -9,7 +9,8 @@
 - Expected topic branch: `test/t023-skill-activation-topology-evals`
 - Expected executor handoff: `handoffs/T023-executor-handoff.json`
 - Assurance-Class: `routing/behavioral-eval + deterministic-isolation + context/distribution evidence`
-- Readiness note: Remains `BLOCKED` until T022 is ACCEPTED and MG1 is integrated into `develop` with the D050 topology corpus and victory thresholds pre-registered.
+- Test-Authorship-Mode: `mixed`
+- Readiness note: Remains `BLOCKED` until T022 is ACCEPTED and MG1 is integrated into `develop` with the D050 topology corpus, D052 conformance oracle and victory thresholds pre-registered.
 
 ## Objective
 
@@ -26,13 +27,42 @@ This task decides an **activation topology**, not Governance authority, runtime 
 - `docs/decisions/D044-unified-governance-skill-architecture.md`
 - `docs/decisions/D050-canonical-capability-source-and-evaluated-skill-topology.md`
 - `docs/decisions/D051-single-install-self-bootstrap-and-durable-project-footprint.md`
+- `docs/decisions/D052-specification-owned-conformance-test-authorship.md`
 - `docs/decisions/D046-agent-capability-engineering-and-context-architecture.md`
 - `docs/UNIFIED-GOVERNANCE-REFACTOR-PLAN.md`
-- MG1-integrated canonical/experimental Skill routing Markdown and pre-registered eval criteria
+- MG1-integrated canonical/experimental Skill routing Markdown and pre-registered D052 conformance assets
 - `docs/TESTING-AND-EVALUATION.md`
 - `docs/CONTEXT-ARCHITECTURE.md`
 - `docs/MAINTAINER-SKILL-CONTRACT.md`
 - `docs/GOVERNANCE-SKILL-CONTRACT.md`
+
+## D052 ownership split
+
+MG1/ChatGPT Orchestrator owns the semantic acceptance oracle for this experiment before T023 starts, including at minimum:
+
+- exact candidate topology definitions/identities;
+- positive/negative/near-miss/cross-profile/ambiguous/multi-intent corpus membership;
+- expected classifications/outcome semantics;
+- fixed train/validation or equivalent holdout partition when applicable;
+- repeated clean-context trial method;
+- applicable metric definitions;
+- material-improvement and mandatory non-regression thresholds;
+- semantic negative controls;
+- deterministic grader/assertion expectations that encode the approved comparison meaning.
+
+Those assets are frozen once T023 begins unless a persisted ChatGPT revision explicitly restarts/redefines the experiment.
+
+The executor owns technical realization and verification execution, including:
+
+- host/model/provider runner/adapters where authorized;
+- environment/session isolation;
+- trace/result collection;
+- metric computation from the frozen oracle/results;
+- technical harness plumbing;
+- supplementary implementation/exploratory tests and diagnostics that do not redefine the frozen oracle;
+- the executor handoff and evidence package.
+
+If the executor finds a suspected semantic defect in the MG1 oracle, it must stop the affected claim and report an `ORACLE_DEFECT`-equivalent blocker with evidence rather than changing expected classifications, thresholds or semantic grader meaning.
 
 ## Required topology set
 
@@ -49,11 +79,13 @@ Any additional candidate requires MG1 authority before T023 starts. Provider-spe
 
 ## Authorized scope
 
-- Non-Markdown activation/eval corpora, fixtures, harnesses, adapters and result evidence that implement the already-integrated MG1 experiment.
-- Non-Markdown deterministic profile-isolation/routing tests required to verify constant semantics across topology candidates.
+- Non-Markdown runner/harness/adapters and result evidence needed to execute the already-integrated MG1/D052 experiment.
+- Non-Markdown deterministic profile-isolation/routing implementation tests required to verify constant semantics across topology candidates.
 - Non-Markdown context/load-path instrumentation or structured traces that measure the MG1-defined metrics without introducing telemetry/network dependencies outside the test harness.
 - Temporary/ignored generated Skill/package outputs produced from the MG1-owned canonical experimental definitions.
-- Non-Markdown structured topology-selection evidence.
+- Non-Markdown structured topology-selection evidence derived from the frozen MG1 oracle and executed results.
+- Supplementary executor-authored diagnostic/edge/adversarial cases that do not change the pre-registered selection rule or required corpus.
+- Mechanical harness corrections only when they preserve the frozen semantic oracle and are authorized by the durable task/review flow.
 - The executor handoff JSON.
 
 ## Explicit exclusions
@@ -61,7 +93,8 @@ Any additional candidate requires MG1 authority before T023 starts. Provider-spe
 - Committed Markdown (`*.md`) authoring, editing, deletion, or regeneration.
 - Changes to `governance-core/` protocol semantics.
 - Changes to accepted deterministic capability behavior merely to improve one topology.
-- Post-hoc modification of the MG1 corpus, variants, host/model matrix, repeated-trial method or victory thresholds after comparative results are observed.
+- Post-hoc modification of the MG1 corpus, expected classifications, variants, host/model matrix, repeated-trial method, metric meaning or victory thresholds after comparative results are observed.
+- Executor-authored semantic replacement of any D052 Orchestrator-owned conformance asset.
 - Creating independently maintained Governance Skill sources/products.
 - Independent per-entrypoint product/version identities.
 - Making portable correctness depend on Skill-to-Skill invocation.
@@ -84,13 +117,14 @@ Across B0, B1, F2 and G3, T023 MUST hold constant the accepted:
 - Consumer/source permission and mutation boundaries;
 - deterministic regression baseline;
 - canonical capability/source authority;
-- D051 one-product/single-install Consumer distribution constraint.
+- D051 one-product/single-install Consumer distribution constraint;
+- D052 frozen conformance-oracle meaning for the comparative experiment.
 
-A topology MAY change which Skill metadata/body/reference is exposed or activated. It MUST NOT gain an artificial advantage by changing the governed behavior being routed.
+A topology MAY change which Skill metadata/body/reference is exposed or activated. It MUST NOT gain an artificial advantage by changing the governed behavior being routed or the acceptance oracle used to score it.
 
 ## Required corpus classes
 
-The MG1 corpus MUST be executed with the repetition/isolation policy pre-registered before T023 and include at least:
+The MG1 corpus MUST be persisted before T023 and executed with the repetition/isolation policy pre-registered before T023. It includes at least:
 
 - positive Consumer lifecycle prompts;
 - positive state/event/mission/handoff/sequencing prompts;
@@ -102,6 +136,8 @@ The MG1 corpus MUST be executed with the repetition/isolation policy pre-registe
 - cross-profile cases designed to detect Consumer/source-maintainer contamination;
 - ambiguous cases with an expected bounded/insufficient-context behavior;
 - multi-intent cases where one or more capabilities may legitimately be needed.
+
+The executor may add exploratory cases for diagnosis, but those additions cannot silently enter the frozen acceptance score or change the pre-registered decision rule.
 
 ## Required evidence dimensions
 
@@ -122,7 +158,7 @@ T023 does not implement final platform wrappers; its installability evidence may
 
 ## Selection rule
 
-MG1 MUST define the exact numeric/qualitative material-improvement and non-regression thresholds before T023 starts.
+MG1 MUST define and persist the exact numeric/qualitative material-improvement and non-regression thresholds before T023 starts.
 
 T023 MUST apply those thresholds without changing them after results are observed.
 
@@ -138,13 +174,13 @@ If no split topology meets the pre-registered advantage criteria, B0 or B1 remai
 All evaluated candidates use the same accepted Core/engine/profile/capability semantics, and deterministic functional regressions are green.
 
 ### AC-T023-2 — complete pre-registered routing corpus
-Positive, negative, near-miss, cross-profile, ambiguous and multi-intent cases execute under the MG1 repetition/isolation method with raw/structured evidence retained.
+The exact MG1/D052 positive, negative, near-miss, cross-profile, ambiguous and multi-intent cases execute under the pre-registered repetition/isolation method with raw/structured evidence retained.
 
 ### AC-T023-3 — multidimensional comparison
 Activation, routing, overactivation, isolation, context/load-path and D051 installability-feasibility dimensions are reported exactly as pre-registered; applicable portability/permission evidence is separated into portable versus host-specific claims.
 
-### AC-T023-4 — threshold integrity
-The selection uses the MG1 thresholds frozen before comparative results. No threshold/corpus mutation is used to force a preferred architecture.
+### AC-T023-4 — threshold and oracle integrity
+The selection uses the MG1 thresholds, expected outcomes and semantic graders frozen before comparative results. No threshold/corpus/classification/oracle mutation is used to force a preferred architecture.
 
 ### AC-T023-5 — one-product/source/install invariant
 Every candidate remains traceable to one canonical capability source, one Core and one deterministic engine; no second normative or independently maintained runtime source is introduced; the selected candidate remains compatible with D051 one-product/single-install packaging.
@@ -152,16 +188,20 @@ Every candidate remains traceable to one canonical capability source, one Core a
 ### AC-T023-6 — objective topology outcome
 Evidence yields exactly one accepted outcome under MG1 rules: B0, B1, F2, G3, or an explicitly pre-authorized additional candidate. If no challenger meets the accepted advantage criteria, the valid result is retention of the qualifying single-dispatcher/thin-router candidate rather than forced fragmentation.
 
+### AC-T023-7 — D052 ownership/evidence boundary
+The submitted branch preserves the frozen Orchestrator-owned conformance assets, records any supplementary executor-authored cases separately from the acceptance score, and provides evidence that the required oracle was executed rather than reconstructed or weakened during implementation.
+
 ## Verification requirements
 
-- Run the complete MG1 topology corpus with the predeclared repeated clean-context trial method.
+- Run the complete MG1/D052 topology corpus with the predeclared repeated clean-context trial method.
 - Run deterministic profile-isolation and Consumer/source-maintainer regression tests.
 - Run artifact/source-independence regression necessary to prove the candidates did not alter accepted runtime/distribution semantics.
-- Persist raw/structured non-Markdown evidence sufficient to recompute the reported routing metrics.
+- Persist raw/structured non-Markdown evidence sufficient to recompute the reported routing metrics from the frozen corpus/results.
 - Persist candidate identity/provenance sufficient to prove that the evaluated presentation is the MG1-frozen one.
 - Persist structured context/load-path measurements or explicitly labelled deterministic load-model evidence.
 - Persist the MG1-defined installability/package-feasibility evidence for each candidate where applicable.
 - Report per-host/per-model results separately where the matrix has multiple cells; do not collapse provider variance into one opaque score.
+- Distinguish required D052 conformance cases from supplementary executor-authored diagnostic/exploratory cases in evidence.
 - Map every acceptance criterion to exact evidence type/path in the handoff.
 
 ## Stop / escalation conditions
@@ -169,7 +209,8 @@ Evidence yields exactly one accepted outcome under MG1 rules: B0, B1, F2, G3, or
 Stop and report `BLOCKED` rather than broadening scope if:
 
 - MG1 is not integrated into current `develop`;
-- MG1 lacks pre-registered topology variants or victory/non-regression thresholds;
+- MG1 lacks pre-registered topology variants, conformance corpus/expected outcomes or victory/non-regression thresholds;
+- the executor identifies a suspected semantic `ORACLE_DEFECT` in the frozen MG1/D052 acceptance assets that cannot be resolved mechanically without changing meaning;
 - the harness cannot distinguish topology quality from unrelated provider/network instability to the degree required by the predeclared method;
 - candidate construction would require executor-authored committed Markdown;
 - an apparently winning topology requires changed Core/runtime semantics or broader source-maintainer authorization;
