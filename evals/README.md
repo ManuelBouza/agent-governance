@@ -2,7 +2,7 @@
 
 This directory contains agent-facing evaluations of behavior intrinsic to the Governance product.
 
-The normative eval architecture, external references, isolation rules, grader selection, fixture policy, repeated-trial requirements, and release thresholds live in `../docs/TESTING-AND-EVALUATION.md`. The repository-owned harness language decision is `../docs/decisions/D023-python-testing-stack.md`. Skill/capability boundaries are defined by `../docs/TESTING-SKILL-CAPABILITIES.md` and D024. Test/eval authorship modes are defined by D052. Ecosystem/SDD/Skill coexistence is defined by `../governance-core/COEXISTENCE.md` and D026.
+The normative eval architecture, external references, isolation rules, grader selection, fixture policy, repeated-trial requirements, and release thresholds live in `../docs/TESTING-AND-EVALUATION.md`. The repository-owned harness language decision is `../docs/decisions/D023-python-testing-stack.md`. Skill/capability boundaries are defined by `../docs/TESTING-SKILL-CAPABILITIES.md` and D024. D052 authorship modes are defined by `../docs/decisions/D052-specification-owned-conformance-test-authorship.md`; oracle ownership/freeze/revision/`ORACLE_DEFECT` mechanics live in `../docs/CONFORMANCE-ORACLE-CONTRACT.md`. Ecosystem/SDD/Skill coexistence is defined by `../governance-core/COEXISTENCE.md` and D026.
 
 ## Harness language
 
@@ -18,23 +18,13 @@ When the Maintainer Skill is available, it is the project-owned top-level Skill 
 
 External Skill-authoring/evaluation/security Skills may be supplemental only after approval. Their generated prompts, reports, or candidate assertions do not replace repository-owned eval cases, traces, graders, or ChatGPT review.
 
-## Authorship and execution ownership
+## D052 ownership boundary
 
-D052 separates the semantic eval oracle from technical execution/harness work.
+When a Task Contract selects `orchestrator-conformance` or `mixed`, exact Orchestrator-owned eval-oracle assets MUST be identified by that contract/gate. Their semantic lifecycle, freeze/revision rules, mechanical-correction boundary and `ORACLE_DEFECT` handling are defined only in `../docs/CONFORMANCE-ORACLE-CONTRACT.md`; do not duplicate or reinterpret them here.
 
-Under `orchestrator-conformance` or the Orchestrator side of `mixed`, ChatGPT may author and freeze committed conformance/eval assets that directly encode approved semantics, including trigger corpora, positive/negative/near-miss/cross-profile/ambiguous cases, expected classifications, holdout partitions, semantic negative controls, accepted thresholds and deterministic grader expectations.
+The Agente de IA Ejecutor still owns eval execution, clean-session/environment orchestration, host/model/provider adapters, technical harness plumbing, traces, measurements, aggregation, supplementary exploratory/adversarial cases, and implementation-focused eval/test work unless an exact asset is designated as Orchestrator-owned oracle material.
 
-The Agente de IA Ejecutor owns:
-- eval execution and clean-session/environment orchestration;
-- host/model/provider adapters and technical harness plumbing where authorized;
-- traces, measurements, result aggregation and verification evidence;
-- supplementary exploratory/adversarial cases that do not redefine the approved oracle;
-- implementation-focused eval/test work;
-- all eval implementation under `executor-implementation` mode.
-
-The executor may not change an Orchestrator-owned expected classification, threshold, semantic grader expectation or acceptance case merely to improve results. If it finds a semantic defect in the oracle, it reports an `ORACLE_DEFECT`-equivalent blocker with evidence. Mechanical harness corrections require durable authorization and must preserve the approved semantic meaning.
-
-For behavior-preserving refactors, eval cases accepted as part of the RF1 characterization baseline are frozen for that refactor unit unless ChatGPT explicitly authorizes a correction.
+Required frozen oracle cases and supplementary Executor cases MUST remain distinguishable in evidence.
 
 ## Eval rules
 
@@ -44,7 +34,7 @@ For behavior-preserving refactors, eval cases accepted as part of the RF1 charac
 - use deterministic graders for mechanical assertions and model graders only when semantic interpretation requires them;
 - repeated trials are required for probabilistic behavior;
 - representative transcripts and failures must be inspected during release review;
-- D052 pre-authored corpora/thresholds/expected outcomes must remain fixed during a controlled comparison unless a persisted Orchestrator revision explicitly restarts/redefines the experiment.
+- when a D052 frozen oracle applies, execute that exact revision and keep required versus supplementary cases separate.
 
 ## Eval surfaces
 
