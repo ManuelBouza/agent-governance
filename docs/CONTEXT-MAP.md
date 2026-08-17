@@ -17,13 +17,16 @@ Use the checkpoint to determine **what is current**. Use this map to determine *
 | `cold-start` | every source-maintenance bootstrap | `AGENTS.md`, then `docs/orchestrator/CHECKPOINT.md` |
 | `unified-program` | D044 unified Governance architecture/program sequencing | `docs/decisions/D044-unified-governance-skill-architecture.md`, `docs/UNIFIED-GOVERNANCE-REFACTOR-PLAN.md` |
 | `skill-capability` | D050 capability authoring, Skill responsibility, topology-neutral routing or future generated-entrypoint design | `docs/decisions/D050-canonical-capability-source-and-evaluated-skill-topology.md`, `docs/CAPABILITY-SOURCE-CONTRACT.md` |
+| `conformance-authoring` | D052 oracle ownership, freeze/revision or semantic conformance asset design | `docs/decisions/D052-specification-owned-conformance-test-authorship.md`, `docs/CONFORMANCE-ORACLE-CONTRACT.md` |
 | `icae-rcab` | assurance design, context architecture, context budgets/projections | `docs/decisions/D046-agent-capability-engineering-and-context-architecture.md`, `docs/AGENT-CAPABILITY-ENGINEERING.md`, `docs/CONTEXT-ARCHITECTURE.md`, this map |
 | `task-governance` | authoring/reviewing executor Task Contracts and handoffs | `docs/TASK-CONTRACTS.md`, `docs/EXECUTOR-HANDOFFS.md` |
 | `operation-governance` | repository operations/cleanup and durable receipts | `docs/OPERATION-CONTRACTS.md`, `docs/OPERATIONAL-CONTRACTS.md` |
 
 The table is intentionally small. The active checkpoint and current Task/Operational Contract select exact task, review, handoff, learning, release or evidence files only when needed.
 
-The `skill-capability` route deliberately excludes D051/D052 by default. Load D051 only when installation/package semantics are material and D052 only when conformance/test-authorship semantics are material. This prevents normal capability-authoring work from paying unrelated packaging/testing context costs.
+The `skill-capability` route deliberately excludes D051/D052 by default. Load D051 only when installation/package semantics are material and D052 only when conformance/test-authorship semantics are material.
+
+The `conformance-authoring` route deliberately excludes `docs/TASK-CONTRACTS.md` and the full testing/eval strategy by default. Add `task-governance` when binding an oracle to a concrete executable task. Load testing/eval/provider/host material only when the selected assurance plane requires it.
 
 ## Load discipline
 
@@ -71,6 +74,16 @@ The block below is the canonical machine-readable registry for the stable routes
       "path": "docs/CAPABILITY-SOURCE-CONTRACT.md",
       "class": "focused",
       "routes": ["skill-capability"]
+    },
+    {
+      "path": "docs/decisions/D052-specification-owned-conformance-test-authorship.md",
+      "class": "focused",
+      "routes": ["conformance-authoring"]
+    },
+    {
+      "path": "docs/CONFORMANCE-ORACLE-CONTRACT.md",
+      "class": "focused",
+      "routes": ["conformance-authoring"]
     },
     {
       "path": "docs/decisions/D046-agent-capability-engineering-and-context-architecture.md",
