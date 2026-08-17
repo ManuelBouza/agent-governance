@@ -8,15 +8,34 @@ Define how agents modify the canonical `agent-governance` source product without
 
 This is a repository-maintenance workflow, not an installed `.agent-coordination/` lifecycle. Real consumer-project governance is exercised only in separate repositories or synthetic disposable fixtures.
 
-All mutation follows `docs/BRANCHING.md`. Verification follows `docs/TESTING-AND-EVALUATION.md`. D022 defines the controlling staged-change decision. D027 and `docs/ORCHESTRATOR-CHECKPOINTS.md` define ChatGPT source-maintenance continuity across conversations.
+All mutation follows `docs/BRANCHING.md`. Verification follows `docs/TESTING-AND-EVALUATION.md`. D022 defines the controlling staged-change decision. D027 and `docs/ORCHESTRATOR-CHECKPOINTS.md` define ChatGPT source-maintenance continuity across conversations. D052 and `docs/CONFORMANCE-ORACLE-CONTRACT.md` control specification-owned conformance authorship where applicable.
 
 ## Roles
 
 - **Human Owner** — final authority.
-- **ChatGPT Orchestrator** — research/specification/architecture owner, reviewer, Task Contract owner, source-maintenance checkpoint owner, and exclusive normal author of committed Markdown.
-- **Agente de IA Ejecutor** — product-agnostic coding-agent role fulfilled by OpenCode, Codex, Claude Code, Antigravity, or another compatible agent; owns authorized non-Markdown implementation, tests/evals, execution, and persisted executor handoffs.
+- **ChatGPT Orchestrator** — research/specification/architecture owner, reviewer, Task Contract owner, source-maintenance checkpoint owner, exclusive normal author of committed Markdown, and owner of D052-designated semantic conformance/oracle assets.
+- **Agente de IA Ejecutor** — product-agnostic coding-agent role fulfilled by OpenCode, Codex, Claude Code, Antigravity, or another compatible agent; owns authorized non-Markdown implementation, technical/exploratory tests/evals, harness/configuration, verification execution/evidence, and persisted executor handoffs, subject to D052-designated Orchestrator conformance assets.
 
 `AGENTS.md` is the normative repository adapter for these responsibilities.
+
+### D052 test-authorship overlay
+
+When test/eval ownership is material, a new or materially revised Task Contract SHOULD select `orchestrator-conformance`, `executor-implementation`, or `mixed` under D052.
+
+```text
+orchestrator-conformance / mixed
+    Orchestrator -> required semantic conformance/oracle assets
+    Executor     -> implementation/exploratory tests + execution/evidence
+
+executor-implementation
+    Executor     -> implementation/exploratory tests + execution/evidence
+```
+
+The D052 exception is narrow: it does not transfer general implementation, runner plumbing, provider adapters, technical debugging helpers, measurements, traces, executor handoffs, or ordinary implementation tests to ChatGPT.
+
+Semantic oracle changes require persisted Orchestrator authority. A test/eval remains evidence, never Governance authority.
+
+D052 is prospective. Existing T032/T021 work remains grandfathered and T022 may complete under its already-integrated contract as stated by D052.
 
 ## ChatGPT session cold start and turnover
 
@@ -80,9 +99,10 @@ Examples:
 - deterministic test/eval infrastructure;
 - scripts/CLI;
 - adapters/configuration;
-- non-Markdown fixtures/assets.
+- non-Markdown fixtures/assets;
+- D052-designated non-Markdown semantic conformance/oracle assets.
 
-Executable work requires a Task Contract already integrated into `develop` before the executor begins.
+Executable Executor work requires a Task Contract already integrated into `develop` before the executor begins. When D052 selects `orchestrator-conformance` or `mixed`, required Orchestrator-owned conformance assets are persisted/reviewed before Executor implementation when they are needed to define acceptance.
 
 ### Behavior-preserving refactor
 
@@ -98,7 +118,7 @@ Normal work MUST NOT write directly to `main` or `develop`.
 
 - `main` = stable/potentially releasable state.
 - `develop` = next unreleased integration state.
-- planning/Markdown changes use an appropriate short-lived topic branch -> PR -> `develop`.
+- planning/Markdown and Orchestrator-owned D052 conformance changes use an appropriate short-lived topic branch -> review/PR -> `develop`.
 - executor implementation uses the Task Contract's short-lived topic branch -> PR -> `develop` only after ChatGPT review.
 
 Prefer one coherent, independently reviewable change per branch/PR. Split unrelated features, fixes, refactors, dependency upgrades, and cleanup.
@@ -134,27 +154,38 @@ The Task Contract defines at minimum:
 - expected executor handoff path;
 - acceptance criteria;
 - verification/evidence requirements;
+- D052 `Test-Authorship-Mode` and required frozen conformance-asset references when test ownership is material;
 - stop/escalation conditions.
 
 ### Contract integration gate
 
 The Task Contract and any controlling Markdown/Decision Records MUST be integrated into `develop` before executor implementation begins.
 
+When `orchestrator-conformance` or `mixed` requires preimplementation oracle assets, those assets MUST also be integrated into the Executor's starting `develop` baseline before implementation begins.
+
 Normal sequence:
 
-`planning branch -> PR -> develop (contract present) -> executor topic branch`
+`planning/oracle branch -> PR -> develop (contract + required oracle present) -> executor topic branch`
 
-The executor implementation branch MUST be created from a `develop` revision that already contains the exact Task Contract it is expected to execute.
+The executor implementation branch MUST be created from a `develop` revision that already contains the exact Task Contract and any required frozen D052 conformance assets it is expected to execute.
 
-This keeps the requested work independently auditable before implementation exists.
+This keeps the requested work and acceptance oracle independently auditable before implementation exists.
 
 ### Contract freeze
 
 Once implementation starts, the original task semantics are not silently rewritten to match the implementation.
 
 - The executor never edits the Task Contract.
-- Material changes to objective, scope, exclusions, invariants, acceptance, or verification meaning require ChatGPT to persist an explicit revision before execution continues.
+- Material changes to objective, scope, exclusions, invariants, acceptance, verification meaning, or semantic oracle meaning require ChatGPT to persist an explicit revision before execution continues.
 - ChatGPT may update lifecycle metadata or append explicit review/revision/acceptance notes, provided the original request is not obscured.
+
+### D052 oracle freeze
+
+When an Orchestrator-owned oracle is required, its identity/expected meaning is frozen under `docs/CONFORMANCE-ORACLE-CONTRACT.md` before the implementation is allowed to optimize against it.
+
+The Executor may not change expected results, classifications, thresholds, semantic negative-control membership, or acceptance assertion meaning. A suspected semantic defect is reported through the D052 `ORACLE_DEFECT` boundary.
+
+Purely mechanical corrections are allowed only when the Task Contract or durable Orchestrator revision explicitly authorizes that correction class.
 
 ## PD2 — Executor checkout and verification plan
 
@@ -162,43 +193,49 @@ After PD1 is integrated, ChatGPT gives the executor only a minimal launch prompt
 
 The executor MUST:
 1. fetch the canonical repository/remotes;
-2. start from current `develop` containing the Task Contract;
+2. start from current `develop` containing the Task Contract and required D052 conformance assets;
 3. verify the working tree/base identity;
 4. create or checkout the Task Contract's topic branch;
 5. read only the controlling context required by the contract;
-6. determine the implementation/test approach inside the approved contract.
+6. determine the implementation and Executor-owned technical/exploratory test approach inside the approved contract;
+7. include every required frozen Orchestrator conformance asset in the verification plan without redefining its semantics.
 
-Depending on task type, the executor may:
-- add/update deterministic tests;
-- add/update agent-facing evals;
-- establish an approved pre-change characterization baseline;
-- identify expected failing tests for intentional new behavior.
+Depending on task type and selected authorship mode, the executor may:
+- add/update deterministic implementation/regression tests;
+- add/update supplementary agent-facing evals;
+- add property/fuzz/edge/adversarial exploration that does not redefine acceptance;
+- establish an Executor-owned characterization baseline when `executor-implementation` applies;
+- identify expected failing implementation tests for intentional new behavior.
+
+Under `orchestrator-conformance`/`mixed`, the Executor does not reconstruct or silently replace a required semantic oracle already frozen by ChatGPT.
 
 Tests/evals verify the approved contract; they do not redefine it.
 
 ## PD3 — Implement
 
-The Agente de IA Ejecutor performs only authorized non-Markdown work.
+The Agente de IA Ejecutor performs only authorized non-Markdown work outside the narrow D052 Orchestrator-owned conformance exception.
 
 The executor:
 - edits implementation/config/assets inside scope;
-- authors/updates applicable non-Markdown tests/evals/fixtures;
+- authors/updates applicable technical, exploratory, implementation, integration and supplementary test/eval/fixture assets inside its ownership boundary;
+- executes required frozen Orchestrator-owned conformance assets when applicable;
 - does not edit committed Markdown;
+- does not semantically change Orchestrator-owned oracle assets without persisted authorization;
 - does not change strategic scope or acceptance;
 - resolves ordinary technical implementation/test-design choices autonomously inside the contract;
 - keeps the branch focused on one coherent task.
 
-Markdown-only changes are performed by ChatGPT and skip executor implementation unless executable verification was explicitly delegated.
+Markdown-only and D052-designated Orchestrator conformance-authoring changes are performed by ChatGPT under their applicable branch/review gate. Executor implementation begins only after required preimplementation assets are integrated.
 
 ## PD4 — Verify, persist, commit, and push
 
-The executor runs all verification required by the Task Contract and writes/updates the task's handoff under `handoffs/` according to `docs/EXECUTOR-HANDOFFS.md`.
+The executor runs all verification required by the Task Contract, including every applicable frozen Orchestrator-owned conformance asset, and writes/updates the task's handoff under `handoffs/` according to `docs/EXECUTOR-HANDOFFS.md`.
 
 Before returning any `DONE`, `BLOCKED`, or `PARTIAL` status, the executor MUST:
-1. make the implementation/test/eval state internally coherent;
-2. run the required verification;
+1. make the implementation/Executor-owned test/eval state internally coherent;
+2. run the required verification, including designated Orchestrator conformance assets;
 3. update the persisted executor handoff so it describes the final local state;
-4. commit all authorized implementation/test/eval/handoff changes on the topic branch;
+4. commit all authorized implementation/Executor-owned test/eval/handoff changes on the topic branch;
 5. push the topic branch to the canonical remote;
 6. ensure the handoff identifies the pushed commit SHA and base SHA.
 
@@ -206,17 +243,18 @@ The remote topic branch is the review surface. ChatGPT MUST NOT be expected to t
 
 If verification/specification is blocked, persist a `BLOCKED`/`PARTIAL` handoff, commit/push the auditable state when safe, and stop rather than guessing.
 
-The executor MUST NOT make tests green by weakening the ChatGPT-approved contract.
+The executor MUST NOT make tests green by weakening the ChatGPT-approved contract or the semantic meaning of a D052-designated oracle.
 
 ## PD5 — Orchestrator remote review
 
 ChatGPT uses GitHub to review:
 - the persisted Task Contract and its revision history;
+- applicable frozen D052 conformance/oracle identity and revision history;
 - the persisted executor handoff at the pushed HEAD;
 - the remote base/head relationship;
 - every changed file/diff in scope;
 - implementation architecture and complexity;
-- test/eval quality and whether tests would detect relevant breakage;
+- test/eval quality and whether required + supplementary tests would detect relevant breakage;
 - verification evidence;
 - dependencies/configuration/security implications;
 - ownership and branch-policy compliance.
@@ -228,8 +266,8 @@ When review changes the durable frontier — accepted, blocked, rework requested
 ### Rework loop
 
 If technical rework is required:
-- if task semantics are unchanged, ChatGPT persists any durable review directive needed for the executor to act without relying on chat history;
-- if objective/scope/acceptance/verification meaning changes materially, ChatGPT persists an explicit Task Contract revision before execution continues;
+- if task/oracle semantics are unchanged, ChatGPT persists any durable review directive needed for the executor to act without relying on chat history;
+- if objective/scope/acceptance/verification/oracle meaning changes materially, ChatGPT persists an explicit Task Contract/oracle revision before execution continues;
 - the executor pulls the durable update, performs rework on the same task branch, reruns verification, updates the handoff, commits, pushes, and returns the minimal pointer again.
 
 The loop repeats until accepted or cancelled/blocked by Human Owner/ChatGPT.
@@ -258,12 +296,13 @@ Before intentionally closing the ChatGPT chat after integration, ensure `docs/or
 
 ## Handoff invariants
 
-- ChatGPT -> repository: persist research/decisions/contracts first.
-- Repository -> executor: Task Contract and controlling references are the source of task semantics.
+- ChatGPT -> repository: persist research/decisions/contracts and required D052 conformance/oracle assets first.
+- Repository -> executor: Task Contract, controlling references and applicable frozen conformance assets are the source of task/acceptance semantics.
 - ChatGPT -> executor: launch prompt is only a minimal pointer.
-- Executor -> repository: implementation/tests/evals plus persisted handoff are committed and pushed before status is returned.
+- Executor -> repository: implementation + Executor-owned tests/evals + required verification evidence + persisted handoff are committed/pushed as authorized before status is returned.
 - Executor -> ChatGPT: visible response contains only status, handoff path, branch, and pushed HEAD.
-- ChatGPT -> executor rework: durable review directive/contract revision first when needed.
+- Executor -> Orchestrator oracle: execute as required; do not semantically weaken; report `ORACLE_DEFECT` evidence when meaning appears wrong.
+- ChatGPT -> executor rework: durable review directive/contract-oracle revision first when needed.
 - ChatGPT -> PR/integration: only after remote review acceptance.
 - ChatGPT -> next ChatGPT chat: `docs/orchestrator/CHECKPOINT.md` plus Git remote state are the source of continuity; prior chat history is optional.
 - ChatGPT -> Human Owner: escalate scope/risk/public compatibility/release decisions when final authority is required.
@@ -272,4 +311,4 @@ No named executor product is privileged. Switching OpenCode -> Codex -> Claude C
 
 ## Engineering rationale
 
-This workflow intentionally uses small coherent changes, tests coupled to behavior changes, separate refactoring, durable change rationale, explicit review before integration, and compact cold-start checkpoints rather than ever-growing conversation context. These principles are consistent with the research basis recorded in D022 and the continuity decision in D027.
+This workflow intentionally uses small coherent changes, tests coupled to behavior changes, separate refactoring, durable change rationale, explicit review before integration, specification-owned conformance when semantically appropriate, and compact cold-start checkpoints rather than ever-growing conversation context. These principles are consistent with the research basis recorded in D022, the continuity decision in D027 and the authorship boundary in D052.
