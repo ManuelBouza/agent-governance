@@ -5,227 +5,130 @@ Controlling decision: `docs/decisions/D052-specification-owned-conformance-test-
 
 ## Purpose
 
-Define the reusable authoring contract for **Orchestrator-owned conformance/oracle assets** under D052.
+Define the reusable contract for **Orchestrator-owned conformance/oracle assets** under D052 without requiring each Skill/governance task to reconstruct acceptance semantics from broad testing documentation.
 
-The contract answers four questions without requiring each Skill/governance task to reconstruct the whole testing policy:
-
-1. what semantic material belongs to the Orchestrator-owned oracle;
-2. what remains Executor-owned harness/implementation verification;
-3. how oracle identity, freeze, revision and defect handling work;
-4. how Task Contracts point to the oracle with minimal context.
-
-This document does **not** create test authority above Governance. It operationalizes the D052 rule:
+Core rule:
 
 > Test authorship follows semantic authority.
 
-## Authority hierarchy
+A conformance oracle is an executable/data projection of approved semantics. It is evidence, not Governance authority.
 
-A conformance oracle is an executable/data projection of approved semantics.
-
-Authority remains:
+## Authority
 
 ```text
 Human / accepted Governance authority
     -> governance-core/ where applicable
     -> accepted Decision / functional contract / Task Contract
     -> Orchestrator-owned conformance oracle
-    -> Executor harness/execution/result evidence
+    -> Executor harness / execution / evidence
 ```
 
-If an oracle contradicts its controlling specification, the specification wins and the oracle must be corrected through persisted Orchestrator authority.
-
-Green oracle execution is evidence, not acceptance authority.
+If the oracle conflicts with its controlling specification, the specification wins and the oracle must be corrected through persisted Orchestrator authority.
 
 ## Applicability
 
 Use this contract when a Task Contract selects:
 
-- `Test-Authorship-Mode: orchestrator-conformance`; or
-- `Test-Authorship-Mode: mixed` for the Orchestrator-owned semantic surface.
+- `orchestrator-conformance`; or
+- `mixed` for the Orchestrator-owned semantic surface.
 
-Typical source-product uses include:
+Typical uses: Agent Skills, Governance/policy protocols, documentation-managed workflows, routing/classification semantics, security acceptance and frozen characterization baselines.
 
-- Agent Skill behavior/activation;
-- Governance/policy protocol behavior;
-- documentation-managed workflows;
-- routing/classification semantics;
-- security/permission acceptance expectations;
-- frozen characterization baselines whose meaning is owned by the Orchestrator.
+Ordinary consumer/application implementation remains `executor-implementation` by default.
 
-Ordinary consumer/application implementation remains `executor-implementation` by default and does not require an Orchestrator-authored oracle unless its Task Contract explicitly says otherwise.
+## Oracle vs harness
 
-## Oracle != harness
+Ownership is semantic, not based only on file extension/path.
 
-The distinction is semantic, not based only on file extension or directory.
-
-### Oracle
-
-Material whose contents define **what result counts as correct**.
+**Oracle** = material whose change can alter what counts as PASS/FAIL while implementation stays identical.
 
 Examples:
-
-- required input/case membership;
-- expected output/classification/decision;
+- required case membership;
+- expected result/classification/decision;
 - deterministic acceptance assertion meaning;
 - semantic negative controls;
-- accepted threshold or non-regression rule;
-- golden fixture contents when those contents are part of the accepted contract;
-- accepted security/adversarial expectations;
+- accepted thresholds/non-regression rules;
+- contract-significant golden fixture contents;
+- security/adversarial expectations;
 - frozen characterization behavior;
-- deterministic grader logic when the grader itself directly encodes approved expected semantics.
+- deterministic grader logic when it directly encodes approved expected semantics.
 
-### Harness
-
-Material whose primary purpose is to **execute, transport, isolate, collect or aggregate** the oracle.
+**Harness** = material that executes, isolates, transports, collects or aggregates the oracle.
 
 Examples:
-
 - pytest/eval runner mechanics;
 - environment/session setup;
 - provider/host adapters;
-- subprocess/tool invocation plumbing;
+- tool/subprocess wiring;
 - trace collection;
 - metrics aggregation implementation;
 - benchmark/timing plumbing;
-- temporary fixture generation mechanics;
 - debugging helpers.
 
-Harness work remains Executor-owned unless a separate accepted ownership rule says otherwise.
-
-## Semantic ownership test
+Harness/technical implementation remains Executor-owned unless a separate accepted rule says otherwise.
 
 When ownership is unclear, ask:
 
 ```text
-If this value/code changed while implementation stayed identical,
-could the accepted meaning of PASS/FAIL change?
+Could changing this value/code change accepted PASS/FAIL meaning
+without changing the implementation under test?
 ```
 
-If **yes**, it is presumptively oracle semantics and requires Orchestrator ownership/authorization.
+`yes` -> presumptively oracle semantics.  
+`no` -> presumptively harness/technical implementation.
 
-If **no**, and the change only affects execution mechanics, it is presumptively harness/technical implementation.
+The Task Contract overrides this heuristic when it assigns ownership explicitly.
 
-This test is a routing heuristic, not a substitute for the controlling Task Contract when that contract explicitly assigns ownership.
+## Oracle identity and lifecycle
 
-## Oracle identity
+Every material oracle SHOULD be identified by its Task Contract or prerequisite gate using only the metadata needed for auditability:
 
-Every material conformance oracle SHOULD have a stable identity recorded by its Task Contract or prerequisite gate.
+```text
+Oracle-ID: <stable-id>
+Oracle-Revision: <label or canonical Git identity>
+Oracle-Assets:
+  - <path>
+Oracle-Semantic-Scope: <concise meaning>
+Oracle-Freeze-State: DRAFT | FROZEN | SUPERSEDED | RETIRED
+Executor-Mechanical-Corrections: none | <bounded classes>
+```
 
-Recommended identity fields are:
+Do not create a separate manifest when the Task Contract already carries this information clearly.
 
-- `Oracle-ID` — stable scope/task identifier;
-- `Oracle-Revision` — explicit revision label or canonical Git commit identity;
-- `Controlling-Authority` — Decision/contract/Core/capability references;
-- `Test-Authorship-Mode`;
-- `Oracle-Assets` — exact committed paths;
-- `Semantic-Scope` — concise statement of what acceptance meaning is encoded;
-- `Freeze-State` — `DRAFT | FROZEN | SUPERSEDED | RETIRED`;
-- `Executor-Mechanical-Corrections` — `none` or explicitly authorized bounded classes.
+Lifecycle:
+- `DRAFT` — still authored/reviewed; not eligible for implementation acceptance.
+- `FROZEN` — integrated in canonical `develop` and eligible for execution.
+- `SUPERSEDED` — replaced by a persisted Orchestrator revision; supersession states whether prior evidence remains usable or must rerun.
+- `RETIRED` — no longer current acceptance input but retained as auditable history.
 
-These fields may live directly in the Task Contract/gate rather than in a separate manifest when a separate manifest would add no value.
-
-Do not create metadata for its own sake.
-
-## Freeze states
-
-### `DRAFT`
-
-The oracle is still being authored/reviewed and is not eligible to constrain implementation execution.
-
-### `FROZEN`
-
-The oracle is integrated into canonical `develop`, its semantic meaning is approved for the task, and the Executor may execute against it.
-
-A task using pre-authored conformance MUST NOT begin before the required oracle is `FROZEN` and reachable from the Executor's current canonical base.
-
-### `SUPERSEDED`
-
-A later persisted Orchestrator revision replaces the oracle for future execution.
-
-The superseding authority must say whether prior results remain usable, require partial rerun, or are invalidated.
-
-### `RETIRED`
-
-The oracle no longer participates in current acceptance but remains auditable historical evidence.
-
-Retirement must not erase the original accepted request/result history.
+A task requiring pre-authored conformance MUST NOT begin before the required oracle is `FROZEN` and reachable from the Executor's current canonical base.
 
 ## Oracle asset classes
 
-A task may use only the classes it actually needs.
+Use only the classes a task actually needs.
 
-### 1. Case corpus
+| Class | Semantic content |
+| --- | --- |
+| case corpus | required positive/negative/near-miss/cross-profile/ambiguous/multi-intent/security/compatibility/characterization cases |
+| expected outcomes | required decisions/classifications/state/output properties |
+| deterministic assertions | machine-decidable acceptance invariants |
+| semantic negative controls | materially incorrect variants selected to prove the criterion boundary |
+| thresholds / decision rules | accepted victory/non-regression rules |
+| golden fixtures | exact fixture state when that state itself is contractual |
+| grader expectations | accepted deterministic/model-grader meaning |
+| characterization baseline | accepted observable behavior frozen before behavior-preserving refactor |
 
-Structured or code-defined cases whose membership is semantically material.
+### Negative-control sufficiency
 
-Possible classes include:
+Negative controls MUST exercise the semantic boundary promised by the criterion, not merely one convenient corruption.
 
-- positive;
-- negative;
-- near-miss;
-- cross-profile;
-- ambiguous;
-- multi-intent;
-- security/adversarial;
-- compatibility/coexistence;
-- migration/rollback;
-- characterization/regression.
+If a criterion covers materially distinct dimensions, the oracle SHOULD contain representative controls for those dimensions.
 
-Not every task needs every class.
-
-### 2. Expected outcomes
-
-Expected decisions/classifications/state/output properties for required cases.
-
-Expected outcomes should be explicit enough that the Executor does not need to infer semantic acceptance from broad documentation.
-
-### 3. Deterministic acceptance assertions
-
-Machine-decidable invariants selected by the Orchestrator because they directly encode acceptance meaning.
-
-Prefer deterministic assertions over model judgment when the property is mechanically decidable.
-
-### 4. Semantic negative controls
-
-Purposeful mutations/input variants chosen to prove that a verifier rejects or distinguishes materially incorrect states.
-
-Negative controls MUST target the **semantic boundary promised by the criterion**, not merely one convenient corruption mechanism.
-
-Where a criterion covers several materially distinct dimensions, the oracle SHOULD identify representative controls for each relevant dimension.
-
-This requirement incorporates the T020/T032 lesson that a green suite or one negative test does not prove the entire criterion boundary.
-
-### 5. Thresholds / decision rules
-
-Numeric or qualitative victory/non-regression rules that affect acceptance.
-
-Thresholds must be frozen before observed comparative results when post-hoc tuning would bias the decision.
-
-A threshold is never weakened merely because the current implementation fails it.
-
-### 6. Golden fixtures
-
-Fixture contents whose exact semantic state is part of the accepted contract.
-
-Execution-only fixture setup remains harness work.
-
-### 7. Grader expectations
-
-Expected grader behavior/criteria when a grader is required.
-
-Mechanical properties should use deterministic graders. Model-based graders are reserved for genuinely semantic properties that cannot be safely reduced to code.
-
-### 8. Characterization baseline
-
-Observed behavior explicitly accepted/frozen as the baseline for behavior-preserving refactoring.
-
-Characterization captures what must not drift; it does not automatically bless unrelated defects or expand future product semantics.
+This incorporates the T020/T032 lesson: green tests and one negative case do not prove a multidimensional boundary.
 
 ## Capability-source integration
 
-For Agent Governance Skill/governance work, `docs/CAPABILITY-SOURCE-CONTRACT.md` is the preferred topology-neutral source for capability-level routing semantics.
-
-A conformance oracle MAY reference stable capability IDs such as:
+For Agent Governance Skill/governance work, prefer stable capability references from `docs/CAPABILITY-SOURCE-CONTRACT.md`, for example:
 
 ```text
 consumer.lifecycle
@@ -233,228 +136,179 @@ consumer.skill-trust
 source.maintenance
 ```
 
-This allows cases to bind to intent/profile/risk/context boundaries without copying the full functional contracts into the oracle.
+This reduces duplicated intent/profile/risk prose while preserving the controlling normative references.
 
-Capability IDs do not replace controlling normative references.
+Capability IDs are routing metadata, not authority.
 
-## Minimal-context oracle rule
+## Minimal-context rule
 
-A D052 task should let the Executor start from:
+A D052 task should allow the Executor to begin from:
 
 ```text
-AGENTS.md / repository bootstrap
+repository bootstrap
     -> exact Task Contract
     -> exact frozen oracle assets
     -> implementation surface
 ```
 
-rather than requiring broad semantic reconstruction before test design.
+rather than first reconstructing the oracle from a broad document graph.
 
-Each oracle case/assertion SHOULD point, directly or through its Oracle index, to the smallest controlling authority needed to explain its semantic meaning.
+Cases/assertions SHOULD carry the smallest useful authority/capability reference needed to interpret a failure. Load deeper focused authority only when that case actually requires it.
 
-When a conformance failure needs interpretation, load the focused authority for that case rather than preloading every related Decision/Core/Skill document.
+Token/context benefit must be measured from real load paths; it is not assumed merely because an oracle exists.
 
-Expected token/context savings are hypotheses until measured under RCAB/load-path evidence.
+## Task Contract binding
 
-## Task Contract requirements
+For `orchestrator-conformance`/`mixed`, the Task Contract or prerequisite gate SHOULD record the Oracle identity block above and map acceptance criteria to exact oracle assets/case families when material.
 
-For `orchestrator-conformance` or `mixed`, the Task Contract/prerequisite gate SHOULD identify:
+The Task Contract remains execution-scope authority. The oracle is its executable acceptance projection.
 
-```text
-Test-Authorship-Mode: <mode>
-Oracle-ID: <stable-id>
-Oracle-Revision: <revision-or-integrated-commit>
-Oracle-Assets:
-  - <path>
-  - <path>
-Oracle-Semantic-Scope: <concise meaning>
-Oracle-Freeze-State: FROZEN
-Executor-Mechanical-Corrections: <none or bounded list>
-```
+## File placement and data format
 
-It SHOULD also map each acceptance criterion to the relevant oracle asset/case family when that mapping materially improves auditability.
+D052 does **not** require a universal top-level `conformance/` directory.
 
-The Task Contract remains the execution-scope authority; the oracle is its executable acceptance projection.
+Use the existing coherent surface:
+- deterministic conformance assets under `tests/` when appropriate;
+- agent-facing/routing corpora and expected outcomes under `evals/` when appropriate;
+- narrow task-specific structured fixture locations when that avoids duplication.
 
-## File-placement rule
+The Task Contract identifies exact Orchestrator-owned paths.
 
-D052 does not require a new universal top-level `conformance/` directory.
-
-Place assets where their execution/evaluation surface is most coherent, for example:
-
-- deterministic acceptance assets under `tests/` when they are naturally part of deterministic testing;
-- agent-facing corpora/expected outcomes under `evals/` when they are naturally part of behavioral/routing evaluation;
-- task-specific structured data alongside an existing narrow test/eval fixture family when that avoids duplication.
-
-The Task Contract must identify exact Orchestrator-owned paths.
-
-A future layout/schema decision may introduce a dedicated generated/structured oracle representation if evidence shows that it materially improves context, reproducibility or tooling. Until then, do not create a parallel directory tree merely for conceptual purity.
-
-## Machine-readable data rule
-
-Use JSON/JSONL or another deterministic structured form when structure materially improves reproducibility, diffability or automated grading.
-
-A machine-readable oracle asset SHOULD:
-
-- have canonical/stable ordering where order is not semantic;
-- distinguish stable case identity from display text;
+Use JSON/JSONL or another deterministic format when structure materially improves reproducibility/diffability. Structured oracle data SHOULD:
+- keep stable case IDs;
 - represent expected outcomes explicitly;
-- avoid embedding unnecessary normative prose;
-- identify capability/acceptance references when useful;
-- avoid provider-specific fields unless the case is intentionally provider-specific;
-- preserve enough identity to distinguish required frozen cases from Executor-added exploratory cases.
+- use canonical ordering where order is not semantic;
+- avoid unnecessary copied normative prose;
+- distinguish required frozen cases from Executor-added exploratory cases;
+- separate portable semantics from provider-specific fields.
 
-This contract does not mandate one universal schema for all assurance planes.
+No universal oracle schema is mandated across all assurance planes.
 
-## Required vs supplementary evidence
+## Required vs supplementary tests
 
-Executor-added cases remain valuable but must not silently mutate the required acceptance set.
+Executor-added tests remain encouraged but MUST NOT silently change the required acceptance set.
 
-Evidence SHOULD distinguish:
+Evidence distinguishes:
 
 ```text
 required_orchestrator_oracle
 supplementary_executor_tests
 ```
 
-A supplementary case may later be promoted into the required oracle only through persisted Orchestrator review/revision.
-
-This preserves independent technical exploration while preventing implementation-driven post-hoc redefinition of acceptance.
+A supplementary case enters the required oracle only through persisted Orchestrator review/revision.
 
 ## Mechanical correction boundary
 
-The Executor may change an Orchestrator-owned asset only when the controlling Task Contract/review explicitly authorizes a mechanical correction class.
+The Executor may edit an Orchestrator-owned asset only when durable authority explicitly permits a bounded **mechanical** correction whose semantic meaning is unchanged.
 
-Examples that may be mechanical if semantics remain identical:
-
+Potentially mechanical:
 - import/path repair;
 - fixture setup/wiring repair;
 - serialization syntax correction;
 - runner/API compatibility adaptation;
 - environment-specific harness integration.
 
-A correction is **not mechanical** merely because it is small.
-
-The following remain semantic and require persisted Orchestrator authority:
-
-- expected outcome/classification;
+Semantic and therefore Orchestrator-owned:
+- expected result/classification;
 - case category;
 - required corpus membership;
 - threshold;
 - negative-control intent;
 - security expectation;
-- accepted grader meaning;
+- grader meaning;
 - frozen characterization meaning.
 
-When unsure, fail closed and report `ORACLE_DEFECT` rather than edit.
+A change is not mechanical merely because it is small.
 
-## `ORACLE_DEFECT` protocol
+When uncertain, fail closed and report `ORACLE_DEFECT` rather than edit.
 
-If the Executor finds evidence that a frozen oracle is semantically wrong, contradictory or impossible under the controlling authority:
+## `ORACLE_DEFECT`
 
-1. do not change the affected semantic asset;
-2. identify the exact oracle case/assertion/path;
+When a frozen oracle appears semantically wrong or contradictory:
+
+1. do not change the disputed semantic asset;
+2. identify exact case/assertion/path;
 3. identify the controlling authority believed to conflict;
 4. provide the smallest reproducible evidence;
-5. report the affected acceptance claim as `ORACLE_DEFECT`-equivalent / blocked;
-6. continue only unrelated work that the Task Contract safely permits without relying on the disputed oracle;
-7. wait for a persisted Orchestrator revision before rerunning the affected claim.
+5. block the affected acceptance claim as `ORACLE_DEFECT`-equivalent;
+6. continue only unrelated work safely independent of that claim;
+7. wait for a persisted Orchestrator revision before rerunning it.
 
-The Orchestrator then decides whether:
+The Orchestrator determines whether the defect is in implementation, oracle or specification and persists any semantic correction.
 
-- implementation is wrong;
-- oracle is wrong;
-- specification is ambiguous/wrong.
+## Revision after observed results
 
-That decision must be persisted before semantic execution continues.
+Changing semantic oracle content after implementation/eval results are visible creates post-hoc bias risk.
 
-## Oracle revision after observed results
+Default:
+- semantic change -> affected evidence is invalidated and rerun against the new frozen oracle;
+- proven mechanical change -> prior semantic evidence may remain usable if reproducible;
+- corpus membership, expected classifications and thresholds MUST NOT change merely to select a preferred comparative result;
+- exceptions require explicit persisted rationale.
 
-Changing semantic oracle content after implementation/eval results are observed creates a post-hoc bias risk.
+## Assurance-specific rules
 
-Default rule:
+### Behavioral/routing
+- realistic positives and negatives;
+- near-boundary false-activation cases;
+- repeated clean-context trials;
+- frozen holdout/validation membership when optimization/comparison occurs;
+- expected classification stored separately from observed result;
+- portable semantic expectations separated from host/model-specific measurements.
 
-- if the revision changes acceptance meaning, invalidate and rerun all affected evidence against the revised frozen oracle;
-- if the revision is proven purely mechanical and semantics are unchanged, prior semantic results may remain usable when the evidence remains reproducible;
-- comparative/routing thresholds, corpus membership and expected classifications cannot be altered after results merely to select a preferred outcome;
-- any exception requires an explicit persisted rationale.
+MG1/T023 will instantiate these later; this contract does not define their task-specific corpus/thresholds now.
 
-## Security/adversarial oracle rules
+### Security/adversarial
+- deterministic security invariants use deterministic assertions/negative controls where possible;
+- expected containment/rejection semantics belong in the oracle;
+- dynamic execution remains isolated under Executor control;
+- no production credentials/secrets in oracle assets;
+- external scanner/marketplace/provider scores remain supplemental evidence.
 
-For security-sensitive acceptance:
-
-- deterministic security invariants should have deterministic assertions/negative controls where possible;
-- malicious/adversarial cases owned by the Orchestrator should encode the expected containment/rejection semantics, not hidden exploit instructions unnecessary to the acceptance claim;
-- dynamic execution remains in disposable isolated environments under Executor control;
-- no conformance asset may contain production credentials/secrets;
-- external scanner/marketplace/provider scores are supplemental evidence, never the oracle.
-
-## Behavioral/routing oracle rules
-
-For model-mediated routing/activation work:
-
-- use realistic positive and negative prompts;
-- include near-boundary cases where false activation is plausible;
-- use repeated clean-context trials;
-- freeze holdout/validation membership before comparative results when optimization is occurring;
-- record expected routing/classification separately from observed result;
-- separate portable semantic expectation from host/model-specific measurements;
-- do not collapse several provider/model cells into one opaque pass/fail when variance is material.
-
-MG1/T023 will instantiate these rules later. This contract does not define their task-specific corpus or thresholds now.
-
-## Characterization/refactor oracle rules
-
-For behavior-preserving refactors:
-
+### Refactor characterization
 - characterize observable behavior before structural mutation;
-- distinguish intended public/contract behavior from incidental internal implementation details;
-- freeze the accepted characterization baseline before refactor execution;
-- do not rewrite the baseline to match the refactor after implementation begins;
-- newly discovered baseline defects require explicit Orchestrator decision/revision.
+- freeze intended contract behavior, not arbitrary internal implementation detail;
+- do not rewrite the baseline after refactor work starts;
+- discovered baseline defects require persisted Orchestrator decision/revision.
 
-## Oracle completion evidence
+## Completion evidence
 
-A final Executor handoff for a D052 task SHOULD make it possible to verify:
-
+A D052 Executor handoff SHOULD prove:
 - exact frozen oracle revision executed;
-- all required oracle assets/cases executed or exact blockers identified;
+- all required cases/assets executed or exact blockers identified;
 - no semantic oracle drift on the implementation branch;
-- supplementary Executor cases reported separately;
-- relevant results/traces/metrics are reproducible from persisted evidence;
-- `ORACLE_DEFECT` events, if any, identify the exact affected semantic claim.
+- supplementary Executor tests reported separately;
+- persisted evidence can reproduce relevant results/metrics;
+- any `ORACLE_DEFECT` identifies the affected semantic claim.
 
-The handoff does not acquire acceptance authority.
+The handoff remains evidence, not acceptance authority.
 
 ## Anti-patterns
 
 Do not:
-
-- create an Orchestrator-owned copy of every unit test;
-- move technical harness code to the Orchestrator merely because D052 exists;
-- hide semantic expected values inside Executor-owned runner code when they should be frozen oracle data;
-- make the Executor infer expected behavior from a large document set when a focused oracle can encode it directly;
-- duplicate Governance Core prose inside every case;
-- use one trivial negative control to claim a multidimensional invariant is covered;
-- change corpus membership/thresholds after seeing results to make an implementation pass;
-- treat supplementary Executor tests as part of the required acceptance score without Orchestrator promotion;
-- create a new universal oracle directory/schema before a real need exists;
-- let model-based graders replace deterministic checks for machine-decidable properties;
-- treat the oracle as independent Governance authority.
+- make the Orchestrator own every unit test;
+- move ordinary harness/debug code to the Orchestrator;
+- hide semantic expected values inside Executor-owned runner code;
+- require broad-document reconstruction when a focused frozen oracle can encode the acceptance boundary;
+- duplicate Core prose inside every case;
+- use one trivial negative control for a multidimensional invariant;
+- change required cases/thresholds after seeing results to force PASS;
+- mix supplementary Executor cases into the required score without Orchestrator promotion;
+- create a universal oracle directory/schema before evidence requires it;
+- replace deterministic checks with model graders for machine-decidable properties;
+- treat the oracle as Governance authority.
 
 ## Acceptance invariants
 
-This conformance-oracle architecture is valid only while:
-
-1. controlling Governance/specification remains above the oracle;
-2. D052 ownership modes remain explicit when material;
-3. exact Orchestrator-owned assets are identified before Executor implementation when required;
+1. controlling specification remains above the oracle;
+2. D052 ownership mode is explicit when material;
+3. required Orchestrator assets are frozen before implementation when required;
 4. semantic PASS/FAIL meaning cannot be changed unilaterally by the Executor;
-5. mechanical corrections are bounded and semantics-preserving;
-6. `ORACLE_DEFECT` fails closed on semantic disagreement;
-7. Executor supplementary testing remains independent and encouraged;
-8. required versus supplementary evidence is distinguishable;
-9. oracle revisions after observed results are auditable and trigger rerun when meaning changes;
-10. capability IDs/references can reduce context without replacing authority;
-11. tests/evals remain executable evidence rather than Governance authority;
-12. no T023-specific corpus/threshold is pre-registered before its proper MG1 gate.
+5. mechanical corrections remain bounded and semantics-preserving;
+6. `ORACLE_DEFECT` fails closed;
+7. supplementary Executor testing remains independent and encouraged;
+8. required vs supplementary evidence is distinguishable;
+9. semantic oracle revisions after observed results are auditable and rerun affected evidence;
+10. capability references may reduce context without replacing authority;
+11. tests/evals remain evidence, never Governance authority;
+12. no T023-specific corpus/threshold is pre-registered before MG1.
