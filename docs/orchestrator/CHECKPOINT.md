@@ -1,7 +1,7 @@
 # Current ChatGPT Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O104  
+Checkpoint-Sequence: O105  
 Canonical-Branch: `develop`  
 Chat-Closure: CONTINUE_ALLOWED
 
@@ -9,7 +9,7 @@ Chat-Closure: CONTINUE_ALLOWED
 
 Accepted/integrated architecture/method authority includes D044, D049, D050, D051 and D052.
 
-Human Owner direction on 2026-08-17 keeps two separate lanes:
+Human Owner direction keeps two independent lanes:
 
 ```text
 Executor lane
@@ -20,41 +20,33 @@ Orchestrator lane
       that does not assume unfinished executor results or pre-empt gated decisions
 ```
 
-The executable program order is unchanged:
+Executable order is unchanged:
 
 ```text
-T032 R1
-    -> green canonical deterministic baseline
-    -> T021 R1
-    -> T022
-    -> MG1 topology/eval pre-registration + D052 conformance oracle
-    -> T023 comparative activation-topology eval
-    -> T024 selected topology / D051 packaging
+T032 R1 -> green baseline -> T021 R1 -> T022 -> MG1 -> T023 -> T024
 ```
 
 T026 remains separately gated/BLOCKED.
 
 ## Executor lane — paused
 
-Canonical remote T032 remains the rejected candidate `b43b306e56c6b90969c3dd10e23ccf8e00cc8ba5` on `fix/t032-rcab-snapshot-live-separation`; T021 remains frozen at `969e2130ca9abb27c6ae5ad830923582f45b8a2f`.
+Canonical remote T032 remains rejected HEAD `b43b306e56c6b90969c3dd10e23ccf8e00cc8ba5`; T021 remains frozen at `969e2130ca9abb27c6ae5ad830923582f45b8a2f`.
 
-`docs/operations/OP066-abandon-interrupted-t032-local-work.md` is integrated but MUST NOT execute until the Human Owner explicitly reports executor capacity is available. PR #144 / proposed OP067 was closed without merge and is non-authoritative.
+`docs/operations/OP066-abandon-interrupted-t032-local-work.md` MUST NOT execute until the Human Owner explicitly reports executor capacity is available. PR #144 / proposed OP067 was closed without merge and is non-authoritative.
 
 No T032/T021/T022 implementation is launched, inferred or accepted while this lane is paused.
 
-## Capability source and routing — integrated
+## Capability architecture — integrated
 
 PR #145 integrated `docs/CAPABILITY-SOURCE-CONTRACT.md`.
 
 PR #146 integrated the focused route:
 
 ```text
-skill-capability
-    -> D050
-    -> docs/CAPABILITY-SOURCE-CONTRACT.md
+skill-capability -> D050 + docs/CAPABILITY-SOURCE-CONTRACT.md
 ```
 
-Canonical topology-neutral capability families remain:
+Topology-neutral capability families remain:
 
 ```text
 consumer.lifecycle
@@ -62,79 +54,69 @@ consumer.skill-trust
 source.maintenance
 ```
 
-These are semantic/routing clusters, not final Skill boundaries. Final activation topology remains MG1/T023 authority after T022.
+They are semantic/routing clusters, not final Skill boundaries. B0/B1/F2/G3 selection remains MG1/T023 authority after T022.
 
-## D052 conformance oracle — current Orchestrator work
+## D052 conformance architecture — integrated
 
-Current branch: `docs/d052-conformance-oracle-contract`.
-
-`docs/CONFORMANCE-ORACLE-CONTRACT.md` operationalizes D052 as a compact focused contract for:
-
-- oracle vs harness ownership;
-- semantic ownership heuristic based on whether a change can alter accepted PASS/FAIL meaning;
-- Oracle identity/revision/freeze lifecycle;
-- case/outcome/assertion/negative-control/threshold/golden/grader/characterization asset classes;
-- negative-control sufficiency across materially distinct criterion dimensions;
-- capability-ID references for lower duplication;
-- minimal-context Task Contract -> frozen oracle -> implementation flow;
-- exact required vs supplementary evidence separation;
-- bounded mechanical correction vs semantic change;
-- fail-closed `ORACLE_DEFECT` handling;
-- post-result revision/rerun rules;
-- behavioral, security and refactor-specific constraints;
-- no universal new oracle directory/schema without later evidence.
-
-The contract does **not** pre-register any T023-specific corpus or thresholds before MG1/T022 eligibility.
-
-`docs/CONTEXT-MAP.md` adds the focused route:
+PR #147 merged at `11c11defe4f09621983db8ef7ca88ae84d713f8d` and integrated `docs/CONFORMANCE-ORACLE-CONTRACT.md` plus the focused route:
 
 ```text
-conformance-authoring
-    -> D052
-    -> docs/CONFORMANCE-ORACLE-CONTRACT.md
+conformance-authoring -> D052 + docs/CONFORMANCE-ORACLE-CONTRACT.md
 ```
 
-`docs/TASK-CONTRACTS.md` is not part of that default load. Add `task-governance` only when binding an oracle to a concrete executable task. Full testing/eval/provider/host material is also on-demand by assurance plane.
+The contract centralizes oracle-vs-harness ownership, identity/freeze/revision, negative-control sufficiency, required-vs-supplementary evidence, mechanical correction boundaries, `ORACLE_DEFECT`, and post-result rerun semantics.
 
-The D047 bootstrap ratchet is unchanged. Under D049, live context-map evolution does not require incidental historical snapshot refresh.
+It creates no universal oracle directory/schema and does not pre-register T023-specific corpus/thresholds.
+
+`task-governance` is loaded separately only when binding a frozen oracle to a concrete Task Contract. Full testing/eval/provider/host context remains assurance-plane-specific and on-demand.
+
+## D052 documentation dedup — current Orchestrator work
+
+Current branch: `docs/d052-testing-doc-dedup`.
+
+The branch keeps all testing architecture, external technical basis, fixture families, assurance layers and release gates intact while removing repeated oracle-lifecycle prose from:
+
+- `docs/TESTING-AND-EVALUATION.md`;
+- `tests/README.md`;
+- `evals/README.md`.
+
+Those documents now point to `docs/CONFORMANCE-ORACLE-CONTRACT.md` for semantic oracle ownership/freeze/revision/`ORACLE_DEFECT` rules while retaining only their local execution-surface responsibilities.
+
+Current net diff before checkpoint update: 3 Markdown files; strategy +10/-20, deterministic README +6/-16, eval README +6/-16. No executable tests/evals changed.
+
+## RCAB / context discipline
+
+D047 bootstrap reference/ratchet remains unchanged. D049 means current Context Map evolution does not require incidental refresh of the historical RCAB snapshot.
+
+Focused authoring routes remain:
+
+```text
+skill-capability       -> D050 + capability contract
+conformance-authoring  -> D052 + oracle contract
+```
+
+Do not preload D051, Task Contracts, full testing docs, providers or host material unless the concrete concern requires them.
 
 ## L007
 
-The accidental Orchestrator direct write to `develop` at `dffe9cc18696ae04e57b9fef9a4b5b833f0c3435` is durably recorded in `docs/learning/L007-orchestrator-direct-develop-write.md`.
+The accidental direct `develop` write at `dffe9cc18696ae04e57b9fef9a4b5b833f0c3435` remains recorded in `docs/learning/L007-orchestrator-direct-develop-write.md`, state `CONTROL_PLANNED`.
 
-L007 remains `CONTROL_PLANNED`, not `VERIFIED`.
-
-Current write discipline remains: capture `develop` SHA -> create `docs/*` branch -> verify branch exists -> write only to that branch -> review/PR.
+Current write discipline: capture current `develop` SHA -> create `docs/*` branch -> verify branch exists -> write only to that branch -> exact review/PR. Do not rewrite incident history.
 
 ## Future MG1/T023 boundary
 
-After T022 acceptance, MG1 will instantiate the capability and conformance contracts with the actual B0/B1/F2/G3 presentations, corpus, expected outcomes, semantic negative controls, repeated-trial method, host/model matrix, metrics and victory/non-regression thresholds.
+Current Orchestrator work may define topology-neutral capability metadata, reusable oracle authoring structure and focused routing. It MUST NOT instantiate the T023 comparison early.
 
-Current Orchestrator work may define reusable authoring contracts and focused routing, but MUST NOT populate the T023 oracle early.
-
-## T032 boundary preserved
-
-When the Executor lane is eventually re-enabled, corrected T032 still must satisfy T032-R1 exactly. D052 does not retroactively transfer T032 test authorship.
-
-## Pending cleanup-only operations
-
-- OP063 — D050 documentation branch;
-- OP064 — D051 documentation branch;
-- OP065 — D052 documentation branch;
-- OP066 — interrupted local T032 state, only when Human explicitly re-enables executor capacity.
-
-Do not execute them merely to create activity while the Executor lane is paused.
+Only after T022 acceptance may MG1 freeze B0/B1/F2/G3 presentations, actual corpus, expected outcomes, semantic negative controls, repeated-trial method, host/model matrix, metrics and victory/non-regression thresholds.
 
 ## Next Action
 
-1. Review/integrate `docs/d052-conformance-oracle-contract` only if its diff is Markdown-only, remains focused/context-conscious, does not pre-register T023 cases/thresholds and leaves D047/D049 snapshot semantics unchanged.
-2. After integration, align `docs/TESTING-AND-EVALUATION.md`, `tests/README.md` and `evals/README.md` to reference the oracle contract instead of repeating ownership/oracle lifecycle prose.
-3. Continue Orchestrator-only design/documentation work while the Executor lane is paused.
-4. Do not prepare or launch T032 re-entry until the Human Owner explicitly re-enables the Executor lane.
-5. When capacity returns: execute OP066 first, verify its durable receipt, then prepare fresh T032 re-entry from then-current `develop`.
-6. Do not resume T021 before T032 acceptance/integration and green baseline.
-7. Do not start MG1/T023 before T022 acceptance.
-8. Do not launch T026 without its separate decision gate.
+1. Review/integrate `docs/d052-testing-doc-dedup` only if the final diff remains Markdown-only and preserves the testing/eval architecture and release gates.
+2. Then create a compact topology-neutral **capability catalog** from the already accepted Consumer/Maintainer contracts, mapping stable capability/sub-capability IDs to current operations, profile, mutation/risk class and focused authority/context references.
+3. The catalog must not decide final Skill boundaries or require a structured runtime/schema implementation yet.
+4. Continue Orchestrator-only work while the Executor lane is paused.
+5. When the Human later re-enables Executor capacity: execute OP066 first; only after verified `DONE` may fresh T032 re-entry be prepared.
+6. T021 remains after accepted/integrated T032; MG1/T023 remain after T022; T026 remains separately gated.
 
 ## Next Chat Minimum Load
 
@@ -143,13 +125,10 @@ After normal bootstrap:
 - D050 + `docs/CAPABILITY-SOURCE-CONTRACT.md` for capability/Skill architecture;
 - D052 + `docs/CONFORMANCE-ORACLE-CONTRACT.md` for generic conformance authoring;
 - add `task-governance` only when binding/reviewing a concrete Task Contract;
-- `docs/CONTEXT-MAP.md` only when stable routing/RCAB registration is material;
 - D051 only for packaging/install semantics;
 - OP066 only after Human explicitly re-enables executor capacity;
-- D049/T032/T032-R1/L006 only when preparing/reviewing T032 again;
-- T021/T021-R1 only after T032 acceptance permits it;
-- T023 only when preparing MG1 after T022.
+- T032/T021/T023-specific material only when their gates become active.
 
 ## Do Not
 
-Do not wait for unseen executor work; execute OP066 before Human re-enables the Executor lane; preauthorize T032 re-entry early; treat interrupted T032 local work as authority; accept rejected `b43b306e...`; resume T021 early; start or pre-register MG1/T023 before T022; retrofit D052 onto T032/T021; weaken D049/D047/T032-R1; treat capability count as Skill count; require Skill-to-Skill invocation; introduce unapproved multi-agent product architecture; independently version generated Skills; violate D051; treat tests/oracles as Governance authority; create an unnecessary universal oracle directory/schema; preload Task Contracts/full testing docs for generic oracle design; refresh the RCAB historical snapshot merely because the live map changed; rewrite L007 incident history; write directly to `develop`/`main`; or launch T026 early.
+Do not wait for unseen executor work; execute OP066 early; preauthorize T032 re-entry; treat interrupted T032 local work as authority; accept rejected T032; resume T021 early; pre-register MG1/T023 before T022; retrofit D052 onto T032/T021; weaken D049/D047/T032-R1; treat capability count as Skill count; require Skill-to-Skill invocation; introduce unapproved multi-agent product architecture; independently version generated Skills; violate D051; treat tests/oracles as Governance authority; create unnecessary universal schemas/directories; refresh historical RCAB snapshot merely because live Markdown changed; rewrite L007 history; write directly to `develop`/`main`; or launch T026 early.
