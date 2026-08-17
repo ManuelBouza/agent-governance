@@ -2,7 +2,7 @@
 
 This directory contains agent-facing evaluations of behavior intrinsic to the Governance product.
 
-The normative eval architecture, external references, isolation rules, grader selection, fixture policy, repeated-trial requirements, and release thresholds live in `../docs/TESTING-AND-EVALUATION.md`. The repository-owned harness language decision is `../docs/decisions/D023-python-testing-stack.md`. Skill/capability boundaries are defined by `../docs/TESTING-SKILL-CAPABILITIES.md` and D024. Ecosystem/SDD/Skill coexistence is defined by `../governance-core/COEXISTENCE.md` and D026.
+The normative eval architecture, external references, isolation rules, grader selection, fixture policy, repeated-trial requirements, and release thresholds live in `../docs/TESTING-AND-EVALUATION.md`. The repository-owned harness language decision is `../docs/decisions/D023-python-testing-stack.md`. Skill/capability boundaries are defined by `../docs/TESTING-SKILL-CAPABILITIES.md` and D024. Test/eval authorship modes are defined by D052. Ecosystem/SDD/Skill coexistence is defined by `../governance-core/COEXISTENCE.md` and D026.
 
 ## Harness language
 
@@ -18,11 +18,21 @@ When the Maintainer Skill is available, it is the project-owned top-level Skill 
 
 External Skill-authoring/evaluation/security Skills may be supplemental only after approval. Their generated prompts, reports, or candidate assertions do not replace repository-owned eval cases, traces, graders, or ChatGPT review.
 
-## Agent ownership
+## Authorship and execution ownership
 
-The `Agente de IA Ejecutor` owns non-Markdown executable eval definitions, fixtures, harness inputs, eval execution, and verification evidence under `evals/`. The executor role is product agnostic: OpenCode, Codex, Claude Code, Antigravity, or another compatible coding agent may fulfill it.
+D052 separates the semantic eval oracle from technical execution/harness work.
 
-ChatGPT owns committed Markdown instructions/specifications and defines the product behavior/invariants that evals must measure. The executor must not modify evals to redefine the approved contract.
+Under `orchestrator-conformance` or the Orchestrator side of `mixed`, ChatGPT may author and freeze committed conformance/eval assets that directly encode approved semantics, including trigger corpora, positive/negative/near-miss/cross-profile/ambiguous cases, expected classifications, holdout partitions, semantic negative controls, accepted thresholds and deterministic grader expectations.
+
+The Agente de IA Ejecutor owns:
+- eval execution and clean-session/environment orchestration;
+- host/model/provider adapters and technical harness plumbing where authorized;
+- traces, measurements, result aggregation and verification evidence;
+- supplementary exploratory/adversarial cases that do not redefine the approved oracle;
+- implementation-focused eval/test work;
+- all eval implementation under `executor-implementation` mode.
+
+The executor may not change an Orchestrator-owned expected classification, threshold, semantic grader expectation or acceptance case merely to improve results. If it finds a semantic defect in the oracle, it reports an `ORACLE_DEFECT`-equivalent blocker with evidence. Mechanical harness corrections require durable authorization and must preserve the approved semantic meaning.
 
 For behavior-preserving refactors, eval cases accepted as part of the RF1 characterization baseline are frozen for that refactor unit unless ChatGPT explicitly authorizes a correction.
 
@@ -33,7 +43,8 @@ For behavior-preserving refactors, eval cases accepted as part of the RF1 charac
 - grade observable outcomes/tool/file traces rather than agent self-report;
 - use deterministic graders for mechanical assertions and model graders only when semantic interpretation requires them;
 - repeated trials are required for probabilistic behavior;
-- representative transcripts and failures must be inspected during release review.
+- representative transcripts and failures must be inspected during release review;
+- D052 pre-authored corpora/thresholds/expected outcomes must remain fixed during a controlled comparison unless a persisted Orchestrator revision explicitly restarts/redefines the experiment.
 
 ## Eval surfaces
 
