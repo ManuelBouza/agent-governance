@@ -42,6 +42,12 @@ The consumer and maintainer Skills have separate activation/triggers and operati
 
 Repository development uses two agent roles plus the Human Owner. Agent-product names are adapters, never governance roles.
 
+### D052 test-authorship override
+
+D052 prospectively refines the blanket non-Markdown test/eval ownership wording below. When an integrated Task Contract/gate selects `orchestrator-conformance` or `mixed`, ChatGPT Orchestrator owns the narrowly designated committed conformance/oracle assets that directly encode ChatGPT-owned acceptance semantics; the Agente de IA Ejecutor owns implementation/exploratory tests, technical harness work, execution and evidence. Semantic changes to an Orchestrator-owned oracle require persisted ChatGPT authority. Existing T032/T021 work is grandfathered and T022 may complete under its existing contract; MG1/T023 is the first strong planned application.
+
+Where later sections of this file say that all non-Markdown tests/evals belong to the executor, read that wording subject to this D052 override and `docs/decisions/D052-specification-owned-conformance-test-authorship.md`.
+
 ### Human Owner
 
 Final authority over product scope, priorities, risk, public distribution, releases, and overrides.
@@ -52,7 +58,7 @@ ChatGPT owns product strategy, research synthesis, architectural decisions, work
 
 Only ChatGPT may create, rewrite, or persist Markdown instruction/design/decision/task/checkpoint files in normal agentic development. This includes `AGENTS.md`, `README.md`, `docs/**/*.md`, `governance-core/*.md`, Skill Markdown, and Markdown files inside test/eval fixtures.
 
-ChatGPT does not take over implementation merely because a task is difficult. Non-Markdown implementation and verification belong to the Agente de IA Ejecutor.
+ChatGPT does not take over implementation merely because a task is difficult. Non-Markdown implementation and verification belong to the Agente de IA Ejecutor, subject to the D052 conformance/oracle exception above.
 
 A fresh ChatGPT conversation MUST be able to resume source-product orchestration from the canonical Git repository without requiring prior chat history. D027 and `docs/ORCHESTRATOR-CHECKPOINTS.md` define that cold-start/chat-turnover contract.
 
@@ -60,7 +66,7 @@ A fresh ChatGPT conversation MUST be able to resume source-product orchestration
 
 The executor is an abstract role that MAY be fulfilled by OpenCode, Codex, Claude Code, Antigravity, or another compatible local/coding agent. Product identity does not change task semantics, authority, or acceptance.
 
-The Agente de IA Ejecutor owns all authorized non-Markdown technical work, including:
+The Agente de IA Ejecutor owns all authorized non-Markdown technical work, subject to D052-designated Orchestrator conformance/oracle assets, including:
 - product implementation code/configuration/assets;
 - deterministic test code and test fixtures;
 - agent-facing eval code/data/fixtures except committed Markdown;
@@ -76,6 +82,7 @@ The executor MUST NOT:
 - create or edit committed `*.md` files;
 - change product scope, architecture, acceptance criteria, or strategic intent;
 - weaken or reinterpret tests/evals in a way that contradicts the ChatGPT-approved contract;
+- semantically change a D052-designated Orchestrator-owned conformance/oracle asset without persisted ChatGPT authorization;
 - alter an accepted refactor characterization baseline after structural mutation begins unless ChatGPT explicitly authorizes a correction;
 - claim acceptance authority merely because tests are green;
 - treat local-only/unpushed state as a completed normal handoff.
@@ -96,9 +103,9 @@ ChatGPT performs committed Markdown-only work on a short-lived topic branch from
 
 Executable work uses a contract-first sequence:
 
-1. ChatGPT persists the Task Contract and controlling Markdown/decisions.
-2. That planning change is reviewed and integrated into `develop`.
-3. Only then may an executor create the implementation topic branch from a `develop` revision containing the exact Task Contract.
+1. ChatGPT persists the Task Contract and controlling Markdown/decisions and, where D052 requires it, the designated preimplementation conformance/oracle assets.
+2. That planning/conformance change is reviewed and integrated into `develop`.
+3. Only then may an executor create the implementation topic branch from a `develop` revision containing the exact Task Contract and required D052 conformance assets.
 4. The executor implements/tests using any compatible internal process it selects, persists its handoff, commits, and pushes the topic branch.
 5. The executor returns only status, handoff path, branch, and pushed HEAD.
 6. ChatGPT reviews the remote Task Contract, handoff, base/head identities, complete diff, and evidence through GitHub.
@@ -114,7 +121,7 @@ The executor does not normally open or merge the implementation PR unless the Ta
 - Chat/terminal prompts are transport only and SHOULD contain only repository/branch context plus the exact Task Contract path.
 - The executor MUST NOT infer missing task semantics from prior chat history.
 - If a prompt conflicts with the persisted Task Contract, the persisted contract controls unless ChatGPT/Human Owner persists an explicit revision/supersession.
-- Material objective/scope/acceptance/verification changes require a persisted Task Contract revision before execution continues.
+- Material objective/scope/acceptance/verification changes, including semantic D052 oracle changes, require a persisted Task Contract/review revision before execution continues.
 - Before `DONE`, `BLOCKED`, or `PARTIAL`, the executor MUST persist, commit, and push the handoff/current task branch state.
 
 A reviewer must be able to reconstruct what was requested, what the executor reported, and what actually changed from the canonical Git remote alone. The executor's private/internal orchestration trace is not required for this reconstruction unless a Task Contract explicitly makes a particular process artifact part of the deliverable or evidence.
@@ -135,12 +142,13 @@ When chat closure is recommended, the minimal next-chat prompt should point only
 
 ## Testing Skill/capability invariant
 
-D024 and `docs/TESTING-SKILL-CAPABILITIES.md` define the source-product testing Skill boundary.
+D024, D052 and `docs/TESTING-SKILL-CAPABILITIES.md` define the source-product testing Skill boundary.
 
 - the test/eval suite is executable repository code and MUST NOT require model-driven Agent Skill activation;
+- test authorship may be `orchestrator-conformance`, `executor-implementation`, or `mixed` under D052 when ownership is material;
 - the Maintainer Skill, when available, is the only project-owned top-level Skill for source test/eval maintenance;
 - it routes progressively to deterministic, property/state-machine, Skill/eval, or security/supply-chain context rather than spawning generic overlapping pytest/testing/TDD Skills;
-- a cold executor can bootstrap from `AGENTS.md`, its persisted Task Contract, controlling references, and approved tooling before the Maintainer Skill exists;
+- a cold executor can bootstrap from `AGENTS.md`, its persisted Task Contract, controlling references, applicable pre-authored conformance assets, and approved tooling before the Maintainer Skill exists;
 - external testing/authoring/security Skills are optional supplemental aids only after applicable supply-chain/coexistence approval and never replace repository-owned verification;
 - the Consumer Governance Skill MUST NOT activate for source-product test/eval maintenance.
 
@@ -164,7 +172,8 @@ D025 and `docs/LOCAL-DEVELOPMENT-TOOLCHAIN.md` define the source-maintainer tool
 Normal agentic write ownership is:
 
 - committed `*.md` -> ChatGPT Orchestrator
-- all authorized non-Markdown implementation/test/eval/config/assets/handoffs -> Agente de IA Ejecutor
+- D052-designated non-Markdown conformance/oracle assets under `orchestrator-conformance` or the Orchestrator side of `mixed` -> ChatGPT Orchestrator
+- all other authorized non-Markdown implementation/test/eval/config/assets/handoffs -> Agente de IA Ejecutor
 
 `LICENSE` and repository control files may be additionally protected by product-specific adapters. When a file category genuinely crosses responsibilities, ChatGPT defines the exception explicitly before mutation.
 
@@ -191,7 +200,7 @@ Neither ChatGPT nor an Agente de IA Ejecutor may bypass this policy because of r
 - Both Skills are operational tooling, never authority over the Core.
 - Do not author final Skill packages until their documented release gates are satisfied.
 - Tests/evals validate Governance/Skill behavior, not application-task implementation quality.
-- `docs/TESTING-AND-EVALUATION.md` is normative for verification architecture, isolation, fixtures, grader selection, thresholds, and external technical references.
+- `docs/TESTING-AND-EVALUATION.md` is normative for verification architecture, isolation, fixtures, grader selection, thresholds, and external technical references; D052 controls authorship ownership where applicable.
 - External Skill research follows `governance-core/SKILL-DISCOVERY.md` and `governance-core/SKILL-SUPPLY-CHAIN.md`.
 
 ## Change discipline
@@ -200,6 +209,6 @@ Prefer one coherent, independently reviewable change at a time. Separate behavio
 
 For refactors, the RF1 characterization baseline is a remotely auditable checkpoint accepted by ChatGPT before structural mutation.
 
-When changing protocol behavior, ChatGPT updates the smallest relevant Core Markdown module and applicable decisions/design documentation; the Agente de IA Ejecutor updates authorized implementation plus focused tests/evals and runs verification.
+When changing protocol behavior, ChatGPT updates the smallest relevant Core Markdown module and applicable decisions/design documentation and, when D052 applies, the designated conformance oracle; the Agente de IA Ejecutor updates authorized implementation plus supplementary technical tests/evals and runs verification.
 
 Preserve progressive context loading and avoid duplicating normative rules.

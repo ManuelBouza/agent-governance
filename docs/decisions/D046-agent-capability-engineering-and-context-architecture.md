@@ -12,6 +12,8 @@ ICAE is a composition of existing repository governance with specification/contr
 
 Repository Context Architecture & Budgeting (**RCAB**) is adopted as a cross-cutting ICAE assurance dimension, not as a separate methodology.
 
+D052 later refines authorship of executable conformance oracles without changing ICAE's assurance routing: when semantic authority belongs to ChatGPT and a Task Contract selects `orchestrator-conformance` or `mixed`, ChatGPT may author the designated acceptance/conformance assets; the executor still performs technical implementation, supplementary testing, execution and evidence.
+
 ## Core assurance rule
 
 If a property must always hold, violation is material, and the property is machine-decidable from observable state, prose or model instructions MUST NOT be its sole enforcement.
@@ -32,6 +34,18 @@ Model-generated judgments are evidence only and never isolated Governance accept
 For material acceptance criteria, Task Contracts and reviews SHOULD use stable criterion identities when doing so improves auditability. Evidence MUST identify what it actually proves. A weaker evidence class MUST NOT silently satisfy a stronger claim; for example, `surface-present` is not equivalent to `executed-successfully`.
 
 Where relevant, evidence may distinguish classes such as deterministic assertion, property/state replay, executed-successfully, negative-control, reproducibility, routing/behavioral eval, security/adversarial evidence, package/isolation evidence, and review-only judgment.
+
+D052 adds an authorship distinction without changing this evidence hierarchy:
+
+```text
+acceptance meaning / conformance oracle authorship
+    !=
+verification execution
+    !=
+Governance acceptance
+```
+
+A pre-authored conformance oracle is an executable projection of accepted semantics, not independent authority. An executor may add stronger supplementary evidence but may not silently weaken or reinterpret an Orchestrator-owned expected outcome.
 
 This decision selects the systemic control direction for L003 and L004. Those learnings remain unverified until the corresponding controls are implemented and replay-proven.
 
@@ -56,6 +70,8 @@ Agent Governance therefore:
 - permits large evidence/history/generated artifacts when normal reads remain bounded and on-demand;
 - preserves positive source/distribution boundaries.
 
+D052 permits a pre-authored executable conformance oracle to reduce semantic reconstruction work for an executor, but token/context savings MUST be measured from actual load paths before being claimed. Test code/data must not become a second normative authority or an excuse to omit controlling references required for safe interpretation.
+
 The existing Consumer budgets in `governance-core/CONTEXT.md` remain unchanged. They are project-design targets for the Consumer context model and are not automatically copied into source-repository policy.
 
 ## Adoption sequence
@@ -76,6 +92,8 @@ No vector database, embedding pipeline, semantic database, or remote retrieval s
 
 T018–T020 are grandfathered under their accepted contracts. ICAE/RCAB apply prospectively from T021 onward and to newly contracted cross-cutting work.
 
+D052 is separately prospective for test authorship. T032 R1 and T021 R1 remain under their already-launched contracts; T022 may complete under its already-integrated runtime/profile contract. MG1/T023 is the first strong planned D052 application because the Orchestrator already owns the topology definitions, corpus meaning and pre-registered victory/non-regression criteria.
+
 T021 remains a deterministic, zero-behavior-drift refactor. It does not require model eval ceremony unless its implementation changes a model-mediated activation/routing surface.
 
 T023 is the natural first strong probabilistic profile-routing gate. T024 remains a distribution/provenance gate. T029 must include the applicable final ICAE/RCAB release conformance established by then.
@@ -84,9 +102,9 @@ T026 remains separately gated and MUST NOT be launched by this decision.
 
 ## Authority
 
-ICAE and RCAB structure evidence and assurance; they do not change role authority.
+ICAE and RCAB structure evidence and assurance; they do not create a new agent role or acceptance authority.
 
 - Human Owner retains final product/risk/release authority.
-- ChatGPT Orchestrator retains Markdown, architecture, Task Contract and acceptance authority.
-- Agente de IA Ejecutor retains authorized non-Markdown implementation and verification ownership.
+- ChatGPT Orchestrator retains Markdown, architecture, Task Contract and acceptance authority and, under D052-designated modes, the narrow conformance/oracle assets that directly encode its acceptance semantics.
+- Agente de IA Ejecutor retains authorized product implementation, implementation/exploratory testing, technical harness work, verification execution and evidence ownership except for those D052-designated conformance assets.
 - Git remains the authoritative source-product state.

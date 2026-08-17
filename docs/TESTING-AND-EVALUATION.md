@@ -29,6 +29,24 @@ When available, the source-product Maintainer Skill is the only project-owned to
 
 Do not create a generic pytest/testing/TDD Skill merely to run the approved stack. External authoring/evaluation/security Skills are supplemental only after the applicable supply-chain/coexistence approval and cannot replace repository-owned verification.
 
+## Test authorship and semantic-oracle rule
+
+D052 defines authorship of repository-owned tests/evals when ownership is material.
+
+Three modes are supported:
+
+- `orchestrator-conformance`: ChatGPT authors the required acceptance/conformance oracle; the executor executes it and may add supplementary technical tests.
+- `executor-implementation`: the executor authors technical tests/evals and executes them inside the ChatGPT-owned Task Contract/acceptance boundary.
+- `mixed`: ChatGPT authors the semantic conformance oracle while the executor authors implementation/exploratory tests and executes both classes.
+
+Agent Skill, governance/policy and documentation-managed protocol work should normally use `orchestrator-conformance` or `mixed` when ChatGPT owns the correctness semantics. Ordinary consumer-application implementation remains `executor-implementation` by default.
+
+Orchestrator-owned conformance assets may include approved assertions, positive/negative/near-miss/cross-profile/ambiguous cases, expected classifications/outcomes, frozen corpora/holdouts, semantic negative controls, thresholds represented as data, golden fixtures, security acceptance cases and deterministic grader expectations.
+
+The executor remains responsible for execution, environment/harness mechanics, diagnostics, implementation tests, property/fuzz exploration, supplementary edge/adversarial cases, traces, result aggregation and evidence.
+
+A conformance test is an executable projection of its controlling Core/Decision/Task Contract, not normative authority. If an executor identifies a semantic oracle defect, it reports an `ORACLE_DEFECT`-equivalent blocker with evidence rather than changing expected semantics. Mechanical corrections require durable authorization and must preserve meaning.
+
 ## Ecosystem coexistence test rule
 
 D026 and `governance-core/COEXISTENCE.md` define how consumer Governance interacts with pre-existing SDD, Skills, registries, memory, permissions, testing and other project capabilities.
@@ -355,10 +373,12 @@ Thresholds MAY be tightened after enough empirical data exists. Relaxing a relea
 
 ## Ownership
 
-Per `AGENTS.md`:
+Per D052 and `AGENTS.md`:
 - ChatGPT Orchestrator owns this Markdown strategy, test/eval contracts, acceptance meaning and release interpretation;
-- Agente de IA Ejecutor owns non-Markdown test/eval implementation, fixtures/data, harness code, execution and reproducible evidence;
-- the executor may improve broken test implementation but may not redefine the approved behavioral contract without returning to ChatGPT.
+- under `orchestrator-conformance` or the Orchestrator side of `mixed`, ChatGPT owns the designated non-Markdown conformance/oracle assets that directly encode its approved acceptance semantics;
+- the Agente de IA Ejecutor owns implementation-focused tests/evals, supplementary fixtures/cases, technical harness/adapters, execution and reproducible evidence, and all test/eval implementation under `executor-implementation`;
+- the executor may improve a mechanically broken harness only within durable authorization and without redefining approved behavior;
+- a suspected semantic oracle defect must be escalated with evidence rather than silently changed.
 
 ## Implementation constraint
 
@@ -378,6 +398,6 @@ Initial preference:
 
 Testing/eval suites are living product artifacts.
 
-When a bug, ambiguity, security issue, portability failure, coexistence conflict, trigger collision, or regression is confirmed, add the smallest reproducible case to the appropriate suite before or with the fix whenever practical.
+When a bug, ambiguity, security issue, portability failure, coexistence conflict, trigger collision, or regression is confirmed, add the smallest reproducible case to the appropriate suite before or with the fix whenever practical. D052 authorship mode determines who owns the semantic expected behavior; executor-discovered technical regressions may remain executor-authored when they do not redefine the acceptance oracle.
 
 Review external references periodically because agent-evaluation, SDD tooling and Agent Skill security guidance are evolving quickly.
