@@ -46,7 +46,7 @@ No T032/T021/T022 implementation is launched, inferred or accepted while this la
 
 PR #145 integrated `docs/CAPABILITY-SOURCE-CONTRACT.md`.
 
-PR #146 integrated the focused `skill-capability` route in `docs/CONTEXT-MAP.md`:
+PR #146 integrated the focused route:
 
 ```text
 skill-capability
@@ -64,43 +64,39 @@ source.maintenance
 
 These are semantic/routing clusters, not final Skill boundaries. Final activation topology remains MG1/T023 authority after T022.
 
-D051 is loaded only when package/install semantics are material; D052 is loaded only when conformance/test-authorship is material.
-
 ## D052 conformance oracle — current Orchestrator work
 
 Current branch: `docs/d052-conformance-oracle-contract`.
 
-Goal: operationalize D052 without forcing each Skill/governance task to reconstruct oracle ownership and lifecycle from broad testing documentation.
+`docs/CONFORMANCE-ORACLE-CONTRACT.md` operationalizes D052 as a compact focused contract for:
 
-`docs/CONFORMANCE-ORACLE-CONTRACT.md` defines:
-
-- oracle versus harness semantics;
-- ownership heuristic based on whether a change can alter accepted PASS/FAIL meaning;
-- stable Oracle identity/revision/scope fields;
-- `DRAFT | FROZEN | SUPERSEDED | RETIRED` lifecycle;
-- case corpus, expected outcomes, deterministic assertions, negative controls, thresholds, golden fixtures, grader expectations and characterization asset classes;
-- Task Contract binding and exact asset-path requirements;
-- required versus supplementary Executor evidence;
-- bounded mechanical correction versus semantic change;
+- oracle vs harness ownership;
+- semantic ownership heuristic based on whether a change can alter accepted PASS/FAIL meaning;
+- Oracle identity/revision/freeze lifecycle;
+- case/outcome/assertion/negative-control/threshold/golden/grader/characterization asset classes;
+- negative-control sufficiency across materially distinct criterion dimensions;
+- capability-ID references for lower duplication;
+- minimal-context Task Contract -> frozen oracle -> implementation flow;
+- exact required vs supplementary evidence separation;
+- bounded mechanical correction vs semantic change;
 - fail-closed `ORACLE_DEFECT` handling;
 - post-result revision/rerun rules;
-- capability-ID integration for focused semantic routing;
-- no universal new oracle directory/schema unless evidence later justifies one.
+- behavioral, security and refactor-specific constraints;
+- no universal new oracle directory/schema without later evidence.
 
-The contract explicitly does **not** pre-register T023-specific corpus or thresholds before MG1/T022 eligibility.
+The contract does **not** pre-register any T023-specific corpus or thresholds before MG1/T022 eligibility.
 
-`docs/CONTEXT-MAP.md` adds a focused route:
+`docs/CONTEXT-MAP.md` adds the focused route:
 
 ```text
 conformance-authoring
     -> D052
     -> docs/CONFORMANCE-ORACLE-CONTRACT.md
-    -> docs/TASK-CONTRACTS.md
 ```
 
-Full testing/eval strategy remains on-demand rather than mandatory preload.
+`docs/TASK-CONTRACTS.md` is not part of that default load. Add `task-governance` only when binding an oracle to a concrete executable task. Full testing/eval/provider/host material is also on-demand by assurance plane.
 
-The D047 bootstrap ratchet is unchanged. Under D049, these live map changes do not trigger incidental refresh of the historical RCAB snapshot.
+The D047 bootstrap ratchet is unchanged. Under D049, live context-map evolution does not require incidental historical snapshot refresh.
 
 ## L007
 
@@ -114,7 +110,7 @@ Current write discipline remains: capture `develop` SHA -> create `docs/*` branc
 
 After T022 acceptance, MG1 will instantiate the capability and conformance contracts with the actual B0/B1/F2/G3 presentations, corpus, expected outcomes, semantic negative controls, repeated-trial method, host/model matrix, metrics and victory/non-regression thresholds.
 
-Current Orchestrator work may define reusable authoring contracts and routing, but MUST NOT populate the T023 oracle early.
+Current Orchestrator work may define reusable authoring contracts and focused routing, but MUST NOT populate the T023 oracle early.
 
 ## T032 boundary preserved
 
@@ -131,8 +127,8 @@ Do not execute them merely to create activity while the Executor lane is paused.
 
 ## Next Action
 
-1. Review/integrate `docs/d052-conformance-oracle-contract` only if its diff is Markdown-only, does not pre-register T023-specific cases/thresholds and leaves D047 snapshot/ratchet semantics unchanged.
-2. After integration, align the stable testing/eval documentation to reference the new oracle contract rather than duplicating D052 ownership semantics.
+1. Review/integrate `docs/d052-conformance-oracle-contract` only if its diff is Markdown-only, remains focused/context-conscious, does not pre-register T023 cases/thresholds and leaves D047/D049 snapshot semantics unchanged.
+2. After integration, align `docs/TESTING-AND-EVALUATION.md`, `tests/README.md` and `evals/README.md` to reference the oracle contract instead of repeating ownership/oracle lifecycle prose.
 3. Continue Orchestrator-only design/documentation work while the Executor lane is paused.
 4. Do not prepare or launch T032 re-entry until the Human Owner explicitly re-enables the Executor lane.
 5. When capacity returns: execute OP066 first, verify its durable receipt, then prepare fresh T032 re-entry from then-current `develop`.
@@ -145,7 +141,8 @@ Do not execute them merely to create activity while the Executor lane is paused.
 After normal bootstrap:
 
 - D050 + `docs/CAPABILITY-SOURCE-CONTRACT.md` for capability/Skill architecture;
-- D052 + `docs/CONFORMANCE-ORACLE-CONTRACT.md` + `docs/TASK-CONTRACTS.md` for conformance authoring;
+- D052 + `docs/CONFORMANCE-ORACLE-CONTRACT.md` for generic conformance authoring;
+- add `task-governance` only when binding/reviewing a concrete Task Contract;
 - `docs/CONTEXT-MAP.md` only when stable routing/RCAB registration is material;
 - D051 only for packaging/install semantics;
 - OP066 only after Human explicitly re-enables executor capacity;
@@ -155,4 +152,4 @@ After normal bootstrap:
 
 ## Do Not
 
-Do not wait for unseen executor work; execute OP066 before Human re-enables the Executor lane; preauthorize T032 re-entry early; treat interrupted T032 local work as authority; accept rejected `b43b306e...`; resume T021 early; start or pre-register MG1/T023 before T022; retrofit D052 onto T032/T021; weaken D049/D047/T032-R1; treat capability count as Skill count; require Skill-to-Skill invocation; introduce unapproved multi-agent product architecture; independently version generated Skills; violate D051; treat tests/oracles as Governance authority; create an unnecessary universal oracle directory/schema; refresh the RCAB historical snapshot merely because the live map changed; rewrite L007 incident history; write directly to `develop`/`main`; or launch T026 early.
+Do not wait for unseen executor work; execute OP066 before Human re-enables the Executor lane; preauthorize T032 re-entry early; treat interrupted T032 local work as authority; accept rejected `b43b306e...`; resume T021 early; start or pre-register MG1/T023 before T022; retrofit D052 onto T032/T021; weaken D049/D047/T032-R1; treat capability count as Skill count; require Skill-to-Skill invocation; introduce unapproved multi-agent product architecture; independently version generated Skills; violate D051; treat tests/oracles as Governance authority; create an unnecessary universal oracle directory/schema; preload Task Contracts/full testing docs for generic oracle design; refresh the RCAB historical snapshot merely because the live map changed; rewrite L007 incident history; write directly to `develop`/`main`; or launch T026 early.
