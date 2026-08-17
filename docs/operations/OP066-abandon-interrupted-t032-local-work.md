@@ -4,7 +4,7 @@ Operation ID: OP066
 Status: READY  
 Type: interrupted local-work retirement  
 Authorized base: `develop`  
-Receipt anchor: PR #TBD
+Receipt anchor: PR #143
 
 ## Objective
 
@@ -82,7 +82,7 @@ Before claiming `DONE`, verify and record:
 
 ## Durable receipt
 
-Publish one top-level comment to the receipt-anchor PR with:
+Publish one top-level comment to PR #143 with:
 
 ```text
 AGENT-GOVERNANCE-OPERATION-RECEIPT v1
