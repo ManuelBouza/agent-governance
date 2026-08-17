@@ -1,15 +1,15 @@
 # Current ChatGPT Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O106  
+Checkpoint-Sequence: O107  
 Canonical-Branch: `develop`  
 Chat-Closure: CONTINUE_ALLOWED
 
 ## Frontier
 
-Accepted architecture/method authority: D044, D049, D050, D051, D052.
+Accepted authority includes D044, D049, D050, D051, D052.
 
-Human Owner direction creates two lanes:
+Human Owner lanes:
 
 ```text
 Executor lane     = PAUSED until Human explicitly re-enables it
@@ -26,104 +26,84 @@ T026 remains separately gated/BLOCKED.
 
 ## Executor lane
 
-- T032 canonical remote remains rejected `fix/t032-rcab-snapshot-live-separation@b43b306e56c6b90969c3dd10e23ccf8e00cc8ba5`.
+- T032 remote remains rejected `fix/t032-rcab-snapshot-live-separation@b43b306e56c6b90969c3dd10e23ccf8e00cc8ba5`.
 - T021 remains frozen at `969e2130ca9abb27c6ae5ad830923582f45b8a2f`.
-- OP066 is integrated but MUST NOT execute until Human explicitly reports Executor capacity is available.
-- PR #144 / proposed OP067 closed without merge; OP067 is non-authoritative.
-- Do not launch/infer/accept T032/T021/T022 work while this lane is paused.
+- OP066 MUST NOT execute until Human explicitly reports Executor capacity is available.
+- PR #144 / OP067 was closed without merge and is non-authoritative.
 
-When Human later re-enables Executor capacity: execute OP066 first; only after verified `DONE` may a fresh T032 re-entry be prepared.
+When Human re-enables the Executor: OP066 first; only after verified `DONE` may fresh T032 re-entry be prepared.
 
 ## Integrated Orchestrator architecture
 
-### Capability model
-
 - PR #145: `docs/CAPABILITY-SOURCE-CONTRACT.md`.
-- D050 topology-neutral families: `consumer.lifecycle`, `consumer.skill-trust`, `source.maintenance`.
-- capability/sub-capability IDs are routing units, not Skills.
+- PR #146: focused capability routing.
+- PR #147: `docs/CONFORMANCE-ORACLE-CONTRACT.md` + focused conformance routing.
+- PR #148: D052 testing/eval ownership deduplication.
+- PR #149: compact `docs/CAPABILITY-CATALOG.md` and split `skill-capability` vs `capability-authoring` routes.
 
-### Focused context routing
+Routine capability lookup now uses:
 
-- PR #146: `skill-capability` route.
-- PR #147: `docs/CONFORMANCE-ORACLE-CONTRACT.md` + `conformance-authoring` route.
-- PR #148: testing/eval docs defer D052 oracle lifecycle to the oracle contract instead of duplicating it.
+```text
+skill-capability -> D050 + docs/CAPABILITY-CATALOG.md
+```
 
-D047 bootstrap reference/ratchet is unchanged. Under D049, live Context Map changes do not require incidental historical snapshot refresh.
+Capability model changes use:
 
-### L007
+```text
+capability-authoring -> D050 + docs/CAPABILITY-SOURCE-CONTRACT.md + docs/CAPABILITY-CATALOG.md
+```
 
-Accidental direct `develop` write `dffe9cc18696ae04e57b9fef9a4b5b833f0c3435` is recorded in `docs/learning/L007-orchestrator-direct-develop-write.md`, state `CONTROL_PLANNED`.
+D047 bootstrap ratchet remains unchanged. D049 means live Context Map evolution does not require incidental refresh of the historical RCAB snapshot.
 
-Current write sequence is fail-closed:
+## Current Orchestrator work — Consumer Skill baseline
+
+Branch: `docs/consumer-skill-capability-baseline`.
+
+Adds `docs/CONSUMER-SKILL-CAPABILITY-BASELINE.md` as a **structural characterization**, not a topology decision.
+
+Observed baseline: `develop@a29a3278839524eb918892e0a3c2d38926eb1be4`.
+
+Key observations:
+
+- Consumer Skill v1 is `FINAL-AUTHORED / RELEASE-APPROVED`;
+- `governance-skill/SKILL.md` is 8,910 UTF-8 bytes and contains all Skill-local lifecycle + coexistence + external-Skill-trust routing;
+- after activation it progressively routes into installed Governance Core/project state, but source `governance-skill/` has no Skill-local `references/` layer;
+- CLI v1 has seven commands and maps many-to-many to catalog capabilities;
+- `maintainer-skill/` has no Maintainer `SKILL.md` at this baseline, so this is Consumer v1 / pre-T022, not future D050 B0;
+- `consumer.skill-trust` remains only a legitimate challenger boundary, not a selected separate Skill.
+
+Candidate internal reference cuts are recorded only as future hypotheses. No B0/B1/F2/G3 winner, T023 corpus, threshold, holdout or host/model matrix is selected.
+
+No token/runtime-context saving is inferred from file size alone.
+
+## L007
+
+Direct-write incident `dffe9cc18696ae04e57b9fef9a4b5b833f0c3435` remains `CONTROL_PLANNED` in `docs/learning/L007-orchestrator-direct-develop-write.md`.
+
+Fail-closed write sequence remains:
 
 ```text
 capture develop SHA -> create docs/* branch -> verify branch -> write -> exact review -> PR
 ```
 
-Do not rewrite incident history.
-
-## Current Orchestrator work — capability catalog
-
-Branch: `docs/capability-catalog-v1`.
-
-Adds `docs/CAPABILITY-CATALOG.md`, compacted from an initial 428-line draft to 162 lines before review.
-
-Stable focused routes currently represented:
-
-```text
-consumer.lifecycle.installation
-consumer.lifecycle.state
-consumer.lifecycle.execution
-consumer.lifecycle.mission
-consumer.lifecycle.coexistence
-consumer.skill-trust.discovery
-consumer.skill-trust.audit
-source.maintenance.orchestrator
-source.maintenance.executor
-source.maintenance.testing
-source.maintenance.release
-```
-
-`source-maintainer-target` is explicitly prospective and does not claim T022 runtime completion.
-
-`consumer.skill-trust` remains a distinct semantic/risk family, but a separate `External Skill Trust` release entrypoint is only the D050 G3 challenger until MG1/T023 evidence.
-
-Context Map candidate change:
-
-```text
-skill-capability
-    -> D050 + docs/CAPABILITY-CATALOG.md
-
-capability-authoring
-    -> D050 + docs/CAPABILITY-SOURCE-CONTRACT.md + docs/CAPABILITY-CATALOG.md
-```
-
-This is a structural routing improvement only; do not claim physical token/byte savings without RCAB measurement.
-
-## MG1/T023 boundary
-
-Current Orchestrator work MAY define topology-neutral capability metadata and reusable oracle structure.
-
-It MUST NOT define/freeze T023 candidate descriptions, concrete corpus, expected outcomes, thresholds, holdout split, host/model matrix or winner before T022 acceptance and MG1.
-
 ## Next Action
 
-1. Review/integrate `docs/capability-catalog-v1` only if Markdown-only, compact/topology-neutral, D047/D049 unchanged, and no claim that `source-maintainer-target` is implemented.
-2. Then characterize the accepted/current Consumer Skill against the catalog: capability-to-entrypoint/reference mapping, duplicated routing/context, and candidate progressive-disclosure cuts. Characterization only; no topology selection and no Skill behavior change.
+1. Review/integrate `docs/consumer-skill-capability-baseline` only if Markdown-only and purely characterization.
+2. Then derive a **topology-neutral progressive-disclosure design envelope** from the catalog + baseline: what must remain top-level, what may move behind focused references, and what must stay deterministic/shared. Do not choose B0/B1/F2/G3.
 3. Continue Orchestrator-only work while Executor lane is paused.
-4. T021 only after accepted/integrated T032; MG1/T023 only after T022; T026 only after its separate gate.
+4. T021 remains after T032; MG1/T023 remain after T022; T026 remains separately gated.
 
 ## Next Chat Minimum Load
 
-After normal bootstrap:
+After bootstrap:
 
-- routine capability work: `skill-capability` route;
-- capability model changes: `capability-authoring` route;
-- oracle design: `conformance-authoring` route;
-- D051 only for package/install semantics;
+- routine capability work: `skill-capability`;
+- model changes: `capability-authoring`;
+- D052 oracle design: `conformance-authoring`;
+- Consumer Skill structural work: `docs/CONSUMER-SKILL-CAPABILITY-BASELINE.md` only when relevant;
 - OP066 only after Human re-enables Executor;
-- task-specific T032/T021/T023 material only when its gate is active.
+- task-specific T032/T021/T023 context only when its gate is active.
 
 ## Do Not
 
-Do not wait for unseen Executor work; execute OP066 early; preauthorize T032 re-entry; accept rejected T032; resume T021 early; pre-register MG1/T023; retrofit D052 onto T032/T021; weaken D049/D047/T032-R1; treat capability count as Skill count; treat `source-maintainer-target` as implemented; require Skill-to-Skill invocation; introduce unapproved multi-agent product architecture; independently version generated Skills; violate D051; treat catalog/oracles/tests as Governance authority; claim RCAB savings without measurement; refresh historical snapshot incidentally; rewrite L007 history; write directly to `develop`/`main`; or launch T026 early.
+Do not wait for unseen Executor work; execute OP066 early; preauthorize T032 re-entry; accept rejected T032; resume T021 early; pre-register MG1/T023; retrofit D052 onto T032/T021; weaken D049/D047/T032-R1; treat capability count or CLI command count as Skill count; treat source-maintainer as implemented; require Skill-to-Skill invocation; introduce unapproved multi-agent product architecture; independently version generated Skills; violate D051; treat catalog/oracle/tests as Governance authority; claim RCAB savings without measurement; refresh historical snapshot incidentally; rewrite L007 history; write directly to `develop`/`main`; or launch T026 early.
