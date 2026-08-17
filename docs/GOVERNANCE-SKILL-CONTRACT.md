@@ -4,21 +4,44 @@ Status: DESIGN-APPROVED
 
 ## Purpose
 
-Define the reusable consumer-facing Agent Skill that installs and operates the portable governance framework inside adopting repositories without becoming an authority source, replacing the project's development methodology, or storing upstream product-maintenance state.
+Define the reusable consumer-facing Agent Governance capability that installs and operates the portable governance framework inside adopting repositories without becoming an authority source, replacing the project's development methodology, or storing upstream product-maintenance state.
 
-This Skill is distinct from the source-product Maintainer Skill defined in `MAINTAINER-SKILL-CONTRACT.md`.
+Under D050, the Consumer capability may be exposed through one unified dispatcher or one of several generated Agent Governance entrypoints. It remains part of one Agent Governance product/distribution rather than an independently versioned Governance product.
 
-The Consumer Governance Skill must work across compatible agent products by targeting governance roles rather than vendor identities.
+The Consumer Governance capability must work across compatible agent products by targeting governance roles rather than vendor identities.
 
 ## Source Independence Invariant
 
 After installation/bootstrap, a governed consumer repository MUST remain operable without read/write access to the canonical `agent-governance` source repository.
 
-Consumers SHOULD use an immutable release/tag/commit artifact. The Skill MUST NOT require a floating `main`/`develop` checkout, upstream mutation, or source-product PD/RF maintenance context during normal consumer operation.
+Consumers SHOULD use an immutable release/tag/commit artifact. The installed Agent Governance distribution MUST NOT require a floating `main`/`develop` checkout, upstream mutation, or source-product PD/RF maintenance context during normal consumer operation.
+
+## Single-Install / Self-Bootstrap Invariant
+
+D051 requires the normal Consumer experience to be:
+
+```text
+install Agent Governance once
+    -> bootstrap the target repository
+    -> operate/validate from the installed distribution + durable project footprint
+```
+
+For every supported Consumer release-target packaging path:
+
+- one Agent Governance distribution installation unit/bundle MUST contain all Agent-Governance-owned reusable material required for supported bootstrap and normal Consumer operations;
+- after that installation, the user MUST NOT have to manually locate, download, copy or install a second Agent Governance Core/runtime/template/schema/Skill support package;
+- bootstrap from an already installed release MUST NOT require access to the Agent Governance source checkout or network retrieval of missing Agent Governance payload files;
+- bootstrap MUST materialize the project's durable `.agent-governance/` and `.agent-coordination/` authority/state as defined by the current Core/package contract;
+- that durable project footprint is generated project state/authority, not a second product installation;
+- source-maintainer overlays/history/state MUST NOT be copied into an ordinary Consumer repository merely because the installed Agent Governance distribution also contains a source-maintainer entrypoint.
+
+The distribution may itself be acquired through the host/platform's normal package-delivery mechanism. D051 constrains what is required **after** the product is installed.
+
+Project-native tooling and separately approved third-party Skills are not hidden Agent Governance dependencies. Governance may discover/reuse/audit them under coexistence/supply-chain rules, but Agent Governance itself MUST remain usable without requiring arbitrary optional third-party capability installation.
 
 ## Non-Authority Invariant
 
-The Skill MUST NOT replace or redefine the Governance Core or project authority/state records. If Skill instructions conflict with repository authority sources, repository authority sources win. Governance MUST remain operable when the Skill is unavailable or unsupported.
+The Skill/distribution MUST NOT replace or redefine the Governance Core or project authority/state records. If Skill instructions conflict with repository authority sources, repository authority sources win. Governance MUST remain operable when the Skill is unavailable or unsupported.
 
 Existing SDD/specification systems, Skills, registries, memory, permissions, testing and other project-native capabilities remain governed by `COEXISTENCE.md`: detect first, reuse/adapt before adding, and fail closed on unresolved authority/ownership overlap.
 
@@ -29,8 +52,10 @@ Initialize the canonical modular Core, project instance skeleton and adapter req
 
 Before material mutation, inspect relevant project-native capability/instruction surfaces under `COEXISTENCE.md` and stop on unresolved collisions.
 
+Bootstrap MUST source required Agent-Governance-owned reusable Core/templates/runtime support from the already-installed distribution and create only the durable project baseline required by the current footprint contract. Demand-driven task/decision/Skill records are created when needed rather than pre-materializing future work.
+
 ### 2. Validate installation
-Validate required files, Core/project separation, protocol-version consistency, direct references, context budgets, adapter boundaries, EXCHANGE integrity, STATE coherence, coexistence boundaries and absence of project-specific contamination in reusable assets.
+Validate required files, Core/project separation, protocol-version consistency, direct references, context budgets, versions, adapters, STATE, WORKPLAN sequence, coexistence inventory, Skill approval records and EXCHANGE coherence.
 
 ### 3. Cold-start reconstruction
 Start from STATE + GOVERNANCE, follow routed context only, replay EXCHANGE after the checkpoint when needed, and identify protocol, phase/gates, current frontier, blockers, controlling decisions and next permitted action.
@@ -117,7 +142,7 @@ Known systems such as Gentle-AI, GitHub Spec Kit and OpenSpec are compatibility 
 
 ## Explicitly Out of Scope
 
-The Consumer Governance Skill MUST NOT:
+The Consumer Governance capability MUST NOT:
 - develop, refactor, test, or release the canonical `agent-governance` source product merely because it is reachable;
 - load source-product maintainer decisions, `PD*`/`RF*` workflows, or branch-maintenance instructions during ordinary consumer operation;
 - decide project strategy without authority input;
@@ -135,7 +160,8 @@ The Consumer Governance Skill MUST NOT:
 - become the only copy of governance rules/templates/state;
 - assume a project domain;
 - assume OpenCode, Codex, Claude Code, Antigravity, ChatGPT or another named product is always active;
-- expose future task contents merely to optimize planning or implementation.
+- expose future task contents merely to optimize planning or implementation;
+- require a second manually installed Agent Governance support payload after the product distribution is installed.
 
 ## Deterministic vs Judgment Operations
 
@@ -148,7 +174,7 @@ A script MUST NOT encode strategic decisions belonging to Human or Strategy role
 ## Minimal Context Principle
 
 The Skill MUST follow progressive disclosure:
-- `SKILL.md` provides activation and operational routing;
+- `SKILL.md` or selected generated entrypoint provides activation and operational routing;
 - Core modules are loaded only when routed;
 - `COEXISTENCE.md` is loaded only when existing SDD/Skill/tooling boundaries matter;
 - deterministic tooling replaces duplicated validation prose;
@@ -166,13 +192,13 @@ External Skill acquisition MUST occur in a quarantine/review location before act
 
 ## Functional Acceptance Criteria
 
-The Consumer Governance Skill is acceptable only if:
+The Consumer Governance capability is acceptable only if:
 1. a clean unrelated repository can be bootstrapped without project knowledge;
 2. a stateless compatible agent reconstructs state without chat history;
 3. stale STATE is detected correctly;
 4. valid/invalid EXCHANGE transitions and role actors are distinguished;
 5. handoffs consume only required deltas;
-6. removing the Skill leaves governance/state intact;
+6. removing/unavailability of the Skill leaves governance/state intact;
 7. reusable assets contain no project-specific facts;
 8. mutation never invents strategy;
 9. canonical semantics work with at least two agent adapters;
@@ -181,11 +207,12 @@ The Consumer Governance Skill is acceptable only if:
 12. a directory/registry result cannot become installation-valid until its canonical artifact is resolved and separately audited;
 13. an external Skill cannot become valid for installation without an exact provenance/revision audit record, and a changed/shadowed artifact fails validation until re-audited/resolved;
 14. normal operation succeeds without access to the canonical source repository after installation;
-15. maintainer-only triggers do not activate this Skill;
+15. maintainer-only triggers do not activate the Consumer capability;
 16. a repository with Gentle-AI-like, Spec Kit-like, OpenSpec-like or custom SDD fixtures reuses/adapts existing capability ownership without duplicate specs/plans/tasks;
 17. a repository with no SDD/third-party Skills remains fully governable without Governance installing them;
-18. unsafe managed-file or governance-Skill overlap is detected and fails closed rather than being overwritten/shadowed.
+18. unsafe managed-file or governance-Skill overlap is detected and fails closed rather than being overwritten/shadowed;
+19. one supported Agent Governance distribution installation is sufficient to bootstrap and normally operate a clean Consumer repository without manually installed supplemental Agent Governance payload files, while the resulting project remains durably governable from its own installed authority/state.
 
 ## Release Gate
 
-Do not author/release final `SKILL.md` until operation boundaries, package layout, exact consumer trigger corpus, activation description, CLI contracts and template fields are finalized and validated against the current protocol, including source independence, sequential disclosure, Skill discovery resolution, supply-chain semantics, ecosystem coexistence and non-overlap with existing SDD/orchestration Skills.
+Do not author/release final Consumer entrypoint(s) until operation boundaries, package layout, exact Consumer trigger corpus, activation description, CLI contracts and template fields are finalized and validated against the current protocol, including source independence, D051 single-install/self-bootstrap behavior, sequential disclosure, Skill discovery resolution, supply-chain semantics, ecosystem coexistence and non-overlap with existing SDD/orchestration Skills.
