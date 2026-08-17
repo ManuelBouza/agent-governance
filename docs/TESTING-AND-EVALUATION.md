@@ -29,23 +29,15 @@ When available, the source-product Maintainer Skill is the only project-owned to
 
 Do not create a generic pytest/testing/TDD Skill merely to run the approved stack. External authoring/evaluation/security Skills are supplemental only after the applicable supply-chain/coexistence approval and cannot replace repository-owned verification.
 
-## Test authorship and semantic-oracle rule
+## Test authorship and conformance oracle
 
-D052 defines authorship of repository-owned tests/evals when ownership is material.
+D052 defines `orchestrator-conformance`, `executor-implementation`, and `mixed` authorship modes. `docs/CONFORMANCE-ORACLE-CONTRACT.md` is the focused authority for oracle-vs-harness ownership, oracle identity/freeze/revision, negative-control sufficiency, required-versus-supplementary evidence, bounded mechanical corrections, and `ORACLE_DEFECT` handling.
 
-Three modes are supported:
+This strategy continues to define **which assurance plane and verification technique is appropriate**. It does not duplicate the oracle lifecycle.
 
-- `orchestrator-conformance`: ChatGPT authors the required acceptance/conformance oracle; the executor executes it and may add supplementary technical tests.
-- `executor-implementation`: the executor authors technical tests/evals and executes them inside the ChatGPT-owned Task Contract/acceptance boundary.
-- `mixed`: ChatGPT authors the semantic conformance oracle while the executor authors implementation/exploratory tests and executes both classes.
+When D052 applies, the controlling Task Contract/gate identifies the exact Orchestrator-owned oracle assets. The Executor executes the required oracle and remains responsible for technical harness/execution, implementation-focused and supplementary tests, diagnostics, traces, aggregation, and evidence except where an exact asset is explicitly designated otherwise.
 
-Agent Skill, governance/policy and documentation-managed protocol work should normally use `orchestrator-conformance` or `mixed` when ChatGPT owns the correctness semantics. Ordinary consumer-application implementation remains `executor-implementation` by default.
-
-Orchestrator-owned conformance assets may include approved assertions, positive/negative/near-miss/cross-profile/ambiguous cases, expected classifications/outcomes, frozen corpora/holdouts, semantic negative controls, thresholds represented as data, golden fixtures, security acceptance cases and deterministic grader expectations.
-
-The executor remains responsible for execution, environment/harness mechanics, diagnostics, implementation tests, property/fuzz exploration, supplementary edge/adversarial cases, traces, result aggregation and evidence.
-
-A conformance test is an executable projection of its controlling Core/Decision/Task Contract, not normative authority. If an executor identifies a semantic oracle defect, it reports an `ORACLE_DEFECT`-equivalent blocker with evidence rather than changing expected semantics. Mechanical corrections require durable authorization and must preserve meaning.
+A conformance oracle remains an executable projection of its controlling specification, never independent Governance authority.
 
 ## Ecosystem coexistence test rule
 
@@ -373,12 +365,10 @@ Thresholds MAY be tightened after enough empirical data exists. Relaxing a relea
 
 ## Ownership
 
-Per D052 and `AGENTS.md`:
-- ChatGPT Orchestrator owns this Markdown strategy, test/eval contracts, acceptance meaning and release interpretation;
-- under `orchestrator-conformance` or the Orchestrator side of `mixed`, ChatGPT owns the designated non-Markdown conformance/oracle assets that directly encode its approved acceptance semantics;
-- the Agente de IA Ejecutor owns implementation-focused tests/evals, supplementary fixtures/cases, technical harness/adapters, execution and reproducible evidence, and all test/eval implementation under `executor-implementation`;
-- the executor may improve a mechanically broken harness only within durable authorization and without redefining approved behavior;
-- a suspected semantic oracle defect must be escalated with evidence rather than silently changed.
+Per D052, `AGENTS.md`, and `docs/CONFORMANCE-ORACLE-CONTRACT.md`:
+- ChatGPT Orchestrator owns this Markdown strategy, acceptance meaning/release interpretation, and exact conformance/oracle assets designated by an applicable `orchestrator-conformance`/`mixed` Task Contract or gate;
+- the Agente de IA Ejecutor owns technical harness/adapters, execution, implementation-focused and supplementary tests/evals, and reproducible evidence except for exact designated Orchestrator oracle assets;
+- semantic oracle lifecycle/change rules are not redefined here.
 
 ## Implementation constraint
 
@@ -398,6 +388,6 @@ Initial preference:
 
 Testing/eval suites are living product artifacts.
 
-When a bug, ambiguity, security issue, portability failure, coexistence conflict, trigger collision, or regression is confirmed, add the smallest reproducible case to the appropriate suite before or with the fix whenever practical. D052 authorship mode determines who owns the semantic expected behavior; executor-discovered technical regressions may remain executor-authored when they do not redefine the acceptance oracle.
+When a bug, ambiguity, security issue, portability failure, coexistence conflict, trigger collision, or regression is confirmed, add the smallest reproducible case to the appropriate suite before or with the fix whenever practical. D052 and `docs/CONFORMANCE-ORACLE-CONTRACT.md` determine whether that new case changes the required semantic oracle or remains Executor-owned supplementary/implementation coverage.
 
 Review external references periodically because agent-evaluation, SDD tooling and Agent Skill security guidance are evolving quickly.
