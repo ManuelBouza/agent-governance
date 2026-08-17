@@ -16,12 +16,15 @@ Generate and verify the T023-selected Agent Governance Skill topology plus suppo
 
 The selected topology may contain one or multiple generated Skill entrypoints. Wrappers and entrypoints must add routing/packaging projection only and must not fork Governance behavior, Core authority, profile contracts, deterministic engine implementation or product versioning.
 
+For every supported release-target platform, the resulting Consumer-capable distribution must satisfy D051: **one Agent Governance installation unit must contain all Agent-Governance-owned reusable material required for bootstrap and normal Consumer operation**. The user must not manually assemble secondary Agent Governance packages or support files after installation.
+
 ## Controlling references
 
 - `AGENTS.md`
 - `docs/TASK-CONTRACTS.md`
 - `docs/decisions/D044-unified-governance-skill-architecture.md`
 - `docs/decisions/D050-canonical-capability-source-and-evaluated-skill-topology.md`
+- `docs/decisions/D051-single-install-self-bootstrap-and-durable-project-footprint.md`
 - `docs/UNIFIED-GOVERNANCE-REFACTOR-PLAN.md`
 - accepted T023 review/evidence selecting the exact topology
 - `docs/RELEASES.md`
@@ -34,6 +37,7 @@ The selected topology may contain one or multiple generated Skill entrypoints. W
 - Non-Markdown packaging/validation code and tests.
 - Generated wrapper/Skill artifacts in ignored/temporary build output as appropriate.
 - Non-Markdown artifact identity/provenance evidence.
+- Non-Markdown clean-install/self-bootstrap fixtures and evidence required by D051.
 - The executor handoff JSON.
 
 ## Explicit exclusions
@@ -44,6 +48,8 @@ The selected topology may contain one or multiple generated Skill entrypoints. W
 - Creating independently maintained Governance Skill sources/products.
 - Independent per-entrypoint version numbers or release cycles.
 - Making portable operation depend on Skill-to-Skill invocation.
+- Requiring users to separately install Agent Governance Core/templates/runtime/support packages after installing the distribution.
+- Requiring source-repository checkout access or network retrieval of missing Agent Governance payload during normal bootstrap from an already-installed release.
 - Unrelated provider/model routing, host configuration, permissions, Gentle AI/Caveman integration, multi-agent architecture, or release promotion.
 - Direct writes to `develop` or `main`.
 - Manual maintenance of generated distribution copies.
@@ -59,6 +65,9 @@ The selected topology may contain one or multiple generated Skill entrypoints. W
 - Entry-point/wrapper-specific metadata is subordinate packaging/routing evidence, not Governance authority.
 - The emitted Consumer-capable payload remains self-contained and contains no forbidden source-maintenance state/history.
 - The final topology must match the exact T023-selected outcome; T024 is projection/packaging, not another topology decision.
+- One supported platform installation action/bundle must make the complete Agent Governance distribution available; generated entrypoints are not independent products that the user installs separately.
+- Bootstrap materializes the governed project's durable `.agent-governance/` / `.agent-coordination/` footprint from installed distribution content plus project/Human inputs; that footprint is project state/authority, not a second product installation.
+- Consumer bootstrap must not copy source-maintainer overlays/history/state merely because a source-maintainer entrypoint ships in the same distribution.
 
 ## Acceptance criteria
 
@@ -80,6 +89,19 @@ Artifact-only bootstrap/validate and the applicable accepted normal operations r
 ### AC-T024-6 — topology fidelity
 The generated number/names/routing metadata and capability partition match the T023-selected topology without unreviewed widening, merging or decomposition.
 
+### AC-T024-7 — single-install self-bootstrap
+For every supported release-target platform, a clean environment proves the D051 journey:
+
+1. install the Agent Governance distribution once using the supported platform mechanism;
+2. do not manually install/copy any second Agent Governance Core/runtime/template/schema/Skill support payload;
+3. bootstrap a clean unrelated Consumer repository with Agent Governance source checkout unavailable;
+4. resolve required product-owned Core/runtime/assets/templates from inside the installed distribution;
+5. validate the generated durable project footprint;
+6. execute the applicable normal Consumer operations from the installed distribution + project footprint.
+
+### AC-T024-8 — consumer/source overlay isolation
+A distribution containing source-maintainer or other generated entrypoints does not copy source-product policy/history/state into an ordinary Consumer project footprint.
+
 ## Verification requirements
 
 - Run focused topology-projection/wrapper/package validation tests.
@@ -88,6 +110,8 @@ The generated number/names/routing metadata and capability partition match the T
 - Verify manifest/release identity agrees with T020 generated metadata and later accepted identity schema.
 - Verify all emitted entrypoints share the same distribution/Core/engine/capability provenance.
 - Run artifact-only Consumer bootstrap/validate/normal-operation regression where applicable.
+- Run a clean single-install/self-bootstrap fixture for each supported release-target packaging path, with source checkout unavailable and no out-of-band Agent Governance support payload.
+- Verify the resulting `.agent-governance/` / `.agent-coordination/` footprint and source-maintainer exclusion.
 - Map every acceptance criterion to exact evidence in the handoff.
 
 ## Stop / escalation conditions
@@ -97,7 +121,9 @@ The generated number/names/routing metadata and capability partition match the T
 - T023 topology outcome is unresolved or cannot be reproduced from canonical source.
 - A selected multi-entrypoint topology would require independent versions or Skill-to-Skill invocation to function.
 - The build cannot provide one atomic distribution identity across all emitted entrypoints.
+- A release-target platform requires consumers to manually install multiple independent Agent Governance components or download product-owned support files after installation and no compliant one-unit wrapper/bundle can be produced.
+- Consumer bootstrap would require source checkout or network retrieval of missing Agent Governance payload after the distribution is already installed.
 
 ## Expected handoff
 
-Before claiming `DONE`, `BLOCKED`, or `PARTIAL`, persist the executor handoff at `handoffs/T024-executor-handoff.json` according to `docs/EXECUTOR-HANDOFFS.md`, follow D048's normal-task publication boundary, commit/push all authorized work, and return only the canonical completion fields required by `docs/TASK-CONTRACTS.md`.
+Before claiming `DONE`, `BLOCKED`, or `PARTIAL`, persist `handoffs/T024-executor-handoff.json` according to `docs/EXECUTOR-HANDOFFS.md`, follow D048's normal-task publication boundary, commit/push all authorized work, and return only the canonical completion fields required by `docs/TASK-CONTRACTS.md`.
