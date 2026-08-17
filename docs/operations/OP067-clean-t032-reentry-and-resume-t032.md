@@ -4,7 +4,7 @@ Operation ID: OP067
 Status: READY  
 Type: clean task re-entry with D045 preauthorized continuation  
 Authorized base: `develop`  
-Receipt anchor: PR #TBD
+Receipt anchor: PR #144
 
 ## Objective
 
@@ -40,7 +40,7 @@ Stage A is a readiness/identity gate. It MUST NOT implement T032, mutate T021, a
 
 ## Stage-A durable receipt
 
-Publish one top-level comment to the receipt-anchor PR containing:
+Publish one top-level comment to PR #144 containing:
 
 ```text
 AGENT-GOVERNANCE-OPERATION-RECEIPT v1
