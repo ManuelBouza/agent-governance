@@ -1,7 +1,7 @@
 # Current ChatGPT Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O121  
+Checkpoint-Sequence: O122  
 Canonical-Branch: `develop`  
 Chat-Closure: CONTINUE_ALLOWED
 
@@ -10,47 +10,112 @@ Chat-Closure: CONTINUE_ALLOWED
 Accepted authority: D044, D049, D050, D051, D052.
 
 ```text
-Executor lane     = IDLE / AVAILABLE after verified OP066 cleanup
-Orchestrator lane = READY to prepare fresh T032-R1 re-entry only after new Human authorization
+Executor lane     = ENABLED FOR T032-R1 CLEAN RE-ENTRY ONLY
+Orchestrator lane = WAITING FOR T032-R1 REMOTE HANDOFF
 ```
 
 Executable order remains `T032 R1 -> T021 R1 -> T022 -> MG1 -> T023 -> T024`; T026 remains separately gated.
 
-T032 remote remains rejected at `b43b306e56c6b90969c3dd10e23ccf8e00cc8ba5`; T021 remains frozen at `969e2130ca9abb27c6ae5ad830923582f45b8a2f`.
+OP066 is verified `DONE` and MUST NOT be rerun. T032 remote remains rejected at `b43b306e56c6b90969c3dd10e23ccf8e00cc8ba5`; T021 remains frozen at `969e2130ca9abb27c6ae5ad830923582f45b8a2f`.
 
-## OP066 verified DONE
+## Human authorization
 
-Durable receipt: PR #143 issue comment `5324458497`.
+On 2026-08-18 the Human Owner explicitly authorized resuming executable work with `Go` after verified OP066 completion.
 
-Independent Orchestrator verification confirms:
+This authorization applies only to fresh T032-R1 re-entry under:
 
-- receipt `STATUS: DONE`, `EXCEPTIONS: none`;
-- receipt base `develop@f078c7f8a69273c5b1fa862c2b99655f26f3ff56` equals current `develop` at review time;
-- remote T032 is still exactly `b43b306e56c6b90969c3dd10e23ccf8e00cc8ba5`;
-- remote T021 is still exactly `969e2130ca9abb27c6ae5ad830923582f45b8a2f`;
-- Executor found no interrupted local-only T032 state to destroy;
-- final local T032 state is `CLEAN_AT_REMOTE_HEAD`;
-- remote mutation is `none`.
+- `docs/tasks/T032-rcab-snapshot-live-separation.md`;
+- `docs/reviews/T032-R1.md`;
+- D049;
+- L006;
+- D048 publication timing.
 
-OP066 is therefore accepted as complete. It has no continuation and must not be rerun as part of T032 work.
+D052 does not retrofit T032 ownership; T032 remains grandfathered under its existing Task Contract/rework.
+
+## Clean re-entry procedure
+
+The Executor MUST begin from then-current `origin/develop` containing this checkpoint and current `AGENTS.md`. It must not rely on prior chat/session state.
+
+Before mutation, verify:
+
+- current `origin/develop` contains O122;
+- remote `fix/t032-rcab-snapshot-live-separation` is still exactly `b43b306e56c6b90969c3dd10e23ccf8e00cc8ba5`;
+- remote `refactor/t021-consumer-profile-abstraction` is still exactly `969e2130ca9abb27c6ae5ad830923582f45b8a2f`;
+- local T032 state is absent or clean at the preserved remote T032 head;
+- OP066 receipt remains `DONE / EXCEPTIONS: none`.
+
+If any precondition fails, return `BLOCKED` before unsafe reconciliation.
+
+### Branch reconciliation
+
+T032 and current `develop` have diverged since reviewed base `f72d936987f4b55b62e6087fab1d93262ccee005`. Preserve the existing rejected T032 commits and remote history.
+
+Preferred safe reconciliation:
+
+1. fetch canonical remotes;
+2. checkout/reset the local T032 branch only to its existing remote head `b43b306e...` if needed and safe;
+3. merge the exact current `origin/develop` into the local T032 branch;
+4. do **not** rebase, force-push, rewrite the rejected commits, or publish this reconciliation as an intermediate checkpoint;
+5. if merge reconciliation requires manual resolution of committed Markdown, T021, or unrelated surfaces, stop `BLOCKED` rather than editing outside T032 ownership;
+6. verify that all incoming non-T032 changes are inherited unchanged from `develop` and that the task-specific diff remains limited to T032-authorized non-Markdown files.
+
+The merge/reconciliation remains local until the final D048 publication boundary.
+
+## T032-R1 execution
+
+Implement only the correction required by `docs/reviews/T032-R1.md`:
+
+- complete canonical epoch-payload integrity binding without self-reference;
+- exact derived bootstrap/current/delta/warning/ratchet consistency;
+- verifiable registry identity from snapshot-carried canonical semantics;
+- deterministic entry type/value/order constraints;
+- canonical JSON bytes or an equivalent canonical identity boundary;
+- independent negative controls for metadata/physical metrics, registry identity, bootstrap/ratchet state, and canonical/payload tampering;
+- preserve historical-snapshot integrity after legitimate source advance while explicit currentness becomes stale and live status remains current;
+- preserve D047 thresholds, D049 semantics, source-only/package isolation and all exclusions in T032.
+
+Run the complete T032 verification matrix, including focused RCAB, T030/T031 compatibility, T020 isolation, full deterministic suite, Ruff/format/compile, JSON parse and diff/scope inspection.
+
+## Publication and handoff
+
+D048 controls publication:
+
+```text
+local reconcile + implementation
+ -> complete verification
+ -> final implementation/test state
+ -> final handoff/finalization
+ -> one planned final push of the complete T032 branch
+ -> remote HEAD verification
+ -> visible terminal response
+```
+
+No intermediate progress push is authorized.
+
+The final handoff remains `handoffs/T032-executor-handoff.json` and MUST map AC-T032-1 through AC-T032-6 to exact evidence, explicitly naming the independent tamper negative controls required by T032-R1. Preserve D029 handoff identity semantics.
+
+After the final push, return only:
+
+```text
+STATUS: DONE | BLOCKED | PARTIAL
+HANDOFF: handoffs/T032-executor-handoff.json
+BRANCH: fix/t032-rcab-snapshot-live-separation
+HEAD: <pushed final remote HEAD>
+```
+
+Do not continue into T021 in the same invocation. Orchestrator review/integration of corrected T032 comes first.
 
 ## Next Action
 
-1. Wait for a new explicit Human authorization to resume executable work.
-2. On authorization, prepare a fresh T032-R1 re-entry from then-current `origin/develop`.
-3. The re-entry must reload current `AGENTS.md`, `docs/tasks/T032-rcab-snapshot-live-separation.md`, `docs/reviews/T032-R1.md`, and directly required controlling references.
-4. Treat preserved remote T032 head `b43b306e56c6b90969c3dd10e23ccf8e00cc8ba5` as the rejected implementation starting point; do not rely on prior local/session state.
-5. Reconcile the old T032 topic branch safely with current `develop`, implement only the T032-R1 correction, run the complete required verification, finalize the handoff, and follow D048 publication rules.
-6. T021 remains blocked until T032 is accepted/integrated and canonical deterministic regression is green. T022 follows T021; MG1/T023 follow T022; T026 remains separately gated.
+1. Executor performs the clean T032-R1 re-entry above.
+2. Orchestrator waits for the pushed terminal handoff and then reviews exact remote HEAD/diff/evidence against T032 + T032-R1.
+3. Accept/integrate only if AC-T032-1..6 and the full canonical regression are green with no scope drift.
+4. T021 may resume only after accepted/integrated T032 and green canonical baseline.
 
 ## Next Chat Minimum Load
 
-After normal bootstrap:
-
-- before T032 authorization: this checkpoint only;
-- when T032 re-entry is authorized: `docs/tasks/T032-rcab-snapshot-live-separation.md`, `docs/reviews/T032-R1.md`, D049, L006, and D048 only if publication timing is material;
-- T021/T022/T023 only after their gates become active.
+While T032-R1 is active: `docs/tasks/T032-rcab-snapshot-live-separation.md`, `docs/reviews/T032-R1.md`, D049, L006, and D048 when publication timing is material. Load T021 only after T032 acceptance permits it.
 
 ## Do Not
 
-Do not rerun OP066; resume T032 without new Human authorization; reuse hidden/local state from the interrupted invocation; resume T021/T022 early; pre-register MG1/T023; choose R*/B*; launch T026; weaken D049/D047/T032-R1; or treat the successful cleanup receipt as implementation acceptance.
+Do not rerun OP066; reuse hidden/local state from the interrupted invocation; rebase/force-push T032; push an intermediate progress checkpoint; edit committed Markdown as Executor; change D047/D049; touch T021/T022; pre-register MG1/T023; choose R*/B*; launch T026; or continue into another task before Orchestrator acceptance.
