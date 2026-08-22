@@ -13,13 +13,31 @@ from pathlib import Path
 import pytest
 
 
-def symlink_or_skip(link: Path, target: str | Path) -> None:
+def unsafe_link_fixture(link: Path, target: str | Path) -> None:
     try:
         link.symlink_to(target)
     except OSError as error:
-        if getattr(error, "winerror", None) == 1314:
-            pytest.skip("native Windows host does not grant symbolic-link creation privilege")
-        raise
+        if getattr(error, "winerror", None) != 1314:
+            raise
+        junction_target = Path(target)
+        if not junction_target.is_absolute():
+            junction_target = link.parent / junction_target
+        remove_target = not junction_target.exists()
+        if remove_target:
+            junction_target.mkdir()
+        elif not junction_target.is_dir():
+            junction_target = link.parent.parent / f".{link.name}-junction-target"
+            junction_target.mkdir()
+        subprocess.run(
+            ["cmd", "/c", "mklink", "/J", str(link), str(junction_target)],
+            check=True,
+            capture_output=True,
+            text=True,
+            timeout=30,
+        )
+        assert link.is_junction()
+        if remove_target:
+            junction_target.rmdir()
 
 
 def run_cli(cli: Path, *arguments: object) -> subprocess.CompletedProcess[str]:
@@ -574,7 +592,7 @@ def test_skill_refuses_unsafe_id_and_symlinked_artifact(
 
     approval, candidate_path, candidate = approval_record(consumer)
     candidate_artifact = consumer / candidate["candidate_artifact"]
-    symlink_or_skip(candidate_artifact / "linked", consumer / "managed.txt")
+    unsafe_link_fixture(candidate_artifact / "linked", consumer / "managed.txt")
     linked = run_cli(
         governance_cli,
         "skill",

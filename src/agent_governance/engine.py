@@ -189,6 +189,10 @@ class GovernanceError(Exception):
     """Expected fail-closed CLI error."""
 
 
+def _is_unsafe_link(path: Path) -> bool:
+    return path.is_symlink() or path.is_junction()
+
+
 def _protocol_version(governance: Path) -> str:
     try:
         lines = governance.read_text(encoding="utf-8").splitlines()
@@ -215,11 +219,13 @@ def _version_declaration(path: Path, field: str) -> None:
 
 def _safe_target(raw_target: str) -> Path:
     target = Path(raw_target).expanduser()
-    if target.is_symlink() or not target.is_dir():
+    if _is_unsafe_link(target) or not target.is_dir():
         raise GovernanceError(f"target must be an existing, non-symlink directory: {target}")
     target = target.resolve()
     present_markers = [
-        name for name in SOURCE_MARKERS if (target / name).exists() or (target / name).is_symlink()
+        name
+        for name in SOURCE_MARKERS
+        if (target / name).exists() or _is_unsafe_link(target / name)
     ]
     if present_markers:
         raise GovernanceError(
@@ -247,7 +253,7 @@ def _bootstrap(
     _validate_assets(assets, version)
 
     managed = (target / ".agent-governance", target / ".agent-coordination")
-    collisions = [str(path) for path in managed if path.exists() or path.is_symlink()]
+    collisions = [str(path) for path in managed if path.exists() or _is_unsafe_link(path)]
     if collisions:
         raise GovernanceError(
             f"managed path collision; refusing overwrite: {', '.join(collisions)}"
@@ -275,12 +281,12 @@ def _bootstrap(
 
 
 def _required_file(path: Path) -> None:
-    if path.is_symlink() or not path.is_file():
+    if _is_unsafe_link(path) or not path.is_file():
         raise GovernanceError(f"missing or unsafe required file: {path}")
 
 
 def _required_dir(path: Path) -> None:
-    if path.is_symlink() or not path.is_dir():
+    if _is_unsafe_link(path) or not path.is_dir():
         raise GovernanceError(f"missing or unsafe required directory: {path}")
 
 
@@ -876,7 +882,7 @@ def _bounded_artifact(target: Path, raw_path: object, label: str) -> Path:
     if path.is_absolute() or ".." in path.parts:
         raise GovernanceError(f"{label} must be inside target repository")
     resolved = (target / path).resolve()
-    if target not in resolved.parents or not resolved.exists() or resolved.is_symlink():
+    if target not in resolved.parents or not resolved.exists() or _is_unsafe_link(path):
         raise GovernanceError(f"{label} is missing or unsafe")
     return resolved
 
@@ -884,7 +890,7 @@ def _bounded_artifact(target: Path, raw_path: object, label: str) -> Path:
 def _artifact_digest(path: Path) -> str:
     digest = hashlib.sha256()
     descendants = list(path.rglob("*")) if path.is_dir() else []
-    symlinks = [item for item in descendants if item.is_symlink()]
+    symlinks = [item for item in descendants if _is_unsafe_link(item)]
     if symlinks:
         raise GovernanceError(f"Skill artifact contains unsafe symlink: {symlinks[0]}")
     files = [path] if path.is_file() else sorted(item for item in descendants if item.is_file())
@@ -1162,7 +1168,7 @@ def _archive(target: Path, prepare: bool) -> None:
         if current_state != derived_state:
             raise GovernanceError("STATE is stale; refresh it before archival")
         destination = coordination / "archive" / plan["mission_id"]
-        if destination.exists() or destination.is_symlink():
+        if destination.exists() or _is_unsafe_link(destination):
             raise GovernanceError("mission archive already exists")
         if not prepare:
             print(json.dumps({"mission_id": plan["mission_id"], "archive": "SAFE"}, sort_keys=True))
@@ -1266,7 +1272,9 @@ def _validate_assets(assets: Path, version: str) -> None:
 
 def _validate(target: Path) -> None:
     present_markers = [
-        name for name in SOURCE_MARKERS if (target / name).exists() or (target / name).is_symlink()
+        name
+        for name in SOURCE_MARKERS
+        if (target / name).exists() or _is_unsafe_link(target / name)
     ]
     if present_markers:
         raise GovernanceError(
@@ -1296,7 +1304,7 @@ def _validate(target: Path) -> None:
         "EXCHANGE.jsonl",
         *COORDINATION_DIRS,
     }
-    if (coordination / "archive").is_dir() and not (coordination / "archive").is_symlink():
+    if (coordination / "archive").is_dir() and not _is_unsafe_link(coordination / "archive"):
         expected_coordination.add("archive")
     unexpected_coordination = sorted(
         path.name for path in coordination.iterdir() if path.name not in expected_coordination
@@ -1309,7 +1317,7 @@ def _validate(target: Path) -> None:
         str(path.relative_to(target))
         for root in (core, coordination)
         for path in root.rglob("*")
-        if path.is_symlink()
+        if _is_unsafe_link(path)
     )
     if unsafe_symlinks:
         raise GovernanceError(f"unsafe managed symlinks: {', '.join(unsafe_symlinks)}")
