@@ -1,55 +1,51 @@
 # Current ChatGPT Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O134  
+Checkpoint-Sequence: O135  
 Canonical-Branch: `develop`  
-Current-Work-Unit: T033-R1 native-Windows portability rework launch before T021-R1  
+Current-Work-Unit: Post-T033 native-Windows `develop` baseline validation before T021-R1  
 Chat-Closure: KEEP_CURRENT_CHAT
 
 ## Completed
 
-- Human Owner selected the new ChatGPT desktop app on native Windows, using its Codex view, as the next Agente de IA Ejecutor surface. Codex CLI remains diagnostic-only.
-- The executor-independence boundary remains intact: canonical Git state plus repository instructions/Task Contracts/reviews are authority; no prior OpenCode/Gentle-IA or quarantined Codex project state was imported.
-- Native Windows workstation bootstrap is established: Git `2.53.0.windows.2`, GitHub CLI `2.88.1` authenticated over HTTPS, uv `0.11.32`, native checkout at `C:\Manuel\Projects\agent-governance`, and `uv sync --locked` using CPython `3.13.14`.
-- The Codex app cold diagnostic correctly stopped T021 when clean native-Windows `develop` exposed real portability defects.
-- T033 was persisted and integrated through PR #176.
-- Codex executed T033 on `fix/t033-native-windows-portability-baseline` and pushed terminal HEAD `e97ad4f7593548ad3b6277f265a41be48d812133`; implementation anchor is `4f5bc9d7ec7ce9c6aef68c6a23db9eb6fe5860ef` and handoff is `handoffs/T033-executor-handoff.json`.
-- T033-R1 review found AC-T033-1 through AC-T033-4 satisfied by the submitted locking, LF checkout, LF fixture, and canonical artifact-ordering repairs.
-- AC-T033-5 failed because the submitted branch introduced Windows `pytest.skip(...)` handling for `WinError 1314`, converting seven existing unsafe-symlink/security negative controls into host-capability skips. This conflicts with the Task Contract's explicit prohibition on weakening/skipping deterministic assertions merely to make Windows pass.
-- `docs/reviews/T033-R1.md`, the T033 `IN_PROGRESS` lifecycle update, and checkpoint O133 were integrated through PR #177.
-- Current canonical `develop` is now `ad761094b4e3a9a3d05f0fe5239a7c779db0718b`.
-- The existing T033 implementation branch remains at submitted HEAD `e97ad4f7593548ad3b6277f265a41be48d812133`; compared with current `develop` it is two commits ahead and one commit behind, with merge-base `c581d25d3cfb162d3c4e13838db2af3d1fb3887f`. Rework must reconcile current `develop` into that represented branch without rewriting history.
+- Human Owner selected the new ChatGPT desktop app on native Windows, using its Codex view, as the Agente de IA Ejecutor surface. Codex CLI remains diagnostic-only.
+- The executor-independence boundary remains intact: canonical Git plus repository instructions/Task Contracts/reviews are authority; prior OpenCode/Gentle-IA and quarantined Codex project state were not imported.
+- Native Windows workstation bootstrap is established: Git `2.53.0.windows.2`, GitHub CLI `2.88.1` authenticated over HTTPS, uv `0.11.32`, native checkout `C:\Manuel\Projects\agent-governance`, and repository-local `.venv` from `uv sync --locked` under CPython `3.13.14`.
+- The first clean Codex-app baseline exposed native-Windows repository portability defects, so T021 correctly stopped before mutation.
+- T033 was created to repair those unrelated portability defects.
+- T033-R1 accepted the locking, LF-checkout, LF-fixture and canonical artifact-ordering repairs but rejected seven Windows `pytest.skip(...)` outcomes that weakened existing unsafe-link/security negative controls.
+- Codex completed T033-R1 rework on the preserved `fix/t033-native-windows-portability-baseline` branch. Executor terminal HEAD was `f17f8d22f78ed06062c139d2d4fc5f18773eafb6`; implementation anchor was `77ba22fce6c15a09ab4235b59311f6bb9a189ebd`.
+- The corrected handoff reports `75 passed, 0 skipped` for the affected Consumer security suite and `325 passed, 0 skipped` for the full native-Windows deterministic suite, plus Ruff lint/format green, repeated concurrent appender stress green, LF checkout under `core.autocrlf=true`, and no executor Markdown diff.
+- T033-R2 accepts AC-T033-1 through AC-T033-5. Implementation PR #179 was squash-merged to `develop` as `c111d00aa7b3ff1adaa5883f9850d109c29dc7a7`.
+- After the executor terminal handoff but before PR #179, the Orchestrator accidentally created and deleted six temporary `noop*` files on the T033 topic branch while attempting PR mechanics. Those twelve reviewer-side commits changed no final tree content: comparison from executor HEAD `f17f8d22f78ed06062c139d2d4fc5f18773eafb6` to PR head `0f8b88ecd4f64c6b92947815ae4777cad5947bdd` reports no changed files. This was an Orchestrator tooling error, not executor noncompliance or an authorized workflow pattern.
+- T033 is now `ACCEPTED`; `docs/reviews/T033-R2.md` is the durable acceptance record.
 
-Executable order remains `T033 R1 -> T021 R1 -> T022 -> MG1 -> T023 -> T024`; T026 remains separately gated.
+Executable order returns to `T021 R1 -> T022 -> MG1 -> T023 -> T024`; T026 remains separately gated. T021 still has one launch precondition: a fresh canonical native-Windows verification of current `develop` after this acceptance/checkpoint record is integrated.
 
 ## Controlling References
 
-For the immediate rework:
+For the immediate baseline gate:
 
-- `docs/tasks/T033-native-windows-portability-baseline.md`
-- `docs/reviews/T033-R1.md`
+- `docs/reviews/T033-R2.md`
 - `docs/CODEX-WINDOWS-EXECUTOR-SETUP.md`
 - `docs/LOCAL-DEVELOPMENT-TOOLCHAIN.md`
 
-For T021 only after T033 acceptance/integration and a green fresh native-Windows `develop` baseline:
+For T021 re-entry after the baseline is green:
 
 - `docs/tasks/T021-consumer-profile-abstraction-zero-drift.md`
 - `docs/reviews/T021-R1.md`
 - `docs/REFACTORING-WORKFLOW.md`
 - `docs/decisions/D048-normal-task-single-final-push.md`
 
-T033 rework is limited to satisfying its existing portability/security verification contract. It must not absorb T021 profile semantics, RCAB policy changes, Governance Core semantics, or host-specific product dependencies.
-
 ## Active Remote Artifacts
 
 ```text
-Canonical develop          = ad761094b4e3a9a3d05f0fe5239a7c779db0718b
-T033 Task Contract         = docs/tasks/T033-native-windows-portability-baseline.md
-T033 Review                = docs/reviews/T033-R1.md
-T033 branch                = fix/t033-native-windows-portability-baseline
-T033 submitted HEAD        = e97ad4f7593548ad3b6277f265a41be48d812133
-T033 implementation anchor = 4f5bc9d7ec7ce9c6aef68c6a23db9eb6fe5860ef
-T033 handoff               = handoffs/T033-executor-handoff.json
+T033 status                = ACCEPTED
+T033 Review                = docs/reviews/T033-R2.md
+T033 executor HEAD         = f17f8d22f78ed06062c139d2d4fc5f18773eafb6
+T033 implementation anchor = 77ba22fce6c15a09ab4235b59311f6bb9a189ebd
+T033 integration PR        = #179
+T033 integrated commit     = c111d00aa7b3ff1adaa5883f9850d109c29dc7a7
 
 T021 Task Contract         = docs/tasks/T021-consumer-profile-abstraction-zero-drift.md
 T021 Review                = docs/reviews/T021-R1.md
@@ -57,48 +53,64 @@ T021 topic branch          = refactor/t021-consumer-profile-abstraction
 T021 last verified HEAD    = 969e2130ca9abb27c6ae5ad830923582f45b8a2f
 
 Selected host              = ChatGPT desktop app, Codex view, Windows native
+Primary surface            = graphical Codex app workflow; CLI diagnostics only
 Sandbox backend            = unelevated Human-approved fallback; elevated helper remains blocked
 Native checkout            = C:\Manuel\Projects\agent-governance
 uv                         = 0.11.32
 ```
 
+The T021 remote branch identity above is historical until reverified immediately before launch.
+
 ## Open Questions Or Blockers
 
-T033 is **REWORK_REQUIRED**. The native-Windows suite may not claim canonical green by converting the existing symlink/security negative controls to host-capability skips.
+T033 implementation acceptance is complete. T021 remains temporarily blocked only by the required **fresh current-`develop` native-Windows canonical baseline** after the T033 acceptance/checkpoint Markdown is integrated.
 
-The rework must preserve the accepted locking/EOL/LF-fixture/artifact-ordering improvements unless correction requires otherwise, remove the verification weakening, and execute semantically equivalent native-Windows evidence for the affected unsafe-symlink claims. If faithful coverage cannot be achieved without changing accepted semantics or weakening host security, the executor must return `BLOCKED` rather than normalize skips into acceptance.
+The baseline gate must run without repository mutation:
 
-T021 remains blocked until corrected T033 is accepted/integrated and a fresh native-Windows `develop` bootstrap/verification is green.
+```text
+uv run --locked ruff check .
+uv run --locked ruff format --check .
+uv run --locked python -m pytest
+```
 
-The `unelevated` Codex sandbox may still require narrowly approved command escalation for uv cache/pytest temporary-state ACL behavior. Permanent Full Access, Windows ACL weakening, Defender disablement, global Git changes, or repository-encoded Codex workarounds remain prohibited.
+If the Codex unelevated sandbox still interferes with uv cache/pytest temporary-state ACLs, narrowly approve only the command escalation needed to execute canonical verification. Permanent Full Access, Windows ACL weakening, Defender disablement, global Git changes, or repository-encoded Codex workarounds remain prohibited.
+
+If the fresh current-`develop` suite is red for any cause outside T021, T021 must stop again and the unrelated defect must be governed separately.
 
 ## Independence-Test Boundary
 
-The first mutating Codex task demonstrated that the executor can bootstrap from integrated repository authority, create the required topic branch, implement, verify, persist a handoff and publish terminal state without imported previous-host task history.
+The Codex app has now demonstrated cold repository diagnosis, contract-driven implementation, durable handoff, rework from persisted review authority, preservation of represented branch history, and successful terminal publication without importing prior executor project history.
 
-The current review failure is a governance/acceptance result, not a host-independence failure: Codex produced useful implementation but the Orchestrator independently rejected a test-coverage weakening against the persisted contract.
+This does not remove normal review gates: Codex execution evidence is not acceptance authority. ChatGPT independently reviewed and rejected T033-R1 before accepting T033-R2.
 
-Executor-native Skills, plugins, subagents and compatible technical tools remain available under D041. They remain implementation aids, not authority.
+The first T021-R1 mutation on this host must still start from a **fresh Codex app chat** and use the native-Windows **Local checkout**, not an automatically managed worktree, because the existing T021 remote branch carries represented history that must be reconciled without discard/recreation or force-push rewriting.
 
 ## Next Action
 
-1. Launch T033-R1 rework in the Codex app against the existing `fix/t033-native-windows-portability-baseline` branch.
-2. The executor must synchronize the canonical remote, establish current `develop@ad761094b4e3a9a3d05f0fe5239a7c779db0718b`, and safely reconcile that integrated review authority into the existing represented T033 branch without discard, recreation, force-push, or loss of the submitted implementation history.
-3. Load and execute `docs/tasks/T033-native-windows-portability-baseline.md` together with `docs/reviews/T033-R1.md` as the complete rework authority.
-4. Remove the skip-based acceptance weakening, execute faithful native-Windows negative-control evidence, rerun the complete T033 matrix, update the handoff, commit the complete rework, perform the normal terminal final push, verify remote HEAD, and return only the canonical completion fields.
-5. Orchestrator reviews the new remote T033 HEAD. Only after acceptance does the implementation proceed through PR to `develop`.
-6. After T033 integration, run a fresh native-Windows `develop` canonical baseline. If green, re-verify the exact T021 remote HEAD and resume T021-R1. T022 remains blocked until T021 acceptance.
+1. Integrate this T033 acceptance/checkpoint Markdown branch to `develop`.
+2. In the Codex app, synchronize the native local checkout to the resulting current `origin/develop` and run the canonical baseline read-only. Do not start T021 during that verification.
+3. If the baseline is green, the Orchestrator re-verifies current remote `develop` and the exact remote `refactor/t021-consumer-profile-abstraction` HEAD immediately before launch.
+4. Launch only T021-R1 in a fresh Codex app chat using the unchanged T021 Task Contract plus `docs/reviews/T021-R1.md`; safely reconcile current `develop` into the existing represented T021 branch without discard/recreation/force-push.
+5. Codex performs only the narrow T021-R1 correction, full required verification, terminal handoff, commit and D048 final push.
+6. Orchestrator reviews the pushed T021 branch/handoff/diff and either accepts/integrates it or persists further rework. T022 MUST NOT start before T021 acceptance.
 
 ## Next Chat Minimum Load
 
-If orchestration resumes before T033 acceptance, load only:
+If orchestration resumes before the post-T033 baseline is validated, load only:
 
-- `docs/tasks/T033-native-windows-portability-baseline.md`;
-- `docs/reviews/T033-R1.md`;
-- `docs/CODEX-WINDOWS-EXECUTOR-SETUP.md`.
+- `docs/reviews/T033-R2.md`;
+- `docs/CODEX-WINDOWS-EXECUTOR-SETUP.md`;
+- `docs/LOCAL-DEVELOPMENT-TOOLCHAIN.md`.
 
-Then verify current remote `develop` and `fix/t033-native-windows-portability-baseline`. Do not load T021 rework detail until T033 acceptance makes T021 the active frontier again.
+After a green baseline makes T021 active, load only:
+
+- `docs/tasks/T021-consumer-profile-abstraction-zero-drift.md`;
+- `docs/reviews/T021-R1.md`;
+- `docs/REFACTORING-WORKFLOW.md`;
+- `docs/decisions/D048-normal-task-single-final-push.md`.
+
+Then verify the exact remote T021 branch before launch. Do not load T022 until T021 acceptance.
 
 ## Do Not Load Or Do
 
-Do not merge submitted T033 HEAD `e97ad4f7593548ad3b6277f265a41be48d812133`; start or modify T021; start T022; rerun/modify T032; change RCAB acceptance semantics; weaken or skip deterministic security claims merely for Windows; use global `core.autocrlf` changes as the fix; enable permanent Codex Full Access; weaken Windows security; substitute Codex CLI as the primary executor; import prior hidden project state; directly write `main`/`develop`; force-push represented history; or batch downstream work before T033 acceptance and a green native-Windows baseline.
+Do not start T021 before the fresh current-`develop` native-Windows baseline is green; start T022; rerun/modify T032; change RCAB acceptance semantics; weaken deterministic security claims; use global `core.autocrlf` changes as a fix; enable permanent Codex Full Access; weaken Windows security; substitute Codex CLI as the primary executor; import prior hidden project state; directly write `main`/`develop`; discard/recreate/force-push represented T021 history; or batch downstream work before T021 acceptance.
