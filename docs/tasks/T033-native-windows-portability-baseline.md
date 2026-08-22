@@ -3,7 +3,7 @@
 ## Identity
 
 - Task ID: `T033`
-- Status: `IN_PROGRESS`
+- Status: `ACCEPTED`
 - Type: `fix`
 - Base branch: `develop`
 - Expected topic branch: `fix/t033-native-windows-portability-baseline`
@@ -127,4 +127,14 @@ T021-R1 remains blocked until T033 is accepted/integrated and a clean native-Win
 
 That change conflicts with this contract's explicit prohibition on weakening deterministic assertions merely to make Windows pass and its stop condition for an implementation that would require skipping failing tests.
 
-Rework authority is the unchanged T033 Task Contract plus `docs/reviews/T033-R1.md`. The existing topic branch/history must be preserved; no implementation PR may be accepted from the R1 submitted HEAD. T021 remains blocked until corrected T033 is accepted/integrated and the fresh native-Windows `develop` baseline is green.
+Rework authority remained the unchanged T033 Task Contract plus `docs/reviews/T033-R1.md`. The existing topic branch/history was preserved.
+
+### T033-R2 — ACCEPTED
+
+`docs/reviews/T033-R2.md` reviewed executor terminal HEAD `f17f8d22f78ed06062c139d2d4fc5f18773eafb6` and implementation anchor `77ba22fce6c15a09ab4235b59311f6bb9a189ebd`.
+
+R1 rework removed all skip-based acceptance weakening. Native Windows executes equivalent unsafe-link controls using NTFS junction fixtures when ordinary symbolic-link creation is unavailable. The handoff reports Ruff lint/format green, `75 passed, 0 skipped` for the affected Consumer security suite, `325 passed, 0 skipped` for the full deterministic suite, repeated concurrent appender stress green, repository-controlled LF checkout under `core.autocrlf=true`, and no Markdown blob diff.
+
+PR #179 integrated the accepted implementation to `develop` as squash commit `c111d00aa7b3ff1adaa5883f9850d109c29dc7a7`.
+
+T033 is accepted. The only remaining precondition before T021-R1 re-entry is a fresh canonical native-Windows verification of current `develop` after the acceptance/checkpoint Markdown is integrated.
