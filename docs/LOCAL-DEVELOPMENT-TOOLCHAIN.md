@@ -152,7 +152,7 @@ GitHub CLI may assist authentication or repository operations but is not necessa
 
 ## Executor-host neutrality
 
-OpenCode is one valid local executor host, but the repository toolchain is intentionally not `opencode`-dependent.
+OpenCode, Codex, Claude Code, Antigravity, and other compatible local hosts may fulfill the same abstract Agente de IA Ejecutor role. The repository toolchain is intentionally not dependent on any one host product.
 
 The same Task Contract should remain executable by another compatible agent host if it can:
 
@@ -162,7 +162,12 @@ The same Task Contract should remain executable by another compatible agent host
 - obey D016 ownership restrictions;
 - persist/commit/push the required handoff.
 
-Product-specific agent installation/configuration remains outside `pyproject.toml`/`uv.lock` unless a future decision explicitly creates a product adapter artifact.
+Current host-specific workstation adaptations are documented separately:
+
+- OpenCode worktree permission preflight: `docs/OPENCODE-WORKTREE-PREFLIGHT.md`;
+- Codex native Windows setup and independence preflight: `docs/CODEX-WINDOWS-EXECUTOR-SETUP.md`.
+
+Those host-adaptation documents define local safety/ergonomics, not Agent Governance authority. Product-specific installation/configuration remains outside `pyproject.toml`/`uv.lock` unless a future decision explicitly creates a product adapter artifact.
 
 ## Consumer repositories
 
