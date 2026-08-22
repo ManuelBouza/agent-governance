@@ -3,7 +3,7 @@
 ## Identity
 
 - Task ID: `T033`
-- Status: `READY`
+- Status: `IN_PROGRESS`
 - Type: `fix`
 - Base branch: `develop`
 - Expected topic branch: `fix/t033-native-windows-portability-baseline`
@@ -118,3 +118,13 @@ Host-sandbox failures are not repository acceptance failures. If the Codex nativ
 Before claiming `DONE`, `BLOCKED`, or `PARTIAL`, persist `handoffs/T033-executor-handoff.json` according to `docs/EXECUTOR-HANDOFFS.md`, commit and push all authorized non-Markdown work on the expected topic branch, verify the pushed remote HEAD, and return only the canonical completion fields required by `docs/TASK-CONTRACTS.md`.
 
 T021-R1 remains blocked until T033 is accepted/integrated and a clean native-Windows `develop` baseline is green.
+
+## Review / rework lifecycle
+
+### T033-R1 — REWORK_REQUIRED
+
+`docs/reviews/T033-R1.md` reviewed submitted executor HEAD `e97ad4f7593548ad3b6277f265a41be48d812133`. AC-T033-1 through AC-T033-4 passed, but AC-T033-5 failed because the submitted test changes converted seven existing unsafe-symlink/security negative controls into Windows host-capability skips when symlink creation returns `WinError 1314`.
+
+That change conflicts with this contract's explicit prohibition on weakening deterministic assertions merely to make Windows pass and its stop condition for an implementation that would require skipping failing tests.
+
+Rework authority is the unchanged T033 Task Contract plus `docs/reviews/T033-R1.md`. The existing topic branch/history must be preserved; no implementation PR may be accepted from the R1 submitted HEAD. T021 remains blocked until corrected T033 is accepted/integrated and the fresh native-Windows `develop` baseline is green.
