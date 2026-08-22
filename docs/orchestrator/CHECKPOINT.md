@@ -1,115 +1,114 @@
 # Current ChatGPT Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O131  
+Checkpoint-Sequence: O132  
 Canonical-Branch: `develop`  
-Current-Work-Unit: Codex/Windows app-first executor-host onboarding before T021-R1  
+Current-Work-Unit: Native-Windows deterministic-baseline portability blocker before T021-R1  
 Chat-Closure: KEEP_CURRENT_CHAT
 
 ## Completed
 
-- Human Owner selected Codex on native Windows as the next Agente de IA Ejecutor host, replacing the previous OpenCode + Gentle-IA/WSL workstation path for the next execution.
-- The host change is explicitly an executor-independence test; it does not change the abstract executor role, T021 semantics, acceptance criteria, or authority model.
-- Human Owner clarified that the intended executor surface is the **new ChatGPT desktop app on Windows, using its Codex view**, not Codex CLI as the primary execution product. Codex CLI may remain installed only as optional workstation/runtime diagnostics and must not become the task transport or hidden authority.
-- Codex/Windows configuration and cold-start controls are documented in `docs/CODEX-WINDOWS-EXECUTOR-SETUP.md`.
-- `docs/LOCAL-DEVELOPMENT-TOOLCHAIN.md` points to separate OpenCode and Codex host adaptations while preserving host neutrality.
-- The Windows-native Codex runtime was refreshed to standalone Codex CLI `0.149.0` and authenticated through ChatGPT during host diagnostics. This CLI setup is auxiliary to the app-first target.
-- Prior Codex home state was quarantined outside the active `%USERPROFILE%\.codex` tree rather than migrated into the independence baseline. The active Codex home was recreated with `workspace-write`, `on-request`, Human approval review, private desktop, and command network disabled by default.
-- The preferred native Windows `elevated` sandbox was reproducibly blocked during helper setup by `helper_sandbox_lock_failed` / `SetSecurityInfo sandbox dir failed: 5`, including from an Administrator PowerShell. Read-only ACL inspection showed the sandbox-bin directory owned by Administrators with FullControl for SYSTEM, Administrators, and the Human user; setup logs showed sandbox-user and WFP/firewall provisioning succeeded before the helper ACL lock step failed.
-- Codex then self-diagnosed the host using local evidence only under a disposable non-project directory. Its reported result is that normal native-Windows agent command execution works through the `unelevated` restricted-token backend, including successful real command execution and enforced denial outside writable roots; it attributed the direct `codex sandbox windows` `CreateProcessAsUserW failed: 2` result to an invalid diagnostic invocation that attempted to execute the nonexistent command `windows` rather than to failure of the working unelevated agent path.
-- Human Owner explicitly approved `windows.sandbox = "unelevated"` as the documented fallback for the initial T021 independence baseline. The `elevated` backend remains host-blocked pending a fixed Codex helper/version or a separately authorized version experiment; no manual ACL weakening, Defender disablement, sandbox bypass, downgrade, or prohibited backup import was used.
-- During O131 preparation, an accidental empty `noop` file commit was written to `main` and immediately reverted. `main` advanced from `5333fb8e0cdbc288cd11457b8a952cdcd77f6fa9` through two direct commits to `9cfb62c3107b0fd36d3360c7b694d5c9afd95e80`; the compare from the prior main to the current main has **no changed files**. This was an orchestration tooling error, not an authorized workflow pattern, and must not be repeated.
-- No T021 implementation mutation or new T021 publication has been authorized or performed during host onboarding.
-- The last verified remote `refactor/t021-consumer-profile-abstraction` remains `969e2130ca9abb27c6ae5ad830923582f45b8a2f`; it must be re-verified immediately before launch.
+- Human Owner selected the new ChatGPT desktop app on native Windows, using its Codex view, as the next Agente de IA Ejecutor surface. Codex CLI remains diagnostic-only and is not the primary task transport.
+- The host change remains an executor-independence test. Git, repository instructions, Task Contracts/reviews and persisted handoffs remain authoritative; no OpenCode/Gentle-IA or quarantined prior Codex project state was imported.
+- The active Codex home was recreated cleanly. Local memories and memory generation are disabled for the independence baseline, project-semantic custom instructions are absent, and the old Codex home remains quarantined outside the active tree.
+- Codex is configured Windows-native with PowerShell, `workspace-write`, `on-request`, Human approval review and command network off by default. The preferred `elevated` Windows sandbox remains blocked by the local helper `SetSecurityInfo` failure; Human Owner previously approved the documented `unelevated` restricted-token fallback rather than weakening Windows security.
+- Native workstation tooling is now present and verified from a fresh PowerShell session: Git `2.53.0.windows.2`, GitHub CLI `2.88.1` authenticated to the canonical repository over HTTPS, and uv `0.11.32`, which satisfies the repository-declared `>=0.11.32,<0.12` requirement.
+- A fresh native checkout now exists at `C:\Manuel\Projects\agent-governance`. It was cloned from the canonical GitHub repository directly on `develop`; local `HEAD` and `origin/develop` both matched `51a8842e252ee172dab453d5a92eaf18e75d36c4`, with a clean working tree.
+- `uv sync --locked` succeeded on that checkout using CPython `3.13.14` and created the repository-local `.venv` from locked state.
+- A fresh Codex-app chat was then used for a **read-only baseline diagnosis**. Codex did not modify repository files, create commits, switch branches, or start T021. It finished with the checkout still clean on `develop` at the same HEAD.
+- The fresh Codex diagnostic exposed two host-layer issues: the already-running desktop app had not inherited the newly installed uv PATH (`C:\Users\Manuel\.local\bin\uv.exe`), and the `unelevated` restricted-token sandbox produced ACL/access-denied failures for uv cache and pytest temporary directories. These are host-execution issues, not repository acceptance defects; permanent Full Access is not authorized as a workaround.
+- After removing sandbox noise with a specifically externalized diagnostic invocation, the native-Windows repository baseline itself was still red: `27 failed, 237 passed, 57 errors`.
+- The diagnostic identified and the Orchestrator remotely confirmed the main repository portability classes on current `develop`:
+  - `src/agent_governance/engine.py` imports POSIX-only `fcntl` unconditionally and uses `fcntl.flock`, so the production engine cannot import on native Windows;
+  - the repository has no root `.gitattributes`, while the workstation has `core.autocrlf=true` and repository formatting/byte-canonicalization requires LF, so ordinary Windows checkout conversion changes working-tree bytes;
+  - several repository-context tests create text using platform-translating writers while asserting canonical LF byte counts/JSON, leaving genuine Windows fixture defects even in an LF checkout;
+  - `src/agent_governance/artifact.py` sorts `Path` objects directly, while the artifact regression expects canonical case-sensitive string ordering, producing platform-dependent inventory order on Windows.
+- T021 correctly stopped at the preflight boundary. The existing `refactor/t021-consumer-profile-abstraction` implementation branch was not touched.
+- The Orchestrator created planning branch `docs/o132-native-windows-baseline-blocker` from current `develop` and persisted `docs/tasks/T033-native-windows-portability-baseline.md` to govern the unrelated portability repair before T021 can resume.
 
-Executable order remains `T021 R1 -> T022 -> MG1 -> T023 -> T024`; T026 remains separately gated.
+Executable order is now `T033 -> T021 R1 -> T022 -> MG1 -> T023 -> T024`; T026 remains separately gated.
 
 ## Controlling References
 
-For host readiness:
+For the immediate blocker:
 
+- `docs/tasks/T033-native-windows-portability-baseline.md`
 - `docs/CODEX-WINDOWS-EXECUTOR-SETUP.md`
 - `docs/LOCAL-DEVELOPMENT-TOOLCHAIN.md`
+- `docs/TASK-CONTRACTS.md`
 
-For T021 execution after host readiness:
+For T021 only after T033 acceptance and a green fresh `develop` baseline:
 
 - `docs/tasks/T021-consumer-profile-abstraction-zero-drift.md`
 - `docs/reviews/T021-R1.md`
 - `docs/REFACTORING-WORKFLOW.md`
 - `docs/decisions/D048-normal-task-single-final-push.md`
 
-The T021 Task Contract plus `docs/reviews/T021-R1.md` remain the exclusive semantic rework authority. ChatGPT desktop/Codex configuration is host/workstation adaptation only.
+T033 is a portability repair only. It must not absorb T021 profile semantics, RCAB policy changes, or a Codex-specific product dependency.
 
 ## Active Remote Artifacts
 
 ```text
-Task Contract      = docs/tasks/T021-consumer-profile-abstraction-zero-drift.md
-Review             = docs/reviews/T021-R1.md
-Topic branch       = refactor/t021-consumer-profile-abstraction
-Last verified HEAD = 969e2130ca9abb27c6ae5ad830923582f45b8a2f
-Selected host      = ChatGPT desktop app, Codex view, Windows native
-Primary surface    = graphical Codex app workflow; CLI diagnostics only
-Sandbox backend    = unelevated Human-approved fallback; elevated blocked by local Codex 0.149.0 helper failure
+Canonical develop       = 51a8842e252ee172dab453d5a92eaf18e75d36c4
+Planning branch         = docs/o132-native-windows-baseline-blocker
+T033 Task Contract      = docs/tasks/T033-native-windows-portability-baseline.md
+T033 expected branch    = fix/t033-native-windows-portability-baseline
+T033 expected handoff   = handoffs/T033-executor-handoff.json
+
+T021 Task Contract      = docs/tasks/T021-consumer-profile-abstraction-zero-drift.md
+T021 Review             = docs/reviews/T021-R1.md
+T021 topic branch       = refactor/t021-consumer-profile-abstraction
+T021 last verified HEAD = 969e2130ca9abb27c6ae5ad830923582f45b8a2f
+
+Selected host           = ChatGPT desktop app, Codex view, Windows native
+Primary surface         = graphical Codex app workflow; CLI diagnostics only
+Sandbox backend         = unelevated Human-approved fallback; elevated helper remains blocked
+Native checkout         = C:\Manuel\Projects\agent-governance
+uv                      = 0.11.32
 ```
 
-No T021 implementation PR is authorized before fresh Orchestrator acceptance of the terminal rework handoff and remote diff.
+The T033 contract is not executable merely because it exists on the planning branch. The planning change must first be reviewed and integrated into `develop` under the normal Task Contract integration gate.
 
 ## Open Questions Or Blockers
 
-The Windows-native Codex **core execution path** is validated with the Human-approved `unelevated` fallback, but the complete Agent Governance launch-condition checklist is not yet finished and must now be validated through the intended **ChatGPT desktop app / Codex view** where app behavior is material.
+T021 is now blocked by a **real repository portability defect**, not merely by workstation setup. The canonical deterministic suite must become green on native Windows before T021 re-entry.
 
-Before T021 launch, the Human Owner must still validate the remaining workstation/repository-specific items from `docs/CODEX-WINDOWS-EXECUTOR-SETUP.md`, including:
+Host readiness also has two remaining operational details:
 
-- the new ChatGPT desktop app is installed/current and exposes the Codex view;
-- Codex in the app is running Windows native against the intended local checkout;
-- native Git identity/read path against the canonical repository;
-- `uv` installation/version plus `uv sync --locked` bootstrap;
-- GitHub authentication/read diagnostics sufficient for fetch and later authorized final push;
-- the intended native-Windows checkout identity and deliberate repository trust after verification;
-- root `AGENTS.md` instruction discovery from a fresh Codex app chat;
-- no project-semantic Codex-home `AGENTS.md` / `AGENTS.override.md`;
-- local Codex memories disabled for the baseline chat;
-- no Gentle-IA or project-aware MCP/Skill/hook/rule importing hidden prior Agent Governance state;
-- canonical deterministic baseline green before T021 mutation;
-- exact current remote T021 branch identity re-verified immediately before execution.
+- fully restart the ChatGPT desktop app so the Codex process inherits the newly persistent uv PATH, then verify `uv --version` from Codex without using the absolute executable path;
+- the `unelevated` sandbox currently interferes with uv cache/pytest temp ACLs. If this persists during T033, keep normal repository work under `workspace-write` and approve only the specific command escalation needed for canonical verification. Do not enable permanent Full Access, weaken ACLs, disable Defender, or encode a host workaround into repository correctness.
 
-The `elevated` sandbox is a host-only blocker rather than a T021 semantic defect. The active guide permits a Human-approved documented fallback, and that fallback is now accepted for this baseline. It must remain `workspace-write` + `on-request` with Human approval review and command network off by default.
+T033 acceptance must not use a Human-specific `git config --global core.autocrlf false` change as the fix. Repository state must control the canonical line-ending behavior needed for deterministic source/fixture/artifact bytes.
 
-The executor MUST stop/escalate rather than absorb unrelated work if either:
-
-- the remote T021 branch has advanced from the last verified HEAD before re-entry; or
-- the canonical deterministic baseline on current `develop` is not green for reasons outside T021 scope.
+The executor must stop/escalate if the T033 fixes expose a different unrelated red-baseline cause outside its contract.
 
 ## Independence-Test Boundary
 
-The first Codex T021 run must start from a fresh **Codex app chat** and canonical Git state, not from migrated OpenCode/Gentle-IA context, the quarantined prior Codex home, or a CLI conversation used during workstation diagnosis.
+The successful read-only diagnosis already demonstrates that the Codex app can enter the repository cold, obey the no-mutation/T021 stop boundary, use the local toolchain and return technically useful evidence without imported previous-agent project history.
 
-Project semantics come from repository `AGENTS.md`, this checkpoint, the T021 Task Contract and review. Codex-home memories/instructions/extensions must not substitute hidden prior task state.
+The first **mutation** by Codex must now be T033 after its contract is integrated. T021 remains a later, separate re-entry task and still requires a fresh Codex app chat plus preservation of its represented remote branch history.
 
-For T021-R1, use the native-Windows **Local checkout** in the Codex app rather than an automatically managed Codex worktree because the existing T021 remote branch already carries represented history that must be reconciled without discard/recreation or force-push rewriting.
-
-D048 still controls publication. No intermediate progress push is authorized.
+Host-native Skills, plugins, subagents and compatible technical tools remain available to the executor under D041. They are implementation aids only; they may not supply hidden Agent Governance history or redefine Task Contract authority.
 
 ## Next Action
 
-1. Human Owner validates the intended new ChatGPT desktop app / Codex view and completes the remaining launch-condition checks: app readiness, Git/GitHub/uv readiness, fresh native checkout identity/trust, instruction-source isolation, memory/extension isolation, and clean deterministic repository bootstrap.
-2. Orchestrator re-verifies current remote `develop` and the exact T021 remote HEAD immediately before launch, then provides only the minimal repository/Task Contract transport.
-3. Codex app re-bootstraps from current remote `develop`, safely reconciles the existing T021 topic branch without losing represented history, and performs only T021-R1 under the unchanged Task Contract plus `docs/reviews/T021-R1.md`.
-4. Codex completes the required characterization/regression verification, persists the terminal `handoffs/T021-executor-handoff.json`, commits the complete authorized state, performs the D048 final push, verifies remote HEAD, and returns only the canonical completion fields.
-5. Orchestrator reviews the pushed T021 branch/handoff/diff and either accepts/integrates T021 or persists further rework. T022 MUST NOT start before T021 acceptance.
+1. Review the O132 planning diff, open its Markdown-only PR to `develop`, and integrate the T033 Task Contract/checkpoint update.
+2. Human Owner fully restarts the ChatGPT desktop app so the Codex process inherits `C:\Users\Manuel\.local\bin` and verifies `uv --version` inside a fresh Codex project chat.
+3. Orchestrator re-verifies current remote `develop` after O132 integration and launches only T033 using the canonical minimal Task Contract transport.
+4. Codex executes T033 on `fix/t033-native-windows-portability-baseline`, fixes only the persisted portability scope, runs the required native-Windows verification, persists `handoffs/T033-executor-handoff.json`, performs the normal terminal publication, and returns only the canonical completion fields.
+5. Orchestrator reviews the pushed T033 branch/handoff/diff. Only after T033 is accepted/integrated does the Human run a fresh native-Windows `develop` bootstrap/verification.
+6. If that baseline is green, Orchestrator re-verifies the exact remote T021 branch identity and resumes T021-R1. T022 remains blocked until T021 acceptance.
 
 ## Next Chat Minimum Load
 
-If orchestration resumes before Codex app preflight completion, load only:
+If orchestration resumes before T033 acceptance, load only:
 
+- `docs/tasks/T033-native-windows-portability-baseline.md`;
 - `docs/CODEX-WINDOWS-EXECUTOR-SETUP.md`;
-- `docs/LOCAL-DEVELOPMENT-TOOLCHAIN.md`;
-- `docs/tasks/T021-consumer-profile-abstraction-zero-drift.md`;
-- `docs/reviews/T021-R1.md`;
-- `docs/decisions/D048-normal-task-single-final-push.md`.
+- `docs/LOCAL-DEVELOPMENT-TOOLCHAIN.md`.
 
-Then verify the active remote T021 branch before acting. Do not load T022 until T021 acceptance.
+Then verify current remote `develop` and the T033 planning/implementation branch state as applicable. Do not load T021 rework detail until T033 acceptance makes T021 the active frontier again.
 
 ## Do Not Load Or Do
 
-Do not substitute Codex CLI as the primary executor surface for this baseline; migrate old OpenCode/Gentle-IA project state or the quarantined prior Codex home into the active Codex baseline; enable hidden project-aware Codex memory/extensions for the baseline; weaken Windows security or repository authority merely to make the `elevated` sandbox pass; directly write `main`/`develop`; rerun T032/OP066; resume T021 from stale WSL/local session state; discard or rewrite represented T021 history; start T022; pre-register MG1/T023; choose R*/B*; launch T026; or batch downstream implementation before T021 acceptance.
+Do not start or modify T021; start T022; rerun/modify T032; change RCAB acceptance semantics; use a global `core.autocrlf` workstation change as the repository fix; weaken canonical byte/digest/order/locking assertions; enable permanent Codex Full Access; weaken Windows ACL/security; substitute Codex CLI as the primary executor surface; import the quarantined prior Codex/OpenCode/Gentle-IA project state; directly write `main`/`develop`; force-push represented history; or batch downstream work before T033 acceptance and a green native-Windows baseline.
