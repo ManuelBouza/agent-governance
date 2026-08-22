@@ -1,0 +1,112 @@
+{
+  "task_id": "T033",
+  "status": "DONE",
+  "task_contract_path": "docs/tasks/T033-native-windows-portability-baseline.md",
+  "branch": "fix/t033-native-windows-portability-baseline",
+  "implementation_head_sha": "77ba22fce6c15a09ab4235b59311f6bb9a189ebd",
+  "base_branch": "develop",
+  "base_sha": "c48880262d6d4e98e734932b5bcc6687db0791e0",
+  "files_changed": [
+    ".gitattributes",
+    "src/agent_governance/artifact.py",
+    "src/agent_governance/engine.py",
+    "tests/conftest.py",
+    "tests/test_consumer_governance_cli.py",
+    "tests/test_consumer_governance_cli_v1.py",
+    "tests/test_governance_artifact.py",
+    "tests/test_repository_context.py",
+    "tests/test_shared_governance_engine.py",
+    "handoffs/T033-executor-handoff.json"
+  ],
+  "implementation_summary": "Completed T033-R1 rework after fast-forwarding local develop to exact origin/develop c48880262d6d4e98e734932b5bcc6687db0791e0 and cleanly merging that revision into the preserved existing T033 history. The accepted portability implementation remains: supported POSIX hosts use flock, native Windows uses a deterministic fail-closed per-EXCHANGE Win32 named mutex, checkout LF policy is repository-controlled, canonical LF fixtures are explicit, and artifact ordering uses canonical relative POSIX strings. R1 removes every symlink_or_skip acceptance weakening. When ordinary Windows symlink creation is unavailable with WinError 1314, the tests now create an unprivileged NTFS junction fixture and execute the same unsafe-link/collision/source-marker claims; production classifies both symbolic links and junctions as unsafe and fails closed. The fresh native-Windows canonical suite completes with 325 passed and zero skips. No Markdown blob, T021 implementation, Governance/RCAB semantics, digest/byte expectation, dependency, or package boundary changed.",
+  "rework_authority": "docs/reviews/T033-R1.md",
+  "verification": {
+    "commands": [
+      "git fetch --prune origin",
+      "git merge --ff-only origin/develop",
+      "git merge --no-edit origin/develop",
+      "git clone --quiet --no-hardlinks . <disposable-native-windows-clone>",
+      "git -C <disposable-native-windows-clone> config core.autocrlf true",
+      "git -C <disposable-native-windows-clone> reset --hard --quiet HEAD",
+      "git -C <disposable-native-windows-clone> ls-files --eol AGENTS.md docs/orchestrator/CHECKPOINT.md src/agent_governance/engine.py tests/test_repository_context.py baselines/repository-context-manifest-v1.json",
+      "git -C <disposable-native-windows-clone> check-attr text eol -- AGENTS.md src/agent_governance/engine.py baselines/repository-context-manifest-v1.json",
+      "uv run --locked ruff check .",
+      "uv run --locked ruff format --check .",
+      "uv run --locked python -m pytest",
+      "uv run --locked python -m pytest tests/test_consumer_governance_cli.py tests/test_consumer_governance_cli_v1.py",
+      "uv run --locked python -m pytest -q tests/test_consumer_governance_cli_v1.py::test_event_serializes_concurrent_appenders_without_lost_updates (8 repeated runs)",
+      "git diff --check origin/develop...HEAD",
+      "git diff --numstat origin/develop...HEAD -- '*.md'"
+    ],
+    "results": {
+      "baseline_freshness": "PASS: existing local/pushed T033 branch matched exactly at e97ad4f7593548ad3b6277f265a41be48d812133; clean local develop fast-forwarded from c581d25d3cfb162d3c4e13838db2af3d1fb3887f to exact origin/develop c48880262d6d4e98e734932b5bcc6687db0791e0 and merged cleanly into T033 without rewriting represented history",
+      "fresh_checkout_eol": "PASS: representative Markdown, JSON, source, and test paths all reported i/lf w/lf attr/text=auto eol=lf with core.autocrlf=true",
+      "git_attributes": "PASS: representative measured/formatted paths report text=auto and eol=lf",
+      "ruff_check": "PASS: All checks passed",
+      "ruff_format": "PASS: 26 files already formatted",
+      "affected_consumer_security_suite": "PASS: 75 passed in 30.92s on native Windows; all seven R1 unsafe-link negative controls executed with no skips",
+      "full_deterministic_suite": "PASS: 325 passed in 44.24s on win32 / Python 3.13.14; zero skipped",
+      "locking_stress": "PASS: concurrent eight-process EXCHANGE appender regression passed in 8 consecutive focused runs with no lost updates",
+      "diff_check": "PASS: no whitespace errors",
+      "markdown_diff": "PASS: empty; no committed Markdown content/blob change"
+    },
+    "runtime": "Native Windows 11 / NTFS; PowerShell; CPython 3.13.14 provisioned by uv; pytest 9.1.1; verification executed in a disposable fresh clone with core.autocrlf=true and repository LF attributes active",
+    "network_required": false,
+    "acceptance_criteria_mapping": {
+      "AC-T033-1": {
+        "evidence_type": "portability, deterministic concurrency, negative-control",
+        "tests": [
+          "tests/test_shared_governance_engine.py::test_launcher_is_thin_and_delegates_to_single_shared_engine",
+          "tests/test_shared_governance_engine.py::test_exchange_lock_backend_acquires_and_releases_on_current_platform",
+          "tests/test_shared_governance_engine.py::test_exchange_lock_failure_is_controlled_and_never_enters_critical_section",
+          "tests/test_shared_governance_engine.py::test_exchange_lock_fails_closed_without_supported_backend",
+          "tests/test_consumer_governance_cli_v1.py::test_event_serializes_concurrent_appenders_without_lost_updates"
+        ],
+        "result": "PASS: engine imports and executes on Windows without fcntl; named-mutex acquisition serializes cooperating processes; acquisition/backend failures remain controlled and never enter the critical section; POSIX flock path is retained"
+      },
+      "AC-T033-2": {
+        "evidence_type": "repository configuration and fresh-checkout portability",
+        "tests": [
+          "git ls-files --eol on representative tracked Markdown, JSON, source, and test files in disposable Windows clone",
+          "git check-attr text eol on representative measured/formatted files"
+        ],
+        "result": "PASS: fresh checkout with core.autocrlf=true produces LF working bytes from repository state; no global Git configuration change was used"
+      },
+      "AC-T033-3": {
+        "evidence_type": "deterministic canonical-byte fixtures",
+        "tests": [
+          "tests/test_repository_context.py",
+          "tests/test_consumer_governance_cli.py",
+          "tests/test_consumer_governance_cli_v1.py",
+          "tests/conftest.py"
+        ],
+        "result": "PASS: canonical text/JSON/JSONL fixture writes explicitly disable platform newline translation; accepted byte, digest, snapshot, and RCAB expectations remain unchanged; Windows unsafe-link fixtures use real symlinks when permitted and faithful NTFS junctions otherwise without skipping security claims"
+      },
+      "AC-T033-4": {
+        "evidence_type": "deterministic artifact identity and ordering",
+        "tests": [
+          "tests/test_governance_artifact.py::test_inventory_uses_canonical_relative_path_string_order",
+          "tests/test_governance_artifact.py::test_repeated_builds_have_identical_verified_identity",
+          "tests/test_governance_artifact.py::test_artifact_runs_without_source_or_sibling_dependencies"
+        ],
+        "result": "PASS: tree copying and inventory ordering sort canonical relative POSIX strings, including an ordering case that differs from WindowsPath case-folded comparison"
+      },
+      "AC-T033-5": {
+        "evidence_type": "canonical static, deterministic, portability, and package baseline",
+        "tests": [
+          "uv run --locked ruff check .",
+          "uv run --locked ruff format --check .",
+          "uv run --locked python -m pytest"
+        ],
+        "result": "PASS: canonical native-Windows baseline green in fresh clone with 325 passed and zero skipped; all R1 unsafe-link negative controls execute; no T021 or global core.autocrlf change"
+      }
+    }
+  },
+  "dependencies_or_config_changes": [
+    "Added root .gitattributes with '* text=auto eol=lf'; no dependency, lockfile, user-global Git, or host configuration change"
+  ],
+  "git_status": "clean at implementation_head_sha before handoff-only finalization",
+  "unresolved_issues": [],
+  "recommended_next_task": "ChatGPT Orchestrator reviews the pushed T033 handoff, exact remote diff, and native-Windows evidence before T033 integration or any T021 resumption.",
+  "chatgpt_read_path": "handoffs/T033-executor-handoff.json"
+}

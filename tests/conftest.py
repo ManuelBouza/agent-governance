@@ -38,13 +38,16 @@ def tmp_consumer_footprint(
     (footprint / "STATE.json").write_text(
         '{"protocol": "consumer", "is_synthetic": true}\n',
         encoding="utf-8",
+        newline="",
     )
     (footprint / "EXCHANGE.jsonl").write_text(
         '{"q": 1, "a": "strategy", "e": "start", "v": "synthetic"}\n',
         encoding="utf-8",
+        newline="",
     )
     (footprint / "CAPABILITIES.json").write_text(
         '{"capabilities": [], "is_synthetic": true}\n',
         encoding="utf-8",
+        newline="",
     )
     yield footprint
