@@ -29,6 +29,16 @@ When available, the source-product Maintainer Skill is the only project-owned to
 
 Do not create a generic pytest/testing/TDD Skill merely to run the approved stack. External authoring/evaluation/security Skills are supplemental only after the applicable supply-chain/coexistence approval and cannot replace repository-owned verification.
 
+## Test authorship and conformance oracle
+
+D052 defines `orchestrator-conformance`, `executor-implementation`, and `mixed` authorship modes. `docs/CONFORMANCE-ORACLE-CONTRACT.md` is the focused authority for oracle-vs-harness ownership, oracle identity/freeze/revision, negative-control sufficiency, required-versus-supplementary evidence, bounded mechanical corrections, and `ORACLE_DEFECT` handling.
+
+This strategy continues to define **which assurance plane and verification technique is appropriate**. It does not duplicate the oracle lifecycle.
+
+When D052 applies, the controlling Task Contract/gate identifies the exact Orchestrator-owned oracle assets. The Executor executes the required oracle and remains responsible for technical harness/execution, implementation-focused and supplementary tests, diagnostics, traces, aggregation, and evidence except where an exact asset is explicitly designated otherwise.
+
+A conformance oracle remains an executable projection of its controlling specification, never independent Governance authority.
+
 ## Ecosystem coexistence test rule
 
 D026 and `governance-core/COEXISTENCE.md` define how consumer Governance interacts with pre-existing SDD, Skills, registries, memory, permissions, testing and other project capabilities.
@@ -355,10 +365,10 @@ Thresholds MAY be tightened after enough empirical data exists. Relaxing a relea
 
 ## Ownership
 
-Per `AGENTS.md`:
-- ChatGPT Orchestrator owns this Markdown strategy, test/eval contracts, acceptance meaning and release interpretation;
-- Agente de IA Ejecutor owns non-Markdown test/eval implementation, fixtures/data, harness code, execution and reproducible evidence;
-- the executor may improve broken test implementation but may not redefine the approved behavioral contract without returning to ChatGPT.
+Per D052, `AGENTS.md`, and `docs/CONFORMANCE-ORACLE-CONTRACT.md`:
+- ChatGPT Orchestrator owns this Markdown strategy, acceptance meaning/release interpretation, and exact conformance/oracle assets designated by an applicable `orchestrator-conformance`/`mixed` Task Contract or gate;
+- the Agente de IA Ejecutor owns technical harness/adapters, execution, implementation-focused and supplementary tests/evals, and reproducible evidence except for exact designated Orchestrator oracle assets;
+- semantic oracle lifecycle/change rules are not redefined here.
 
 ## Implementation constraint
 
@@ -378,6 +388,6 @@ Initial preference:
 
 Testing/eval suites are living product artifacts.
 
-When a bug, ambiguity, security issue, portability failure, coexistence conflict, trigger collision, or regression is confirmed, add the smallest reproducible case to the appropriate suite before or with the fix whenever practical.
+When a bug, ambiguity, security issue, portability failure, coexistence conflict, trigger collision, or regression is confirmed, add the smallest reproducible case to the appropriate suite before or with the fix whenever practical. D052 and `docs/CONFORMANCE-ORACLE-CONTRACT.md` determine whether that new case changes the required semantic oracle or remains Executor-owned supplementary/implementation coverage.
 
 Review external references periodically because agent-evaluation, SDD tooling and Agent Skill security guidance are evolving quickly.

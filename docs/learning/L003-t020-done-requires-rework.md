@@ -55,13 +55,31 @@ Canonical review: `docs/reviews/T030-R1.md`.
 
 Under D039 this is a priority/escalation signal, **not** `CONTROL_FAILURE`, because L003 has not yet reached `VERIFIED`.
 
-The recurrence refines the control model:
+The recurrence refined the control model:
 
 - criterion/evidence mapping materially improves auditability and defect localization;
 - deterministic validation can check that mappings exist and reference recorded evidence;
 - mapping presence and evidence-type labels cannot establish semantic sufficiency by themselves;
 - Orchestrator review must still determine whether the cited test/evidence actually proves the full criterion boundary;
 - reproducibility criteria involving commit identity must include the relevant finalization/identity transition in their regression evidence when that transition can change canonical output.
+
+## Further recurrence before verification — T032-R1
+
+T032 produced another `task.done_requires_rework` occurrence before L003 reached `VERIFIED`.
+
+The submitted T032 handoff mapped every `AC-T032-*` criterion to exact tests and evidence types, and the full deterministic suite was green (`302 passed`). Nevertheless, Orchestrator review found `AC-T032-3` semantically under-proven: `validate_snapshot_integrity()` detects direct corruption of `registered_content_digest`, but does not bind all canonical snapshot fields. Changes to class/routes, focused physical metrics, registry identity, or bootstrap/ratchet derived state can pass the claimed integrity validator.
+
+Canonical review: `docs/reviews/T032-R1.md`.
+
+This is another pre-verification recurrence, not `CONTROL_FAILURE`. It reinforces the same systemic lesson as T030-R1:
+
+```text
+criterion -> exact test mapping
+    improves traceability
+    != proof that the negative-control space covers the criterion boundary
+```
+
+The selected control must therefore preserve human/Orchestrator semantic review while improving machine-checkable evidence structure. A green suite and correctly labelled `negative_control` evidence are not sufficient when the negative control exercises only the easiest corruption case.
 
 Do not introduce an LLM or heuristic proxy that claims to decide semantic evidence sufficiency automatically.
 
@@ -76,7 +94,7 @@ D046/ICAE selects the prospective control direction:
 - deterministic validation should eventually expose missing/malformed required evidence mappings without pretending to judge semantic adequacy that belongs to Orchestrator review;
 - live review/EGLL integration should emit `task.done_requires_rework` when a durable post-`DONE` review is `REWORK_REQUIRED`.
 
-T021 and T030 apply criterion/evidence traceability prospectively in their contracts. T030-R1 demonstrates both the value and the limit of that structure. This is policy adoption/evidence, not completion of the systemic control.
+T021, T030 and T032 apply criterion/evidence traceability prospectively in their contracts. T030-R1 and T032-R1 demonstrate both the value and the limit of that structure. This is policy adoption/evidence, not completion of the systemic control.
 
 ## Verification / recurrence status
 

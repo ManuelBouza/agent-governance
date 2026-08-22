@@ -11,6 +11,8 @@ The normative operational strategy is `docs/TESTING-AND-EVALUATION.md`.
 
 Mechanical invariants MUST be verified by deterministic code wherever practical. Agent/model evals are reserved for probabilistic or interpretive behavior such as Skill triggering, context routing, cold-start interpretation, handoff/blocker interpretation, and cross-agent portability. Human/ChatGPT review remains the final semantic/architectural acceptance layer.
 
+D052 prospectively refines authorship of test/eval artifacts. When a Task Contract selects `orchestrator-conformance` or `mixed`, ChatGPT authors the designated acceptance/conformance oracle that directly encodes ChatGPT-owned semantics; the executor remains responsible for implementation-focused tests, technical/exploratory coverage, execution, diagnosis and evidence. `executor-implementation` remains the ordinary implementation mode where no Orchestrator-owned executable oracle is required.
+
 ## External basis
 
 The strategy is informed by current specialized guidance from:
@@ -52,8 +54,10 @@ Numeric trigger thresholds defined by the project are local release policy, not 
 
 ## Implementation consequences
 
-- test/eval code and harness implementation belongs to the Agente de IA Ejecutor under D016;
-- ChatGPT Orchestrator owns test/eval contracts, Markdown strategy and acceptance meaning;
+- D052 controls authorship mode for new/materially revised test/eval work where ownership is material;
+- ChatGPT Orchestrator owns test/eval contracts, Markdown strategy, acceptance meaning and designated conformance/oracle assets under `orchestrator-conformance` or the Orchestrator side of `mixed`;
+- the Agente de IA Ejecutor owns implementation-focused test/eval code, supplementary fixtures/cases, technical harness/adapters, execution and reproducible evidence, and all test/eval implementation under `executor-implementation`;
+- the executor may report an `ORACLE_DEFECT`-equivalent blocker when an Orchestrator-owned oracle appears semantically wrong, but may not silently redefine expected behavior;
 - initial implementation SHOULD prefer lightweight repository-owned tooling;
 - Hypothesis is justified for complex stateful transition spaces but is not required for simple deterministic checks;
 - OPA, hosted eval frameworks and security scanners are reference patterns/tools, not mandatory dependencies;

@@ -2,7 +2,7 @@
 
 This directory contains agent-facing evaluations of behavior intrinsic to the Governance product.
 
-The normative eval architecture, external references, isolation rules, grader selection, fixture policy, repeated-trial requirements, and release thresholds live in `../docs/TESTING-AND-EVALUATION.md`. The repository-owned harness language decision is `../docs/decisions/D023-python-testing-stack.md`. Skill/capability boundaries are defined by `../docs/TESTING-SKILL-CAPABILITIES.md` and D024. Ecosystem/SDD/Skill coexistence is defined by `../governance-core/COEXISTENCE.md` and D026.
+The normative eval architecture, external references, isolation rules, grader selection, fixture policy, repeated-trial requirements, and release thresholds live in `../docs/TESTING-AND-EVALUATION.md`. The repository-owned harness language decision is `../docs/decisions/D023-python-testing-stack.md`. Skill/capability boundaries are defined by `../docs/TESTING-SKILL-CAPABILITIES.md` and D024. D052 authorship modes are defined by `../docs/decisions/D052-specification-owned-conformance-test-authorship.md`; oracle ownership/freeze/revision/`ORACLE_DEFECT` mechanics live in `../docs/CONFORMANCE-ORACLE-CONTRACT.md`. Ecosystem/SDD/Skill coexistence is defined by `../governance-core/COEXISTENCE.md` and D026.
 
 ## Harness language
 
@@ -18,13 +18,13 @@ When the Maintainer Skill is available, it is the project-owned top-level Skill 
 
 External Skill-authoring/evaluation/security Skills may be supplemental only after approval. Their generated prompts, reports, or candidate assertions do not replace repository-owned eval cases, traces, graders, or ChatGPT review.
 
-## Agent ownership
+## D052 ownership boundary
 
-The `Agente de IA Ejecutor` owns non-Markdown executable eval definitions, fixtures, harness inputs, eval execution, and verification evidence under `evals/`. The executor role is product agnostic: OpenCode, Codex, Claude Code, Antigravity, or another compatible coding agent may fulfill it.
+When a Task Contract selects `orchestrator-conformance` or `mixed`, exact Orchestrator-owned eval-oracle assets MUST be identified by that contract/gate. Their semantic lifecycle, freeze/revision rules, mechanical-correction boundary and `ORACLE_DEFECT` handling are defined only in `../docs/CONFORMANCE-ORACLE-CONTRACT.md`; do not duplicate or reinterpret them here.
 
-ChatGPT owns committed Markdown instructions/specifications and defines the product behavior/invariants that evals must measure. The executor must not modify evals to redefine the approved contract.
+The Agente de IA Ejecutor still owns eval execution, clean-session/environment orchestration, host/model/provider adapters, technical harness plumbing, traces, measurements, aggregation, supplementary exploratory/adversarial cases, and implementation-focused eval/test work unless an exact asset is designated as Orchestrator-owned oracle material.
 
-For behavior-preserving refactors, eval cases accepted as part of the RF1 characterization baseline are frozen for that refactor unit unless ChatGPT explicitly authorizes a correction.
+Required frozen oracle cases and supplementary Executor cases MUST remain distinguishable in evidence.
 
 ## Eval rules
 
@@ -33,7 +33,8 @@ For behavior-preserving refactors, eval cases accepted as part of the RF1 charac
 - grade observable outcomes/tool/file traces rather than agent self-report;
 - use deterministic graders for mechanical assertions and model graders only when semantic interpretation requires them;
 - repeated trials are required for probabilistic behavior;
-- representative transcripts and failures must be inspected during release review.
+- representative transcripts and failures must be inspected during release review;
+- when a D052 frozen oracle applies, execute that exact revision and keep required versus supplementary cases separate.
 
 ## Eval surfaces
 
