@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import argparse
-import fcntl
+import errno
 import hashlib
 import json
 import os
@@ -15,6 +15,37 @@ from collections.abc import Callable, Iterator
 from contextlib import contextmanager
 from pathlib import Path
 from typing import IO
+
+try:
+    import fcntl as _fcntl
+except ImportError:  # pragma: no cover - exercised on native Windows
+    _fcntl = None
+
+if os.name == "nt":  # pragma: no branch - selected once per host
+    import ctypes as _ctypes
+
+    _kernel32 = _ctypes.WinDLL("kernel32", use_last_error=True)
+    _create_mutex = _kernel32.CreateMutexW
+    _create_mutex.argtypes = [_ctypes.c_void_p, _ctypes.c_int, _ctypes.c_wchar_p]
+    _create_mutex.restype = _ctypes.c_void_p
+    _wait_for_single_object = _kernel32.WaitForSingleObject
+    _wait_for_single_object.argtypes = [_ctypes.c_void_p, _ctypes.c_ulong]
+    _wait_for_single_object.restype = _ctypes.c_ulong
+    _release_mutex = _kernel32.ReleaseMutex
+    _release_mutex.argtypes = [_ctypes.c_void_p]
+    _release_mutex.restype = _ctypes.c_int
+    _close_handle = _kernel32.CloseHandle
+    _close_handle.argtypes = [_ctypes.c_void_p]
+    _close_handle.restype = _ctypes.c_int
+    _windows_lock_api = (
+        _create_mutex,
+        _wait_for_single_object,
+        _release_mutex,
+        _close_handle,
+    )
+else:
+    _ctypes = None
+    _windows_lock_api = None
 
 CORE_FILES = (
     "ADAPTERS.md",
@@ -373,13 +404,54 @@ def _locked_exchange(path: Path, *, exclusive: bool) -> Iterator[IO[str]]:
     _required_file(path)
     try:
         with path.open("r+", encoding="utf-8", newline="") as stream:
-            fcntl.flock(stream.fileno(), fcntl.LOCK_EX if exclusive else fcntl.LOCK_SH)
+            lock_token = _acquire_file_lock(stream, exclusive=exclusive)
             try:
                 yield stream
             finally:
-                fcntl.flock(stream.fileno(), fcntl.LOCK_UN)
+                _release_file_lock(stream, lock_token)
     except (OSError, UnicodeError) as error:
         raise GovernanceError(f"cannot lock EXCHANGE {path}: {error}") from error
+
+
+def _acquire_file_lock(stream: IO[str], *, exclusive: bool) -> object | None:
+    if _fcntl is not None:
+        mode = _fcntl.LOCK_EX if exclusive else _fcntl.LOCK_SH
+        _fcntl.flock(stream.fileno(), mode)
+        return None
+    if _windows_lock_api is not None and _ctypes is not None:
+        create_mutex, wait_for_single_object, _release_mutex, close_handle = _windows_lock_api
+        canonical_path = os.path.normcase(os.path.abspath(os.fspath(stream.name)))
+        lock_name = (
+            "Local\\AgentGovernanceExchange-"
+            + hashlib.sha256(canonical_path.encode("utf-8")).hexdigest()
+        )
+        handle = create_mutex(None, False, lock_name)
+        if not handle:
+            raise OSError(_ctypes.get_last_error(), "cannot create Windows EXCHANGE mutex")
+        wait_result = wait_for_single_object(handle, 0xFFFFFFFF)
+        if wait_result != 0:
+            close_handle(handle)
+            if wait_result == 0x80:
+                raise OSError(errno.EOWNERDEAD, "Windows EXCHANGE mutex was abandoned")
+            raise OSError(_ctypes.get_last_error(), "cannot acquire Windows EXCHANGE mutex")
+        return handle
+    raise OSError(errno.ENOSYS, "no supported file-locking backend")
+
+
+def _release_file_lock(stream: IO[str], lock_token: object | None) -> None:
+    if _fcntl is not None:
+        _fcntl.flock(stream.fileno(), _fcntl.LOCK_UN)
+        return
+    if _windows_lock_api is not None and _ctypes is not None and lock_token is not None:
+        _create_mutex, _wait_for_single_object, release_mutex, close_handle = _windows_lock_api
+        if not release_mutex(lock_token):
+            error = _ctypes.get_last_error()
+            close_handle(lock_token)
+            raise OSError(error, "cannot release Windows EXCHANGE mutex")
+        if not close_handle(lock_token):
+            raise OSError(_ctypes.get_last_error(), "cannot close Windows EXCHANGE mutex")
+        return
+    raise OSError(errno.ENOSYS, "no supported file-locking backend")
 
 
 def _metadata(text: str, field: str, source: Path) -> str:
@@ -1063,7 +1135,8 @@ def _archive(target: Path, prepare: bool) -> None:
     exchange = coordination / "EXCHANGE.jsonl"
     with _locked_exchange(exchange, exclusive=prepare) as stream:
         plan = _parse_workplan(coordination)
-        events = _events_from_text(stream.read(), exchange)
+        exchange_content = stream.read()
+        events = _events_from_text(exchange_content, exchange)
         if plan["mission_status"] not in {"COMPLETED", "CANCELLED"}:
             raise GovernanceError("mission is not authoritatively completed or cancelled")
         task_states = _validate_event_history(events, plan)
@@ -1103,18 +1176,19 @@ def _archive(target: Path, prepare: bool) -> None:
                 "MISSION.md",
                 "WORKPLAN.md",
                 "STATE.json",
-                "EXCHANGE.jsonl",
                 "CAPABILITIES.json",
             ):
                 shutil.copyfile(coordination / name, temporary / name)
+            _atomic_write(temporary / "EXCHANGE.jsonl", exchange_content)
             for name in COORDINATION_DIRS:
                 shutil.copytree(coordination / name, temporary / name)
             temporary.replace(destination)
-            directory_fd = os.open(archive_root, os.O_RDONLY)
-            try:
-                os.fsync(directory_fd)
-            finally:
-                os.close(directory_fd)
+            if os.name != "nt":
+                directory_fd = os.open(archive_root, os.O_RDONLY)
+                try:
+                    os.fsync(directory_fd)
+                finally:
+                    os.close(directory_fd)
         except Exception:
             shutil.rmtree(temporary, ignore_errors=True)
             if created_archive_root:

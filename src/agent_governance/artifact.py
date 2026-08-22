@@ -55,7 +55,10 @@ def _copy_file(source: Path, destination: Path) -> None:
 def _copy_tree_files(source: Path, destination: Path, pattern: str = "*") -> None:
     if source.is_symlink() or not source.is_dir():
         raise ArtifactBuildError(f"missing or unsafe build input directory: {source}")
-    files = sorted(path for path in source.rglob(pattern) if path.is_file())
+    files = sorted(
+        (path for path in source.rglob(pattern) if path.is_file()),
+        key=lambda path: path.relative_to(source).as_posix(),
+    )
     if not files:
         raise ArtifactBuildError(f"build input directory is empty: {source}")
     for path in files:
@@ -94,7 +97,8 @@ def _source_commit(source_root: Path) -> str:
 
 def _inventory(artifact: Path) -> list[dict[str, object]]:
     files = []
-    for path in sorted(candidate for candidate in artifact.rglob("*") if candidate.is_file()):
+    candidates = (candidate for candidate in artifact.rglob("*") if candidate.is_file())
+    for path in sorted(candidates, key=lambda path: path.relative_to(artifact).as_posix()):
         relative = path.relative_to(artifact).as_posix()
         if relative == IDENTITY_FILENAME:
             continue

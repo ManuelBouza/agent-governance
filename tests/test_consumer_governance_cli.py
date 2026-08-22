@@ -12,6 +12,15 @@ from pathlib import Path
 import pytest
 
 
+def symlink_or_skip(link: Path, target: str | Path, *, target_is_directory: bool = False) -> None:
+    try:
+        link.symlink_to(target, target_is_directory=target_is_directory)
+    except OSError as error:
+        if getattr(error, "winerror", None) == 1314:
+            pytest.skip("native Windows host does not grant symbolic-link creation privilege")
+        raise
+
+
 @pytest.fixture
 def governance_cli(repo_root: Path) -> Path:
     return repo_root / "governance-skill" / "scripts" / "governance.py"
@@ -74,7 +83,7 @@ def test_bootstrap_refuses_managed_collision_without_partial_writes(
     else:
         symlink_target = tmp_path / "managed-symlink-target"
         symlink_target.mkdir(exist_ok=True)
-        existing.symlink_to(symlink_target, target_is_directory=True)
+        symlink_or_skip(existing, symlink_target, target_is_directory=True)
         sentinel = symlink_target / "sentinel"
     sentinel.write_text("keep", encoding="utf-8")
     result = run_cli(governance_cli, "bootstrap", target)
@@ -95,7 +104,7 @@ def test_bootstrap_refuses_unsafe_target_without_writes(
     elif unsafe_kind == "symlink":
         real = tmp_path / "real"
         real.mkdir()
-        target.symlink_to(real, target_is_directory=True)
+        symlink_or_skip(target, real, target_is_directory=True)
     elif unsafe_kind == "source":
         target.mkdir()
         (target / "governance-core").mkdir()
@@ -377,14 +386,14 @@ def test_validate_rejects_unexpected_coordination_root_entry(
     elif entry_kind == "directory":
         entry.mkdir()
     else:
-        entry.symlink_to("missing")
+        symlink_or_skip(entry, "missing")
     result = run_cli(governance_cli, "validate", installed_repo)
     assert result.returncode != 0
     assert "ambiguous coordination root" in result.stderr
 
 
 def test_validate_rejects_managed_symlink(installed_repo: Path, governance_cli: Path) -> None:
-    (installed_repo / ".agent-coordination" / "tasks" / "linked-task").symlink_to("missing")
+    symlink_or_skip(installed_repo / ".agent-coordination" / "tasks" / "linked-task", "missing")
     result = run_cli(governance_cli, "validate", installed_repo)
     assert result.returncode != 0
     assert "unsafe managed symlinks" in result.stderr
@@ -402,7 +411,7 @@ def test_validate_rejects_source_consumer_mixing(
 def test_validate_rejects_dangling_source_marker(
     installed_repo: Path, governance_cli: Path
 ) -> None:
-    (installed_repo / "governance-core").symlink_to("missing")
+    symlink_or_skip(installed_repo / "governance-core", "missing")
     result = run_cli(governance_cli, "validate", installed_repo)
     assert result.returncode != 0
     assert "source/consumer separation" in result.stderr

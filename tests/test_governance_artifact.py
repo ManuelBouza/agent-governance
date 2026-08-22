@@ -163,6 +163,22 @@ def test_repeated_builds_have_identical_verified_identity(tmp_path: Path, repo_r
     ).read_bytes()
 
 
+def test_inventory_uses_canonical_relative_path_string_order(
+    tmp_path: Path, repo_root: Path
+) -> None:
+    builder = load_builder(repo_root)
+    artifact = tmp_path / "artifact"
+    for relative in ("a/file.txt", "Z/file.txt"):
+        path = artifact / relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(relative.encode())
+
+    assert [entry["path"] for entry in builder._inventory(artifact)] == [
+        "Z/file.txt",
+        "a/file.txt",
+    ]
+
+
 def test_artifact_runs_without_source_or_sibling_dependencies(
     tmp_path: Path, repo_root: Path
 ) -> None:

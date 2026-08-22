@@ -36,19 +36,19 @@ def measured_repository(tmp_path: Path) -> Path:
     (repository / "docs" / "orchestrator").mkdir(parents=True)
     (repository / "baselines").mkdir()
     (repository / "AGENTS.md").write_text(
-        "# Agents\n\nSee [guide](docs/guide.md).\n", encoding="utf-8"
+        "# Agents\n\nSee [guide](docs/guide.md).\n", encoding="utf-8", newline=""
     )
     (repository / "docs" / "orchestrator" / "CHECKPOINT.md").write_text(
-        "# Checkpoint\n\nRoute: `docs/guide.md`\n", encoding="utf-8"
+        "# Checkpoint\n\nRoute: `docs/guide.md`\n", encoding="utf-8", newline=""
     )
     (repository / "docs" / "guide.md").write_text(
-        "# Guide\n\n[checkpoint](orchestrator/CHECKPOINT.md)\n", encoding="utf-8"
+        "# Guide\n\n[checkpoint](orchestrator/CHECKPOINT.md)\n", encoding="utf-8", newline=""
     )
-    (repository / "unusual.data").write_text("snowman: \N{SNOWMAN}\n", encoding="utf-8")
+    (repository / "unusual.data").write_text("snowman: \N{SNOWMAN}\n", encoding="utf-8", newline="")
     (repository / "binary.dat").write_bytes(b"\x00\xff\x10")
-    (repository / "large.txt").write_text("x" * (1024 * 1024), encoding="utf-8")
+    (repository / "large.txt").write_text("x" * (1024 * 1024), encoding="utf-8", newline="")
     (repository / "baselines" / "repository-context-source-v1.json").write_text(
-        "stale baseline\n", encoding="utf-8"
+        "stale baseline\n", encoding="utf-8", newline=""
     )
     git(repository, "init", "-q")
     git(repository, "add", ".")
@@ -114,7 +114,7 @@ def test_inventory_is_canonical_complete_and_honest(
         == tool.canonical_payload(report)[tool.TRACKED_CONTENT_DIGEST_KEY]
     )
 
-    (measured_repository / "unusual.data").write_text("changed\n", encoding="utf-8")
+    (measured_repository / "unusual.data").write_text("changed\n", encoding="utf-8", newline="")
     changed = tool.build_report(measured_repository)
     assert (
         changed[tool.VOLATILE_EXECUTION_METADATA_KEY]["source_git_revision"]
@@ -162,11 +162,11 @@ def test_canonical_identity_survives_finalization_boundary(repo_root: Path, tmp_
 
     repository = tmp_path / "finalization-fixture"
     (repository / "docs" / "orchestrator").mkdir(parents=True)
-    (repository / "AGENTS.md").write_text("# Agents\n", encoding="utf-8")
+    (repository / "AGENTS.md").write_text("# Agents\n", encoding="utf-8", newline="")
     (repository / "docs" / "orchestrator" / "CHECKPOINT.md").write_text(
-        "# Checkpoint\n", encoding="utf-8"
+        "# Checkpoint\n", encoding="utf-8", newline=""
     )
-    (repository / "src.txt").write_text("hello\n", encoding="utf-8")
+    (repository / "src.txt").write_text("hello\n", encoding="utf-8", newline="")
 
     git(repository, "init", "-q")
     git(repository, "add", ".")
@@ -313,7 +313,7 @@ def _write_context_map(repository: Path, registry: dict) -> None:
         "<!-- RCAB-MAP-V1:END -->\n"
     )
     (repository / "docs").mkdir(parents=True, exist_ok=True)
-    (repository / "docs" / "CONTEXT-MAP.md").write_text(content, encoding="utf-8")
+    (repository / "docs" / "CONTEXT-MAP.md").write_text(content, encoding="utf-8", newline="")
 
 
 def _default_registry(agents_bytes: int, checkpoint_bytes: int) -> dict:
@@ -350,9 +350,9 @@ def _make_manifest_repository(
     repository = tmp_path / "manifest-repo"
     (repository / "docs" / "orchestrator").mkdir(parents=True)
     (repository / "baselines").mkdir()
-    (repository / "AGENTS.md").write_text(agents_text, encoding="utf-8")
+    (repository / "AGENTS.md").write_text(agents_text, encoding="utf-8", newline="")
     (repository / "docs" / "orchestrator" / "CHECKPOINT.md").write_text(
-        checkpoint_text, encoding="utf-8"
+        checkpoint_text, encoding="utf-8", newline=""
     )
     if registry is None:
         registry = _default_registry(
@@ -400,7 +400,7 @@ def test_ac_rcab_1_no_self_reference(repo_root: Path, tmp_path: Path) -> None:
     # Create and commit a placeholder manifest so it can be registered
     manifest_path = repository / tool.DEFAULT_MANIFEST
     manifest_path.parent.mkdir(parents=True, exist_ok=True)
-    manifest_path.write_text("placeholder\n", encoding="utf-8")
+    manifest_path.write_text("placeholder\n", encoding="utf-8", newline="")
 
     # Register the manifest path in the map to prove self-exclusion
     registry_with_manifest = _default_registry(
@@ -459,7 +459,7 @@ def test_ac_rcab_2_negative_registry_malformed(repo_root: Path, tmp_path: Path) 
     tool = load_measurement_tool(repo_root)
     repository = tmp_path / "bad-registry"
     (repository / "docs").mkdir(parents=True)
-    (repository / "AGENTS.md").write_text("# A\n", encoding="utf-8")
+    (repository / "AGENTS.md").write_text("# A\n", encoding="utf-8", newline="")
 
     bad_content = (
         "# Map\n\n"
@@ -467,7 +467,7 @@ def test_ac_rcab_2_negative_registry_malformed(repo_root: Path, tmp_path: Path) 
         "```json\n{not valid json}\n```\n"
         "<!-- RCAB-MAP-V1:END -->\n"
     )
-    (repository / "docs" / "CONTEXT-MAP.md").write_text(bad_content, encoding="utf-8")
+    (repository / "docs" / "CONTEXT-MAP.md").write_text(bad_content, encoding="utf-8", newline="")
     _git_fixture(repository)
 
     with pytest.raises(tool.MeasurementError, match="invalid JSON"):
@@ -536,7 +536,7 @@ def test_ac_rcab_2_negative_multiple_markers(repo_root: Path, tmp_path: Path) ->
     tool = load_measurement_tool(repo_root)
     repository = tmp_path / "multi-marker"
     (repository / "docs").mkdir(parents=True)
-    (repository / "AGENTS.md").write_text("# A\n", encoding="utf-8")
+    (repository / "AGENTS.md").write_text("# A\n", encoding="utf-8", newline="")
 
     registry_json = json.dumps(_default_registry(10, 10), sort_keys=True)
     bad_content = (
@@ -546,7 +546,7 @@ def test_ac_rcab_2_negative_multiple_markers(repo_root: Path, tmp_path: Path) ->
         "<!-- RCAB-MAP-V1:BEGIN -->\n```json\n" + registry_json + "\n```\n"
         "<!-- RCAB-MAP-V1:END -->\n"
     )
-    (repository / "docs" / "CONTEXT-MAP.md").write_text(bad_content, encoding="utf-8")
+    (repository / "docs" / "CONTEXT-MAP.md").write_text(bad_content, encoding="utf-8", newline="")
     _git_fixture(repository)
 
     with pytest.raises(tool.MeasurementError, match="expected exactly one RCAB-MAP-V1:BEGIN"):
@@ -665,7 +665,7 @@ def test_ac_rcab_3_warning_ratchet_file_count_growth(repo_root: Path, tmp_path: 
         agents_text=agents,
         checkpoint_text=checkpoint,
     )
-    (repository / "docs" / "EXTRA-ROUTER.md").write_text(extra, encoding="utf-8")
+    (repository / "docs" / "EXTRA-ROUTER.md").write_text(extra, encoding="utf-8", newline="")
     git(repository, "add", ".")
     git(
         repository,
@@ -806,6 +806,7 @@ def test_ac_rcab_4_stale_manifest_rejected(repo_root: Path, tmp_path: Path) -> N
     manifest_path.write_text(
         json.dumps(tampered, sort_keys=True, separators=(",", ":")) + "\n",
         encoding="utf-8",
+        newline="",
     )
     exit_code, message = tool.check_manifest(repository, manifest_path)
     assert exit_code == 1
@@ -834,7 +835,7 @@ def test_ac_rcab_4_stale_manifest_after_content_change(repo_root: Path, tmp_path
     assert tool.check_manifest(repository, manifest_path)[0] == 0
 
     # Modify registered content
-    (repository / "AGENTS.md").write_text("# Agents\n\nchanged\n", encoding="utf-8")
+    (repository / "AGENTS.md").write_text("# Agents\n\nchanged\n", encoding="utf-8", newline="")
     git(repository, "add", ".")
     git(
         repository,
@@ -1041,7 +1042,7 @@ def test_ac_t032_2_live_status_from_current_source(repo_root: Path, tmp_path: Pa
 
     # Modify a registered file AFTER the snapshot
     new_agents = "# Agents\n\nupdated\n"
-    (repository / "AGENTS.md").write_text(new_agents, encoding="utf-8")
+    (repository / "AGENTS.md").write_text(new_agents, encoding="utf-8", newline="")
     git(repository, "add", ".")
     git(
         repository,
@@ -1120,7 +1121,7 @@ def test_ac_t032_3_explicit_currentness_fresh_and_stale(repo_root: Path, tmp_pat
     assert "OK" in message
 
     # Legitimate content change makes snapshot stale
-    (repository / "AGENTS.md").write_text("# Agents\n\nchanged\n", encoding="utf-8")
+    (repository / "AGENTS.md").write_text("# Agents\n\nchanged\n", encoding="utf-8", newline="")
     git(repository, "add", ".")
     git(
         repository,
@@ -1156,6 +1157,7 @@ def test_ac_t032_3_tampered_projection_detected_by_integrity(
     manifest_path.write_text(
         json.dumps(tampered, sort_keys=True, separators=(",", ":")) + "\n",
         encoding="utf-8",
+        newline="",
     )
 
     with pytest.raises(tool.MeasurementError, match="registered_content_digest mismatch"):
@@ -1318,7 +1320,7 @@ def test_ac_t032_3_noncanonical_json_bytes_rejected(repo_root: Path, tmp_path: P
     tool.write_manifest(repository, manifest_path)
 
     manifest = json.loads(manifest_path.read_bytes())
-    manifest_path.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
+    manifest_path.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8", newline="")
 
     with pytest.raises(tool.MeasurementError, match="JSON bytes are not canonical"):
         tool.validate_snapshot_integrity(manifest_path)
@@ -1338,6 +1340,7 @@ def test_ac_t032_3_tampered_projection_detected_by_currentness(
     manifest_path.write_text(
         json.dumps(tampered, sort_keys=True, separators=(",", ":")) + "\n",
         encoding="utf-8",
+        newline="",
     )
 
     exit_code, message = tool.check_manifest(repository, manifest_path)
@@ -1383,7 +1386,7 @@ def test_ac_t032_4_historical_snapshot_does_not_poison_regression(
     )
 
     # Legitimate registered content evolution
-    (repository / "AGENTS.md").write_text("# Agents\n\nnew content\n", encoding="utf-8")
+    (repository / "AGENTS.md").write_text("# Agents\n\nnew content\n", encoding="utf-8", newline="")
     git(repository, "add", ".")
     git(
         repository,
@@ -1529,6 +1532,7 @@ def test_snapshot_v1_0_0_backwards_compatible_integrity(repo_root: Path, tmp_pat
     manifest_path.write_text(
         json.dumps(raw, sort_keys=True, separators=(",", ":")) + "\n",
         encoding="utf-8",
+        newline="",
     )
 
     committed = tool.validate_snapshot_integrity(manifest_path)

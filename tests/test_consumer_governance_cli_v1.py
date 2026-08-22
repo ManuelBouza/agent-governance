@@ -13,6 +13,15 @@ from pathlib import Path
 import pytest
 
 
+def symlink_or_skip(link: Path, target: str | Path) -> None:
+    try:
+        link.symlink_to(target)
+    except OSError as error:
+        if getattr(error, "winerror", None) == 1314:
+            pytest.skip("native Windows host does not grant symbolic-link creation privilege")
+        raise
+
+
 def run_cli(cli: Path, *arguments: object) -> subprocess.CompletedProcess[str]:
     return subprocess.run(
         [sys.executable, str(cli), *(str(argument) for argument in arguments)],
@@ -58,6 +67,7 @@ def configure_mission(
     (coordination / "MISSION.md").write_text(
         f"# Mission\n\nMission-ID: `{mission_id}`\nStatus: `{mission_status}`\n",
         encoding="utf-8",
+        newline="",
     )
     lines = "\n".join(
         task_line(task_id, dependency, status, position)
@@ -75,16 +85,19 @@ def configure_mission(
         f"Current task: `{current}`\n"
         f"Blocker: `{blocker}`\n",
         encoding="utf-8",
+        newline="",
     )
     for task_id, _dependency, status in tasks:
         (coordination / "tasks" / f"{task_id}.md").write_text(
             f"# Task\n\nTask-ID: `{task_id}`\nStatus: `{status}`\n",
             encoding="utf-8",
+            newline="",
         )
     events = exchange or [{"q": 1, "a": "human", "e": "start", "n": "Start T1"}]
     (coordination / "EXCHANGE.jsonl").write_text(
         "".join(json.dumps(event, separators=(",", ":")) + "\n" for event in events),
         encoding="utf-8",
+        newline="",
     )
 
 
@@ -561,7 +574,7 @@ def test_skill_refuses_unsafe_id_and_symlinked_artifact(
 
     approval, candidate_path, candidate = approval_record(consumer)
     candidate_artifact = consumer / candidate["candidate_artifact"]
-    (candidate_artifact / "linked").symlink_to(consumer / "managed.txt")
+    symlink_or_skip(candidate_artifact / "linked", consumer / "managed.txt")
     linked = run_cli(
         governance_cli,
         "skill",
