@@ -1,9 +1,9 @@
 # Current ChatGPT Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O126  
+Checkpoint-Sequence: O127  
 Canonical-Branch: `develop`  
-Chat-Closure: CONTINUE_ALLOWED
+Chat-Closure: NEW_CHAT_RECOMMENDED
 
 ## Frontier
 
@@ -50,6 +50,18 @@ T032's blocker is now removed. T021 may be resumed only through a fresh, separat
 ## Next Chat Minimum Load
 
 For T021 preparation: `docs/tasks/T021-consumer-profile-abstraction-zero-drift.md`, the current T021 review/rework record, `docs/REFACTORING-WORKFLOW.md`, and D052 only where authorship ownership is material. Do not load T022 until T021 acceptance.
+
+## Chat Closure
+
+This chat can be closed safely. No material requirement or active state exists only in chat. A fresh Orchestrator session can reconstruct the frontier from current `develop`, `AGENTS.md`, this checkpoint, and the `Next Chat Minimum Load` above.
+
+Minimal restart prompt:
+
+```text
+Continue agent-governance from develop. Use GitHub. Read AGENTS.md and docs/orchestrator/CHECKPOINT.md, then follow next_action.
+```
+
+The repository checkpoint, not prior chat history, is the continuity authority.
 
 ## Do Not
 
