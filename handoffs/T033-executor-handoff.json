@@ -3,9 +3,9 @@
   "status": "DONE",
   "task_contract_path": "docs/tasks/T033-native-windows-portability-baseline.md",
   "branch": "fix/t033-native-windows-portability-baseline",
-  "implementation_head_sha": "4f5bc9d7ec7ce9c6aef68c6a23db9eb6fe5860ef",
+  "implementation_head_sha": "77ba22fce6c15a09ab4235b59311f6bb9a189ebd",
   "base_branch": "develop",
-  "base_sha": "c581d25d3cfb162d3c4e13838db2af3d1fb3887f",
+  "base_sha": "c48880262d6d4e98e734932b5bcc6687db0791e0",
   "files_changed": [
     ".gitattributes",
     "src/agent_governance/artifact.py",
@@ -18,11 +18,13 @@
     "tests/test_shared_governance_engine.py",
     "handoffs/T033-executor-handoff.json"
   ],
-  "implementation_summary": "Replaced the unconditional POSIX fcntl dependency with a host-selected fail-closed locking adapter: supported POSIX hosts retain flock shared/exclusive behavior, while native Windows uses a deterministic per-EXCHANGE Win32 named mutex with blocking acquisition and checked release/handle closure. Windows treats reads and writes as exclusive, preserving safety at the cost of harmlessly reduced reader concurrency. Archive preparation copies the already locked EXCHANGE content and avoids unsupported Windows directory-fsync behavior while retaining existing POSIX directory fsync. Added repository-controlled LF checkout policy, made canonical LF test fixtures explicit, made artifact traversal/inventory sorting depend on canonical relative POSIX strings, and added focused locking, failure, concurrency, and ordering coverage. No Markdown blob changed and no Governance, RCAB, Consumer, digest, byte-count, or package semantics were weakened.",
+  "implementation_summary": "Completed T033-R1 rework after fast-forwarding local develop to exact origin/develop c48880262d6d4e98e734932b5bcc6687db0791e0 and cleanly merging that revision into the preserved existing T033 history. The accepted portability implementation remains: supported POSIX hosts use flock, native Windows uses a deterministic fail-closed per-EXCHANGE Win32 named mutex, checkout LF policy is repository-controlled, canonical LF fixtures are explicit, and artifact ordering uses canonical relative POSIX strings. R1 removes every symlink_or_skip acceptance weakening. When ordinary Windows symlink creation is unavailable with WinError 1314, the tests now create an unprivileged NTFS junction fixture and execute the same unsafe-link/collision/source-marker claims; production classifies both symbolic links and junctions as unsafe and fails closed. The fresh native-Windows canonical suite completes with 325 passed and zero skips. No Markdown blob, T021 implementation, Governance/RCAB semantics, digest/byte expectation, dependency, or package boundary changed.",
+  "rework_authority": "docs/reviews/T033-R1.md",
   "verification": {
     "commands": [
       "git fetch --prune origin",
       "git merge --ff-only origin/develop",
+      "git merge --no-edit origin/develop",
       "git clone --quiet --no-hardlinks . <disposable-native-windows-clone>",
       "git -C <disposable-native-windows-clone> config core.autocrlf true",
       "git -C <disposable-native-windows-clone> reset --hard --quiet HEAD",
@@ -31,17 +33,19 @@
       "uv run --locked ruff check .",
       "uv run --locked ruff format --check .",
       "uv run --locked python -m pytest",
+      "uv run --locked python -m pytest tests/test_consumer_governance_cli.py tests/test_consumer_governance_cli_v1.py",
       "uv run --locked python -m pytest -q tests/test_consumer_governance_cli_v1.py::test_event_serializes_concurrent_appenders_without_lost_updates (8 repeated runs)",
       "git diff --check origin/develop...HEAD",
       "git diff --numstat origin/develop...HEAD -- '*.md'"
     ],
     "results": {
-      "baseline_freshness": "PASS: clean local develop fast-forwarded from 51a8842e252ee172dab453d5a92eaf18e75d36c4 to exact origin/develop c581d25d3cfb162d3c4e13838db2af3d1fb3887f before branch creation",
+      "baseline_freshness": "PASS: existing local/pushed T033 branch matched exactly at e97ad4f7593548ad3b6277f265a41be48d812133; clean local develop fast-forwarded from c581d25d3cfb162d3c4e13838db2af3d1fb3887f to exact origin/develop c48880262d6d4e98e734932b5bcc6687db0791e0 and merged cleanly into T033 without rewriting represented history",
       "fresh_checkout_eol": "PASS: representative Markdown, JSON, source, and test paths all reported i/lf w/lf attr/text=auto eol=lf with core.autocrlf=true",
       "git_attributes": "PASS: representative measured/formatted paths report text=auto and eol=lf",
       "ruff_check": "PASS: All checks passed",
       "ruff_format": "PASS: 26 files already formatted",
-      "full_deterministic_suite": "PASS: 318 passed, 7 skipped in 48.22s on win32 / Python 3.13.14; skips are symlink negative controls on a Windows host lacking symbolic-link creation privilege",
+      "affected_consumer_security_suite": "PASS: 75 passed in 30.92s on native Windows; all seven R1 unsafe-link negative controls executed with no skips",
+      "full_deterministic_suite": "PASS: 325 passed in 44.24s on win32 / Python 3.13.14; zero skipped",
       "locking_stress": "PASS: concurrent eight-process EXCHANGE appender regression passed in 8 consecutive focused runs with no lost updates",
       "diff_check": "PASS: no whitespace errors",
       "markdown_diff": "PASS: empty; no committed Markdown content/blob change"
@@ -76,7 +80,7 @@
           "tests/test_consumer_governance_cli_v1.py",
           "tests/conftest.py"
         ],
-        "result": "PASS: canonical text/JSON/JSONL fixture writes explicitly disable platform newline translation; accepted byte, digest, snapshot, and RCAB expectations remain unchanged"
+        "result": "PASS: canonical text/JSON/JSONL fixture writes explicitly disable platform newline translation; accepted byte, digest, snapshot, and RCAB expectations remain unchanged; Windows unsafe-link fixtures use real symlinks when permitted and faithful NTFS junctions otherwise without skipping security claims"
       },
       "AC-T033-4": {
         "evidence_type": "deterministic artifact identity and ordering",
@@ -94,7 +98,7 @@
           "uv run --locked ruff format --check .",
           "uv run --locked python -m pytest"
         ],
-        "result": "PASS: canonical native-Windows baseline green in fresh clone; 318 passed and 7 host-capability skips; no T021 or global core.autocrlf change"
+        "result": "PASS: canonical native-Windows baseline green in fresh clone with 325 passed and zero skipped; all R1 unsafe-link negative controls execute; no T021 or global core.autocrlf change"
       }
     }
   },
