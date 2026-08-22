@@ -935,7 +935,11 @@ def test_manifest_does_not_embed_git_sha(repo_root: Path) -> None:
 
     for key in manifest:
         assert "git" not in key.lower()
-        assert "sha" not in key.lower() or key in ("registry_digest", "registered_content_digest")
+        assert "sha" not in key.lower() or key in (
+            "registry_digest",
+            "registered_content_digest",
+            "snapshot_payload_digest",
+        )
         assert "commit" not in key.lower()
 
     for entry in manifest["registered_paths"]:
@@ -1158,6 +1162,168 @@ def test_ac_t032_3_tampered_projection_detected_by_integrity(
         tool.validate_snapshot_integrity(manifest_path)
 
 
+@pytest.mark.parametrize(
+    ("field", "value", "error"),
+    [
+        ("path", "../AGENTS.md", "invalid registered path"),
+        ("class", "unknown", "invalid class"),
+        ("routes", ["z-route", "a-route"], "routes must be non-empty, unique, and sorted"),
+        ("byte_size", True, "invalid byte_size"),
+        ("line_count", -1, "invalid line_count"),
+        ("sha256", "A" * 64, "invalid sha256"),
+    ],
+)
+def test_ac_t032_3_entry_type_value_controls_reject_tampering(
+    repo_root: Path,
+    tmp_path: Path,
+    field: str,
+    value: object,
+    error: str,
+) -> None:
+    """AC-T032-3: entry fields enforce deterministic type and value constraints."""
+    tool = load_measurement_tool(repo_root)
+    repository = _make_manifest_repository(tmp_path)
+    manifest_path = repository / tool.DEFAULT_MANIFEST
+    tool.write_manifest(repository, manifest_path)
+
+    tampered = json.loads(manifest_path.read_bytes())
+    tampered["registered_paths"][0][field] = value
+    tampered[tool.SNAPSHOT_PAYLOAD_DIGEST_KEY] = tool.compute_snapshot_payload_digest(tampered)
+    manifest_path.write_bytes(tool.canonical_json(tampered))
+
+    with pytest.raises(tool.MeasurementError, match=error):
+        tool.validate_snapshot_integrity(manifest_path)
+
+
+def test_ac_t032_3_entry_canonical_order_rejects_tampering(repo_root: Path, tmp_path: Path) -> None:
+    """AC-T032-3: registered entries must retain canonical path order."""
+    tool = load_measurement_tool(repo_root)
+    repository = _make_manifest_repository(tmp_path)
+    manifest_path = repository / tool.DEFAULT_MANIFEST
+    tool.write_manifest(repository, manifest_path)
+
+    tampered = json.loads(manifest_path.read_bytes())
+    tampered["registered_paths"].reverse()
+    tampered[tool.SNAPSHOT_PAYLOAD_DIGEST_KEY] = tool.compute_snapshot_payload_digest(tampered)
+    manifest_path.write_bytes(tool.canonical_json(tampered))
+
+    with pytest.raises(tool.MeasurementError, match="unique paths in canonical order"):
+        tool.validate_snapshot_integrity(manifest_path)
+
+
+@pytest.mark.parametrize("field", ["class", "routes"])
+def test_ac_t032_3_class_and_routes_must_match_registry_semantics(
+    repo_root: Path, tmp_path: Path, field: str
+) -> None:
+    """AC-T032-3 R1 control A1: class/routes tampering fails after digest refresh."""
+    tool = load_measurement_tool(repo_root)
+    repository = _make_manifest_repository(tmp_path)
+    manifest_path = repository / tool.DEFAULT_MANIFEST
+    tool.write_manifest(repository, manifest_path)
+
+    tampered = json.loads(manifest_path.read_bytes())
+    tampered["registered_paths"][0][field] = "focused" if field == "class" else ["alternate-route"]
+    tampered[tool.SNAPSHOT_PAYLOAD_DIGEST_KEY] = tool.compute_snapshot_payload_digest(tampered)
+    manifest_path.write_bytes(tool.canonical_json(tampered))
+
+    with pytest.raises(tool.MeasurementError, match="metadata does not match snapshot registry"):
+        tool.validate_snapshot_integrity(manifest_path)
+
+
+def test_ac_t032_3_focused_physical_metrics_bound_by_payload_digest(
+    repo_root: Path, tmp_path: Path
+) -> None:
+    """AC-T032-3 R1 control A2: focused physical metrics are payload-bound."""
+    tool = load_measurement_tool(repo_root)
+    repository = _make_manifest_repository(tmp_path)
+    manifest_path = repository / tool.DEFAULT_MANIFEST
+    tool.write_manifest(repository, manifest_path)
+
+    tampered = json.loads(manifest_path.read_bytes())
+    focused = next(entry for entry in tampered["registered_paths"] if entry["class"] == "focused")
+    focused["byte_size"] += 1
+    focused["line_count"] += 1
+    manifest_path.write_bytes(tool.canonical_json(tampered))
+
+    with pytest.raises(tool.MeasurementError, match="snapshot_payload_digest mismatch"):
+        tool.validate_snapshot_integrity(manifest_path)
+
+
+def test_ac_t032_3_registry_identity_recomputed_from_snapshot_semantics(
+    repo_root: Path, tmp_path: Path
+) -> None:
+    """AC-T032-3 R1 control B: arbitrary registry identity is rejected."""
+    tool = load_measurement_tool(repo_root)
+    repository = _make_manifest_repository(tmp_path)
+    manifest_path = repository / tool.DEFAULT_MANIFEST
+    tool.write_manifest(repository, manifest_path)
+
+    tampered = json.loads(manifest_path.read_bytes())
+    tampered["registry_digest"] = "0" * 64
+    tampered[tool.SNAPSHOT_PAYLOAD_DIGEST_KEY] = tool.compute_snapshot_payload_digest(tampered)
+    manifest_path.write_bytes(tool.canonical_json(tampered))
+
+    with pytest.raises(tool.MeasurementError, match="registry_digest mismatch"):
+        tool.validate_snapshot_integrity(manifest_path)
+
+
+@pytest.mark.parametrize(
+    "field",
+    [
+        "files",
+        "current",
+        "accepted_reference",
+        "delta",
+        "warning",
+        "warning_reasons",
+        "ratchet_candidate",
+    ],
+)
+def test_ac_t032_3_bootstrap_state_recomputed_from_snapshot_entries(
+    repo_root: Path, tmp_path: Path, field: str
+) -> None:
+    """AC-T032-3 R1 control C: derived bootstrap state is exactly recomputed."""
+    tool = load_measurement_tool(repo_root)
+    repository = _make_manifest_repository(tmp_path)
+    manifest_path = repository / tool.DEFAULT_MANIFEST
+    tool.write_manifest(repository, manifest_path)
+
+    tampered = json.loads(manifest_path.read_bytes())
+    if field == "files":
+        tampered["bootstrap_router"][field].reverse()
+    elif field in ("current", "accepted_reference"):
+        tampered["bootstrap_router"][field]["byte_size"] += 1
+    elif field == "delta":
+        tampered["bootstrap_router"][field]["byte_size_delta"] += 1
+    elif field == "warning":
+        tampered["bootstrap_router"][field]["active"] = not tampered["bootstrap_router"][field][
+            "active"
+        ]
+    elif field == "warning_reasons":
+        tampered["bootstrap_router"]["warning"]["reasons"].append({"reason": "tampered"})
+    else:
+        tampered["bootstrap_router"][field] = {"file_count": 0, "byte_size": 0, "line_count": 0}
+    tampered[tool.SNAPSHOT_PAYLOAD_DIGEST_KEY] = tool.compute_snapshot_payload_digest(tampered)
+    manifest_path.write_bytes(tool.canonical_json(tampered))
+
+    with pytest.raises(tool.MeasurementError, match="bootstrap_router does not match"):
+        tool.validate_snapshot_integrity(manifest_path)
+
+
+def test_ac_t032_3_noncanonical_json_bytes_rejected(repo_root: Path, tmp_path: Path) -> None:
+    """AC-T032-3: semantically equivalent noncanonical JSON is rejected."""
+    tool = load_measurement_tool(repo_root)
+    repository = _make_manifest_repository(tmp_path)
+    manifest_path = repository / tool.DEFAULT_MANIFEST
+    tool.write_manifest(repository, manifest_path)
+
+    manifest = json.loads(manifest_path.read_bytes())
+    manifest_path.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
+
+    with pytest.raises(tool.MeasurementError, match="JSON bytes are not canonical"):
+        tool.validate_snapshot_integrity(manifest_path)
+
+
 def test_ac_t032_3_tampered_projection_detected_by_currentness(
     repo_root: Path, tmp_path: Path
 ) -> None:
@@ -1356,6 +1522,9 @@ def test_snapshot_v1_0_0_backwards_compatible_integrity(repo_root: Path, tmp_pat
     raw["projection_schema_version"] = "1.0.0"
     raw.pop("snapshot_type", None)
     raw.pop("snapshot_semantics", None)
+    raw.pop("registry", None)
+    raw.pop("excluded_paths", None)
+    raw.pop("snapshot_payload_digest", None)
     # Recompute digest since we haven't changed registered_paths — it's still valid
     manifest_path.write_text(
         json.dumps(raw, sort_keys=True, separators=(",", ":")) + "\n",

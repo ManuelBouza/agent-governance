@@ -76,8 +76,9 @@ VOLATILE_EXECUTION_METADATA_KEY = "volatile_execution_metadata"
 
 DEFAULT_CONTEXT_MAP = "docs/CONTEXT-MAP.md"
 DEFAULT_MANIFEST = "baselines/repository-context-manifest-v1.json"
-MANIFEST_SCHEMA_VERSION = "1.1.0"
-SUPPORTED_MANIFEST_SCHEMA_VERSIONS = frozenset({"1.0.0", "1.1.0"})
+MANIFEST_SCHEMA_VERSION = "1.2.0"
+SUPPORTED_MANIFEST_SCHEMA_VERSIONS = frozenset({"1.0.0", "1.1.0", "1.2.0"})
+SNAPSHOT_PAYLOAD_DIGEST_KEY = "snapshot_payload_digest"
 SNAPSHOT_TYPE = "epoch"
 SNAPSHOT_SEMANTICS = "evidence_snapshot_not_live_authority"
 LIVE_STATUS_TYPE = "live"
@@ -388,6 +389,44 @@ def compute_registry_digest(registry: dict[str, object]) -> str:
     return hashlib.sha256(canonical_json(registry)).hexdigest()
 
 
+def _canonical_registry(registry: dict[str, object]) -> dict[str, object]:
+    return {
+        "schema_version": registry["schema_version"],
+        "entries": sorted(
+            [
+                {
+                    "path": PurePosixPath(entry["path"]).as_posix(),
+                    "class": entry["class"],
+                    "routes": sorted(entry["routes"]),
+                }
+                for entry in registry["entries"]
+            ],
+            key=lambda entry: entry["path"],
+        ),
+        "bootstrap_ratchet": {
+            field: registry["bootstrap_ratchet"][field]
+            for field in (
+                "reference",
+                "file_count",
+                "byte_size",
+                "line_count",
+                "warning_relative_growth",
+                "blocking",
+            )
+        },
+    }
+
+
+def snapshot_payload(manifest: dict[str, object]) -> dict[str, object]:
+    """Return snapshot evidence fields without the self-referential digest."""
+    return {key: value for key, value in manifest.items() if key != SNAPSHOT_PAYLOAD_DIGEST_KEY}
+
+
+def compute_snapshot_payload_digest(manifest: dict[str, object]) -> str:
+    """Return the SHA-256 identity of the complete canonical snapshot payload."""
+    return hashlib.sha256(canonical_json(snapshot_payload(manifest))).hexdigest()
+
+
 def validate_registry(registry: dict[str, object], root: Path) -> None:
     """Validate the RCAB-MAP-V1 registry for mechanically decidable integrity.
 
@@ -560,8 +599,11 @@ def _compute_rcab_projection(
     validate_registry(registry, root)
 
     excluded = set(excluded_paths or set())
-    registry_digest = compute_registry_digest(registry)
+    canonical_registry = _canonical_registry(registry)
+    registry_digest = compute_registry_digest(canonical_registry)
     entries = registry["entries"]
+    registry_paths = {PurePosixPath(entry["path"]).as_posix() for entry in entries}
+    projected_exclusions = sorted(excluded & registry_paths)
 
     registered_entries: list[dict[str, object]] = []
     for entry in sorted(entries, key=lambda e: e["path"]):
@@ -587,6 +629,8 @@ def _compute_rcab_projection(
     ratchet = _compute_ratchet(bootstrap_entries, registry["bootstrap_ratchet"])
 
     return {
+        "registry": canonical_registry,
+        "excluded_paths": projected_exclusions,
         "registry_digest": registry_digest,
         "registered_paths": registered_entries,
         "registered_content_digest": registered_content_digest,
@@ -612,15 +656,19 @@ def build_manifest(
     the JSON cannot honestly mistake it for live authority.
     """
     projection = _compute_rcab_projection(root, map_path=map_path, excluded_paths=excluded_paths)
-    return {
+    manifest = {
         "projection_schema_version": MANIFEST_SCHEMA_VERSION,
         "snapshot_type": SNAPSHOT_TYPE,
         "snapshot_semantics": SNAPSHOT_SEMANTICS,
+        "registry": projection["registry"],
+        "excluded_paths": projection["excluded_paths"],
         "registry_digest": projection["registry_digest"],
         "registered_paths": projection["registered_paths"],
         "registered_content_digest": projection["registered_content_digest"],
         "bootstrap_router": projection["bootstrap_router"],
     }
+    manifest[SNAPSHOT_PAYLOAD_DIGEST_KEY] = compute_snapshot_payload_digest(manifest)
+    return manifest
 
 
 def build_live_status(
@@ -715,24 +763,124 @@ def check_manifest(
     return 0, "manifest OK"
 
 
+def _require_nonnegative_int(value: object, field: str) -> int:
+    if isinstance(value, bool) or not isinstance(value, int) or value < 0:
+        raise MeasurementError(f"invalid {field}: {value!r}")
+    return value
+
+
+def _require_digest(value: object, field: str) -> str:
+    if not isinstance(value, str) or len(value) != 64 or value != value.lower():
+        raise MeasurementError(f"invalid {field}: {value!r}")
+    try:
+        int(value, 16)
+    except ValueError as error:
+        raise MeasurementError(f"{field} is not a lowercase hex string: {value!r}") from error
+    return value
+
+
+def _validate_snapshot_entry(entry: object) -> dict[str, object]:
+    required = {"path", "class", "routes", "byte_size", "line_count", "sha256"}
+    if not isinstance(entry, dict) or set(entry) != required:
+        raise MeasurementError("registered path entry must contain exactly canonical entry fields")
+    path = entry["path"]
+    if (
+        not isinstance(path, str)
+        or not path
+        or PurePosixPath(path).is_absolute()
+        or PurePosixPath(path).as_posix() != path
+        or ".." in PurePosixPath(path).parts
+    ):
+        raise MeasurementError(f"invalid registered path: {path!r}")
+    if entry["class"] not in VALID_REGISTRY_CLASSES:
+        raise MeasurementError(f"invalid class for path {path!r}: {entry['class']!r}")
+    routes = entry["routes"]
+    if (
+        not isinstance(routes, list)
+        or not routes
+        or not all(isinstance(route, str) and route for route in routes)
+        or routes != sorted(set(routes))
+    ):
+        raise MeasurementError(f"routes must be non-empty, unique, and sorted for path {path!r}")
+    _require_nonnegative_int(entry["byte_size"], f"byte_size for path {path!r}")
+    line_count = entry["line_count"]
+    if line_count is not None:
+        _require_nonnegative_int(line_count, f"line_count for path {path!r}")
+    _require_digest(entry["sha256"], f"sha256 for path {path!r}")
+    return entry
+
+
+def _validate_snapshot_registry(registry: object) -> dict[str, object]:
+    if not isinstance(registry, dict) or set(registry) != {
+        "schema_version",
+        "entries",
+        "bootstrap_ratchet",
+    }:
+        raise MeasurementError("snapshot registry must contain exactly canonical registry fields")
+    if registry["schema_version"] != REGISTRY_SCHEMA_VERSION:
+        raise MeasurementError(
+            f"unsupported snapshot registry schema: {registry['schema_version']!r}"
+        )
+    entries = registry["entries"]
+    if not isinstance(entries, list) or not entries:
+        raise MeasurementError("snapshot registry entries must be a non-empty list")
+    canonical_entries: list[dict[str, object]] = []
+    for entry in entries:
+        if not isinstance(entry, dict) or set(entry) != {"path", "class", "routes"}:
+            raise MeasurementError(
+                "snapshot registry entry must contain exactly path, class, routes"
+            )
+        path = entry["path"]
+        if (
+            not isinstance(path, str)
+            or not path
+            or PurePosixPath(path).is_absolute()
+            or PurePosixPath(path).as_posix() != path
+            or ".." in PurePosixPath(path).parts
+        ):
+            raise MeasurementError(f"invalid snapshot registry path: {path!r}")
+        if entry["class"] not in VALID_REGISTRY_CLASSES:
+            raise MeasurementError(f"invalid snapshot registry class for {path!r}")
+        routes = entry["routes"]
+        if (
+            not isinstance(routes, list)
+            or not routes
+            or not all(isinstance(route, str) and route for route in routes)
+            or routes != sorted(set(routes))
+        ):
+            raise MeasurementError(f"invalid snapshot registry routes for {path!r}")
+        canonical_entries.append(entry)
+    registry_paths = [entry["path"] for entry in canonical_entries]
+    if registry_paths != sorted(set(registry_paths)):
+        raise MeasurementError(
+            "snapshot registry entries must have unique paths in canonical order"
+        )
+
+    reference = registry["bootstrap_ratchet"]
+    required_reference = {
+        "reference",
+        "file_count",
+        "byte_size",
+        "line_count",
+        "warning_relative_growth",
+        "blocking",
+    }
+    if not isinstance(reference, dict) or set(reference) != required_reference:
+        raise MeasurementError("snapshot registry bootstrap_ratchet has invalid fields")
+    if not isinstance(reference["reference"], str) or not reference["reference"]:
+        raise MeasurementError("snapshot registry bootstrap_ratchet.reference must be non-empty")
+    for field in ("file_count", "byte_size", "line_count"):
+        _require_nonnegative_int(reference[field], f"bootstrap_ratchet.{field}")
+    growth = reference["warning_relative_growth"]
+    if isinstance(growth, bool) or not isinstance(growth, (int, float)) or not 0 <= growth <= 1:
+        raise MeasurementError(f"invalid bootstrap_ratchet.warning_relative_growth: {growth!r}")
+    if not isinstance(reference["blocking"], bool):
+        raise MeasurementError(f"invalid bootstrap_ratchet.blocking: {reference['blocking']!r}")
+    return registry
+
+
 def validate_snapshot_integrity(manifest_path: Path) -> dict[str, object]:
-    """Validate the internal canonical integrity of a committed snapshot.
-
-    Checks machine-decidable properties without comparing against current
-    registered content:
-
-    * manifest parses as valid JSON;
-    * ``projection_schema_version`` is a supported version;
-    * v1.1.0+ manifests carry machine-visible epoch snapshot semantics;
-    * ``registered_paths`` are present, canonically ordered and non-empty;
-    * ``registered_content_digest`` matches the digest recomputed from the
-      manifest's own ``registered_paths`` (tamper detection);
-    * ``bootstrap_router`` has required structural fields;
-    * ``registry_digest`` is a 64-character hex string.
-
-    Raises :class:`MeasurementError` on any integrity failure.
-    Returns the parsed manifest dict on success.
-    """
+    """Validate canonical snapshot evidence without consulting live source."""
     raw = manifest_path.read_bytes()
     try:
         committed = json.loads(raw)
@@ -740,6 +888,8 @@ def validate_snapshot_integrity(manifest_path: Path) -> dict[str, object]:
         raise MeasurementError(f"manifest is not valid JSON: {error}") from error
     if not isinstance(committed, dict):
         raise MeasurementError("manifest must be a JSON object")
+    if raw != canonical_json(committed):
+        raise MeasurementError("manifest JSON bytes are not canonical")
 
     schema = committed.get("projection_schema_version")
     if schema not in SUPPORTED_MANIFEST_SCHEMA_VERSIONS:
@@ -748,7 +898,7 @@ def validate_snapshot_integrity(manifest_path: Path) -> dict[str, object]:
             f"supported: {sorted(SUPPORTED_MANIFEST_SCHEMA_VERSIONS)}"
         )
 
-    if schema == MANIFEST_SCHEMA_VERSION:
+    if schema != "1.0.0":
         snapshot_type = committed.get("snapshot_type")
         if snapshot_type != SNAPSHOT_TYPE:
             raise MeasurementError(
@@ -761,41 +911,23 @@ def validate_snapshot_integrity(manifest_path: Path) -> dict[str, object]:
                 f"expected {SNAPSHOT_SEMANTICS!r}"
             )
 
-    registry_digest = committed.get("registry_digest")
-    if not isinstance(registry_digest, str) or len(registry_digest) != 64:
-        raise MeasurementError(f"invalid registry_digest: {registry_digest!r}")
-    try:
-        int(registry_digest, 16)
-    except ValueError as error:
-        raise MeasurementError(
-            f"registry_digest is not a hex string: {registry_digest!r}"
-        ) from error
+    registry_digest = _require_digest(committed.get("registry_digest"), "registry_digest")
 
     registered_paths = committed.get("registered_paths")
     if not isinstance(registered_paths, list) or not registered_paths:
         raise MeasurementError("manifest must contain a non-empty 'registered_paths' list")
 
-    paths: list[str] = []
-    for entry in registered_paths:
-        if not isinstance(entry, dict):
-            raise MeasurementError(
-                f"registered path entry must be an object, got {type(entry).__name__}"
-            )
-        path = entry.get("path")
-        sha256 = entry.get("sha256")
-        if not isinstance(path, str) or not path:
-            raise MeasurementError(f"invalid registered path: {path!r}")
-        if not isinstance(sha256, str) or len(sha256) != 64:
-            raise MeasurementError(f"invalid sha256 for path {path!r}: {sha256!r}")
-        paths.append(path)
+    paths = [_validate_snapshot_entry(entry)["path"] for entry in registered_paths]
 
-    if paths != sorted(paths):
-        raise MeasurementError("registered_paths must be in canonical (sorted) order")
+    if paths != sorted(set(paths)):
+        raise MeasurementError("registered_paths must have unique paths in canonical order")
 
     content_identity = [{"path": e["path"], "sha256": e["sha256"]} for e in registered_paths]
     expected_digest = hashlib.sha256(canonical_json(content_identity)).hexdigest()
-    actual_digest = committed.get("registered_content_digest")
-    if not isinstance(actual_digest, str) or actual_digest != expected_digest:
+    actual_digest = _require_digest(
+        committed.get("registered_content_digest"), "registered_content_digest"
+    )
+    if actual_digest != expected_digest:
         raise MeasurementError(
             f"registered_content_digest mismatch: manifest claims {actual_digest!r} "
             f"but registered_paths compute to {expected_digest!r}"
@@ -814,9 +946,68 @@ def validate_snapshot_integrity(manifest_path: Path) -> dict[str, object]:
     ):
         if field not in bootstrap_router:
             raise MeasurementError(f"bootstrap_router missing required field: {field}")
-    warning = bootstrap_router["warning"]
-    if not isinstance(warning, dict) or "active" not in warning or "reasons" not in warning:
-        raise MeasurementError("bootstrap_router.warning must have 'active' and 'reasons'")
+    if schema != MANIFEST_SCHEMA_VERSION:
+        return committed
+
+    required_fields = {
+        "projection_schema_version",
+        "snapshot_type",
+        "snapshot_semantics",
+        "registry",
+        "excluded_paths",
+        "registry_digest",
+        "registered_paths",
+        "registered_content_digest",
+        "bootstrap_router",
+        SNAPSHOT_PAYLOAD_DIGEST_KEY,
+    }
+    if set(committed) != required_fields:
+        raise MeasurementError("manifest must contain exactly canonical snapshot fields")
+
+    registry = _validate_snapshot_registry(committed["registry"])
+    expected_registry_digest = compute_registry_digest(registry)
+    if registry_digest != expected_registry_digest:
+        raise MeasurementError(
+            f"registry_digest mismatch: manifest claims {registry_digest!r} "
+            f"but snapshot registry computes to {expected_registry_digest!r}"
+        )
+
+    excluded_paths = committed["excluded_paths"]
+    registry_entries = registry["entries"]
+    registry_paths = [entry["path"] for entry in registry_entries]
+    if (
+        not isinstance(excluded_paths, list)
+        or not all(isinstance(path, str) and path in registry_paths for path in excluded_paths)
+        or excluded_paths != sorted(set(excluded_paths))
+    ):
+        raise MeasurementError("excluded_paths must be unique registered paths in canonical order")
+    expected_paths = [path for path in registry_paths if path not in excluded_paths]
+    if paths != expected_paths:
+        raise MeasurementError("registered_paths do not match snapshot registry and exclusions")
+    projected_metadata = [
+        {"path": entry["path"], "class": entry["class"], "routes": entry["routes"]}
+        for entry in registered_paths
+    ]
+    expected_metadata = [entry for entry in registry_entries if entry["path"] not in excluded_paths]
+    if projected_metadata != expected_metadata:
+        raise MeasurementError("registered path metadata does not match snapshot registry")
+
+    expected_ratchet = _compute_ratchet(
+        [entry for entry in registered_paths if entry["class"] in BOOTSTRAP_CLASSES],
+        registry["bootstrap_ratchet"],
+    )
+    if bootstrap_router != expected_ratchet:
+        raise MeasurementError("bootstrap_router does not match registered entries and reference")
+
+    payload_digest = _require_digest(
+        committed.get(SNAPSHOT_PAYLOAD_DIGEST_KEY), SNAPSHOT_PAYLOAD_DIGEST_KEY
+    )
+    expected_payload_digest = compute_snapshot_payload_digest(committed)
+    if payload_digest != expected_payload_digest:
+        raise MeasurementError(
+            f"snapshot_payload_digest mismatch: manifest claims {payload_digest!r} "
+            f"but canonical payload computes to {expected_payload_digest!r}"
+        )
 
     return committed
 
