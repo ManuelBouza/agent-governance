@@ -38,7 +38,8 @@ BEHAVIORS = {
     "reuse_existing_capabilities",
     "adapt_existing_capabilities",
     "preserve_managed_surfaces",
-    "refuse_unsolicited_sdd",
+    "use_native_sdd",
+    "refuse_unsolicited_external_sdd",
     "fail_closed_conflict",
 }
 POSITIVE_OPERATION_TAGS = {
@@ -76,7 +77,8 @@ CROSS_CUTTING_TAGS = {
 COEXISTENCE_TAGS = SHAPES | {
     "managed_preservation",
     "managed_conflict",
-    "no_unsolicited_sdd",
+    "native_sdd_fallback",
+    "no_unsolicited_external_sdd",
 }
 ALLOWED_TAGS = (
     POSITIVE_OPERATION_TAGS
@@ -188,8 +190,11 @@ def _validate_coexistence(value: Any, location: str) -> list[str]:
         and "preserve_managed_surfaces" not in expected_behaviors
     ):
         errors.append(f"{location}: managed surfaces must be preserved")
-    if value["shape"] == "no_sdd" and expected_behaviors != ["refuse_unsolicited_sdd"]:
-        errors.append(f"{location}: no_sdd must refuse unsolicited SDD only")
+    if value["shape"] == "no_sdd" and expected_behaviors != [
+        "use_native_sdd",
+        "refuse_unsolicited_external_sdd",
+    ]:
+        errors.append(f"{location}: no_sdd must use native SDD and refuse unsolicited external SDD")
     return errors
 
 
@@ -303,7 +308,8 @@ def validate_corpus(data: Any) -> dict[str, Any]:
             behavior_tags = {
                 "preserve_managed_surfaces": "managed_preservation",
                 "fail_closed_conflict": "managed_conflict",
-                "refuse_unsolicited_sdd": "no_unsolicited_sdd",
+                "use_native_sdd": "native_sdd_fallback",
+                "refuse_unsolicited_external_sdd": "no_unsolicited_external_sdd",
             }
             if tags_valid and isinstance(expected_behaviors, list):
                 required_behavior_tags = {
