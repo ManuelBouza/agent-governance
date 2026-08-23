@@ -19,6 +19,7 @@ SKILL_SOURCE_FILES = (
     Path("assets/CAPABILITIES.template.json"),
     Path("assets/EXCHANGE.template.jsonl"),
     Path("assets/MISSION.template.md"),
+    Path("assets/RUNBOOK-RECIPE.template.json"),
     Path("assets/RUNBOOK.template.md"),
     Path("assets/SKILL-APPROVAL.template.json"),
     Path("assets/STATE.template.json"),
