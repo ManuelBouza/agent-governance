@@ -1,111 +1,124 @@
 # Current ChatGPT Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O145  
+Checkpoint-Sequence: O146  
 Canonical-Branch: `develop`  
-Current-Work-Unit: T034 native SDD executable materialization READY for Executor launch under D054/RB001  
+Current-Work-Unit: T034-R1 Design/Plan re-entry integrated; resume existing T034 branch  
 Chat-Closure: KEEP_CURRENT_CHAT
 
-## Completed
+## Durable frontier
 
-- PR #188 contained the two accidental direct-`develop` noop writes without rewriting history; L007 remains `CONTROL_PLANNED`.
-- PR #189 integrated D054/T035 planning as `9bd77ee05db878dfc383b4628f563d17e89327de`.
-- D054 is accepted architecture for Executor-owned execution mechanics: CLI/API/SDK/Git/uv/PowerShell/Bash/cloud/database/cluster/deployment/SSH/remote operations are selected and executed by the abstract Executor inside the current D033 envelope.
-- Human/Orchestrator authority remains semantic: outcome, target/effect/resource/privilege/credential/network boundary, controlling Design/Plan, semantic runbooks/checkpoints, approval gates and acceptance evidence.
-- `docs/runbooks/RB001-source-executor-checkout-bootstrap.md` is now the source-maintainer semantic runbook for safe checkout/toolchain bootstrap.
-- Until T035 native recipe persistence exists, unknown adapter syntax is resolved from project-native or installed/version-specific help and official vendor/API documentation; successful newly resolved operations remain provisional handoff evidence rather than durable VERIFIED recipes.
-- T035 remains `BLOCKED` until T034 is accepted/integrated on a green canonical baseline and a separate post-T034 Orchestrator-owned D052 oracle gate is integrated.
-- The T035 oracle is intentionally not yet authored/frozen because integrating a deliberately red T035 oracle before T034 would invalidate T034's required full canonical pytest acceptance.
+- D053 native SDD remains accepted with single-owner stages.
+- D054 Executor-owned execution mechanics and RB001 source bootstrap remain integrated and controlling.
+- T035 remains `BLOCKED` until T034 is accepted/integrated on a green canonical baseline and a later T035 oracle gate is frozen.
 - T021/T022 remain paused.
+- T034 first execution returned terminal `BLOCKED` on the expected branch rather than expanding scope.
+- Submitted terminal pointer:
+  - branch: `feat/t034-native-sdd-executable-materialization`;
+  - HEAD: `83abcafc60c943040fa4aa70f242950220851981`;
+  - implementation anchor: `3c85675394f4764f7436bbbb12e75de64a505f68`;
+  - handoff: `handoffs/T034-executor-handoff.json`.
+- The submitted implementation preserved the frozen oracle and committed no Markdown.
+- T034-R1 review is integrated at `docs/reviews/T034-R1.md` with disposition `REWORK_REQUIRED` and authoritative Design/Plan re-entry scope.
 
-## Current Remote State
+## Current remote state
 
 ```text
-last verified develop             = 9bd77ee05db878dfc383b4628f563d17e89327de
-D054/T035 planning PR              = #189 — MERGED
-D054 decision                      = docs/decisions/D054-executor-owned-operation-resolution-and-runbook-recipes.md
-operation-resolution contract      = docs/RUNBOOK-OPERATION-RESOLUTION.md
-source bootstrap runbook           = docs/runbooks/RB001-source-executor-checkout-bootstrap.md
-
-T034 status                        = READY
+last verified develop              = 332baa9db5c030ffc007a72ac1d0f28225cfabd6
+T034 R1 review PR                  = #191 — MERGED
+T034 review                        = docs/reviews/T034-R1.md
 T034 task                          = docs/tasks/T034-native-sdd-executable-materialization.md
 T034 oracle                        = tests/test_t034_native_sdd_conformance.py
-T034 oracle revision               = T034-A2-v1 — FROZEN
-T034 expected branch               = feat/t034-native-sdd-executable-materialization
-T034 remote branch                 = ABSENT at last check
+T034 oracle revision               = T034-A2-v1 — FROZEN / unchanged
+T034 branch                        = feat/t034-native-sdd-executable-materialization
+T034 submitted terminal HEAD       = 83abcafc60c943040fa4aa70f242950220851981
+T034 implementation anchor         = 3c85675394f4764f7436bbbb12e75de64a505f68
 T034 handoff                       = handoffs/T034-executor-handoff.json
-
-T035 status                        = BLOCKED on T034 + future oracle gate
-T035 task                          = docs/tasks/T035-runbook-operation-resolution-readiness.md
-T035 oracle                        = NOT YET AUTHORED/FROZEN
-
+T034 branch relation               = ahead 2 / behind 1 vs current develop at last check
+T035                               = BLOCKED
 T021/T022                          = PAUSED
 ```
 
-Immediately before actual Executor launch, re-resolve canonical `develop` and the T034 branch state. A stale local branch named `develop` is not sufficient baseline evidence.
+Re-resolve canonical `develop` and the T034 branch immediately before resume. After this checkpoint itself is integrated, the T034 branch will be further behind and must be reconciled without rewriting represented history.
 
-## T034 Execution Boundary
+## T034-R1 accepted preservation
 
-T034 remains exactly the integrated Task Contract; D054 changes execution mechanics ownership, not T034 product semantics.
+Preserve the submitted T034 implementation unless an R1 correction mechanically requires adjustment:
 
-Required implementation remains narrowly bounded to:
+- closed Core inventory now contains `SDD.md` / `SDD-Version`;
+- the no-external-SDD corpus/grader semantics use the frozen native fallback vocabulary;
+- authorized artifact protocol expectations use `1.14.0`;
+- no second SDD runtime/lifecycle, external SDD dependency, task parser/schema, handoff schema or CLI-surface expansion was introduced.
 
-- add `SDD.md` / `SDD-Version` to the existing closed deterministic Core inventory;
-- align deterministic Core/package expectations to integrated Protocol `1.14.0`;
-- synchronize the existing T015 `no_sdd` corpus/grader/self-tests to frozen native fallback semantics:
-  - `use_native_sdd`
-  - `refuse_unsolicited_external_sdd`
-  - `native_sdd_fallback`
-  - `no_unsolicited_external_sdd`;
-- preserve self-contained packaging/source independence and the stable CLI v1 surface;
-- run the frozen T034 oracle, focused suites and complete native-Windows canonical Ruff/pytest verification;
-- persist `handoffs/T034-executor-handoff.json`, perform Code Review & Verify, commit and make the one planned final push under D048.
+The frozen T034 oracle must remain unchanged.
 
-Not authorized without SDD re-entry:
+## T034-R1 required corrections
 
-- edits to `tests/test_t034_native_sdd_conformance.py`;
-- committed Markdown edits by the Executor;
-- new SDD command/state/lifecycle/queue;
-- external SDD dependency;
-- new task-section parser/schema or handoff schema;
-- T021/T022 changes;
-- direct `develop`/`main` writes or force-push of represented history.
+`docs/reviews/T034-R1.md` is the authoritative revision to the original Task Contract for these exact additions:
 
-## D054 / RB001 Bootstrap Rule for T034
+1. mechanically change only `protocol_version` to `1.14.0` in:
+   - `governance-skill/assets/CAPABILITIES.template.json`;
+   - `governance-skill/assets/STATE.template.json`;
+2. update `src/agent_governance/artifact.py` only so the existing `governance-skill/assets/RUNBOOK.template.md` participates in the current explicit self-contained artifact allowlist/parity; corresponding mechanical artifact-test expectations are allowed;
+3. narrowly correct reference-integrity path/prose classification in `tests/_helpers.py` plus focused regressions in `tests/test_reference_integrity.py` so accepted slash-separated SDD taxonomy is not treated as a path while concrete relative paths, dotfiles, missing paths, traversal protection and existing fail-closed reference checks remain effective.
 
-The Executor, not the Human, owns the concrete Git/uv/PowerShell/shell mechanics required to establish the safe native-Windows T034 baseline.
+The reference review identifies representative taxonomy forms. Do not broadly exempt slash-containing tokens.
+
+These additions do not activate D054 Consumer runtime semantics, create native runbook/recipe directories, change routed Core protocol, or absorb T035 into T034.
+
+## Resume procedure
+
+Resume on the existing represented T034 branch. Do not recreate it, reset it to `develop`, rebase/force-push represented commits, or discard the submitted handoff/history.
 
 The Executor must:
 
-1. follow `docs/runbooks/RB001-source-executor-checkout-bootstrap.md` semantically;
-2. preserve any unrepresented local work and fail closed rather than destructively reset/overwrite it;
-3. prove local base equals current canonical `origin/develop` containing the exact T034 contract/oracle;
-4. reload current `AGENTS.md` because the governing integrated history changed `AGENTS.md`;
-5. resolve unknown adapter syntax from installed/version-specific help or official documentation rather than model memory/chat snippets;
-6. keep newly resolved operation evidence provisional until T035 exists;
-7. use only D033-authorized target/effect/credential/network/privilege boundaries.
+1. synchronize canonical remote state;
+2. establish current `origin/develop` containing `docs/reviews/T034-R1.md` and this checkpoint;
+3. safely reconcile current `develop` into the existing T034 branch with represented history preserved; if that cannot be done safely, return `BLOCKED`;
+4. reload current `AGENTS.md` when required by the governing integrated history;
+5. load the original T034 Task Contract plus `docs/reviews/T034-R1.md` as the complete revised execution authority;
+6. follow D054/RB001 for Git/uv/PowerShell/shell mechanics and authoritative documentation fallback;
+7. implement only the R1 corrections while preserving accepted T034 work;
+8. rerun Code Review & Verify and the complete required verification matrix;
+9. update `handoffs/T034-executor-handoff.json` with the new implementation anchor/evidence;
+10. commit the complete R1 rework and perform one planned final push under D048;
+11. verify remote branch HEAD and return only the canonical terminal fields.
 
-No Human command-by-command copy/paste is part of the normal launch path.
+## Required R1 verification
 
-## Canonical Launch Prompt
+The terminal handoff must include green evidence for:
 
-Use the current `docs/TASK-CONTRACTS.md` minimal transport semantics:
+- frozen T034 oracle;
+- complete Consumer trigger corpus/grader suite;
+- focused bootstrap/validate and missing/tampered Core controls;
+- complete Governance artifact/self-contained package suite including `RUNBOOK.template.md` parity;
+- complete reference-integrity suite and focused taxonomy/concrete-path regression coverage;
+- stable CLI v1 non-regression suite;
+- native-Windows canonical:
+  - `uv run --locked ruff check .`;
+  - `uv run --locked ruff format --check .`;
+  - `uv run --locked python -m pytest`.
+
+No skip/xfail/deletion/weakening may be introduced merely to make the suite green.
+
+## Canonical T034-R1 resume prompt
 
 ```text
 Operate as the Agente de IA Ejecutor for ManuelBouza/agent-governance.
 
-Synchronize the canonical remote and ensure the local develop baseline used for bootstrap is current with origin/develop. Preserve local/uncommitted work; if a safe current baseline cannot be established, stop and report BLOCKED rather than using stale repository state.
+Synchronize the canonical remote and establish current origin/develop. Continue on the existing represented branch feat/t034-native-sdd-executable-materialization; preserve its submitted commits, handoff and history. Safely reconcile current develop into that existing branch. If this cannot be done without discard, branch recreation, force-push or represented-history rewrite, stop and report BLOCKED.
 
-AGENTS.md changed in the governing integrated change; reload current AGENTS.md from this baseline before loading the Task Contract.
+Reload current repository instructions from the reconciled baseline as required.
 
-Then load and execute the authoritative Task Contract:
+Then load and execute the authoritative T034 rework specification:
 docs/tasks/T034-native-sdd-executable-materialization.md
+docs/reviews/T034-R1.md
 
-Treat that Task Contract and its referenced repository policies as the complete execution specification. Do not infer or expand task scope from this prompt.
+Treat those files and their referenced repository policies as the complete revised execution specification. Do not infer or expand rework scope from this prompt.
 
-For source checkout/toolchain bootstrap and other execution mechanics, follow the applicable semantic runbook, including docs/runbooks/RB001-source-executor-checkout-bootstrap.md. Resolve missing adapter syntax from project-native or installed/version-specific help and official vendor/API documentation under D054; do not delegate routine command execution to the Human.
+For source checkout/toolchain/bootstrap and other execution mechanics, follow D054 and the applicable semantic runbook including docs/runbooks/RB001-source-executor-checkout-bootstrap.md. Resolve missing adapter syntax from project-native or installed/version-specific help and official vendor/API documentation; do not delegate routine command execution to the Human.
 
-Complete the required implementation, Code Review & Verify, verification and executor handoff, commit and push all authorized work, then return only:
+Complete the required R1 implementation, Code Review & Verify, verification and updated executor handoff, commit and push all authorized rework, then return only:
 
 STATUS: DONE | BLOCKED | PARTIAL
 HANDOFF: <path>
@@ -113,33 +126,28 @@ BRANCH: <branch>
 HEAD: <pushed-commit-sha>
 ```
 
-The runbook sentence is a routing pointer to integrated authority, not a duplicate command specification.
+## Next action
 
-## Next Action
+1. Integrate this O146 checkpoint through its short-lived Markdown PR.
+2. Reverify canonical `develop` and exact remote T034 branch relation/HEAD after that integration.
+3. Give the canonical T034-R1 resume prompt above to the Codex Executor, preferably in the existing T034 Codex chat so represented local context can be reused without becoming authority.
+4. Await only the terminal pointer fields.
+5. Perform remote D053 Converge/Accept from GitHub.
+6. Do not resume T021/T022 and do not author/freeze the T035 oracle until T034 is accepted/integrated and canonical verification is green.
 
-1. Integrate this O145 checkpoint refresh through its short-lived Markdown PR.
-2. Reverify canonical `develop` after that merge and confirm `feat/t034-native-sdd-executable-materialization` is still absent/unstarted.
-3. In the ChatGPT desktop app Codex Executor surface, open the safe native-Windows source project and send the canonical launch prompt above.
-4. The Executor performs all routine Git/uv/PowerShell/shell operations itself under D054/RB001.
-5. Await only the terminal pointer fields from the Executor.
-6. Then perform remote D053 Converge/Accept review from GitHub.
-7. Do not resume T021/T022 or author/freeze the T035 oracle until T034 is accepted/integrated and the canonical baseline is green.
+## Next chat minimum load
 
-## Next Chat Minimum Load
-
-Until T034 returns a terminal handoff, load only:
+Until T034-R1 returns a terminal handoff, load only:
 
 - current `develop` identity;
 - `AGENTS.md`;
 - this checkpoint;
 - `docs/tasks/T034-native-sdd-executable-materialization.md`;
+- `docs/reviews/T034-R1.md`;
 - `tests/test_t034_native_sdd_conformance.py`;
-- `docs/runbooks/RB001-source-executor-checkout-bootstrap.md`;
-- exact T034 implementation/handoff branch state when it exists;
-- D054 only when resolving a concrete execution-boundary conflict.
+- exact T034 branch/handoff state;
+- RB001/D054 only when resolving an execution-boundary conflict.
 
-Do not reconstruct prior SDD adoption history or preload T021/T022 when these repository artifacts are sufficient.
+## Do not
 
-## Do Not Load Or Do
-
-Do not hand routine CLI/API/PowerShell/Bash commands to the Human as the default path; do not make recipe syntax execution authority; do not guess unknown commands from model memory; do not bypass target/identity/privilege/credential/network controls; do not disable TLS/host-key/security controls for convenience; do not modify the frozen T034 oracle; do not absorb T035 into T034; do not author/freeze the T035 oracle before T034 acceptance; do not resume T021/T022 automatically; do not write directly to `main`/`develop`; and do not treat L007 containment as verified prevention.
+Do not merge submitted T034 HEAD `83abcafc60c943040fa4aa70f242950220851981`; do not discard/recreate/rebase-force the represented T034 branch; do not modify the frozen oracle; do not let the reference-integrity correction broadly suppress real path failures; do not activate D054 Consumer runtime or start T035; do not resume T021/T022; do not hand routine CLI/API/shell commands to the Human; and do not write directly to `main`/`develop`.
