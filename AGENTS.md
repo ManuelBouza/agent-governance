@@ -101,6 +101,20 @@ Within stages 5-6 and the authorized Task Contract, the executor owns its **impl
 
 Executor-internal plans, worker results, SDD state, Skill output, graph state or host-native approvals are implementation aids/evidence only. They do not become Task Contract authority, controlling Design, or Agent Governance acceptance, and they must not create tracked repository state or external lifecycle authority outside authorized scope.
 
+### D054 execution-mechanics ownership
+
+D054 prospectively makes the command/API interaction boundary explicit for delegated executable work.
+
+Inside authorized D053 stages 5-6, the Agente de IA Ejecutor owns Execution Adapter mechanics: CLI/API/SDK invocation, Git/uv command selection, PowerShell/Bash/shell syntax, cloud/database/cluster/deployment tooling, SSH/remote-management operations and equivalent technical execution details.
+
+ChatGPT/Human authority remains semantic: requested outcome, controlling Design/Plan, actual target/effect/resource/privilege/credential/network envelope, required semantic runbook/checkpoints, approval/Human gates and acceptance evidence. The Human Owner MUST NOT become the default copy/paste terminal operator merely because a command is needed. Human interaction is reserved for D033 `REQUIRE_HUMAN` gates, MFA/external approvals that cannot be delegated, material credential/risk decisions, or an explicit request to inspect/execute exact syntax.
+
+For each adapter operation the Executor follows D054's runbook-first resolution rule: reuse a compatible VERIFIED operation recipe when one exists; otherwise resolve the operation from project-native or installed/version-specific help and official vendor/API documentation, execute only inside the current D033 envelope, verify the required postcondition, and promote reusable syntax only through the approved recipe lifecycle. Model memory, community examples or chat snippets are never sufficient sole authority for a newly learned executable recipe.
+
+Until T035 native recipe persistence is integrated, the same ownership/documentation rule applies but newly resolved operations remain provisional handoff evidence rather than pretending a reusable native recipe store already exists.
+
+This D054 rule governs Executor-side technical execution. It does not transfer ChatGPT-owned GitHub Markdown mutation to the Executor; Orchestrator repository writes remain subject to the branching policy and the L007 fail-closed branch-target control.
+
 The executor MUST NOT:
 - create or edit committed `*.md` files;
 - change product scope, normative requirements/spec deltas, controlling Design/architecture, Plan/Trace semantics, acceptance criteria, or strategic intent;
