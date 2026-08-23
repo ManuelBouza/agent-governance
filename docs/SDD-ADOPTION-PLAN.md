@@ -13,7 +13,7 @@ This plan is the first `Plan & Trace` artifact under D053. Adoption is increment
 
 ## SDD profile
 
-Adoption is `ASSURED` because it changes Governance protocol, source-development authority, consumer-project workflow and potentially durable bootstrap/package semantics.
+Adoption is `ASSURED` because it changes Governance protocol, source-development authority, consumer-project workflow and durable bootstrap/package semantics.
 
 The profile increases specification, trace and conformance depth; it does not transfer stage ownership.
 
@@ -109,7 +109,7 @@ An existing normative artifact may be the current specification carrier. A separ
 
 ### 4. Consumer portability
 
-Native SDD semantics that governed consumer projects need live in reusable Governance Core/product distribution, not only in source-maintenance docs. A1 therefore adds `governance-core/SDD.md` and routes it from the existing Core rather than creating source-only SDD authority.
+Native SDD semantics that governed consumer projects need live in reusable Governance Core/product distribution, not only in source-maintenance docs. A1 therefore added `governance-core/SDD.md`; A2/T034 materializes that module through the existing deterministic install/validation/package architecture.
 
 ### 5. Source/consumer separation
 
@@ -130,73 +130,68 @@ Where machine-verifiable semantics are required, D052 applies. Orchestrator auth
 Owner: **Orchestrator**  
 Change class: Markdown/policy  
 Executor: **not used**  
-State: **AUTHORED — pending PR integration**
+State: **INTEGRATED**
 
-A1 was authored on `docs/sdd-a1-semantic-protocol` from the accepted D053 baseline. It updates the smallest coherent normative surface needed to remove known contradictions and introduces one focused reusable SDD Core module.
+A1 was authored on `docs/sdd-a1-semantic-protocol` from accepted D053 baseline `0c0ecdcc8d19492bed9a0fbaa1751f845e7ddfa4`, reviewed through PR #185, and squash-integrated into `develop` as `6d5c24d9641177a6556c7b475e53c4716fb024b4`.
 
-A1 changed:
+A1 established the reusable semantic surface across:
 
-- `governance-core/SDD.md` — new reusable native SDD method;
-- `AGENTS.md` — source role/workflow adapter;
-- `governance-core/GOVERNANCE.md` — router/authority and mandatory-lifecycle integration;
-- `governance-core/LIFECYCLE.md` — F0-F6 specification/Design/Plan ownership and readiness;
-- `governance-core/COEXISTENCE.md` — native SDD fallback and external-provider reuse;
-- `governance-core/EXECUTION.md` — Executor Implement + Code Review & Verify semantics;
-- `governance-core/HANDOFF.md` — review evidence and Strategy convergence/re-entry;
-- `governance-core/CONTEXT.md` — focused/lazy SDD loading and no duplicate spec truth;
-- `governance-core/ADAPTERS.md` — product-neutral single-owner stage mapping;
-- `governance-core/PROTOCOL.md` — DONE vs ACCEPTED and SDD blocker/event semantics;
-- `docs/DEVELOPMENT-WORKFLOW.md` — exact PD0-PD6 SDD mapping;
-- `docs/TASK-CONTRACTS.md` — source SDD profile/carrier/delta/Design/trace contract;
-- `docs/EXECUTOR-HANDOFFS.md` — Code Review & Verify/requirement-trace evidence;
-- `docs/decisions/D041-executor-process-autonomy.md` — private autonomy bounded inside stages 5-6;
-- `docs/decisions/D052-specification-owned-conformance-test-authorship.md` — test authorship aligned with single-owner Design/acceptance;
-- `governance-skill/SKILL.md` — consumer governance routing for installed native SDD;
-- `governance-skill/assets/TASK.template.md` — proportionate SDD task fields.
+- new `governance-core/SDD.md`;
+- source `AGENTS.md` and PD workflow;
+- Core router/lifecycle/coexistence/execution/handoff/context/protocol/adapters;
+- source Task Contracts and executor handoffs;
+- D041/D052 ownership alignment;
+- Consumer Governance Skill routing and task template.
 
-`governance-core/QUALITY.md`, `governance-core/ASSURANCE.md` and `governance-core/EXECUTION-CONTROL.md` were inspected and do not require A1 edits: their existing Strategy-owned quality/design/authorization semantics already compose with D053.
+A1 established one owner per stage, native fallback when no adequate project-native SDD exists, proportional profiles, change-delta semantics, bidirectional traceability and explicit re-entry. It did not change runtime/package/test code.
 
-A1 acceptance requires:
-
-1. one accountable owner per SDD stage everywhere normative;
-2. Orchestrator owns Explore, Specify, Design, Plan & Trace and Converge/Accept/Evolve;
-3. Executor ownership is limited to technical Implement plus Code Review & Verify for Executor-owned implementation;
-4. no normative text requires the Executor to reconstruct missing specification/Design/Plan authority;
-5. native SDD is the fallback when no adequate project-native SDD provider exists;
-6. project-native SDD can be reused/adapted without duplicate authority;
-7. `ADDED / MODIFIED / REMOVED / PRESERVED`, proportional profiles and re-entry semantics are representable without forcing a new file for each stage;
-8. no source-only state is introduced into the consumer footprint;
-9. historical Task Contracts are not rewritten solely for SDD labels.
-
-A1 is complete only after its full Markdown diff is reviewed and integrated into `develop`.
+A1 acceptance criteria were satisfied at semantic/Markdown convergence. Executable materialization was deliberately deferred to A2.
 
 ### A2 — Executable enforcement/materialization decision
 
 Owner: **Orchestrator**  
-Change class: design + Task Contract/conformance gate if executable work is required
+Change class: Design + Task Contract + D052 conformance gate  
+State: **DECIDED — T034 GATE AUTHORED**
 
-After A1 integration, inspect the resulting protocol against current schemas/runtime/tests/bootstrap/package behavior and decide the **minimum** executable delta required to make native SDD operational rather than documentation-only.
+A2 inspected integrated A1 against current runtime/package/bootstrap/schema/test behavior and selected the **minimum coherent executable delta**.
 
-A1 intentionally creates likely executable questions without answering them ad hoc, including:
+#### Required executable delta
 
-- whether bootstrap/package inventory must ship the new `governance-core/SDD.md`;
-- whether Core/protocol version manifests or deterministic inventory expectations require updates;
-- whether the expanded consumer `TASK.template.md` requires parser/validator/schema changes;
-- whether `docs/EXECUTOR-HANDOFFS.md` review/trace evidence requires a handoff schema/validator update;
-- whether deterministic/eval conformance must prove stage ownership, native fallback and package self-bootstrap semantics.
+1. **Required Core inventory** — `src/agent_governance/engine.py` uses a closed `CORE_FILES` and `CORE_VERSION_FIELDS` inventory. It does not yet contain `SDD.md`, while integrated `GOVERNANCE.md` routes that module and `_validate_core()` requires routed references to equal the closed inventory. T034 must add `SDD.md`/`SDD-Version` through the existing fail-closed model.
+2. **Protocol/Core deterministic expectations** — test helpers still enumerate the pre-A1 Core set and artifact tests contain pre-A1 protocol expectations. The generic artifact builder already copies all `governance-core/*.md`; T034 aligns executable expectations rather than creating special SDD packaging.
+3. **Missing-provider behavioral conformance** — the existing Consumer Governance corpus/grader still encodes the obsolete `no_sdd -> refuse_unsolicited_sdd` meaning. T034 freezes the accepted replacement: `use_native_sdd` plus `refuse_unsolicited_external_sdd`.
 
-A2 SHALL NOT assume all of these are required. The Orchestrator must inspect current implementation/tests and select only the smallest coherent executable delta.
+#### Explicitly not required by current architecture
 
-If executable work is required, create a normal source Task Contract under `docs/tasks/` and select D052 `orchestrator-conformance`, `mixed` or `executor-implementation` based on actual semantic ownership. Required Orchestrator-owned oracle assets must be integrated before Executor launch.
+- no parser/schema for the expanded Markdown `TASK.template.md`; current deterministic task mechanics need only existing task identity/state metadata while D053 semantics remain agent/Governance-readable Markdown;
+- no new handoff JSON schema/validator; A1 review/trace obligations are protocol/Task-Contract semantics and no consumer runtime handoff schema exists today;
+- no new SDD command family, state tree, lifecycle queue or external SDD dependency.
 
-No Executor is launched directly from this adoption plan.
+If implementation proves one of these excluded mechanisms genuinely necessary, T034 requires SDD Design re-entry rather than scope expansion.
+
+A2 created:
+
+- `docs/tasks/T034-native-sdd-executable-materialization.md` — complete ASSURED Design/Plan & Trace;
+- `tests/test_t034_native_sdd_conformance.py` — D052 Orchestrator-owned frozen acceptance projection (`T034-A2-v1`).
+
+T034 uses `Test-Authorship-Mode: mixed`. The Executor owns implementation, technical review, supplementary tests and execution evidence; it may only synchronize legacy T015 semantic files to the exact frozen T034 meaning and may not edit the T034 oracle.
+
+A2 is complete when this Task Contract/conformance gate is reviewed and integrated into `develop`.
 
 ### A3 — Executor implementation and technical review
 
 Owner: **Executor**  
-Precondition: an A2 Task Contract and any required D052 conformance assets are integrated and `READY`.
+Precondition: T034 and `T034-A2-v1` are integrated/reachable from canonical `develop`.
 
-The Executor performs only authorized non-Markdown implementation and then `Code Review & Verify` against the approved D053/A1/A2 specification, Design and Plan.
+The Executor performs only the authorized non-Markdown implementation from:
+
+`docs/tasks/T034-native-sdd-executable-materialization.md`
+
+It then performs D053 `Code Review & Verify`, runs the frozen T034 conformance oracle plus required existing/supplementary verification, persists `handoffs/T034-executor-handoff.json`, commits and performs the one planned final push.
+
+Because A1 changed `AGENTS.md`, the first T034 Executor launch MUST include the D043 conditional current-`AGENTS.md` reload after synchronizing the integrated `develop` baseline.
+
+T034 execution must use a safe fresh/rematerialized native-Windows checkout; the stale pre-T033 CRLF checkout is not acceptance evidence.
 
 Executor `DONE` remains evidence only.
 
@@ -204,17 +199,17 @@ Executor `DONE` remains evidence only.
 
 Owner: **Orchestrator**
 
-Review remote implementation/evidence and establish:
+Review remote T034 implementation/evidence and establish:
 
 - source workflow convergence with D053;
-- consumer Core convergence with D053;
-- no dual-stage ownership;
+- installed Consumer Core includes/routs/validates native `SDD.md`;
+- no dual-stage ownership or second lifecycle;
 - no hidden dependency on external SDD tooling;
 - no duplicate current-truth/spec authority;
-- coexistence with an adequate project-native SDD provider;
-- native fallback behavior when no provider exists;
-- single-install/self-bootstrap compatibility where new distributed assets/state exist;
-- applicable deterministic/eval/security verification is green;
+- coexistence with adequate project-native SDD remains unchanged;
+- missing-provider fallback uses native SDD and does not install an external SDD merely for methodology coverage;
+- single-install/self-bootstrap compatibility and Protocol 1.14.0 package identity are green;
+- frozen T034 oracle plus applicable deterministic/eval/package verification are green;
 - accepted current specification carriers and implementation agree.
 
 Only after A4 acceptance is native SDD adoption operationally complete.
@@ -235,9 +230,9 @@ Human request for project-wide native SDD
         -> SDD research
         -> D053 accepted architecture
         -> this adoption Plan & Trace
-        -> A1 semantic protocol adoption
-        -> A2 executable delta/Task Contract if required
-        -> A3 Executor implementation + Code Review & Verify
+        -> A1 semantic protocol adoption (integrated)
+        -> A2 executable decision + T034/frozen conformance gate
+        -> A3 T034 Executor implementation + Code Review & Verify
         -> A4 Orchestrator convergence/acceptance
         -> accepted native SDD current state
 ```
@@ -253,12 +248,14 @@ Stop and return to Orchestrator Design/Plan if adoption would require any of the
 - source-maintenance records copied into ordinary consumer repositories;
 - silent migration of existing consumer project state;
 - weakening D052, security, provenance, coexistence or single-install invariants;
-- rewriting represented T021/T022 history merely to retrofit labels.
+- rewriting represented T021/T022 history merely to retrofit labels;
+- adding task/handoff schemas or new SDD runtime machinery merely because they are possible rather than required by accepted behavior.
 
 ## Current next action
 
-1. Review the complete A1 Markdown diff on `docs/sdd-a1-semantic-protocol` against accepted D053 and this plan.
-2. Integrate A1 through the normal Markdown PR to `develop`.
-3. Reverify `develop` after integration.
-4. Execute **A2 — executable enforcement/materialization decision** by inspecting current runtime/package/bootstrap/schema/test behavior.
-5. Do not launch an Executor until A2 produces an integrated `READY` Task Contract and any required D052 conformance gate.
+1. Review the A2/T034 planning + conformance-gate diff against D053, D052 and this plan.
+2. Integrate the gate through a normal topic PR to `develop` only if the frozen oracle and Task Contract are coherent.
+3. Reverify `develop` after integration and confirm `T034-A2-v1` is frozen/reachable there.
+4. Establish a safe fresh/rematerialized native-Windows Executor checkout current with that `develop` revision.
+5. Launch T034 using the canonical minimal executor prompt plus the required D043 current-`AGENTS.md` reload line.
+6. Do not resume T021/T022 automatically.
