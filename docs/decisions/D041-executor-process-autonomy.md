@@ -22,7 +22,7 @@ Governance owns requested outcome + boundaries + acceptance
 Executor owns implementation process + internal orchestration
 ```
 
-The executor MAY choose any compatible internal process or composition of capabilities available to it, including direct work, planning, SDD/specification workflows, sub-agents/workers, Skills, code-graph/navigation tools, testing/review helpers, or other executor-native mechanisms.
+The executor MAY choose any compatible internal process or composition of capabilities available to it, including direct work, private/internal planning, private SDD/specification workflows, sub-agents/workers, Skills, code-graph/navigation tools, testing/review helpers, or other executor-native mechanisms.
 
 Agent Governance MUST NOT prescribe an executor-internal methodology, agent type, delegation topology, planning framework, or tool merely because it is available or preferred by the current host.
 
@@ -39,12 +39,12 @@ A source-product Task Contract SHOULD specify only the implementation semantics 
 - branch/handoff/result contract;
 - stop/escalation conditions.
 
-A Task Contract SHOULD NOT prescribe internal execution mechanics such as:
+A Task Contract SHOULD NOT prescribe private execution mechanics such as:
 
-- whether to use SDD;
+- whether the executor uses an internal SDD/planning helper inside its authorized implementation/review stages;
 - whether to use one or many sub-agents;
 - which executor-native worker type to select;
-- how the executor decomposes its own internal work;
+- how the executor decomposes its own internal coding/review work;
 - which compatible navigation/planning/review tool to use;
 - executor-internal prompting or context topology.
 
@@ -58,6 +58,7 @@ Executor autonomy does not make executor-internal state part of Agent Governance
 internal plan / SDD state / worker result / Skill output / code graph
     = implementation aid or evidence
     != Task Contract authority
+    != controlling Governance Design/Plan
     != Governance acceptance
 ```
 
@@ -75,6 +76,7 @@ The only Governance-relevant requirement is that the abstract Agente de IA Ejecu
 
 - authorized scope is respected;
 - required result is produced;
+- required technical Code Review & Verify is completed under applicable policy;
 - required verification is completed;
 - required handoff is valid;
 - committed/pushed state is the state reported for review.
@@ -83,7 +85,7 @@ Agent Governance reviews the resulting Git state and evidence, not the executor'
 
 ## Relationship to D026, D030 and D031
 
-D026 remains capability-first/reuse-before-install/no-authority-collision policy. It does not require or prohibit SDD as an executor-internal implementation method.
+D026 remains capability-first/reuse-before-install/no-authority-collision policy. It does not require or prohibit use of an executor-internal SDD helper inside the executor's authorized technical stages.
 
 D030 prevents executor-host overlays from acquiring overlapping source-maintenance review/delivery/acceptance authority. It does not prohibit using non-authoritative host capabilities internally when they stay within the Task Contract and repository mutation boundary.
 
@@ -91,10 +93,32 @@ D031 permits Gentle-AI discovery/routing capabilities to coexist while preservin
 
 Any wording in prior source-maintenance decisions that says not to initialize/migrate this repository into an external SDD system remains a repository-state boundary: it prevents unsolicited tracked/generated project conversion. It MUST NOT be interpreted as a ban on using an executor's SDD capability internally when that capability can operate without unauthorized repository state or authority changes.
 
+## Refinement by D053
+
+Accepted D053 prospectively narrows **where** this process autonomy operates without revoking the autonomy itself.
+
+Native Agent Governance SDD has one accountable owner per stage:
+
+```text
+Orchestrator -> Explore / Specify / Design / Plan & Trace
+Executor     -> Implement / Code Review & Verify
+Orchestrator -> Converge / Accept / Evolve
+```
+
+Therefore:
+
+- D041 autonomy applies inside executor stages `Implement` and `Code Review & Verify`;
+- executor-private planning/SDD/design-like tools remain implementation aids only;
+- the executor does not acquire authoritative specification, controlling Design, Plan/Trace or acceptance ownership merely because its host provides those capabilities;
+- local coding choices remain autonomous when they preserve the approved Design;
+- a material requirement/Design/Plan defect discovered during implementation/review requires stop/re-entry to the Orchestrator rather than an executor-authored authoritative redesign.
+
+Where earlier D041 wording could be read as giving the executor authority to decide whether the governed task itself uses SDD or to own material technical Design, D053 controls prospectively. The executor remains free to choose private methods for realizing and technically reviewing the already-approved contract.
+
 ## Consequences
 
-- Task Contracts become more strictly result-oriented and executor-product neutral.
+- Task Contracts remain executor-product neutral while now carrying the complete Orchestrator-owned specification/Design/Plan boundary required by D053.
 - Agent Governance does not route work to `General Task`, SDD agents, or any other host-specific agent type.
-- The executor is free to select and compose its full compatible toolset.
-- Review continues to rely on remote Git state, deterministic evidence and the persisted handoff rather than internal orchestration behavior.
+- The executor is free to select and compose its full compatible toolset inside stages 5-6.
+- Review continues to rely on remote Git state, technical review/verification evidence and the persisted handoff rather than internal orchestration behavior.
 - Host-specific restrictions are introduced only for demonstrated authority, mutation, security, reproducibility or acceptance conflicts.
