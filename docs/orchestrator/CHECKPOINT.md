@@ -1,154 +1,133 @@
 # Current ChatGPT Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O144  
+Checkpoint-Sequence: O145  
 Canonical-Branch: `develop`  
-Current-Work-Unit: D054/T035 planning gate converged; next executable task remains T034  
+Current-Work-Unit: T034 native SDD executable materialization READY for Executor launch under D054/RB001  
 Chat-Closure: KEEP_CURRENT_CHAT
 
-## Human Owner Direction
+## Completed
 
-On 2026-08-23 the Human Owner clarified that routine technical execution mechanics belong to the abstract Agente de IA Ejecutor, not to the Human as a copy/paste terminal operator.
-
-This applies to Git, uv, PowerShell, Bash, CLI/API/SDK calls, cloud/database/cluster/deployment tooling, SSH/remote management and equivalent Execution Adapters.
-
-Human/Orchestrator authority remains semantic and risk-oriented: requested outcome, controlling Design/Plan, actual target/effect/resource/privilege/credential/network envelope, semantic runbook/checkpoints, approval gates and acceptance evidence.
-
-## Existing Authority / Refinement
-
-This direction refines existing architecture rather than replacing it:
-
-- D033 already authorizes by target/effect/resource/privilege/credential/network rather than executable name and lets the Executor choose exact technical commands inside the authorized envelope.
-- D034 already defines semantic runbooks and terminal-neutral Execution Adapters.
-- D041 already gives the Executor implementation-process/tool autonomy inside D053 stages 5-6.
-- D039 already defines evidence-driven learning, but not a native operation-recipe registry.
-
-D054 adds the missing operation-resolution rule:
-
-```text
-semantic operation + actual target/effect
-    -> applicable semantic runbook
-    -> compatible VERIFIED adapter recipe when available
-    -> otherwise installed/version-specific help or official documentation
-    -> bounded CANDIDATE
-    -> preflight + D033 authorization
-    -> execution
-    -> semantic postcondition verification
-    -> VERIFIED promotion only when provenance/binding/evidence remain sufficient
-```
-
-Model memory, community snippets or prior chat are not sufficient sole authority for newly learned executable syntax.
-
-## D054 / T035 Planning Gate
-
-PR #189 (`test/t035-operation-resolution-gate`) contains only Markdown and has converged on:
-
-- `docs/decisions/D054-executor-owned-operation-resolution-and-runbook-recipes.md`;
-- `docs/RUNBOOK-OPERATION-RESOLUTION.md` staged recipe/persistence contract;
-- `governance-skill/assets/RUNBOOK.template.md`;
-- `docs/runbooks/RB001-source-executor-checkout-bootstrap.md`;
-- `docs/tasks/T035-runbook-operation-resolution-readiness.md`;
-- `AGENTS.md` execution-mechanics ownership refinement;
-- `docs/learning/L007-orchestrator-direct-develop-write.md` recurrence evidence;
-- this checkpoint.
-
-D054 preserves:
-
-```text
-semantic runbook != command transcript
-verified recipe = adapter-specific technical realization/evidence
-```
-
-The staged native fallback persistence model is:
-
-```text
-.agent-coordination/runbooks/
-    RUNBOOK.template.md
-    <runbook-id>.md
-    recipes/
-        RUNBOOK-RECIPE.template.json
-        <recipe-id>.json
-```
-
-Semantic runbook meaning remains Human/Strategy/project-native procedure authority. Recipe JSON remains Executor-owned technical realization/evidence and cannot grant execution authority.
-
-## T035 Oracle Sequencing Correction
-
-The T035 D052 conformance oracle is intentionally **not** part of PR #189.
-
-A deliberately red T035 oracle integrated before T034 would violate T034 acceptance because T034 requires the complete canonical pytest suite to be green. Therefore:
-
-```text
-D054/T035 planning gate
-    -> T034 Implement + Code Review & Verify
-    -> T034 Converge/Accept + integrate
-    -> canonical develop green
-    -> Orchestrator authors/freezes T035 oracle in a separate gate
-    -> T035 becomes READY
-    -> T035 Implement + Code Review & Verify
-    -> T035 Converge/Accept + integrate
-    -> D040 Phase-B D054 Core activation
-```
-
-T035 remains `BLOCKED` until both T034 acceptance/integration and its future oracle gate are complete.
-
-## Bootstrap-Period Execution Rule
-
-After PR #189 is integrated and until T035 native recipe persistence exists:
-
-- the Executor owns CLI/API/PowerShell/Bash/remote mechanics;
-- the Human is not asked to execute routine source-maintainer commands;
-- D033/D034 authorization and runbook controls remain active;
-- source checkout/toolchain bootstrap uses `docs/runbooks/RB001-source-executor-checkout-bootstrap.md`;
-- absent a compatible reusable recipe, the Executor resolves syntax from project-native or installed/version-specific help and official vendor/API documentation;
-- successful newly resolved operations remain provisional handoff evidence, not durable VERIFIED recipes, until T035 can revalidate and persist them.
-
-## L007 Recurrence / Containment
-
-During D054 preparation, two accidental GitHub contents writes targeted `develop`, creating root files `noop` and `noop2` in commits `a09e1d8cc84e0591ca2cd0401b30cd69844914ba` and `87319e9167c60d64a2f16f0a79367000c048bfb9`.
-
-No history rewrite was used. PR #188 removed only those files and restored the intended tree as `3694cd7ec562f2baa127965f4269a609957f4783`.
-
-L007 remains `CONTROL_PLANNED`, not `VERIFIED`. Normal Orchestrator content mutation must create/verify the topic branch first and must not target `develop`/`main` directly.
+- PR #188 contained the two accidental direct-`develop` noop writes without rewriting history; L007 remains `CONTROL_PLANNED`.
+- PR #189 integrated D054/T035 planning as `9bd77ee05db878dfc383b4628f563d17e89327de`.
+- D054 is accepted architecture for Executor-owned execution mechanics: CLI/API/SDK/Git/uv/PowerShell/Bash/cloud/database/cluster/deployment/SSH/remote operations are selected and executed by the abstract Executor inside the current D033 envelope.
+- Human/Orchestrator authority remains semantic: outcome, target/effect/resource/privilege/credential/network boundary, controlling Design/Plan, semantic runbooks/checkpoints, approval gates and acceptance evidence.
+- `docs/runbooks/RB001-source-executor-checkout-bootstrap.md` is now the source-maintainer semantic runbook for safe checkout/toolchain bootstrap.
+- Until T035 native recipe persistence exists, unknown adapter syntax is resolved from project-native or installed/version-specific help and official vendor/API documentation; successful newly resolved operations remain provisional handoff evidence rather than durable VERIFIED recipes.
+- T035 remains `BLOCKED` until T034 is accepted/integrated on a green canonical baseline and a separate post-T034 Orchestrator-owned D052 oracle gate is integrated.
+- The T035 oracle is intentionally not yet authored/frozen because integrating a deliberately red T035 oracle before T034 would invalidate T034's required full canonical pytest acceptance.
+- T021/T022 remain paused.
 
 ## Current Remote State
 
 ```text
-last verified develop             = 3694cd7ec562f2baa127965f4269a609957f4783
-containment PR                     = #188 — MERGED
-D054/T035 planning PR              = #189 — OPEN / MERGEABLE
-D054/T035 planning branch          = test/t035-operation-resolution-gate
+last verified develop             = 9bd77ee05db878dfc383b4628f563d17e89327de
+D054/T035 planning PR              = #189 — MERGED
 D054 decision                      = docs/decisions/D054-executor-owned-operation-resolution-and-runbook-recipes.md
 operation-resolution contract      = docs/RUNBOOK-OPERATION-RESOLUTION.md
 source bootstrap runbook           = docs/runbooks/RB001-source-executor-checkout-bootstrap.md
-T035 task                          = docs/tasks/T035-runbook-operation-resolution-readiness.md
-T035 status                        = BLOCKED on T034 + future oracle gate
-T035 oracle                        = NOT YET AUTHORED/FROZEN
 
-T034 status                        = READY — launch after PR #189 integration/reverification
+T034 status                        = READY
 T034 task                          = docs/tasks/T034-native-sdd-executable-materialization.md
 T034 oracle                        = tests/test_t034_native_sdd_conformance.py
 T034 oracle revision               = T034-A2-v1 — FROZEN
-T034 implementation branch        = feat/t034-native-sdd-executable-materialization
+T034 expected branch               = feat/t034-native-sdd-executable-materialization
+T034 remote branch                 = ABSENT at last check
+T034 handoff                       = handoffs/T034-executor-handoff.json
+
+T035 status                        = BLOCKED on T034 + future oracle gate
+T035 task                          = docs/tasks/T035-runbook-operation-resolution-readiness.md
+T035 oracle                        = NOT YET AUTHORED/FROZEN
 
 T021/T022                          = PAUSED
 ```
 
-Resolve current PR #189 head and current canonical `develop` again immediately before integration. After integration, re-resolve `develop`, reread current `docs/TASK-CONTRACTS.md`, and use the canonical minimal Executor transport.
+Immediately before actual Executor launch, re-resolve canonical `develop` and the T034 branch state. A stale local branch named `develop` is not sufficient baseline evidence.
+
+## T034 Execution Boundary
+
+T034 remains exactly the integrated Task Contract; D054 changes execution mechanics ownership, not T034 product semantics.
+
+Required implementation remains narrowly bounded to:
+
+- add `SDD.md` / `SDD-Version` to the existing closed deterministic Core inventory;
+- align deterministic Core/package expectations to integrated Protocol `1.14.0`;
+- synchronize the existing T015 `no_sdd` corpus/grader/self-tests to frozen native fallback semantics:
+  - `use_native_sdd`
+  - `refuse_unsolicited_external_sdd`
+  - `native_sdd_fallback`
+  - `no_unsolicited_external_sdd`;
+- preserve self-contained packaging/source independence and the stable CLI v1 surface;
+- run the frozen T034 oracle, focused suites and complete native-Windows canonical Ruff/pytest verification;
+- persist `handoffs/T034-executor-handoff.json`, perform Code Review & Verify, commit and make the one planned final push under D048.
+
+Not authorized without SDD re-entry:
+
+- edits to `tests/test_t034_native_sdd_conformance.py`;
+- committed Markdown edits by the Executor;
+- new SDD command/state/lifecycle/queue;
+- external SDD dependency;
+- new task-section parser/schema or handoff schema;
+- T021/T022 changes;
+- direct `develop`/`main` writes or force-push of represented history.
+
+## D054 / RB001 Bootstrap Rule for T034
+
+The Executor, not the Human, owns the concrete Git/uv/PowerShell/shell mechanics required to establish the safe native-Windows T034 baseline.
+
+The Executor must:
+
+1. follow `docs/runbooks/RB001-source-executor-checkout-bootstrap.md` semantically;
+2. preserve any unrepresented local work and fail closed rather than destructively reset/overwrite it;
+3. prove local base equals current canonical `origin/develop` containing the exact T034 contract/oracle;
+4. reload current `AGENTS.md` because the governing integrated history changed `AGENTS.md`;
+5. resolve unknown adapter syntax from installed/version-specific help or official documentation rather than model memory/chat snippets;
+6. keep newly resolved operation evidence provisional until T035 exists;
+7. use only D033-authorized target/effect/credential/network/privilege boundaries.
+
+No Human command-by-command copy/paste is part of the normal launch path.
+
+## Canonical Launch Prompt
+
+Use the current `docs/TASK-CONTRACTS.md` minimal transport semantics:
+
+```text
+Operate as the Agente de IA Ejecutor for ManuelBouza/agent-governance.
+
+Synchronize the canonical remote and ensure the local develop baseline used for bootstrap is current with origin/develop. Preserve local/uncommitted work; if a safe current baseline cannot be established, stop and report BLOCKED rather than using stale repository state.
+
+AGENTS.md changed in the governing integrated change; reload current AGENTS.md from this baseline before loading the Task Contract.
+
+Then load and execute the authoritative Task Contract:
+docs/tasks/T034-native-sdd-executable-materialization.md
+
+Treat that Task Contract and its referenced repository policies as the complete execution specification. Do not infer or expand task scope from this prompt.
+
+For source checkout/toolchain bootstrap and other execution mechanics, follow the applicable semantic runbook, including docs/runbooks/RB001-source-executor-checkout-bootstrap.md. Resolve missing adapter syntax from project-native or installed/version-specific help and official vendor/API documentation under D054; do not delegate routine command execution to the Human.
+
+Complete the required implementation, Code Review & Verify, verification and executor handoff, commit and push all authorized work, then return only:
+
+STATUS: DONE | BLOCKED | PARTIAL
+HANDOFF: <path>
+BRANCH: <branch>
+HEAD: <pushed-commit-sha>
+```
+
+The runbook sentence is a routing pointer to integrated authority, not a duplicate command specification.
 
 ## Next Action
 
-1. Final-review PR #189 changed-file set and merge it to `develop` only if it remains Markdown-only and semantically converged.
-2. Reverify canonical `develop` after integration.
-3. Refresh this checkpoint through a new short-lived Markdown topic branch so the durable frontier points to T034 launch.
-4. Reread current `docs/TASK-CONTRACTS.md` and `docs/tasks/T034-native-sdd-executable-materialization.md` from final `develop`.
-5. Launch T034 through the Executor, not through Human-run CLI commands. T034 bootstrap follows RB001/D054; unknown adapter syntax is resolved from authoritative version-specific help/documentation.
-6. Await only the Executor terminal pointer, then perform remote D053 Converge/Accept review from GitHub.
-7. Do not resume T021/T022 automatically.
+1. Integrate this O145 checkpoint refresh through its short-lived Markdown PR.
+2. Reverify canonical `develop` after that merge and confirm `feat/t034-native-sdd-executable-materialization` is still absent/unstarted.
+3. In the ChatGPT desktop app Codex Executor surface, open the safe native-Windows source project and send the canonical launch prompt above.
+4. The Executor performs all routine Git/uv/PowerShell/shell operations itself under D054/RB001.
+5. Await only the terminal pointer fields from the Executor.
+6. Then perform remote D053 Converge/Accept review from GitHub.
+7. Do not resume T021/T022 or author/freeze the T035 oracle until T034 is accepted/integrated and the canonical baseline is green.
 
 ## Next Chat Minimum Load
 
-After PR #189 integration and until T034 returns a terminal handoff, load only:
+Until T034 returns a terminal handoff, load only:
 
 - current `develop` identity;
 - `AGENTS.md`;
@@ -156,11 +135,11 @@ After PR #189 integration and until T034 returns a terminal handoff, load only:
 - `docs/tasks/T034-native-sdd-executable-materialization.md`;
 - `tests/test_t034_native_sdd_conformance.py`;
 - `docs/runbooks/RB001-source-executor-checkout-bootstrap.md`;
-- D054 only when resolving a concrete execution-boundary conflict;
-- exact T034 implementation/handoff branch state when it exists.
+- exact T034 implementation/handoff branch state when it exists;
+- D054 only when resolving a concrete execution-boundary conflict.
 
-Do not reconstruct prior SDD adoption history or preload T021/T022 when repository state is sufficient.
+Do not reconstruct prior SDD adoption history or preload T021/T022 when these repository artifacts are sufficient.
 
 ## Do Not Load Or Do
 
-Do not hand routine CLI/API/PowerShell/Bash command sequences to the Human as the default path; do not let recipe syntax become authority; do not store secrets in recipes; do not guess unknown commands from model memory; do not execute stale/revoked recipes; do not bypass target/identity/privilege/credential/network checks; do not disable TLS/host-key/security controls for convenience; do not activate routed D054 Consumer Core before T035 readiness; do not absorb T035 into T034; do not resume T021/T022; do not write directly to `main`/`develop`; and do not treat L007 containment as verification of the prevention control.
+Do not hand routine CLI/API/PowerShell/Bash commands to the Human as the default path; do not make recipe syntax execution authority; do not guess unknown commands from model memory; do not bypass target/identity/privilege/credential/network controls; do not disable TLS/host-key/security controls for convenience; do not modify the frozen T034 oracle; do not absorb T035 into T034; do not author/freeze the T035 oracle before T034 acceptance; do not resume T021/T022 automatically; do not write directly to `main`/`develop`; and do not treat L007 containment as verified prevention.
