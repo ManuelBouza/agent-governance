@@ -1,11 +1,12 @@
 # Executor Launch Profiles
 
 Status: ACTIVE SOURCE-MAINTAINER GUIDANCE  
-Controlling decision: `docs/decisions/D055-executor-launch-session-and-compute-profile.md`
+Controlling decision: `docs/decisions/D055-executor-launch-session-and-compute-profile.md`  
+Bootstrap authority: `docs/decisions/D042-remote-baseline-freshness-before-contract-load.md`
 
 ## Purpose
 
-Provide the compact Human-facing launch metadata that ChatGPT Orchestrator must give before every prompt delegated to an Agente de IA Ejecutor.
+Provide the compact Human-facing launch metadata that ChatGPT Orchestrator must give before every prompt delegated to an Agente de IA Ejecutor, and normalize the minimal transport prompt used to reach persisted Git authority safely.
 
 This file maps the portable D055 policy onto the currently selected Executor adapter. It does not change Task Contract semantics and does not make any model/product a source dependency.
 
@@ -21,29 +22,74 @@ Effort: <exact recommended reasoning setting>
 Rationale: <one concise sentence>
 ```
 
-Then, separately:
+The launch card is for the Human to configure/select the Executor session. Do not duplicate it inside the prompt unless the host has no separate model/session control and the setting must be conveyed textually.
+
+## Mandatory remote-freshness bootstrap
+
+D042 applies to **every** Executor launch, including read-only verification, same-task continuation and work on an already existing topic branch.
+
+Before loading repository policy or persisted execution authority, the Executor must:
 
 ```text
-PROMPT FOR EXECUTOR
-<minimal transport prompt pointing to canonical repository/branch + persisted authority>
+synchronize canonical GitHub remote
+        -> establish/verify safe current local baseline from canonical remote state
+        -> load AGENTS.md from that refreshed state
+        -> load the exact persisted task/review/gate authority
+        -> execute
 ```
 
-The launch card is for the Human to configure/select the Executor session. Do not duplicate it inside the prompt unless the host has no separate model/session control and the setting must be conveyed textually.
+`current` means the current canonical remote state at execution time, not a SHA remembered by ChatGPT, not a stale local `develop`, and not merely the branch currently checked out.
+
+Remote freshness must not discard local or unrepresented work. If a safe current baseline cannot be established, the Executor fails closed according to D042/RB001 rather than reset/clean/overwrite merely to satisfy the launch.
+
+The prompt tells the Executor to synchronize/refresh from GitHub; **the prompt does not prescribe Git commands**. Exact Git/CLI mechanics remain Executor-owned under D054 and the applicable runbook.
+
+## Canonical minimal transport prompt
+
+Unless a persisted authority explicitly requires additional transport metadata, every Executor prompt SHOULD use this shape:
+
+```text
+Operate as the Agente de IA Ejecutor for <repository>.
+
+Synchronize with GitHub and establish a safe current local baseline from the canonical remote state before loading repository instructions or execution authority, per D042/RB001. Do not discard unrepresented local work.
+
+Use <canonical/base or represented topic branch as applicable>.
+
+Load current repository instructions, then execute exactly:
+<persisted authority path>
+
+Return only the output required by that persisted authority.
+```
+
+For a task that must continue on an existing represented topic branch, `Use ...` identifies that branch. The Executor still refreshes canonical remote references first and safely reconciles only as permitted by the persisted authority.
+
+Do **not** add to the prompt:
+
+- task requirements or acceptance criteria already persisted in Git;
+- implementation instructions;
+- shell/Git/uv/PowerShell commands;
+- copied excerpts from the Task Contract/review/gate;
+- a remembered HEAD as the source of truth when the persisted authority can resolve current state;
+- model/session configuration already shown in the Human-facing launch card.
+
+A SHA may appear in a prompt only when the persisted authority makes that exact identity materially necessary for safe reconciliation or verification. It must never replace the required fresh remote synchronization.
 
 ## Session rule
 
 Use this decision order:
 
 ```text
-new Task Contract/work unit?                 -> NEW
+new Task Contract/work unit?                  -> NEW
 same Task Contract + same represented branch? -> CONTINUE
-cold-start/independence evidence required?    -> NEW
-executor/host/checkout changed?               -> NEW
-prior context stale/contaminated/unrelated?   -> NEW
+cold-start/independence evidence required?     -> NEW
+executor/host/checkout changed?                -> NEW
+prior context stale/contaminated/unrelated?    -> NEW
 same-task rework/follow-up with clean context? -> CONTINUE
 ```
 
 A newly governing `AGENTS.md` change uses D043 conditional reload when the host can refresh it safely; otherwise use `NEW`.
+
+Session continuity never exempts D042 remote freshness. `CONTINUE` preserves useful conversation context, not stale repository state.
 
 ## Effort rule
 
