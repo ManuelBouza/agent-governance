@@ -2,116 +2,74 @@
 
 SDD-Version: 1.0.0
 
-Load this module whenever a governed change is being framed, specified, designed, planned, implemented, technically reviewed, semantically accepted, or when an existing project-native SDD/specification provider may overlap with Governance.
+Load this module for governed development framing, specification, Design, planning, implementation review, convergence, or SDD-provider overlap.
 
-## Purpose
+## Purpose and posture
 
-Define Agent Governance's built-in, tool-neutral Spec-Driven Development method. Native SDD applies to source code, Agent Skills, Markdown/text/policy, configuration, schemas, refactors and comparable governed deliverables without requiring OpenSpec, Spec Kit, Kiro or another external SDD product.
+Agent Governance provides built-in, tool-neutral, **spec-anchored, delta-first SDD** for code, Agent Skills, Markdown/text/policy, configuration, schemas, refactors and comparable deliverables.
 
-Native SDD is a semantic overlay on the existing Governance lifecycle. It does not create a second task queue, a third agent role, a mandatory vendor-style directory tree, or a competing acceptance authority.
+Native SDD:
+- evolves accepted specification with the product instead of treating implementation as the only durable intent;
+- keeps implementation artifacts directly maintainable/reviewable rather than using general `spec-as-source` regeneration;
+- grows brownfield specification coverage through real changes, not full retrospective backfill;
+- treats tests/evals as evidence projections, never authority;
+- reuses/adapts adequate project-native SDD providers instead of duplicating them;
+- creates no second task queue, third agent role, mandatory vendor directory tree or competing acceptance authority.
 
-## Core posture
+## Single-owner stages
 
-Agent Governance uses **spec-anchored, delta-first SDD**:
+Every applicable stage has one accountable owner.
 
-- accepted specification remains available after implementation and evolves with the product;
-- implementation artifacts remain directly maintainable and reviewable;
-- brownfield repositories are specified incrementally through real changes rather than full retrospective backfill;
-- tests/evals are evidence projections of approved semantics, never independent authority;
-- accepted Governance/Human authority remains above task-local specification artifacts;
-- external/project-native SDD providers are reused or adapted when adequate instead of duplicated.
-
-General `spec-as-source` regeneration is not the default.
-
-## Single-owner stage model
-
-Every applicable SDD stage has one accountable owner.
-
-| Stage | Accountable owner | Required result |
+| Stage | Owner | Result |
 | --- | --- | --- |
-| `1. Explore / Frame` | Strategy/Governance Agent | Problem, intent, evidence, constraints, research needs and scope boundary are understood. |
-| `2. Specify` | Strategy/Governance Agent | Durable normative requirements/spec delta state what SHALL change, remain true or be removed. |
-| `3. Design` | Strategy/Governance Agent | The controlling solution design, architecture and material quality/security/privacy/reliability/compatibility decisions are defined. |
-| `4. Plan & Trace` | Strategy/Governance Agent | Atomic work, dependencies, acceptance, requirement trace and verification obligations are implementation-ready. |
-| `5. Implement` | Implementation Agent | Authorized technical implementation is created strictly inside the approved specification/design/plan. |
-| `6. Code Review & Verify` | Implementation Agent | The implementation is technically reviewed, required verification is executed, in-authority defects are corrected and evidence is persisted. |
-| `7. Converge / Accept / Evolve` | Strategy/Governance Agent | Specification/design/plan, implementation and evidence are compared; the change is accepted/reworked/rejected and accepted current-spec state is evolved. |
+| `1. Explore / Frame` | Strategy | Problem, intent, evidence, constraints and scope are understood. |
+| `2. Specify` | Strategy | Durable normative requirements/spec delta state what SHALL change, remain true or be removed. |
+| `3. Design` | Strategy | Controlling solution architecture and material quality/security/privacy/reliability/compatibility decisions are defined. |
+| `4. Plan & Trace` | Strategy | Atomic work, dependencies, acceptance, trace and verification obligations are implementation-ready. |
+| `5. Implement` | Implementation | Authorized technical implementation is created inside the approved specification/Design/Plan. |
+| `6. Code Review & Verify` | Implementation | Implementation is technically reviewed, required verification runs, in-authority defects are corrected and evidence is persisted. |
+| `7. Converge / Accept / Evolve` | Strategy | Specification/Design/Plan, implementation and evidence converge; accepted current-spec state is evolved. |
 
 The Human Owner remains final authority over scope, risk, release and overrides.
 
-No stage is dual-owned. In particular:
+No stage is dual-owned. Local coding choices belong to Implementation only while they preserve approved Design. A choice that materially changes requirements, architecture/interfaces/state/data flow/trust boundaries, compatibility/migration, failure behavior, acceptance or task decomposition requires Strategy re-entry.
 
-```text
-Strategy owns Explore -> Specify -> Design -> Plan & Trace
-Implementation owns Implement -> Code Review & Verify
-Strategy owns Converge -> Accept -> Evolve
-```
+## Proportional profiles
 
-Local coding choices are part of implementation only while they remain inside the approved Design. A choice that materially changes architecture, interfaces, state/data flow, security/trust boundaries, compatibility/migration, failure behavior, acceptance meaning or task decomposition is an upstream Design/Plan issue and requires re-entry.
+Every governed change receives SDD reasoning coverage; separate files are created only when they add durable value.
 
-## Proportional SDD profiles
+- `COMPACT` — small/low-risk/local work or when the changed normative artifact itself is the specification carrier. Existing task/decision/review records may carry the SDD concerns.
+- `STANDARD` — ordinary features, bugs, Skill behavior changes, compatibility work and non-trivial text/protocol/config changes. Require explicit delta, material Design, trace and convergence evidence.
+- `ASSURED` — security-sensitive, public-contract/protocol, high-risk, multi-component, migration or compliance-sensitive work. Require stronger explicit specification/trace and applicable independent/conformance assurance.
 
-Every governed change receives SDD reasoning coverage. Separate files are created only when they add durable value.
-
-### `COMPACT`
-
-Use for small, low-risk, local changes or when the changed normative artifact itself is the specification carrier. Explore/Specify/Design/Plan/Trace may be represented inside the existing task/decision/review record.
-
-### `STANDARD`
-
-Use for ordinary features, bugs, Skill behavior changes, compatibility work and non-trivial text/protocol/configuration changes. Require an explicit requirement delta, material design, task/verification trace and convergence evidence.
-
-### `ASSURED`
-
-Use for security-sensitive, public-contract/protocol, high-risk, multi-component, migration or compliance-sensitive work. Require stronger explicit specification/trace evidence and applicable independent/conformance assurance.
-
-Profile selection controls artifact/evidence depth, not stage ownership.
+Profile depth never changes stage ownership.
 
 ## Current specification carrier
 
-For each touched capability, Strategy SHALL identify the accepted **current specification carrier** when one exists.
-
-A carrier MAY be:
-
+For each touched capability, Strategy SHALL identify the accepted **current specification carrier** when one exists. It MAY be:
 - an adequate project-native spec/SDD artifact;
-- a dedicated Governance-native capability specification;
-- an existing normative artifact whose contents already define accepted behavior, such as an Agent Skill, policy/protocol Markdown, schema, API contract or comparable product artifact.
+- a dedicated Governance-native specification;
+- an existing normative product artifact such as an Agent Skill, protocol/policy Markdown, schema or API contract.
 
-Do not create a duplicate full specification when an existing artifact already carries the same accepted semantics adequately.
+Do not duplicate adequate current truth merely to create a new spec file.
 
-## Change delta
+## Requirement delta and quality
 
-Behavior-bearing changes express the affected requirement delta using:
-
+Behavior-bearing changes use the applicable classes:
 - `ADDED` — new required behavior/contract;
 - `MODIFIED` — existing required behavior whose accepted meaning changes;
-- `REMOVED` — previously required behavior that is intentionally withdrawn;
+- `REMOVED` — previously required behavior intentionally withdrawn;
 - `PRESERVED` — material behavior/invariants that MUST remain unchanged and be re-proved.
 
-`PRESERVED` is especially important for refactors, fixes, migrations, security hardening and zero-drift work.
+A zero-behavior-delta change may use only `PRESERVED` plus authorized structural/objective constraints.
 
-A change with no intended behavior delta may contain only `PRESERVED` requirements plus explicitly authorized structural/objective constraints.
+Material normative requirements SHALL be verifiable at the appropriate product level and SHOULD be independently traceable when useful. Prefer `SHALL`, one material obligation per requirement, an explicit subject, `what` over unnecessary coding prescription, explicit trigger/state/error conditions, stable IDs when needed, and Given/When/Then where examples materially reduce ambiguity.
 
-## Requirement quality
-
-Material normative requirements SHOULD be independently traceable and SHALL be verifiable at the level appropriate to the product.
-
-Prefer:
-
-- `SHALL` for mandatory behavior;
-- one material obligation per requirement where practical;
-- explicit subject/system;
-- `what` rather than unnecessary coding prescription;
-- explicit trigger/state/error conditions when material;
-- Given/When/Then scenarios when examples materially reduce ambiguity;
-- stable identifiers when independent traceability is useful;
-- a declared verification method or acceptance mapping.
-
-Supported verification methods include `test`, `inspection`, `analysis`, `demonstration`, `eval`, or justified combinations.
+Supported verification methods: `test`, `inspection`, `analysis`, `demonstration`, `eval`, or justified combinations.
 
 ## Bidirectional traceability
 
-Material work must support both questions:
+Material work must answer both:
 
 ```text
 Why does this implementation/change exist?
@@ -122,109 +80,82 @@ Normal trace:
 
 ```text
 Human / mission intent
-        -> requirement / spec delta
-        -> Strategy Design
-        -> task / Plan & Trace
-        -> Implementation
-        -> Code Review & Verify evidence
-        -> Strategy Converge / Accept
-        -> evolved current specification state
+ -> requirement / spec delta
+ -> Strategy Design
+ -> task / Plan & Trace
+ -> Implementation
+ -> Code Review & Verify evidence
+ -> Strategy Converge / Accept
+ -> evolved current specification state
 ```
 
-A separate traceability matrix is required only when complexity/risk makes it materially useful. Ordinary work may keep the mapping in existing task, handoff, EXCHANGE and review records.
-
-Material implementation with no authorized requirement/scope parent is potential scope drift or gold-plating and must be reviewed before acceptance.
+Use a separate matrix only when complexity/risk makes it useful. Untraceable material implementation is potential scope drift/gold-plating and must be reviewed before acceptance.
 
 ## Design boundary
 
-Design is a Strategy responsibility.
+Design is Strategy-owned and must be complete enough that Implementation does not invent missing architecture or acceptance semantics. Define material component boundaries, interfaces, state/data flow, trust/security boundaries, compatibility/migration, failure model and other controlling decisions when applicable.
 
-Before implementation readiness, Design must be complete enough that the Implementation Agent does not have to invent missing architecture or acceptance semantics. Material component boundaries, interfaces, state/data flow, trust/security boundaries, compatibility/migration strategy, failure model and other controlling technical decisions belong to Strategy when applicable.
-
-Design does not need to prescribe every function name, variable, loop, helper or equivalent local coding choice. Those remain implementation details while they preserve the controlling Design.
-
-`QUALITY.md` supplies the cross-cutting design/quality envelope; `SECURITY.md` and `EXECUTION-CONTROL.md` add their specific authority when applicable.
+Do not prescribe every function, variable, helper or equivalent local coding choice unless it is materially controlling. `QUALITY.md`, `SECURITY.md` and `EXECUTION-CONTROL.md` supply applicable cross-cutting boundaries.
 
 ## Code Review & Verify
 
-Before marking an implementation task `DONE`, the Implementation Agent SHALL technically review the implementation against the approved specification/design/plan and the applicable quality/security constraints already represented there.
-
-The review covers the applicable subset of:
-
+Before `DONE`, Implementation SHALL technically review the submitted implementation against the approved specification/Design/Plan for the applicable subset of:
 - requirement/spec-delta fidelity, including `PRESERVED` behavior;
-- approved design/task-boundary fidelity;
+- Design/task-boundary fidelity;
 - correctness, edge cases and failure behavior;
-- maintainability and unnecessary complexity;
-- security/privacy/reliability/compatibility obligations already in scope;
+- maintainability/unnecessary complexity;
+- represented security/privacy/reliability/compatibility obligations;
 - required deterministic/property/integration/eval/conformance evidence;
-- unauthorized scope additions visible in implementation.
+- unauthorized scope additions.
 
-The Implementation Agent MAY correct implementation/test defects found by this review when the correction remains inside the approved specification/design/plan.
+Implementation MAY correct implementation/test defects inside approved authority. If review exposes a defective/ambiguous/infeasible upstream requirement, Design, Plan or acceptance meaning, report a blocker/re-entry trigger instead of redefining it.
 
-If review reveals that an upstream requirement, Design, acceptance meaning or Plan is defective/ambiguous/infeasible, the Implementation Agent reports a blocker/re-entry trigger instead of redefining the upstream stage.
-
-Implementation `DONE` is evidence that stages 5-6 completed; it is not product acceptance.
+Implementation `DONE` proves stages 5-6 only; it is not product acceptance.
 
 ## Converge / Accept / Evolve
 
-Strategy performs the final semantic/governance review after implementation handoff.
-
-Before acceptance, Strategy establishes:
-
-- `completeness` — every required change has implementation and evidence;
-- `correctness` — evidence actually proves the specified outcome;
+Strategy reviews the implementation and evidence for:
+- `completeness` — every required change has implementation/evidence;
+- `correctness` — evidence proves the specified outcome;
 - `coherence` — specification, Design, Plan, implementation and evidence do not materially contradict;
 - `containment` — no material unauthorized behavior/scope was introduced;
-- `persistence` — accepted current-spec carrier and resulting product state agree after integration.
+- `persistence` — accepted current-spec carrier and product state agree after integration.
 
-Strategy accepts, rejects or sends bounded rework. Accepted deltas are folded into the current specification carrier when a dedicated living spec exists; when the normative product artifact itself is the carrier, the accepted artifact becomes the new current state without duplicate specification text.
-
-Historical change/task/evidence/review records remain auditable according to project retention policy.
+Strategy accepts, rejects or sends bounded rework. Accepted deltas are folded into a dedicated living spec when one exists; when the normative product artifact itself is the carrier, that accepted artifact becomes current truth without duplicate specification text. Preserve historical change/task/evidence/review records under project retention policy.
 
 ## Re-entry
 
 SDD is iterative, not a one-way waterfall.
 
-When stages 5-6 expose an upstream defect:
-
 ```text
-Implementation discovers spec/design/plan conflict
-        -> persist/report evidence
-        -> STOP affected work
-        -> Strategy re-enters earliest affected stage
-        -> Strategy persists revised authority
-        -> Implementation resumes stages 5-6
+Implementation discovers upstream spec/Design/Plan defect
+ -> persist/report evidence and STOP affected work
+ -> Strategy re-enters earliest affected stage
+ -> Strategy persists revised authority
+ -> Implementation resumes stages 5-6
 ```
 
-A material semantic or design change discovered during implementation MUST NOT be hidden as a coding detail.
+A material semantic/Design change MUST NOT be hidden as a coding detail.
 
-## Coexistence with project-native SDD
+## Provider coexistence
 
-`COEXISTENCE.md` controls provider overlap.
+`COEXISTENCE.md` controls overlap. When an adequate project-native SDD provider exists, Strategy classifies it as `REUSE`, `ADAPT`, `COEXIST`, `MISSING` or `CONFLICT` and references adequate native artifacts instead of duplicating them.
 
-When an adequate project-native SDD/specification provider exists, Strategy classifies it under `REUSE`, `ADAPT`, `COEXIST`, `MISSING` or `CONFLICT` and references its adequate artifacts instead of duplicating them.
+Reused/adapted tools still map to the single-owner stage model. Host-native SDD/planning tools used by Implementation inside stages 5-6 remain private implementation aids and do not gain specification/Design/Plan/acceptance authority.
 
-Any reused/adapted provider must map to the single-owner Governance stage model. A tool that lets both agents edit the same spec/design/plan does not transfer authority: Strategy remains the owner of stages 1-4 and 7; Implementation may use private tool workflows only inside stages 5-6.
+When no adequate external/project-native provider exists, this module supplies SDD. Absence of an external SDD product is valid and does not justify installing one merely for methodology availability.
 
-When no adequate external/project-native SDD provider exists, this native module supplies SDD coverage. Absence of an external SDD product is therefore valid and does not justify installing one merely for methodology availability.
+## Artifact applicability
 
-## Artifact-type applicability
+- **Code** — Strategy specifies/designs; Implementation implements/reviews/verifies; Strategy converges/accepts/evolves.
+- **Agent Skills** — Strategy owns activation/input/output/authority/context/failure/side-effect/security semantics; artifact write ownership still controls materialization.
+- **Markdown/text/policy** — the artifact may itself be the current spec carrier. Do not introduce Implementation merely for ceremony when Strategy owns the artifact.
+- **Configuration/schema** — Strategy owns desired state/validation/compatibility/failure/runtime semantics; Implementation handles authorized technical realization/review.
+- **Refactor** — `PRESERVED` requirements/characterization plus authorized structural Design are the contract; Implementation changes structure without semantic drift.
 
-Native SDD applies independent of file type.
+## Brownfield and core invariants
 
-- **Code** — Strategy specifies/designs observable behavior and controlling solution structure; Implementation codes and technically reviews/verifies it; Strategy converges/accepts/evolves.
-- **Agent Skills** — Strategy specifies activation, inputs, outputs, authority, context, failure behavior, side effects/permissions, security boundaries and negative controls. Artifact ownership still controls who writes the Skill/package pieces.
-- **Markdown/text/policy** — the normative artifact may itself be the current spec carrier. When Strategy owns that artifact, an Implementation Agent is not inserted merely for ceremony.
-- **Configuration/schema** — Strategy specifies desired state, validation, compatibility and failure/runtime effects; Implementation handles only authorized technical realization/review.
-- **Refactor** — `PRESERVED` requirements/characterization plus authorized structural Design are the primary contract; Implementation changes structure without changing preserved semantics.
-
-## Historical/brownfield rule
-
-Native SDD is prospective and delta-first.
-
-Do not stop normal project work to generate a full historical specification of an existing repository. Do not rewrite accepted historical task/spec/review records merely to attach new SDD labels. Coverage grows when real work touches a capability.
-
-## Core invariants
+Do not stop normal work to generate full historical specs or rewrite accepted historical task/spec/review records merely to attach SDD labels. Coverage grows when real work touches a capability.
 
 ```text
 specification != proof
@@ -232,11 +163,9 @@ plan          != proof
 Implementation DONE != acceptance
 ```
 
-- one accountable owner per SDD stage;
-- Strategy owns stages 1-4 and 7;
-- Implementation owns stages 5-6 only for its authorized technical implementation;
+- Strategy owns stages 1-4 and 7; Implementation owns stages 5-6 only for authorized technical work.
 - no external SDD product is required;
 - no duplicate source of truth;
 - no full brownfield backfill;
-- explicit re-entry for material upstream changes;
-- Git/project-native durable records remain the authority surface across chats/agents/tools.
+- material upstream changes use explicit re-entry;
+- Git/project-native durable records remain the cross-chat/cross-agent authority surface.
