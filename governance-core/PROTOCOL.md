@@ -1,6 +1,6 @@
 # Durable Coordination Protocol
 
-Protocol-Module-Version: 1.2.0
+Protocol-Module-Version: 1.3.0
 
 Load this module for STATE reconstruction, EXCHANGE/event semantics, Decision Records, protocol corrections, capability-inventory persistence or version upgrades.
 
@@ -10,7 +10,7 @@ Load this module for STATE reconstruction, EXCHANGE/event semantics, Decision Re
 
 It should contain only fields required to identify the current protocol/mission focus, lifecycle phase/gates, active/ready work, next permitted action, controlling record IDs/paths and the latest incorporated EXCHANGE sequence.
 
-STATE must not contain full work inventories, capability/ecosystem inventories, decision history or self-referential current commit SHA. The Git commit containing STATE versions the snapshot.
+STATE must not contain full work inventories, capability/ecosystem inventories, specification history, decision history or self-referential current commit SHA. The Git commit containing STATE versions the snapshot.
 
 If valid EXCHANGE events exist with `q > STATE.exchange_q`, replay those events and relevant authority records before relying on STATE.
 
@@ -30,7 +30,7 @@ CAPABILITIES is evidence/routing metadata, not authority and not a substitute fo
 
 A material provider/version/path/Skill-selection change invalidates the affected inventory entry until re-evaluated. STATE may point to a current coexistence blocker/decision but does not copy the inventory.
 
-Repositories with no material external capability decisions MAY keep the inventory minimal; absence of a third-party SDD/Skill ecosystem is a valid state.
+Repositories with no material external capability decisions MAY keep the inventory minimal. Absence of a third-party SDD provider is valid because native `SDD.md` supplies Governance SDD semantics; it does not mean the project operates without SDD discipline.
 
 ## EXCHANGE
 
@@ -42,7 +42,7 @@ Keys:
 - `e` event;
 - `k` task id for task-scoped events;
 - `r` Git/evidence reference;
-- `v` concise verification;
+- `v` concise verification/review evidence;
 - `x` reason code;
 - `n` next action;
 - `z` newly introduced risks;
@@ -59,15 +59,21 @@ Normal handoff reads only events after the checkpoint. During one continuous imp
 
 ## Task Sequence Semantics
 
-`done` means the Implementation Agent has completed and verified the disclosed task against its acceptance criteria. A later task may become READY from WORKPLAN ordering/dependencies using DONE or ACCEPTED prerequisites under EXECUTION rules.
+`done` means the Implementation Agent has completed native SDD `Implement` plus `Code Review & Verify` for the disclosed task: the authorized implementation exists, required technical review was performed, required verification ran, in-authority defects were resolved for the terminal claim, and evidence is persisted according to the task/project contract.
 
-`accept`/`reject` represents Strategy/Human review and is not a default prerequisite for inter-task continuation.
+`done` is not Governance acceptance. A later task may become READY from WORKPLAN ordering/dependencies using DONE or ACCEPTED prerequisites under EXECUTION rules.
+
+`accept`/`reject` represents Strategy/Human `Converge / Accept` review and is not a default prerequisite for inter-task continuation.
+
+A `blocked` event caused by a material requirement/Design/Plan defect must identify the reason/evidence and route to the earliest affected Strategy-owned SDD stage. Implementation MUST NOT use `progress` or `done` to silently encode an authoritative upstream redesign.
 
 ## Decision Records
 
 Use `.agent-coordination/decisions/<ID>-<slug>.md` when future agents need rationale, considered alternatives or consequences. A Decision Record is authoritative only through its controlling authority/event relationship; it does not outrank GOVERNANCE/MISSION/WORKPLAN.
 
 A capability/coexistence classification that changes authority boundaries, provider ownership or readiness SHOULD reference a Decision Record when future agents need the rationale. `CAPABILITIES.json` points to that decision; it does not carry the rationale itself.
+
+A material SDD re-entry that changes accepted requirements, controlling Design, Plan/Trace or acceptance meaning must be persisted in the applicable specification/task/Decision artifact before a `resume` event. EXCHANGE records the transition; it is not the only copy of the revised authority when future work needs the full semantics.
 
 Routine decisions that do not need preserved rationale should remain EXCHANGE events.
 
@@ -77,6 +83,8 @@ Persist the operational effect of approved decisions before a context switch or 
 
 Capability inventory entries are refreshed after the relevant provider/ownership decision exists. Editing CAPABILITIES itself never creates authority.
 
+Accepted current specification carriers evolve through the governed artifact/task/decision flow; STATE/EXCHANGE may point to the current frontier but must not duplicate full living specification content.
+
 ## Versioning
 
 Semantic versioning:
@@ -84,7 +92,7 @@ Semantic versioning:
 - minor: backward-compatible rule/capability extension;
 - major: incompatible protocol change.
 
-Protocol upgrades require an EXCHANGE decision. Work normally completes under the version active when it started unless safety or Human Owner direction requires otherwise.
+Protocol upgrades require an EXCHANGE decision. Work normally completes under the version active when it started unless safety or Human Owner direction requires otherwise. D053 adoption is prospective/delta-first; historical tasks are not rewritten merely to attach SDD labels.
 
 ## Archival
 
