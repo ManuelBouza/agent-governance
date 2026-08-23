@@ -1,0 +1,116 @@
+{
+  "task_id": "T034",
+  "status": "BLOCKED",
+  "task_contract_path": "docs/tasks/T034-native-sdd-executable-materialization.md",
+  "branch": "feat/t034-native-sdd-executable-materialization",
+  "implementation_head_sha": "3c85675394f4764f7436bbbb12e75de64a505f68",
+  "base_branch": "develop",
+  "base_sha": "47410b601c0e03bc128e92c99509f678317aa91c",
+  "files_changed": [
+    "evals/consumer_governance/corpus.json",
+    "evals/consumer_governance/grader.py",
+    "src/agent_governance/engine.py",
+    "tests/_helpers.py",
+    "tests/test_consumer_governance_trigger_corpus.py",
+    "tests/test_governance_artifact.py",
+    "handoffs/T034-executor-handoff.json"
+  ],
+  "implementation_summary": "Implemented the complete explicitly authorized T034 delta that can be realized without expanding scope: SDD.md/SDD-Version joined the closed runtime and test Core inventories; artifact protocol expectations moved to 1.14.0; and both existing no_sdd corpus cases, the grader vocabulary/tag projection, and self-tests now use the exact frozen native-SDD fallback semantics. The implementation cannot satisfy bootstrap, artifact, CLI, or complete-suite acceptance because integrated develop still contains protocol_version 1.13.0 in two required package JSON assets that are outside T034 Authorized scope. The integrated A1 RUNBOOK.template.md is also omitted by the artifact builder's explicit package allowlist, whose implementation path is outside Authorized scope. Canonical pytest additionally exposes integrated A1 Markdown/reference-integrity failures outside T034 authority. No frozen oracle, Markdown, external dependency, SDD runtime/lifecycle, parser/schema, handoff schema, or CLI surface was changed.",
+  "sdd_profile": "ASSURED",
+  "oracle": {
+    "oracle_id": "T034-NATIVE-SDD-MATERIALIZATION",
+    "oracle_revision": "T034-A2-v1",
+    "asset": "tests/test_t034_native_sdd_conformance.py",
+    "base_blob_sha1": "89e5211c381f7067d4dabb6f1ed56bf8fda61be1",
+    "implementation_blob_sha1": "89e5211c381f7067d4dabb6f1ed56bf8fda61be1",
+    "semantic_drift": false
+  },
+  "verification": {
+    "commands": [
+      "git fetch --prune origin",
+      "git merge --ff-only origin/develop",
+      "uv sync --locked",
+      "uv run --locked ruff check .",
+      "uv run --locked ruff format --check .",
+      "uv run --locked python -m pytest tests/test_t034_native_sdd_conformance.py tests/test_consumer_governance_trigger_corpus.py tests/test_governance_artifact.py -q",
+      "uv run --locked python -m pytest tests/test_consumer_governance_trigger_corpus.py tests/test_t034_native_sdd_conformance.py::test_missing_external_sdd_uses_native_sdd_without_external_install -q",
+      "uv run --locked python -m pytest",
+      "git diff --exit-code origin/develop -- tests/test_t034_native_sdd_conformance.py"
+    ],
+    "results": {
+      "bootstrap": "PASS: clean local develop was fast-forwarded to exact origin/develop 47410b601c0e03bc128e92c99509f678317aa91c; implementation verification was rematerialized in a fresh native-Windows worktree with repository LF attributes active",
+      "locked_environment": "PASS: uv sync --locked resolved the committed lock and created a fresh project-local environment",
+      "ruff_check": "PASS: All checks passed",
+      "ruff_format": "PASS: 27 files already formatted in the fresh worktree",
+      "focused_native_fallback": "PASS: 31 passed, covering the complete trigger corpus/grader self-tests and frozen native-fallback conformance assertion",
+      "focused_t034_artifact": "BLOCKED: 3 failed and 34 passed; bootstrap rejects package asset protocol_version 1.13.0 versus Core 1.14.0, and artifact parity detects omitted governance-skill/assets/RUNBOOK.template.md",
+      "full_deterministic_suite": "BLOCKED: 19 failed, 253 passed, 57 errors on win32 / Python 3.13.14 / pytest 9.1.1. Bootstrap/CLI cascades originate from stale package JSON protocol versions; artifact parity also detects omitted RUNBOOK.template.md; reference-integrity failures originate in integrated Orchestrator-owned Markdown",
+      "frozen_oracle_integrity": "PASS: frozen oracle blob SHA-1 is unchanged from origin/develop (89e5211c381f7067d4dabb6f1ed56bf8fda61be1)"
+    },
+    "runtime": "Native Windows / NTFS; PowerShell; Git 2.53.0.windows.2; uv 0.11.32; CPython 3.13.14; pytest 9.1.1; Ruff 0.16.2; final verification in fresh rematerialized worktree C:/Manuel/Projects/agent-governance/.worktrees/t034",
+    "network_required": true,
+    "network_detail": "Network was used only for canonical Git fetch and locked toolchain provisioning; deterministic test runtime used no network.",
+    "acceptance_criteria_mapping": {
+      "AC-T034-1": "BLOCKED after partial implementation: engine.CORE_FILES/CORE_VERSION_FIELDS contain SDD.md/SDD-Version, but source bootstrap cannot start while required package JSON assets remain at protocol 1.13.0.",
+      "AC-T034-2": "BLOCKED after partial implementation: generic Core artifact copy includes core/SDD.md and identity derives 1.14.0, but artifact completeness fails because integrated RUNBOOK.template.md is absent from the explicit package allowlist and artifact bootstrap hits stale package JSON versions.",
+      "AC-T034-3": "PASS: exact frozen behaviors and explicit tags are present; complete corpus/grader self-tests and frozen native-fallback assertion pass.",
+      "AC-T034-4": "PASS for submitted implementation: no runtime/lifecycle, dependency, task parser/schema, or handoff schema was added.",
+      "AC-T034-5": "BLOCKED: CLI surface code is unchanged, but required CLI non-regression tests cannot bootstrap due to package asset protocol mismatch.",
+      "AC-T034-6": "BLOCKED: canonical Ruff gates pass in the fresh Windows worktree; canonical pytest remains red with the recorded integrated/out-of-scope defects."
+    }
+  },
+  "code_review": {
+    "reviewed_head_sha": "3c85675394f4764f7436bbbb12e75de64a505f68",
+    "summary": "The reviewed implementation uses the existing closed Core inventory and generic package path, synchronizes only the frozen no_sdd meaning, introduces no special SDD machinery, and leaves the stable CLI surface unchanged. No in-authority correctness, complexity, or scope defect remains. Completion requires upstream authority for files omitted from Authorized scope and resolution of integrated canonical-suite defects.",
+    "findings": [
+      {
+        "severity": "blocking",
+        "classification": "plan_trace_scope_defect",
+        "evidence": "governance-skill/assets/CAPABILITIES.template.json and governance-skill/assets/STATE.template.json each declare protocol_version 1.13.0; _validate_package rejects them against integrated Core 1.14.0, but neither file is in T034 Authorized scope.",
+        "required_reentry": "Authorize exact 1.14.0 mechanical synchronization or persist an alternate controlling resolution."
+      },
+      {
+        "severity": "blocking",
+        "classification": "design_plan_package_gap",
+        "evidence": "governance-skill/assets/RUNBOOK.template.md exists on integrated develop, while src/agent_governance/artifact.py SKILL_SOURCE_FILES omits it and existing artifact parity fails; neither artifact.py nor a package expectation excluding that asset is authorized.",
+        "required_reentry": "Persist whether the runbook template belongs in the self-contained artifact and authorize the corresponding builder/test delta."
+      },
+      {
+        "severity": "blocking",
+        "classification": "integrated_baseline_defect",
+        "evidence": "Canonical reference-integrity tests reject A1 phrases in AGENTS.md and governance-core/{GOVERNANCE,PROTOCOL,EXECUTION,LIFECYCLE,HANDOFF}.md as unresolved paths. These Orchestrator-owned Markdown semantics and any broad parser correction are outside T034 scope.",
+        "required_reentry": "Resolve the integrated Markdown/reference-test compatibility or explicitly revise verification authority before T034 resumes."
+      }
+    ],
+    "resolved_findings": [
+      "Corrected stale Core inventory and required-Core helper inventory for SDD.md.",
+      "Corrected exact no_sdd behavior/tag vocabulary and both affected corpus projections.",
+      "Corrected the two authorized artifact protocol expectations from 1.13.0 to 1.14.0."
+    ],
+    "upstream_reentry_required": true,
+    "upstream_reentry_stage": "Design"
+  },
+  "requirement_trace": {
+    "R-T034-1": "Implemented in src/agent_governance/engine.py and tests/_helpers.py; frozen conformance reaches the bootstrap step, then blocks on unauthorized stale package JSON protocol versions.",
+    "R-T034-2": "Implemented in corpus.json and grader.py; focused frozen oracle and complete trigger-corpus self-tests pass.",
+    "R-T034-3": "Authorized artifact expectations are synchronized and generic Core copy includes SDD.md; complete package behavior is blocked by omitted authorized asset/config paths.",
+    "R-T034-4": "Legacy behavior/tag vocabulary is removed from the corpus/grader/self-tests; exact replacement semantics pass focused verification.",
+    "R-T034-5": "Legacy complete no-SDD fallback is absent from the submitted corpus and grader vocabulary.",
+    "R-T034-P1": "Preserved: no dependency or lock change.",
+    "R-T034-P2": "Preserved: only no_sdd cases and vocabulary changed; other coexistence shapes are untouched.",
+    "R-T034-P3": "Preserved in submitted code; package/bootstrap proof is blocked before execution by stale package metadata and builder allowlist gap.",
+    "R-T034-P4": "Preserved: no CLI command/surface code changed.",
+    "R-T034-P5": "Preserved: no stage runtime or lifecycle machinery added.",
+    "R-T034-P6": "Preserved: no task parser/schema or migration added.",
+    "R-T034-P7": "Preserved: no T021/T022/T015 historical contract or represented Git history changed."
+  },
+  "dependencies_or_config_changes": [],
+  "git_status": "clean at implementation_head_sha before handoff-only finalization",
+  "unresolved_issues": [
+    "T034 Authorized scope omits the two package JSON assets whose protocol versions must match integrated Core 1.14.0.",
+    "Artifact package authority does not resolve the integrated RUNBOOK.template.md allowlist/parity gap.",
+    "Canonical pytest is red on integrated Orchestrator-owned Markdown/reference-integrity compatibility outside T034 scope."
+  ],
+  "recommended_next_task": "ChatGPT Orchestrator performs D053 Design/Plan & Trace re-entry, persists authority for the exact missing package/config/test paths and integrated reference-integrity resolution, then relaunches T034 from the revised canonical develop baseline without changing the frozen native-SDD semantic oracle unless separately justified.",
+  "chatgpt_read_path": "handoffs/T034-executor-handoff.json"
+}
