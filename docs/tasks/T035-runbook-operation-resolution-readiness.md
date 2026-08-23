@@ -15,7 +15,7 @@
 - Release-Impact: `prepares backward-compatible runtime support for later D054 Core activation`
 - Context-Impact: `focused bootstrap/validation/assets/tests only`
 
-T035 is blocked until T034 is accepted and integrated with a green canonical baseline. T035 MUST NOT absorb or bypass T034's frozen native-SDD materialization contract.
+T035 is blocked until T034 is accepted and integrated with a green canonical baseline **and** the required D052 T035 conformance oracle is subsequently authored/reviewed/integrated. T035 MUST NOT absorb or bypass T034's frozen native-SDD materialization contract.
 
 ## Objective
 
@@ -41,10 +41,12 @@ T035 adds the native demand-driven runbook/recipe footprint, recipe structural/t
 ## Dependency / sequencing
 
 ```text
-D054 + T035 gate integrated
+D054 + staged T035 planning integrated
         -> T034 Implement + Code Review & Verify
         -> T034 Converge/Accept + integrate
         -> canonical develop green
+        -> Orchestrator authors/reviews/integrates T035 D052 oracle
+        -> T035 becomes READY
         -> T035 Implement + Code Review & Verify
         -> T035 Converge/Accept + integrate
         -> D040 Phase-B D054 Core activation
@@ -152,17 +154,22 @@ It MUST NOT edit:
 
 After T035 acceptance, the Orchestrator owns the separate Markdown-only D054 activation.
 
-## D052 conformance oracle
+## D052 conformance oracle gate
+
+The required semantic oracle is deliberately **not authored/integrated in this planning change** because T034's already-frozen contract requires the complete canonical suite to become green. Integrating an intentionally failing T035 oracle before T034 would make T034 unfinishable.
+
+Reserved post-T034 identity:
 
 - Oracle-ID: `T035-RUNBOOK-OPERATION-READINESS`
 - Oracle-Revision: `T035-D054-v1`
-- Oracle-Assets:
-  - `tests/test_t035_runbook_operation_resolution_conformance.py`
+- Planned Oracle-Asset: `tests/test_t035_runbook_operation_resolution_conformance.py`
 - Oracle-Semantic-Scope: native runbook/recipe bootstrap layout, exact recipe trust states/field contract, VERIFIED provenance/postcondition requirements, material runbook binding, fail-closed unsafe-path behavior and no routed protocol/CLI-surface expansion.
-- Oracle-Freeze-State: `FROZEN` only when this Task Contract and exact oracle are integrated into canonical `develop`; T035 remains `BLOCKED` until T034 acceptance even after the oracle is frozen.
-- Executor-Mechanical-Corrections: none to oracle semantics; implementation/harness/test mechanics outside the frozen oracle remain Executor-owned.
+- Oracle-Freeze-State: `NOT_AUTHORED` while T034 is unresolved.
+- Executor-Mechanical-Corrections: to be frozen by the post-T034 D052 gate; semantic expectations remain Orchestrator-owned.
 
-The Executor MUST NOT edit `tests/test_t035_runbook_operation_resolution_conformance.py`.
+After T034 is accepted/integrated and current `develop` is green, the Orchestrator SHALL author/review the exact D052 oracle against this unchanged Task Contract/Design, integrate it to `develop`, mark it `FROZEN`, and only then change T035 from `BLOCKED` to `READY` for Executor launch.
+
+The future Executor MUST NOT edit the frozen T035 oracle.
 
 ## Authorized scope
 
@@ -178,13 +185,13 @@ The Executor MUST NOT edit `tests/test_t035_runbook_operation_resolution_conform
 
 - all committed Markdown;
 - `governance-skill/assets/RUNBOOK.template.md`;
-- `tests/test_t035_runbook_operation_resolution_conformance.py`;
+- the post-T034 frozen D052 oracle at `tests/test_t035_runbook_operation_resolution_conformance.py`;
 - D054 semantic field/state/source hierarchy and material-effect runbook requirement.
 
 ## Explicit exclusions
 
 - any committed Markdown edit by the Executor;
-- any edit/weakening of the T035 frozen conformance oracle;
+- any edit/weakening of the future frozen T035 conformance oracle;
 - D054 routed Core activation or protocol-version bump;
 - new top-level CLI commands;
 - universal shell/command wrapper, execution daemon or remote broker;
@@ -236,7 +243,7 @@ All required focused/package/security tests are also green.
 
 ## Verification and trace requirements
 
-Required Orchestrator conformance:
+The post-T034 Orchestrator conformance gate SHALL bind:
 
 ```text
 R-T035-1/2/3 -> tests/test_t035_runbook_operation_resolution_conformance.py
@@ -255,13 +262,14 @@ Executor SHALL additionally:
 - perform D053 Code Review & Verify against this Design/Plan;
 - record exact requirement/AC -> test/command evidence in the handoff;
 - distinguish required frozen oracle from supplementary Executor tests;
-- confirm no committed Markdown or T035 oracle drift on the implementation branch.
+- confirm no committed Markdown or frozen T035 oracle drift on the implementation branch.
 
 ## Stop / escalation / SDD re-entry conditions
 
 Return `BLOCKED`/`PARTIAL` rather than expand scope when:
 
 - T034 is not accepted/integrated or canonical baseline is not green;
+- the required T035 D052 oracle has not been frozen/integrated;
 - a runtime change requires changing D054 semantic recipe fields/states/source hierarchy;
 - secure validation requires executing recipes or adding a command broker;
 - a new top-level CLI command appears necessary;
