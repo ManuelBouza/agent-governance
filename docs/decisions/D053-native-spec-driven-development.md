@@ -1,23 +1,23 @@
 # D053 — Native spec-anchored delta-first development
 
-Status: PROPOSED  
+Status: ACCEPTED  
 Date: 2026-08-23  
-Authority requested: Human Owner / ChatGPT Orchestrator  
+Accepted by: Human Owner  
 Research basis: `docs/SPEC-DRIVEN-DEVELOPMENT-RESEARCH.md`
 
 ## Problem
 
 Agent Governance already performs substantial preimplementation framing, research, architecture, task contracting, readiness, verification and review, but specification is not yet a first-class durable development primitive across source maintenance and governed consumer projects.
 
-Current Core coexistence semantics treat project-native SDD as an optional external capability and permit a no-SDD mode. The Human Owner now wants every governed development unit — code, Agent Skill, policy/text artifact, configuration, schema or comparable deliverable — to receive SDD discipline without requiring a third-party SDD product.
+Current Core coexistence semantics treat project-native SDD as an optional external capability and permit a no-SDD mode. The Human Owner requires every governed development unit — code, Agent Skill, policy/text artifact, configuration, schema or comparable deliverable — to receive SDD discipline without requiring a third-party SDD product.
 
 The ecosystem does not provide one settled formal SDD standard. OpenSpec, GitHub Spec Kit, Kiro and other current systems differ materially in artifact layout, lifecycle and source-of-truth posture. Copying one tool wholesale would conflict with Agent Governance's executor neutrality, coexistence model and existing F/PD lifecycles.
 
-The first D053 draft also distributed responsibility inside individual SDD stages, for example giving Design partly to the Orchestrator and partly to the Executor, and Verify & Converge partly to each. The Human Owner rejected that model. Native Agent Governance SDD must have **one accountable owner per stage**. The Executor is not a co-owner of specification, design, planning or semantic convergence; its SDD responsibility is limited to technical implementation and technical review/verification of that implementation.
+The first D053 draft distributed responsibility inside individual SDD stages, for example giving Design partly to the Orchestrator and partly to the Executor, and Verify & Converge partly to each. The Human Owner rejected that model. Native Agent Governance SDD has **one accountable owner per stage**. The Executor is not a co-owner of specification, design, planning or semantic convergence; its SDD responsibility is limited to technical implementation and technical review/verification of that implementation.
 
 ## Decision
 
-Subject to Human Owner acceptance, Agent Governance SHALL adopt a **native, tool-neutral, spec-anchored, delta-first SDD capability** for both:
+Agent Governance SHALL adopt a **native, tool-neutral, spec-anchored, delta-first SDD capability** for both:
 
 - maintenance/development of the Agent Governance source product; and
 - governed consumer-project development when no adequate project-native SDD provider is already primary.
@@ -394,7 +394,7 @@ Historical Task Contracts and accepted changes MUST NOT be rewritten solely to a
 
 ### D041 executor process autonomy
 
-D041 remains valid inside the Executor's assigned stages, but D053 would refine the authority boundary for native SDD.
+D041 remains valid inside the Executor's assigned stages, but D053 refines the authority boundary for native SDD.
 
 The Executor may choose internal coding/review tools, sub-agents, private plans and local implementation tactics inside stages 5-6. It may not use those mechanisms to create a competing authoritative specification, design, task plan or acceptance model.
 
@@ -416,7 +416,7 @@ Conformance remains subordinate to the specification and is never an independent
 
 ## 21. Implementation boundary
 
-Acceptance of D053 would authorize a follow-up design/implementation program, not direct ad-hoc mutation.
+Acceptance of D053 authorizes a follow-up design/implementation program, not direct ad-hoc mutation.
 
 Expected affected governance surfaces include, at minimum:
 
@@ -450,7 +450,7 @@ Adoption should measure practical outcomes where feasible, including:
 
 D039 learning-loop semantics may consume that evidence to refine the process later.
 
-## Consequences if accepted
+## Consequences
 
 ### Gains
 
@@ -495,12 +495,14 @@ Rejected as general default: nondeterminism and mixed normative/implementation p
 
 ### Keep SDD optional only
 
-Rejected if D053 is accepted: the Human Owner's intended product is to provide SDD discipline even when no external provider exists.
+Rejected: native SDD is now an accepted Agent Governance capability when no adequate project-native provider is primary.
 
 ### Full brownfield spec backfill
 
 Rejected: high cost, likely stale, and contrary to the strongest OpenSpec brownfield lesson.
 
-## Decision request
+## Acceptance
 
-Human Owner approval is requested for the revised D053 architecture with **single-owner SDD stages** and Executor participation limited to implementation/code creation and technical code review/verification before Orchestrator convergence/acceptance.
+The Human Owner approved the revised D053 architecture on 2026-08-23.
+
+The accepted architecture is therefore controlling for subsequent SDD adoption work. Implementation remains subject to the normal branch, Task Contract, D052 conformance, review and integration gates; acceptance of D053 does not itself authorize an Executor to mutate Core/runtime/package artifacts.
