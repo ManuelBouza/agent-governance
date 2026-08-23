@@ -303,6 +303,7 @@ def test_recipe_registry_rejects_unknown_fields_states_and_duplicate_verified_bi
     first_path.write_text(json.dumps(first, indent=2) + "\n", encoding="utf-8", newline="")
     result = _validate(cli, target, repo_root)
     assert result.returncode == 0, result.stderr
+    first_path.unlink()
 
     unknown_state = copy.deepcopy(first)
     unknown_state["recipe_id"] = "git.status.unknown-state.v1"
@@ -327,6 +328,7 @@ def test_recipe_registry_rejects_unknown_fields_states_and_duplicate_verified_bi
     assert "field" in result.stderr.casefold() or "unexpected" in result.stderr.casefold()
     invalid_path.unlink()
 
+    first_path.write_text(json.dumps(first, indent=2) + "\n", encoding="utf-8", newline="")
     duplicate_binding = _verified_recipe(template, recipe_id="git.status.second.v1")
     invalid_path.write_text(
         json.dumps(duplicate_binding, indent=2) + "\n",
