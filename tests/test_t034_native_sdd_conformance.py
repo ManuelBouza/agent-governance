@@ -15,6 +15,7 @@ import sys
 from pathlib import Path
 
 import pytest
+from _helpers import CORE_REQUIRED_MODULES
 
 
 def _load_module(path: Path, name: str):
@@ -36,9 +37,7 @@ def _run_cli(cli: Path, *arguments: object, cwd: Path) -> subprocess.CompletedPr
     )
 
 
-def test_native_sdd_is_required_installed_core(
-    repo_root: Path, tmp_path: Path
-) -> None:
+def test_native_sdd_is_required_installed_core(repo_root: Path, tmp_path: Path) -> None:
     engine = _load_module(
         repo_root / "src" / "agent_governance" / "engine.py",
         "t034_engine",
@@ -66,11 +65,8 @@ def test_native_sdd_is_required_installed_core(
     assert "missing" in missing.stderr.lower()
 
 
-def test_core_and_artifact_expect_protocol_1_14_with_sdd(
-    repo_root: Path, tmp_path: Path
-) -> None:
-    helpers = _load_module(repo_root / "tests" / "_helpers.py", "t034_helpers")
-    assert "SDD.md" in helpers.CORE_REQUIRED_MODULES
+def test_core_and_artifact_expect_protocol_1_14_with_sdd(repo_root: Path, tmp_path: Path) -> None:
+    assert "SDD.md" in CORE_REQUIRED_MODULES
 
     builder = _load_module(
         repo_root / "src" / "agent_governance" / "artifact.py",
@@ -92,9 +88,7 @@ def test_core_and_artifact_expect_protocol_1_14_with_sdd(
     ).read_bytes()
 
 
-def test_missing_external_sdd_uses_native_sdd_without_external_install(
-    repo_root: Path,
-) -> None:
+def test_missing_external_sdd_uses_native_sdd_without_external_install(repo_root: Path) -> None:
     corpus_path = repo_root / "evals" / "consumer_governance" / "corpus.json"
     grader_path = repo_root / "evals" / "consumer_governance" / "grader.py"
     corpus = json.loads(corpus_path.read_text(encoding="utf-8"))
