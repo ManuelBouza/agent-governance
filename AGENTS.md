@@ -29,6 +29,7 @@ Do not create a live `.agent-governance/` / `.agent-coordination/` consumer foot
 - Source local toolchain: `docs/LOCAL-DEVELOPMENT-TOOLCHAIN.md`.
 - Source-product Task Contract policy: `docs/TASK-CONTRACTS.md`.
 - Executor handoff policy: `docs/EXECUTOR-HANDOFFS.md`.
+- Executor launch-profile guidance: `docs/EXECUTOR-LAUNCH-PROFILES.md`.
 - ChatGPT Orchestrator checkpoint policy: `docs/ORCHESTRATOR-CHECKPOINTS.md`.
 - Current ChatGPT Orchestrator checkpoint: `docs/orchestrator/CHECKPOINT.md`.
 - Executable source-maintenance task records: `docs/tasks/`.
@@ -114,6 +115,18 @@ For each adapter operation the Executor follows D054's runbook-first resolution 
 Until T035 native recipe persistence is integrated, the same ownership/documentation rule applies but newly resolved operations remain provisional handoff evidence rather than pretending a reusable native recipe store already exists.
 
 This D054 rule governs Executor-side technical execution. It does not transfer ChatGPT-owned GitHub Markdown mutation to the Executor; Orchestrator repository writes remain subject to the branching policy and the L007 fail-closed branch-target control.
+
+### D055 executor launch profile
+
+D055 governs the Human-facing configuration chosen before ChatGPT hands a prompt to a concrete Agente de IA Ejecutor.
+
+Before every Executor prompt, ChatGPT MUST state the active concrete Executor, whether the Human should start a `NEW` session or `CONTINUE` the existing one, the recommended currently available model, the recommended reasoning effort, and one concise rationale. The active Executor adapter must be known before these settings are recommended; the current checkpoint should record it when one is selected.
+
+The default is `NEW` for the first launch of a new Task Contract/work unit and `CONTINUE` for clean same-task/same-branch follow-up or persisted rework. Fresh-context/independence requirements, executor/checkout changes, stale or contaminated context, or inability to reload newly controlling repository instructions require `NEW`.
+
+Model/effort selection uses the minimum sufficient compute for the remaining technical implementation/review risk: `MEDIUM` is the normal center of gravity, `LOW` is deliberate for mechanically bounded work, and `HIGH` is selective for concrete technical complexity. Highest host modes are exceptional. Increased reasoning MUST NOT substitute for missing specification/Design/Plan authority.
+
+The launch profile is separate from the Task Contract and normally separate from the transport prompt. Provider-specific mappings live in `docs/EXECUTOR-LAUNCH-PROFILES.md`; model names never become repository correctness semantics.
 
 The executor MUST NOT:
 - create or edit committed `*.md` files;
