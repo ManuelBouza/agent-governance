@@ -18,7 +18,6 @@ from pathlib import Path
 
 import pytest
 
-
 RECIPE_FIELDS = {
     "recipe_id",
     "status",
@@ -160,7 +159,9 @@ def _assert_validate(cli: Path, target: Path, repo_root: Path, *, succeeds: bool
         assert result.returncode != 0
 
 
-def test_bootstrap_materializes_only_native_runbook_templates(repo_root: Path, tmp_path: Path) -> None:
+def test_bootstrap_materializes_only_native_runbook_templates(
+    repo_root: Path, tmp_path: Path
+) -> None:
     cli, target = _bootstrap(repo_root, tmp_path)
     runbooks = target / ".agent-coordination" / "runbooks"
     recipes = runbooks / "recipes"
@@ -236,7 +237,9 @@ def test_verified_recipe_requires_exact_trust_evidence(repo_root: Path, tmp_path
         _assert_validate(cli, target, repo_root, succeeds=False)
 
 
-def test_each_material_effect_requires_resolvable_runbook_step(repo_root: Path, tmp_path: Path) -> None:
+def test_each_material_effect_requires_resolvable_runbook_step(
+    repo_root: Path, tmp_path: Path
+) -> None:
     cli, target = _bootstrap(repo_root, tmp_path)
     template = _source_template(repo_root)
 
