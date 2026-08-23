@@ -308,3 +308,95 @@ HANDOFF: <path>
 BRANCH: <branch>
 HEAD: <pushed-commit-sha>
 ```
+
+If and only if the governing integrated change modified `AGENTS.md`, insert this line after the remote-freshness paragraph and before the Task Contract pointer:
+
+```text
+AGENTS.md changed in the governing integrated change; reload current AGENTS.md from this baseline before loading the Task Contract.
+```
+
+For normal launches, substitute only repository identity, base branch and Task Contract path. The output placeholders remain the generic completion schema; the concrete handoff path/branch are resolved from the Task Contract. The executor chooses the concrete safe Git commands used to establish current remote identity. The conditional D043 reload line is included only when canonical Git history requires it.
+
+### Launch-prompt non-duplication invariant
+
+The launch prompt MUST NOT duplicate task semantics that belong in Git, including:
+
+- objective/result;
+- requirement/specification delta or current specification carrier;
+- acceptance criteria;
+- authorized filenames/scope;
+- exclusions;
+- architecture/controlling Design constraints;
+- Plan/Trace decomposition;
+- test commands or fixture families;
+- D052 conformance corpus/expected outcomes/thresholds or oracle semantics;
+- expected implementation branch/handoff path when the Task Contract already defines them;
+- provider/product-specific implementation instructions;
+- task-specific safety/security restrictions;
+- protocol/module versions;
+- executor-internal methodology, sub-agent topology, private SDD mode, Skill routing, or tool choice;
+- routine repository-instruction reads already supplied by the compatible host.
+
+Standing repository rules such as Markdown ownership remain in `AGENTS.md`/referenced policy and SHOULD NOT be re-stated task-by-task in the launch prompt.
+
+The generic D042 remote-freshness requirement is allowed in the prompt because it determines which persisted repository state is being loaded; it is not task-specific semantics. The D043 reload line is also allowed when required because it refreshes changed repository instructions rather than adding task semantics.
+
+If any task-specific fact is necessary to execute safely or correctly, persist it in the Task Contract, its controlling specification/Design/Plan artifacts, its D052 conformance assets, or its controlling repository policy before launch rather than extending the chat/terminal prompt.
+
+### Launch-prompt authority invariant
+
+The prompt does not supersede or supplement missing Task Contract semantics.
+
+```text
+normal launch prompt = role + repository + remote freshness + task pointer + completion contract
+conditional delta     = AGENTS.md reload only after AGENTS.md change
+Task Contract + referenced Git policy/specification/Design + designated D052 conformance assets = execution specification
+```
+
+If the Task Contract is missing, not `READY`, not integrated into the stated base branch, materially incomplete, or missing a required D052 pre-authored oracle, do not compensate by adding instructions to the launch prompt. Repair/persist the appropriate Orchestrator-owned SDD stage/contract/gate first.
+
+If the executor cannot find the Task Contract or required conformance assets after synchronizing and verifying the current canonical base, it MUST stop/escalate; it MUST NOT fall back to a stale topic branch or chat-carried semantics.
+
+If a launch prompt conflicts with the persisted Task Contract, D052 conformance oracle, or repository policy, the executor MUST stop/escalate rather than choosing the chat-only instruction as a new task scope. Human/ChatGPT changes to specification/Design/Plan/objective/scope/acceptance/verification/oracle semantics must be persisted through the normal SDD re-entry/Task Contract revision flow.
+
+## Canonical post-integration cleanup delegation
+
+Post-integration branch retirement is not another implementation launch and MUST NOT be expressed as an ad hoc executor instruction or as a chat-carried `TASK`/`PR` cleanup target.
+
+Before delegating cleanup, ChatGPT MUST persist the complete concrete operation in an integrated `docs/operations/OPNNN-*.md` Operational Contract governed by `docs/OPERATION-CONTRACTS.md`.
+
+The cleanup bootstrap prompt then contains only repository/base/remote-freshness context plus exactly one Operational Contract path, with the same conditional D043 `AGENTS.md` reload rule. All concrete targets, resolved-review exceptions, safety semantics, and required evidence live in Git.
+
+```text
+normal task launch -> Task Contract pointer
+post-integration cleanup -> Operational Contract pointer
+prompt-specific operation semantics -> prohibited
+```
+
+If cleanup safety cannot be derived from the persisted Operational Contract and its referenced authoritative Git/GitHub state, the executor returns `BLOCKED` or `PARTIAL`; ChatGPT MUST NOT compensate with chat-only instructions.
+
+## Minimal executor response pattern
+
+After persisting/committing/pushing the required implementation handoff, the executor should return only:
+
+`STATUS: DONE | BLOCKED | PARTIAL`
+
+`HANDOFF: handoffs/TNNN-executor-handoff.json`
+
+`BRANCH: <topic-branch>`
+
+`HEAD: <pushed-commit-sha>`
+
+Operational Contract completion schemas are defined by each integrated Operational Contract and are referenced through `docs/POST-INTEGRATION-CLEANUP-PROMPT.md` for branch retirement.
+
+## Audit invariant
+
+A reviewer must be able to reconstruct from Git alone:
+- what was requested before implementation or operation, including applicable specification/Design/Plan/Trace;
+- which D052 test-authorship mode/oracle applied when material;
+- any explicit SDD re-entry revisions/review directives;
+- what the executor reported it did and technically reviewed;
+- what actually changed;
+- what the Orchestrator later accepted/rejected through convergence.
+
+Chat history and private executor orchestration traces must not be required for this reconstruction unless a persisted contract explicitly makes a process artifact part of the deliverable/evidence.
