@@ -1,10 +1,10 @@
 # Current ChatGPT Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O152  
+Checkpoint-Sequence: O153  
 Canonical-Branch: `develop`  
-Current-Work-Unit: T035 accepted/integrated; D054 Phase-B routed-Core activation is the next separately governed Orchestrator work unit if Human continues  
-Chat-Closure: KEEP_CURRENT_CHAT  
+Current-Work-Unit: chat closed after T035 acceptance; D054 Phase-B routed-Core activation is the next eligible Orchestrator work unit if the Human continues  
+Chat-Closure: NEW_CHAT_RECOMMENDED  
 Active-Executor: Codex  
 Active-Executor-Surface: ChatGPT desktop / Codex / native Windows
 
@@ -19,10 +19,10 @@ Active-Executor-Surface: ChatGPT desktop / Codex / native Windows
 - T035 oracle `T035-D054-v1` is integrated/frozen on canonical `develop` through commit `3df2b4a91c94c99c160477ed031a37132070b228`.
 - T035 Executor result was submitted as `DONE` at `7c90ba89644d6d4d25d92ba30a96bfd25a6253d5` with handoff `handoffs/T035-executor-handoff.json`.
 - T035 implementation was independently reviewed by ChatGPT Orchestrator, integrated through PR #201 at `29bc0aacb80bc8adb19072a5634d4fed715e3779`, and accepted in `docs/reviews/T035-R1.md`.
-- Accepted T035 evidence: focused suite `59 passed`; full native-Windows deterministic suite `355 passed in 50.88s`; Ruff check/format PASS; `git diff --check` PASS; no Markdown/oracle drift; no unresolved Executor Code Review & Verify findings.
-- T035 is `ACCEPTED` once the current acceptance Markdown PR is integrated.
-- D040 Phase-B D054 routed-Core activation is now eligible as a separate Orchestrator-owned Markdown work unit. It has not started in this checkpoint.
-- T021/T022 remain paused.
+- T035 is `ACCEPTED`; accepted evidence includes focused suite `59 passed`, full native-Windows deterministic suite `355 passed in 50.88s`, Ruff check/format PASS, `git diff --check` PASS, no Markdown/oracle drift and no unresolved Executor Code Review & Verify findings.
+- T035 acceptance Markdown was integrated through PR #202 at `218e279bc7be6efdffe9b30b183a05e888d3f99a`.
+- D040 Phase-B D054 routed-Core activation is eligible as a separate Orchestrator-owned Markdown work unit. It has **not** started.
+- T021/T022 remain paused and MUST NOT auto-resume.
 
 ## Mandatory Executor prompt transport invariant
 
@@ -43,9 +43,7 @@ Load current repository instructions, then execute exactly:
 Return only the output required by that persisted authority.
 ```
 
-Do not carry task requirements, acceptance criteria, implementation instructions, copied contract text, or routine Git/CLI/uv/PowerShell commands in the prompt. Exact adapter mechanics belong to the Executor under D054.
-
-`CONTINUE` preserves chat context only; it never exempts D042 remote synchronization/freshness.
+Do not carry task requirements, acceptance criteria, implementation instructions, copied contract text, or routine Git/CLI/uv/PowerShell commands in the prompt. Exact adapter mechanics belong to the Executor under D054. `CONTINUE` preserves chat context only; it never exempts D042 remote synchronization/freshness.
 
 ## D055 launch invariant
 
@@ -69,7 +67,7 @@ complex/high-risk technical work  -> GPT-5.6 Sol / High
 exceptional long-horizon work     -> GPT-5.6 Sol / highest mode only when justified
 ```
 
-## T035 accepted state
+## T035 accepted identity
 
 ```text
 Task: T035
@@ -81,6 +79,8 @@ Integrated implementation: 29bc0aacb80bc8adb19072a5634d4fed715e3779
 Handoff: handoffs/T035-executor-handoff.json
 Acceptance review: docs/reviews/T035-R1.md
 Oracle: T035-D054-v1 — FROZEN / unchanged
+Acceptance PR: #202
+Accepted develop anchor: 218e279bc7be6efdffe9b30b183a05e888d3f99a
 ```
 
 ## Orchestrator branch-mutation containment
@@ -91,21 +91,23 @@ Containment:
 
 - no direct write to `develop`/`main` occurred;
 - the submitted Executor HEAD `7c90ba89644d6d4d25d92ba30a96bfd25a6253d5` remained intact as an immutable commit;
-- a clean integration branch `integrate/t035-runbook-operation-resolution-readiness` was created exactly from that submitted HEAD;
-- PR #201 integrated only that exact submitted implementation;
+- PR #201 integrated only an integration branch created exactly from that submitted HEAD;
 - the accidental post-submission Markdown commit on `feat/t035-runbook-operation-resolution-readiness` was excluded from acceptance/integration;
 - history was not rewritten or force-pushed;
-- durable acceptance Markdown is owned on `docs/t035-acceptance`.
+- durable acceptance Markdown was integrated separately through PR #202.
 
-Do not use the current tip of the represented Executor branch as T035 accepted identity. Use the submitted Executor HEAD and integrated commit recorded above.
+Do not use the current tip of the represented Executor branch as T035 accepted identity. Use the submitted Executor HEAD and integrated commits recorded above.
 
 ## Next action
 
-1. Integrate `docs/t035-acceptance` through a focused Markdown-only PR and reverify canonical `develop`.
-2. Stop and report T035 accepted/integrated state to the Human Owner.
-3. If the Human explicitly continues, start D040 Phase-B D054 routed-Core activation as a new Orchestrator-owned Markdown work unit from current `develop`.
-4. Do not launch an Executor merely for the Markdown-only activation unless a new executable requirement emerges.
-5. Do not resume T021/T022 automatically.
+On the next Human-authorized chat:
+
+1. bootstrap from current GitHub `develop`;
+2. read current `AGENTS.md` and this checkpoint before loading deeper history;
+3. because the next eligible work unit is D040 Phase-B D054 routed-Core activation, load only D040, D054 and the routed Core modules required by their own sequencing/ownership rules;
+4. perform the Orchestrator-owned Explore/Specify/Design/Plan/Trace and Markdown-only activation workflow from a fresh topic branch;
+5. do not launch an Executor merely for Markdown-only activation unless a new executable requirement emerges;
+6. do not resume T021/T022 automatically.
 
 ## Next chat minimum load
 
@@ -115,7 +117,7 @@ Load only:
 - `AGENTS.md`;
 - this checkpoint.
 
-Load D040/D054 and routed Core modules only when the Human explicitly continues into Phase-B activation. Load D055/launch profiles only when preparing a future Executor launch.
+Then follow `Next action`. Do not reconstruct the frontier from prior chat history or Project Memory.
 
 ## Do not
 
