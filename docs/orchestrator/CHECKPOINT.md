@@ -1,9 +1,9 @@
 # Current ChatGPT Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O151  
+Checkpoint-Sequence: O152  
 Canonical-Branch: `develop`  
-Current-Work-Unit: T035 runbook operation resolution readiness is READY for Executor implementation  
+Current-Work-Unit: T035 accepted/integrated; D054 Phase-B routed-Core activation is the next separately governed Orchestrator work unit if Human continues  
 Chat-Closure: KEEP_CURRENT_CHAT  
 Active-Executor: Codex  
 Active-Executor-Surface: ChatGPT desktop / Codex / native Windows
@@ -16,12 +16,12 @@ Active-Executor-Surface: ChatGPT desktop / Codex / native Windows
 - D055 requires a Human-facing Executor Launch Profile before every Executor prompt; `docs/EXECUTOR-LAUNCH-PROFILES.md` carries the current Codex mapping and pointer-only prompt shape.
 - D056 requires concise Human-visible progress notes around meaningful GitHub/remote operation phases.
 - T034 is `ACCEPTED` and integrated.
-- The pre-T035 native-Windows canonical baseline passed on `develop@219904a352785d49dabe4f688d5cc65bde3dd547`: Ruff check PASS, Ruff format PASS, pytest `340 passed`, worktree clean.
-- T035-G1 pre-freeze verification passed on the represented oracle branch: diff scope PASS, reconcile PASS, semantic delta UNCHANGED, Ruff check/format PASS, pytest collection PASS, oracle RED only for expected missing T035 behavior.
 - T035 oracle `T035-D054-v1` is integrated/frozen on canonical `develop` through commit `3df2b4a91c94c99c160477ed031a37132070b228`.
-- T035 Task Contract is `READY` once this O151 transition is integrated.
-- Expected T035 implementation branch: `feat/t035-runbook-operation-resolution-readiness`.
-- Expected T035 handoff: `handoffs/T035-executor-handoff.json`.
+- T035 Executor result was submitted as `DONE` at `7c90ba89644d6d4d25d92ba30a96bfd25a6253d5` with handoff `handoffs/T035-executor-handoff.json`.
+- T035 implementation was independently reviewed by ChatGPT Orchestrator, integrated through PR #201 at `29bc0aacb80bc8adb19072a5634d4fed715e3779`, and accepted in `docs/reviews/T035-R1.md`.
+- Accepted T035 evidence: focused suite `59 passed`; full native-Windows deterministic suite `355 passed in 50.88s`; Ruff check/format PASS; `git diff --check` PASS; no Markdown/oracle drift; no unresolved Executor Code Review & Verify findings.
+- T035 is `ACCEPTED` once the current acceptance Markdown PR is integrated.
+- D040 Phase-B D054 routed-Core activation is now eligible as a separate Orchestrator-owned Markdown work unit. It has not started in this checkpoint.
 - T021/T022 remain paused.
 
 ## Mandatory Executor prompt transport invariant
@@ -69,27 +69,43 @@ complex/high-risk technical work  -> GPT-5.6 Sol / High
 exceptional long-horizon work     -> GPT-5.6 Sol / highest mode only when justified
 ```
 
-## T035 frozen oracle
+## T035 accepted state
 
 ```text
-Oracle-ID: T035-RUNBOOK-OPERATION-READINESS
-Oracle-Revision: T035-D054-v1
-Oracle-Asset: tests/test_t035_runbook_operation_resolution_conformance.py
-Oracle-Freeze-State: FROZEN
-Integrated oracle commit: 3df2b4a91c94c99c160477ed031a37132070b228
-Pre-freeze gate: docs/reviews/T035-G1-oracle-prefreeze-verification.md
+Task: T035
+Status: ACCEPTED
+Submitted Executor HEAD: 7c90ba89644d6d4d25d92ba30a96bfd25a6253d5
+Implementation anchor: 05130a1993c04e489ff69d4c60c8de5ad5f09685
+Implementation PR: #201
+Integrated implementation: 29bc0aacb80bc8adb19072a5634d4fed715e3779
+Handoff: handoffs/T035-executor-handoff.json
+Acceptance review: docs/reviews/T035-R1.md
+Oracle: T035-D054-v1 — FROZEN / unchanged
 ```
 
-The Executor MUST NOT edit the frozen oracle. A semantic concern is `ORACLE_DEFECT`-equivalent and requires D053 Orchestrator re-entry.
+## Orchestrator branch-mutation containment
+
+During T035 convergence, ChatGPT Orchestrator mistakenly created `docs/reviews/T035-R1.md` on the represented Executor branch after the submitted Executor HEAD. This was an Orchestrator ownership/workflow error, not an Executor defect.
+
+Containment:
+
+- no direct write to `develop`/`main` occurred;
+- the submitted Executor HEAD `7c90ba89644d6d4d25d92ba30a96bfd25a6253d5` remained intact as an immutable commit;
+- a clean integration branch `integrate/t035-runbook-operation-resolution-readiness` was created exactly from that submitted HEAD;
+- PR #201 integrated only that exact submitted implementation;
+- the accidental post-submission Markdown commit on `feat/t035-runbook-operation-resolution-readiness` was excluded from acceptance/integration;
+- history was not rewritten or force-pushed;
+- durable acceptance Markdown is owned on `docs/t035-acceptance`.
+
+Do not use the current tip of the represented Executor branch as T035 accepted identity. Use the submitted Executor HEAD and integrated commit recorded above.
 
 ## Next action
 
-1. Integrate the T035 `READY` Task Contract transition and this O151 checkpoint.
-2. Reverify canonical `develop`.
-3. Launch T035 implementation in a NEW Codex session using the D055 launch profile and the mandatory D042 pointer-only prompt.
-4. Await only the Task Contract-defined terminal pointer.
-5. Perform remote GitHub D053 Converge/Accept review of the submitted implementation/handoff.
-6. Do not resume T021/T022 automatically.
+1. Integrate `docs/t035-acceptance` through a focused Markdown-only PR and reverify canonical `develop`.
+2. Stop and report T035 accepted/integrated state to the Human Owner.
+3. If the Human explicitly continues, start D040 Phase-B D054 routed-Core activation as a new Orchestrator-owned Markdown work unit from current `develop`.
+4. Do not launch an Executor merely for the Markdown-only activation unless a new executable requirement emerges.
+5. Do not resume T021/T022 automatically.
 
 ## Next chat minimum load
 
@@ -99,8 +115,8 @@ Load only:
 - `AGENTS.md`;
 - this checkpoint.
 
-For the T035 Executor launch, additionally load `docs/EXECUTOR-LAUNCH-PROFILES.md` and `docs/tasks/T035-runbook-operation-resolution-readiness.md`.
+Load D040/D054 and routed Core modules only when the Human explicitly continues into Phase-B activation. Load D055/launch profiles only when preparing a future Executor launch.
 
 ## Do not
 
-Do not omit D042 remote freshness from an Executor prompt; do not duplicate task semantics into the prompt; do not give routine CLI/API/shell commands to the Human; do not edit or weaken `T035-D054-v1` during implementation; do not activate D054 routed Core/protocol semantics inside T035; do not resume T021/T022 automatically; do not expose private chain-of-thought instead of D056 progress notes; and do not write directly to `main`/`develop`.
+Do not omit D042 remote freshness from an Executor prompt; do not duplicate task semantics into the prompt; do not give routine CLI/API/shell commands to the Human; do not edit or weaken frozen `T035-D054-v1`; do not use the polluted represented Executor branch tip as accepted T035 identity; do not activate D054 routed Core semantics without a separate Orchestrator work unit; do not resume T021/T022 automatically; do not expose private chain-of-thought instead of D056 progress notes; and do not write directly to `main`/`develop`.
