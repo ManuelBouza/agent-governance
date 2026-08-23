@@ -217,12 +217,13 @@ These sources support the control pattern; they do not become Agent Governance a
 
 D054 is accepted architecture immediately for source-maintainer interaction and planning, but reusable Consumer Core activation follows D040 so canonical `develop` is not knowingly broken by a cross-owner protocol transition.
 
-### Phase A — accepted design and executable readiness
+### Phase A — source interaction rule + staged readiness
 
-1. persist D054 and the staged operation-resolution contract;
-2. integrate T035 plus its Orchestrator-owned conformance gate while current Protocol remains `1.14.0`;
-3. complete already-frozen T034 first to restore the current native-SDD executable baseline;
-4. T035 then adds the native runbook/recipe footprint, validation/resolution mechanics and implementation tests without changing the stable Consumer CLI command set.
+1. persist D054, the staged operation-resolution contract, the first source-maintainer runbook and the BLOCKED T035 Task Contract;
+2. do **not** freeze/integrate the T035 executable oracle yet, because T034's already-frozen contract requires the complete canonical suite to become green and a deliberately failing T035 oracle would make T034 impossible to accept;
+3. execute and accept/integrate already-frozen T034 first, using D054's bootstrap-period rule for all CLI/API/shell mechanics;
+4. after T034 is integrated and the canonical baseline is green, author/review/integrate the D052 T035 conformance oracle, which makes T035 READY;
+5. T035 then adds the native runbook/recipe footprint, validation/resolution mechanics and implementation tests without changing the stable Consumer CLI command set.
 
 ### Phase B — protocol activation
 
@@ -247,4 +248,4 @@ This temporary limitation is preferable to either making the Human the command r
 - recipe drift fails closed;
 - remote/cloud operations use the same target/effect/credential model as local commands;
 - no universal terminal wrapper, external SDD/runtime dependency or command-name allowlist is introduced;
-- T034 is not cancelled or semantically rewritten by D054; its launch is paused only until this source-level interaction refinement and T035 gate are durably represented.
+- T034 is not cancelled or semantically rewritten by D054; its launch is paused only until this source-level interaction refinement and staged T035 planning are durably represented.
