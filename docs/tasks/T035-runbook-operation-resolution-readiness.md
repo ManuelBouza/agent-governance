@@ -49,7 +49,7 @@ D054 + staged T035 planning integrated
         -> T034 Converge/Accept + integrate
         -> canonical develop green
         -> Orchestrator authors/reviews/integrates T035 D052 oracle
-        -> T035 becomes READY
+        -> T035 READY
         -> T035 Implement + Code Review & Verify
         -> T035 Converge/Accept + integrate
         -> D040 Phase-B D054 Core activation
@@ -159,16 +159,22 @@ After T035 acceptance, the Orchestrator owns the separate Markdown-only D054 act
 
 ## D052 conformance oracle gate
 
-The required semantic oracle is integrated and frozen.
+The required semantic oracle was authored only after T034 acceptance and after a green canonical native-Windows baseline, preserving D040's green-baseline migration invariant.
+
+Frozen identity:
 
 - Oracle-ID: `T035-RUNBOOK-OPERATION-READINESS`
 - Oracle-Revision: `T035-D054-v1`
 - Oracle-Asset: `tests/test_t035_runbook_operation_resolution_conformance.py`
 - Oracle-Semantic-Scope: native runbook/recipe bootstrap layout, exact recipe trust states/field contract, VERIFIED provenance/postcondition requirements, material runbook binding, fail-closed unsafe-path behavior and no routed protocol/CLI-surface expansion.
-- Oracle-Freeze-State: `FROZEN` on canonical `develop`.
-- Executor-Mechanical-Corrections: pre-freeze mechanical normalization was authorized by `docs/reviews/T035-G1-oracle-prefreeze-verification.md`; semantic expectations remained Orchestrator-owned and unchanged.
+- Oracle-Freeze-State: `FROZEN`
+- Oracle integrated commit: `3df2b4a91c94c99c160477ed031a37132070b228`
+- Pre-freeze verification: `docs/reviews/T035-G1-oracle-prefreeze-verification.md`
+- Executor-Mechanical-Corrections: only the bounded pre-freeze Ruff normalization recorded by T035-G1; semantic expectations are immutable during implementation.
 
-T035 implementation completed against this frozen oracle, and `docs/reviews/T035-R1.md` records acceptance. The Executor MUST NOT edit the frozen T035 oracle.
+The Executor MUST NOT edit the frozen T035 oracle. A suspected semantic defect is `ORACLE_DEFECT`-equivalent and requires D053 Orchestrator re-entry.
+
+T035 implementation completed against this frozen oracle and is accepted by `docs/reviews/T035-R1.md`.
 
 ## Authorized scope
 
@@ -184,13 +190,13 @@ T035 implementation completed against this frozen oracle, and `docs/reviews/T035
 
 - all committed Markdown;
 - `governance-skill/assets/RUNBOOK.template.md`;
-- the post-T034 frozen D052 oracle at `tests/test_t035_runbook_operation_resolution_conformance.py`;
+- frozen D052 oracle `tests/test_t035_runbook_operation_resolution_conformance.py` at revision `T035-D054-v1`;
 - D054 semantic field/state/source hierarchy and material-effect runbook requirement.
 
 ## Explicit exclusions
 
 - any committed Markdown edit by the Executor;
-- any edit/weakening of the future frozen T035 conformance oracle;
+- any edit/weakening of the frozen T035 conformance oracle;
 - D054 routed Core activation or protocol-version bump;
 - new top-level CLI commands;
 - universal shell/command wrapper, execution daemon or remote broker;
@@ -242,7 +248,7 @@ All required focused/package/security tests are also green.
 
 ## Verification and trace requirements
 
-The post-T034 Orchestrator conformance gate binds:
+The frozen T035 oracle binds:
 
 ```text
 R-T035-1/2/3 -> tests/test_t035_runbook_operation_resolution_conformance.py
@@ -250,27 +256,27 @@ R-T035-4/5   -> tests/test_t035_runbook_operation_resolution_conformance.py
 R-T035-6/7   -> frozen oracle + existing package/canonical suites
 ```
 
-Executor additionally:
+Executor SHALL additionally:
 
-- added focused implementation tests for parser/validator branches introduced;
-- tested unsafe symlink/junction-equivalent paths without weakening host coverage;
-- proved bootstrap rollback/collision behavior remains safe;
-- ran complete artifact/self-contained package coverage affected by new assets;
-- ran stable CLI v1 tests;
-- ran complete canonical Ruff + pytest on native Windows;
-- performed D053 Code Review & Verify against this Design/Plan;
-- recorded exact requirement/AC -> test/command evidence in the handoff;
-- distinguished required frozen oracle from supplementary Executor tests;
-- confirmed no committed Markdown or frozen T035 oracle drift on the submitted implementation HEAD.
+- add focused implementation tests for all parser/validator branches introduced;
+- test unsafe symlink/junction paths with platform-equivalent fixtures rather than host-capability skips;
+- prove bootstrap rollback/collision behavior remains safe;
+- run complete artifact/self-contained package coverage affected by new assets;
+- run stable CLI v1 tests;
+- run complete canonical Ruff + pytest on native Windows;
+- perform D053 Code Review & Verify against this Design/Plan;
+- record exact requirement/AC -> test/command evidence in the handoff;
+- distinguish required frozen oracle from supplementary Executor tests;
+- confirm no committed Markdown or frozen T035 oracle drift on the implementation branch.
 
 Accepted evidence is recorded in `handoffs/T035-executor-handoff.json` and `docs/reviews/T035-R1.md`.
 
 ## Stop / escalation / SDD re-entry conditions
 
-During implementation, return `BLOCKED`/`PARTIAL` rather than expand scope when:
+Return `BLOCKED`/`PARTIAL` rather than expand scope when:
 
-- T034 is not accepted/integrated or canonical baseline is not green;
-- the required T035 D052 oracle has not been frozen/integrated;
+- the current canonical baseline cannot be established safely or is unexpectedly red before authorized implementation changes;
+- the frozen T035 D052 oracle is unavailable from the current canonical base;
 - a runtime change requires changing D054 semantic recipe fields/states/source hierarchy;
 - secure validation requires executing recipes or adding a command broker;
 - a new top-level CLI command appears necessary;
@@ -284,21 +290,23 @@ A frozen-oracle semantic concern is `ORACLE_DEFECT`-equivalent and requires Orch
 
 ## Expected handoff
 
-The accepted Executor handoff is `handoffs/T035-executor-handoff.json` under `docs/EXECUTOR-HANDOFFS.md` and records:
+Before terminal status, persist `handoffs/T035-executor-handoff.json` under `docs/EXECUTOR-HANDOFFS.md` with:
 
-- exact accepted T034/current-develop base;
+- exact current-develop base;
 - frozen oracle revision `T035-D054-v1`;
 - implementation review anchor;
 - requirement/AC trace;
 - focused/canonical/package/security verification;
 - no-Markdown/no-oracle-drift evidence;
-- no unresolved re-entry blocker.
+- any re-entry blocker.
 
-The submitted Executor terminal result was:
+Commit authorized work and perform one planned final push under D048. Return only:
 
 ```text
-STATUS: DONE
+STATUS: DONE | BLOCKED | PARTIAL
 HANDOFF: handoffs/T035-executor-handoff.json
 BRANCH: feat/t035-runbook-operation-resolution-readiness
-HEAD: 7c90ba89644d6d4d25d92ba30a96bfd25a6253d5
+HEAD: <pushed-commit-sha>
 ```
+
+Accepted terminal result: `STATUS: DONE`, submitted HEAD `7c90ba89644d6d4d25d92ba30a96bfd25a6253d5`, integrated through PR #201.
