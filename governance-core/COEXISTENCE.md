@@ -1,8 +1,10 @@
 # Ecosystem Coexistence
 
-Coexistence-Version: 1.0.0
+Coexistence-Version: 1.1.0
 
 Load this module when bootstrapping Governance into a repository with existing SDD/workflow/Skill/tooling surfaces, when F2/F3 needs a capability provider, or when two systems may overlap in authority, artifacts, Skills, permissions, or generated instructions.
+
+Load `SDD.md` when the overlap concerns specification, Design, Plan/Trace, implementation review or acceptance ownership.
 
 ## Core invariant
 
@@ -10,14 +12,16 @@ Load this module when bootstrapping Governance into a repository with existing S
 
 Agent Governance is the coordination/authority layer. It does not automatically replace the project's SDD methodology, testing workflow, Skill registry, memory system, permission system, branch/PR workflow, or other development infrastructure.
 
+Native SDD is nevertheless part of Governance itself: when no adequate project-native/external SDD provider exists, `SDD.md` supplies the method without installing another product.
+
 ## Capability classifications
 
 For each capability material to the current mission/task classify:
 
-- `REUSE` — existing provider fully covers the need and remains primary;
-- `ADAPT` — existing provider remains primary and Governance adds only a bounded reference/adapter layer;
+- `REUSE` — existing provider fully covers the need and remains primary for its compatible artifact/process surface;
+- `ADAPT` — existing provider remains primary for its compatible surface and Governance adds only a bounded reference/adapter layer;
 - `COEXIST` — providers have distinct non-overlapping responsibilities;
-- `MISSING` — no acceptable provider exists;
+- `MISSING` — no acceptable provider exists for that capability; for SDD methodology specifically, Governance native `SDD.md` is then the fallback provider rather than an absent method;
 - `CONFLICT` — responsibility/authority overlap is unresolved and blocks readiness.
 
 Classification is routing evidence, not a new authority tier.
@@ -39,16 +43,41 @@ Detection MUST be bounded to capabilities relevant to the current scope. Do not 
 
 ## SDD/specification systems
 
+Agent Governance native SDD uses the single-owner stage model from `SDD.md`:
+
+```text
+Strategy       -> Explore / Specify / Design / Plan & Trace
+Implementation -> Implement / Code Review & Verify
+Strategy       -> Converge / Accept / Evolve
+```
+
 When an existing SDD/specification system owns specs, proposals, designs, plans, or tasks:
 
 1. preserve those native artifacts unless Human Owner explicitly authorizes migration;
-2. reference rather than duplicate them from MISSION, Decision Records, WORKPLAN, or the current Governance task;
-3. validate their outputs against F0-F5 requirements instead of regenerating equivalent artifacts automatically;
-4. adopt native task decomposition at F4 when it is complete enough, adding only Governance-specific metadata needed for readiness/execution;
-5. preserve sequential disclosure: implementation receives only the native artifacts required by the current Governance task;
-6. classify incompatible competing lifecycle/task ownership as `CONFLICT` and stop before F5.
+2. determine which native artifacts are adequate current specification/design/plan carriers for the affected scope;
+3. reference rather than duplicate them from MISSION, Decision Records, WORKPLAN, or the current Governance task;
+4. validate their outputs against `SDD.md` plus F0-F5 requirements instead of regenerating equivalent artifacts automatically;
+5. adopt native task decomposition at F4 when it is complete enough, adding only Governance-specific metadata needed for readiness/execution/trace;
+6. map artifact write/approval ownership to the Governance single-owner stages; a tool allowing both agents to edit one artifact does not create dual Governance authority;
+7. preserve sequential disclosure: Implementation receives only the native artifacts required by the current Governance task;
+8. classify incompatible competing lifecycle/task/spec/design/acceptance ownership as `CONFLICT` and stop before F5.
 
 A third-party methodology's internal claim that its specs are the source of truth does not automatically modify Governance authority ordering. Strategy explicitly binds controlling native artifacts by reference for the applicable scope.
+
+Executor/Implementation-native SDD tools may still be used privately inside stages Implement and Code Review & Verify when they do not create tracked competing specification/Design/Plan state or authority. Such private state remains an implementation aid only.
+
+## Native SDD fallback
+
+Absence of an external/project-native SDD product is valid. It does **not** mean development proceeds with no SDD discipline.
+
+When no adequate SDD provider exists:
+
+- use the native `SDD.md` method;
+- use existing Governance/project artifacts as current specification carriers where adequate;
+- materialize only the proportionate `COMPACT`, `STANDARD` or `ASSURED` evidence needed for the change;
+- do not install OpenSpec, Spec Kit, Kiro or another SDD framework merely to obtain an SDD lifecycle.
+
+This preserves portability and avoids turning a preferred market tool into a required dependency.
 
 ## Skills and registries
 
@@ -58,8 +87,8 @@ Existing Skills/registries are inspected before external discovery.
 - Same-name project/user collisions use the host's deterministic precedence for activation analysis, but material shadowing MUST be visible to Strategy.
 - The exact artifact selected for normative use still requires the approval rules in `SKILLS.md` and `SKILL-SUPPLY-CHAIN.md`.
 - Reuse an approved existing Skill that covers the capability before installing another.
-- Semantically overlapping governance/orchestration Skills are `CONFLICT` when both claim mission authority, readiness/task ownership, Skill approval, or equivalent Governance responsibility.
-- Generic SDD/planning/testing Skills MUST NOT cause the Consumer Governance Skill to broaden its activation surface.
+- Semantically overlapping governance/orchestration Skills are `CONFLICT` when both claim mission authority, readiness/task ownership, Skill approval, SDD stage authority, or equivalent Governance responsibility.
+- Generic SDD/planning/testing Skills MUST NOT cause the Consumer Governance Skill to broaden its activation surface or transfer Strategy-owned SDD stages to Implementation.
 
 A third-party Skill registry MAY be used as discovery evidence. It does not replace canonical-source resolution, immutable revision/digest approval, or permission/dependency audit.
 
@@ -74,19 +103,19 @@ When Governance requires integration with a shared file/surface:
 4. otherwise prefer a separate Governance adapter file when the host can reference it;
 5. if safe composition cannot be established, classify `CONFLICT` and require Strategy/Human resolution.
 
-The same principle applies to agent commands, Skill directories, permission rules, hooks, MCP/plugin declarations, and other generated assets.
+The same principle applies to agent commands, Skill directories, permission rules, hooks, MCP/plugin declarations, SDD directories and other generated assets.
 
-## No-SDD / no-Skill mode
+## No external-SDD / no-Skill mode
 
-Absence of SDD or third-party Skills is valid.
+Absence of a third-party SDD framework or third-party Skills is valid.
 
-Governance MUST remain usable from its own Core/lifecycle and project-native tooling. Do not install an SDD framework, memory service, Skill registry, testing framework, or other ecosystem merely to satisfy a preferred stack when the mission does not require it.
+Governance MUST remain usable from its own Core/lifecycle/native SDD and project-native tooling. Do not install a third-party SDD framework, memory service, Skill registry, testing framework, or other ecosystem merely to satisfy a preferred stack when the mission does not require that external capability.
 
 ## Task routing
 
 Normal implementation context may include only:
 - WORKPLAN metadata needed to select the current task;
-- the current Governance task record;
+- the current Governance task record, including its proportionate SDD profile/spec-delta/Design/trace references;
 - exact native project/SDD artifacts referenced by that task;
 - exact approved Skills required for that task;
 - active adapter/tool instructions.
@@ -96,7 +125,8 @@ Do not preload other SDD changes/tasks, the complete Skill registry, or future G
 ## Conflict handling
 
 `CONFLICT` is a strategic/readiness condition. Examples:
-- two systems both claim write ownership of the same plan/tasks;
+- two systems both claim write ownership of the same authoritative spec/design/plan/tasks;
+- an executor-native SDD workflow attempts to become the authoritative Design/Plan or acceptance state;
 - two governance/orchestration Skills claim equivalent authority;
 - an installer would overwrite a third-party managed instruction block;
 - host Skill shadowing selects a different artifact than the one approved;
@@ -106,4 +136,4 @@ Strategy MUST resolve the boundary, persist the decision, then rerun the affecte
 
 ## Known-system examples
 
-Gentle-AI, GitHub Spec Kit, and OpenSpec are examples for compatibility tests/research, not hard-coded branches in portable Core semantics. Product-specific paths/commands belong in adapters or integration guidance, while this module defines the generic capability/ownership rules.
+Gentle-AI, GitHub Spec Kit, OpenSpec and Kiro are examples for compatibility tests/research, not hard-coded branches in portable Core semantics. Product-specific paths/commands belong in adapters or integration guidance, while this module and `SDD.md` define the generic capability/ownership rules.
