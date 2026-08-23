@@ -3,7 +3,7 @@
 ## Identity
 
 - Task ID: `T034`
-- Status: `READY`
+- Status: `ACCEPTED`
 - Type: `mixed`
 - Base branch: `develop`
 - Expected topic branch: `feat/t034-native-sdd-executable-materialization`
@@ -237,7 +237,7 @@ uv run --locked ruff format --check .
 uv run --locked python -m pytest
 ```
 
-No use of the known stale pre-T033 CRLF checkout is valid evidence.
+No use of the known stale pre-T033 CRLF operational checkout is valid evidence.
 
 ## Verification and trace requirements
 
