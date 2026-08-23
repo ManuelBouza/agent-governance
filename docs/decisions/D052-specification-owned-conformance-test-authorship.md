@@ -25,7 +25,7 @@ Agent Governance adopts the following rule:
 
 When ChatGPT Orchestrator owns the normative specification/content that defines what correct behavior means, ChatGPT also owns the corresponding acceptance/conformance oracle unless a Task Contract explicitly selects another justified mode.
 
-The Agente de IA Ejecutor remains responsible for executing verification, adapting technical harness mechanics, diagnosing failures, implementing the requested product behavior, and adding implementation-focused or exploratory tests.
+The Agente de IA Ejecutor remains responsible for executing verification, adapting technical harness mechanics, diagnosing failures, implementing the requested product behavior, technically reviewing that implementation, and adding implementation-focused or exploratory tests.
 
 This decision does not create a third agent role and does not make tests Governance authority.
 
@@ -33,7 +33,7 @@ This decision does not create a third agent role and does not make tests Governa
 normative authority / Task Contract
         -> acceptance meaning
         -> conformance oracle
-        -> executor implementation + execution
+        -> executor implementation + technical review + execution
         -> evidence
         -> Orchestrator acceptance
 ```
@@ -50,7 +50,9 @@ ChatGPT owns the committed conformance/oracle assets needed to encode approved a
 
 ### `executor-implementation`
 
-Use for ordinary implementation work where the Task Contract defines objective outcomes/boundaries but the executor appropriately owns the technical design and its unit/integration/regression tests.
+Use for ordinary implementation work where the Task Contract plus its controlling specification/Design define objective outcomes/boundaries and the executor appropriately owns technical realization plus its unit/integration/regression tests.
+
+Under accepted D053, `executor-implementation` does **not** mean the executor owns the controlling Design stage. It owns implementation/test realization and Code Review & Verify inside the Orchestrator-approved Design.
 
 This remains the normal mode for consumer-application implementation and source-product technical work that does not require an Orchestrator-owned semantic oracle.
 
@@ -88,14 +90,14 @@ When an executable task uses `orchestrator-conformance` or `mixed` and the confo
 Preferred sequence:
 
 ```text
-Orchestrator specification / Task Contract
+Orchestrator specification / Design / Task Contract
     -> Orchestrator conformance assets
     -> review + integrate into develop
     -> executor starts from that exact develop baseline
     -> executor implementation + supplementary tests
-    -> executor executes complete required suite
+    -> executor Code Review & Verify + complete required suite
     -> persisted evidence/handoff
-    -> Orchestrator review/acceptance
+    -> Orchestrator Converge / Accept
 ```
 
 This makes the executable oracle a deterministic projection of already-approved semantics before the implementation can optimize against or reinterpret them.
@@ -111,13 +113,16 @@ The executor retains ownership of:
 - technical harness plumbing and host/provider adapters where authorized;
 - reproduction and diagnosis of failing conformance tests;
 - implementation code/config/assets;
+- technical Code Review & Verify of its implementation against the approved specification/Design/Plan;
 - implementation-focused unit/integration/regression tests;
 - property/state exploration, fuzzing and additional edge-case discovery;
 - supplementary adversarial cases that do not redefine approved expected behavior;
 - traces, measurements, result aggregation and verification evidence;
 - executor handoff artifacts.
 
-The executor SHOULD add useful tests discovered during implementation rather than relying only on the pre-authored conformance suite.
+The executor SHOULD add useful tests discovered during implementation/review rather than relying only on the pre-authored conformance suite.
+
+The executor does not own the D053 Specify, controlling Design, Plan & Trace or Converge/Accept stages. A discovered defect in those upstream stages is reported for Orchestrator re-entry rather than silently repaired through a semantic test change.
 
 ## Oracle-change boundary
 
@@ -142,7 +147,7 @@ The following are semantic oracle changes and MUST NOT be made unilaterally by t
 - frozen characterization meaning;
 - removing/weakening a negative control because implementation fails it.
 
-If the executor has evidence that an Orchestrator-owned oracle is semantically defective or inconsistent, it must stop that affected acceptance claim and report an `ORACLE_DEFECT`-equivalent blocker with evidence. ChatGPT then decides whether the test, implementation or specification is wrong and persists any semantic correction before execution continues.
+If the executor has evidence that an Orchestrator-owned oracle is semantically defective or inconsistent, it must stop that affected acceptance claim and report an `ORACLE_DEFECT`-equivalent blocker with evidence. ChatGPT then determines the earliest affected D053 stage, corrects specification/Design/Plan/oracle authority as required, persists that revision, and only then resumes execution.
 
 ## Independence and anti-overfitting
 
@@ -155,7 +160,8 @@ The Orchestrator MUST NOT treat its pre-authored conformance suite as exhaustive
 ```text
 Orchestrator conformance suite = required acceptance oracle
 Executor supplementary suite   = independent technical exploration
-Both                            = evidence, not acceptance authority
+Executor Code Review & Verify   = technical implementation evidence
+All of the above                = evidence, not acceptance authority
 ```
 
 ## Consumer-project boundary
@@ -174,6 +180,8 @@ ordinary consumer feature / business implementation
 
 A consumer Task Contract may still select `mixed` or `orchestrator-conformance` when a Human/Orchestrator-owned acceptance oracle is genuinely material, but this is not the default.
 
+D053 still controls SDD stage ownership in all three test-authorship modes: Strategy owns specification/Design/Plan and final convergence; Implementation owns technical realization/review.
+
 ## ICAE / RCAB relationship
 
 D046 remains controlling for assurance-plane selection. D052 changes who authors certain conformance artifacts, not which verifier is appropriate.
@@ -182,11 +190,21 @@ The expected context benefit is architectural rather than assumed: a pre-authore
 
 Tests/evals MUST NOT become a second normative authority or a shortcut around required controlling references. They are executable projections of acceptance semantics.
 
-## Relationship to D041
+## Relationship to D041 and D053
 
-D041 executor process autonomy remains accepted.
+D041 executor process autonomy remains accepted inside the executor's assigned technical stages.
 
-D041 explicitly permits method constraints when the method is material to an ownership, deterministic-verification, safety/security or reproducibility boundary. D052 establishes such an ownership boundary for conformance-oracle authorship while leaving the executor free to choose its internal implementation/testing process beyond that boundary.
+D041 explicitly permits method constraints when the method is material to an ownership, deterministic-verification, safety/security or reproducibility boundary. D052 establishes such an ownership boundary for conformance-oracle authorship while leaving the executor free to choose its private implementation/testing/review process beyond that boundary.
+
+Accepted D053 prospectively controls stage ownership:
+
+```text
+Orchestrator -> Explore / Specify / Design / Plan & Trace
+Executor     -> Implement / Code Review & Verify
+Orchestrator -> Converge / Accept / Evolve
+```
+
+D052's test-authorship modes operate *inside* that stage model; they do not transfer Design or acceptance authority to the test author.
 
 ## Relationship to earlier testing ownership
 
@@ -194,8 +212,8 @@ D052 prospectively refines and supersedes conflicting test-authorship clauses in
 
 The binary role model remains intact:
 
-- ChatGPT Orchestrator: semantic specification, Markdown, acceptance meaning, and designated conformance/oracle assets;
-- Agente de IA Ejecutor: authorized implementation, technical/exploratory tests, verification execution and evidence;
+- ChatGPT Orchestrator: semantic specification, controlling Design/Plan, Markdown, acceptance meaning, designated conformance/oracle assets and convergence/acceptance;
+- Agente de IA Ejecutor: authorized implementation, technical Code Review & Verify, implementation/exploratory tests, verification execution and evidence;
 - Human Owner: final product/risk/release/override authority.
 
 ## Program adoption and grandfathering
@@ -203,18 +221,18 @@ The binary role model remains intact:
 D052 is prospective.
 
 - T032 R1 remains governed by its already-launched contract/rework and is not re-scoped.
-- T021 R1 remains governed by its existing contract and is not re-scoped.
+- T021 R1 remains governed by its existing contract and is not re-scoped merely to retrofit D052/D053 labels.
 - T022 may complete under its already-integrated runtime/profile contract without retrofitting a new authorship gate.
-- MG1/T023 is the first strong planned application: MG1 should persist the D050/D051 topology definitions plus the D052 conformance corpus/expected classifications/threshold semantics before T023 execution.
+- MG1/T023 remains a strong planned application of specification-owned conformance when/if that queue is reopened under current Governance authority.
 - New Skill-authoring, governance/policy and documentation-managed protocol tasks should select `orchestrator-conformance` or `mixed` unless a different mode is justified.
 
 Do not rewrite historical Task Contracts merely to label them retrospectively.
 
 ## Consequences
 
-- `AGENTS.md` and Task Contract policy must represent the narrow Orchestrator non-Markdown conformance exception.
+- `AGENTS.md` and Task Contract policy represent the narrow Orchestrator non-Markdown conformance exception plus D053 single-owner stages.
 - future executor launch context can be narrower because acceptance semantics may already be executable, but actual RCAB impact must be measured;
 - tests authored by ChatGPT must still be executed independently by the executor before acceptance;
 - the executor cannot make a failing conformance suite green by silently weakening its expected semantics;
 - ordinary consumer implementation continues to use executor-owned implementation testing by default;
-- green conformance tests remain evidence, never Governance acceptance authority.
+- green conformance tests and completed Code Review & Verify remain evidence, never Governance acceptance authority.
