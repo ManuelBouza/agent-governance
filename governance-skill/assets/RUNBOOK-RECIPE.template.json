@@ -1,0 +1,44 @@
+{
+  "adapter": {
+    "family": "other",
+    "platform": "any",
+    "shell": null,
+    "tool": "<canonical-tool-or-api-identity>",
+    "version": "<exact-installed-or-api-version>"
+  },
+  "authoritative_sources": [
+    {
+      "reference": "<project-native-procedure-or-authoritative-help-reference>",
+      "source_class": "project_native",
+      "version": null
+    }
+  ],
+  "binding": {
+    "credential_class": "none",
+    "network_scope": [],
+    "privilege": "current_user",
+    "resource_scope": "<bounded-resource-scope>",
+    "target_class": "<semantic-target-class>"
+  },
+  "effect_classes": [
+    "OBSERVE"
+  ],
+  "invocation": {
+    "kind": "argv",
+    "template": [
+      "<tool>",
+      "<parameterized-argument>"
+    ]
+  },
+  "operation_id": "<operation-id>",
+  "postconditions": [],
+  "preconditions": [],
+  "preview": null,
+  "recipe_id": "<recipe-id>",
+  "runbook_id": null,
+  "runbook_step": null,
+  "stale_triggers": [],
+  "status": "CANDIDATE",
+  "supersedes": null,
+  "verification": null
+}

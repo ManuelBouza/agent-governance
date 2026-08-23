@@ -113,6 +113,7 @@ def test_repeated_builds_have_identical_verified_identity(tmp_path: Path, repo_r
         "assets/CAPABILITIES.template.json",
         "assets/EXCHANGE.template.jsonl",
         "assets/MISSION.template.md",
+        "assets/RUNBOOK-RECIPE.template.json",
         "assets/RUNBOOK.template.md",
         "assets/SKILL-APPROVAL.template.json",
         "assets/STATE.template.json",
