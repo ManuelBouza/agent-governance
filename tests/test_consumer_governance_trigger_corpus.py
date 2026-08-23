@@ -189,13 +189,13 @@ def _drop_preservation_outcome(data: dict) -> None:
     managed["expected_behaviors"].remove("preserve_managed_surfaces")
 
 
-def _allow_unsolicited_sdd(data: dict) -> None:
+def _remove_native_sdd_fallback(data: dict) -> None:
     no_sdd = next(
         case["coexistence"]
         for case in data["cases"]
         if case["coexistence"] and case["coexistence"]["shape"] == "no_sdd"
     )
-    no_sdd["expected_behaviors"] = ["adapt_existing_capabilities"]
+    no_sdd["expected_behaviors"].remove("use_native_sdd")
 
 
 @pytest.mark.parametrize(
@@ -226,7 +226,10 @@ def _allow_unsolicited_sdd(data: dict) -> None:
         (_use_boolean_schema_version, "expected integer 1"),
         (_drop_conflict_outcome, "overlap must fail closed"),
         (_drop_preservation_outcome, "managed surfaces must be preserved"),
-        (_allow_unsolicited_sdd, "no_sdd must refuse unsolicited SDD only"),
+        (
+            _remove_native_sdd_fallback,
+            "no_sdd must use native SDD and refuse unsolicited external SDD",
+        ),
     ],
 )
 def test_mutations_fail_closed(corpus: dict, grader, mutate, error: str) -> None:
