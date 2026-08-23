@@ -116,9 +116,9 @@ def test_missing_external_sdd_uses_native_sdd_without_external_install(
     assert "use_native_sdd" in grader.BEHAVIORS
     assert "refuse_unsolicited_external_sdd" in grader.BEHAVIORS
     assert "refuse_unsolicited_sdd" not in grader.BEHAVIORS
-    assert "native_sdd_fallback" in grader.COE​XISTENCE_TAGS
-    assert "no_unsolicited_external_sdd" in grader.COE​XISTENCE_TAGS
-    assert "no_unsolicited_sdd" not in grader.COE​XISTENCE_TAGS
+    assert "native_sdd_fallback" in grader.COEXISTENCE_TAGS
+    assert "no_unsolicited_external_sdd" in grader.COEXISTENCE_TAGS
+    assert "no_unsolicited_sdd" not in grader.COEXISTENCE_TAGS
 
     report = grader.validate_corpus(corpus)
     assert report["status"] == "pass"
