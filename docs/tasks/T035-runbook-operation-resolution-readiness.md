@@ -3,7 +3,7 @@
 ## Identity
 
 - Task ID: `T035`
-- Status: `READY`
+- Status: `ACCEPTED`
 - Type: `mixed`
 - Base branch: `develop`
 - Expected topic branch: `feat/t035-runbook-operation-resolution-readiness`
@@ -15,7 +15,7 @@
 - Release-Impact: `prepares backward-compatible runtime support for later D054 Core activation`
 - Context-Impact: `focused bootstrap/validation/assets/tests only`
 
-T035 is READY because T034 is accepted/integrated, the canonical native-Windows baseline is green, and the required D052 conformance oracle `T035-D054-v1` is integrated and frozen on canonical `develop`. T035 MUST NOT absorb or bypass T034's frozen native-SDD materialization contract.
+T035 is ACCEPTED. T034 is accepted/integrated, the canonical native-Windows baseline was green, the required D052 conformance oracle `T035-D054-v1` is integrated and frozen on canonical `develop`, and the T035 implementation was accepted in `docs/reviews/T035-R1.md` and integrated through PR #201. T035 MUST NOT absorb or bypass T034's frozen native-SDD materialization contract.
 
 ## Objective
 
@@ -38,6 +38,7 @@ T035 adds the native demand-driven runbook/recipe footprint, recipe structural/t
 - `governance-skill/assets/RUNBOOK.template.md`
 - `tests/test_t035_runbook_operation_resolution_conformance.py`
 - `docs/reviews/T035-G1-oracle-prefreeze-verification.md`
+- `docs/reviews/T035-R1.md`
 - `docs/tasks/T034-native-sdd-executable-materialization.md`
 
 ## Dependency / sequencing
@@ -173,6 +174,8 @@ Frozen identity:
 
 The Executor MUST NOT edit the frozen T035 oracle. A suspected semantic defect is `ORACLE_DEFECT`-equivalent and requires D053 Orchestrator re-entry.
 
+T035 implementation completed against this frozen oracle and is accepted by `docs/reviews/T035-R1.md`.
+
 ## Authorized scope
 
 - deterministic bootstrap/validation implementation needed for the native runbook/recipe footprint;
@@ -266,6 +269,8 @@ Executor SHALL additionally:
 - distinguish required frozen oracle from supplementary Executor tests;
 - confirm no committed Markdown or frozen T035 oracle drift on the implementation branch.
 
+Accepted evidence is recorded in `handoffs/T035-executor-handoff.json` and `docs/reviews/T035-R1.md`.
+
 ## Stop / escalation / SDD re-entry conditions
 
 Return `BLOCKED`/`PARTIAL` rather than expand scope when:
@@ -303,3 +308,5 @@ HANDOFF: handoffs/T035-executor-handoff.json
 BRANCH: feat/t035-runbook-operation-resolution-readiness
 HEAD: <pushed-commit-sha>
 ```
+
+Accepted terminal result: `STATUS: DONE`, submitted HEAD `7c90ba89644d6d4d25d92ba30a96bfd25a6253d5`, integrated through PR #201.
