@@ -1,0 +1,56 @@
+{
+  "task_id": "T036",
+  "status": "DONE",
+  "task_contract_path": "docs/tasks/T036-d054-phase-b-oracle-transition.md",
+  "branch": "verify/t036-d054-phase-b-oracle-transition",
+  "implementation_head_sha": "f72b1eb609fb5636f102fdfd69501bfc61618008",
+  "base_branch": "develop",
+  "base_sha": "f72b1eb609fb5636f102fdfd69501bfc61618008",
+  "files_changed": ["handoffs/T036-executor-handoff.json"],
+  "implementation_summary": "Read-only Executor Code Review & Verify of the integrated T036 Orchestrator oracle transition. No implementation, oracle, Markdown, runtime, CLI, template, or protocol-version files were changed.",
+  "sdd_profile": "STANDARD",
+  "code_review": {
+    "reviewed_head_sha": "f72b1eb609fb5636f102fdfd69501bfc61618008",
+    "summary": "Reviewed the integrated T036 preserved-surface transition against the Task Contract and controlling references. The oracle reads the accepted T035 R-T035-P1 historical requirement rather than asserting the current protocol version, retains the exact seven-command CLI assertion, and introduces no hidden runtime or version-authority workaround.",
+    "findings": [],
+    "resolved_findings": [],
+    "upstream_reentry_required": false,
+    "upstream_reentry_stage": null
+  },
+  "requirement_trace": {
+    "R-T036-1": "PASS: focused oracle confirms the accepted T035 contract contains the preserved historical Protocol-Version 1.14.0 requirement.",
+    "R-T036-2": "PASS: focused oracle retains the exact Consumer CLI v1 command set: bootstrap, validate, state, event, skill, ecosystem, archive.",
+    "R-T036-P1": "PASS: focused T035 oracle suite passed with all recipe/runbook and security assertions intact.",
+    "R-T036-P2": "PASS: T035 history and frozen revision evidence were not modified.",
+    "R-T036-P3": "PASS: no routed Core, current protocol, Consumer Skill, runtime, template, CLI, or package files changed.",
+    "R-T036-P4": "PASS: no T035 assertion was removed or weakened.",
+    "R-T036-P5": "PASS: current develop baseline remained green while Protocol-Version remains 1.14.0."
+  },
+  "verification": {
+    "commands": [
+      "uv sync --locked",
+      "uv run --locked pytest tests/test_t035_runbook_operation_resolution_conformance.py",
+      "uv run --locked ruff check .",
+      "uv run --locked ruff format --check .",
+      "uv run --locked python -m pytest",
+      "git diff --check"
+    ],
+    "results": {
+      "focused_suite": "PASS: 6 tests passed.",
+      "ruff_check": "PASS: All checks passed.",
+      "ruff_format": "PASS: 29 files already formatted.",
+      "full_deterministic_suite": "PASS: 355 tests passed in 68.30s on native Windows.",
+      "diff_check": "PASS: no whitespace errors.",
+      "ownership_drift": "PASS: only the authorized non-Markdown handoff is added; no oracle or Markdown drift.",
+      "protocol_pin": "PASS: current governance Protocol-Version remains 1.14.0 and no future-version assertion was added."
+    },
+    "runtime": "Native Windows / NTFS; PowerShell; fresh isolated checkout; CPython 3.13.14; uv 0.11.32; pytest 9.1.1; Ruff 0.16.2.",
+    "network_required": true,
+    "network_detail": "Network was used for the canonical remote clone and final branch push. Deterministic verification used only local synthetic state and did not contact targets."
+  },
+  "dependencies_or_config_changes": [],
+  "git_status": "clean after handoff commit",
+  "unresolved_issues": [],
+  "recommended_next_task": "ChatGPT Orchestrator performs T036 Converge/Accept review and may then authorize the separate D040 Phase-B activation work.",
+  "chatgpt_read_path": "handoffs/T036-executor-handoff.json"
+}
