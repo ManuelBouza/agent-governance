@@ -10,6 +10,7 @@ import sys
 from pathlib import Path
 
 import pytest
+from _helpers import protocol_version_from
 
 
 def unsafe_link_fixture(
@@ -85,6 +86,17 @@ def test_bootstrap_creates_canonical_footprint_without_touching_project(
         path.name for path in coordination.iterdir()
     }
     assert all((coordination / name).is_dir() for name in ("tasks", "skills", "decisions"))
+    version = protocol_version_from(repo_root / "governance-core" / "GOVERNANCE.md")
+    assert version is not None
+    for name in ("STATE", "CAPABILITIES"):
+        template = json.loads(
+            (repo_root / "governance-skill" / "assets" / f"{name}.template.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        installed = json.loads((coordination / f"{name}.json").read_text(encoding="utf-8"))
+        assert template["protocol_version"] is None
+        assert installed["protocol_version"] == version
 
 
 @pytest.mark.parametrize("collision", [".agent-governance", ".agent-coordination"])
@@ -199,6 +211,30 @@ def test_bootstrap_prevalidates_package_before_mutation(tmp_path: Path, repo_roo
         package / "governance-skill" / "scripts" / "governance.py", "bootstrap", target
     )
     assert result.returncode != 0
+    assert not (target / ".agent-governance").exists()
+    assert not (target / ".agent-coordination").exists()
+
+
+@pytest.mark.parametrize("template_name", ["STATE.template.json", "CAPABILITIES.template.json"])
+def test_bootstrap_rejects_bound_protocol_version_in_package_template(
+    tmp_path: Path, repo_root: Path, template_name: str
+) -> None:
+    package = tmp_path / "package"
+    shutil.copytree(repo_root / "governance-core", package / "governance-core")
+    shutil.copytree(repo_root / "governance-skill", package / "governance-skill")
+    template = package / "governance-skill" / "assets" / template_name
+    value = json.loads(template.read_text(encoding="utf-8"))
+    value["protocol_version"] = protocol_version_from(package / "governance-core" / "GOVERNANCE.md")
+    template.write_text(json.dumps(value, indent=2) + "\n", encoding="utf-8", newline="")
+    target = tmp_path / "consumer"
+    target.mkdir()
+
+    result = run_cli(
+        package / "governance-skill" / "scripts" / "governance.py", "bootstrap", target
+    )
+
+    assert result.returncode != 0
+    assert "unbound null protocol_version" in result.stderr
     assert not (target / ".agent-governance").exists()
     assert not (target / ".agent-coordination").exists()
 
