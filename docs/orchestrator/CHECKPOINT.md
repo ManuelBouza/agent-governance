@@ -1,9 +1,9 @@
 # Current ChatGPT Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O161  
+Checkpoint-Sequence: O163  
 Canonical-Branch: `develop`  
-Current-Work-Unit: T039 Orchestrator-owned T034 protocol-history oracle transition; T038 implementation is complete but blocked only by the stale T034 live-current-version assertion  
+Current-Work-Unit: T038 accepted/integrated; next action is final independent T039 verification on the restored canonical baseline before resuming T021-R1  
 Chat-Closure: CONTINUE_CURRENT_CHAT  
 Active-Executor: Codex  
 Active-Executor-Surface: ChatGPT desktop / Codex / native Windows
@@ -11,20 +11,21 @@ Active-Executor-Surface: ChatGPT desktop / Codex / native Windows
 ## Durable frontier
 
 - D053 native SDD, D054 execution-mechanics ownership, D040 single current protocol-version authority, D042 freshness, D048 final-publication boundary, D052 conformance ownership, D055 launch profiles and D056 progress-note rules remain controlling.
-- Current routed Core protocol is `1.15.0`.
+- Current routed Core protocol remains `1.15.0`.
 - T034, T035, T036 and T037 remain `ACCEPTED` as historical work units.
-- Human Owner explicitly resumed T021 on 2026-08-24. T021 remains `REWORK_REQUIRED`; its represented branch is history-preserved and reconciled, but no T021-R1 semantic correction has been committed because canonical T020 artifact verification was red.
-- T038 was planned to restore that T020/canonical package baseline without creating a second current-version authority.
-- T038 Executor result at submitted HEAD `6dd2f99c5cc78ddc53f9719b4d2df4dc735d70e7` is `BLOCKED`, with implementation anchor `8aa32b32fb15e01bfbc56e327a910b82b3674c32`, base `a8f458c8d0334edac8d1a9cdeea7418d5cb860d5`, branch `fix/t038-protocol-derived-consumer-assets`, and handoff `handoffs/T038-executor-handoff.json`.
-- T038 implementation is internally green on its authorized surface: combined artifact/Consumer suite `46 passed`, focused T020 artifact `4 passed`, focused protocol-derived asset tests `3 passed`, Ruff check/format PASS and `git diff --check` PASS.
-- T038 changed only the two Consumer JSON templates, engine materialization/validation, Consumer/T020 tests and handoff. It did not change Core, Markdown, T021, CLI commands or artifact builder behavior.
-- T038 source templates now use `protocol_version: null`; bootstrap materializes both installed STATE/CAPABILITIES protocol versions from the already validated packaged Core; T020/current tests derive expectations from Core rather than duplicated literals.
-- Full T038 pytest is `356 passed, 1 failed`. The sole failure is Orchestrator-owned `tests/test_t034_native_sdd_conformance.py::test_core_and_artifact_expect_protocol_1_14_with_sdd`, which still requires a newly built artifact from current Core to report historical T034 version `1.14.0`.
-- This is a D052 oracle lifecycle defect, not a T038 implementation defect. T034's accepted Task Contract remains authoritative historical evidence that T034 materialized Protocol `1.14.0`; current `governance-core/GOVERNANCE.md` remains sole authority for current protocol identity.
-- T039 is persisted at `docs/tasks/T039-t034-protocol-history-oracle-transition.md` with Oracle revision `T039-T034-PROTOCOL-HISTORY-TRANSITION-v1`.
-- T039 changes only the single stale temporal assertion in `tests/test_t034_native_sdd_conformance.py`: historical `1.14.0` is proven from the accepted T034 Task Contract, while a current artifact must equal the protocol dynamically derived from current Core. All other T034 oracle semantics remain frozen.
-- T038 MUST NOT be integrated or accepted until T039 is independently verified and accepted, then T038 is re-verified against fresh canonical develop containing T039.
-- T021 remains blocked pending T038 acceptance. T022 remains blocked until T021 acceptance. MG1/T023 and later unified-refactor work remain ineligible.
+- T039 oracle revision `T039-T034-PROTOCOL-HISTORY-TRANSITION-v1` is integrated and controlling. Its first independent verification at HEAD `0197e1899cb0933c7345b373a5dfdbd015d078fc` was correctly `BLOCKED` because canonical develop did not yet contain T038; that handoff is historical blocker evidence only.
+- T040 corrected the T038/T039 convergence cycle. Required order is: T039 oracle integrated -> T038 accepted/integrated -> fresh T039 final verification -> T039 acceptance -> resume T021-R1.
+- T038 is now `ACCEPTED`. Review: `docs/reviews/T038-R1.md`.
+- Accepted T038 canonical verification base: `b565a54213c1343ba73714a3d1d9a78ae1b78bcc`.
+- Accepted T038 reconciled implementation anchor: `1c4634ac07214ea293cc45e4caa7998f615e432c`.
+- Accepted T038 submitted Executor HEAD: `cb2e7f86fe08ffd80665b4616d71ebad86a425bf`.
+- T038 integration PR: `#217`; integration merge: `b02b6bf2a5d5b843b2803fb454b0316779a5dae8`.
+- T038 full locked verification on the reconciled candidate passed: `357 passed`; Ruff check/format and `git diff --check` passed; focused T020 and protocol-derived asset coverage passed.
+- T038 source Consumer STATE/CAPABILITIES templates are version-neutral (`protocol_version: null`); bootstrap materializes concrete installed identity from validated packaged Core; installed validation remains strict against Core.
+- T038 does not change Core, T021, CLI command names, dependency/toolchain configuration or artifact builder behavior.
+- Orchestrator process incident: after the Human supplied T038 submitted HEAD `cb2e7f86...`, Orchestrator accidentally appended Markdown commit `fb3146cdc80968fa0a583a7a8884635cac193350` to the represented Executor branch. That successor commit is non-authoritative, was excluded from integration, and represented history was not force-pushed or rewritten. PR #217 integrated from a separate Orchestrator branch created exactly at `cb2e7f86...`.
+- Human Owner explicitly resumed T021 on 2026-08-24. T021 remains `REWORK_REQUIRED` under `docs/reviews/T021-R1.md`; its represented branch/history must remain preserved. Its pending semantic defect remains the AC-T021-2 direct unsupported-`Profile` fail-closed boundary.
+- T021 remains paused until T039 final acceptance completes this convergence chain. T022 remains `BLOCKED` until T021 acceptance. MG1/T023 and later unified-refactor work remain ineligible.
 
 ## Mandatory Executor prompt transport invariant
 
@@ -59,39 +60,37 @@ complex/high-risk technical work  -> GPT-5.6 Sol / High
 exceptional long-horizon work     -> GPT-5.6 Sol / highest mode only when justified
 ```
 
-## T039 active identity
+## T039 next verification identity
 
 ```text
 Task: T039
-Status: PLANNED / ORCHESTRATOR-CONFORMANCE GATE
+Status: ORACLE REVISION INTEGRATED / FINAL VERIFICATION REQUIRED
 Task Contract: docs/tasks/T039-t034-protocol-history-oracle-transition.md
 Oracle asset: tests/test_t034_native_sdd_conformance.py
 Oracle revision: T039-T034-PROTOCOL-HISTORY-TRANSITION-v1
-Planning/oracle branch: feat/t039-t034-oracle-transition
-Expected verification branch: verify/t039-t034-oracle-transition
+Prior blocked verification HEAD: 0197e1899cb0933c7345b373a5dfdbd015d078fc
+Expected new verification branch: verify/t039-t034-oracle-transition
 Expected handoff: handoffs/T039-executor-handoff.json
-Purpose: preserve T034 historical 1.14.0 acceptance without pinning future current artifact identity
+Required action: fresh read-only Code Review & Verify from canonical develop after T038 acceptance/integration; handoff-only mutation permitted
 ```
 
-## T038 blocked identity
+## T038 accepted identity
 
 ```text
 Task: T038
-Status: BLOCKED BY T039 ORACLE TRANSITION
+Status: ACCEPTED
 Task Contract: docs/tasks/T038-protocol-derived-consumer-asset-versioning.md
-Branch: fix/t038-protocol-derived-consumer-assets
-Base: a8f458c8d0334edac8d1a9cdeea7418d5cb860d5
-Implementation anchor: 8aa32b32fb15e01bfbc56e327a910b82b3674c32
-Submitted HEAD: 6dd2f99c5cc78ddc53f9719b4d2df4dc735d70e7
-Handoff: handoffs/T038-executor-handoff.json
-Only failing gate: stale D052 T034 exact-current 1.14.0 oracle assertion
+Review: docs/reviews/T038-R1.md
+Submitted Executor HEAD: cb2e7f86fe08ffd80665b4616d71ebad86a425bf
+Integration PR: #217
+Integration merge: b02b6bf2a5d5b843b2803fb454b0316779a5dae8
 ```
 
-## T021 blocked identity
+## T021 paused identity
 
 ```text
 Task: T021
-Status: REWORK_REQUIRED / BLOCKED BY T038
+Status: REWORK_REQUIRED / PAUSED UNTIL T039 FINAL ACCEPTANCE
 Task Contract: docs/tasks/T021-consumer-profile-abstraction-zero-drift.md
 Review authority: docs/reviews/T021-R1.md
 Represented branch: refactor/t021-consumer-profile-abstraction
@@ -102,15 +101,14 @@ Pending semantic correction: AC-T021-2 direct unsupported-Profile fail-closed bo
 
 ## Next action
 
-1. Integrate the T039 planning/oracle/checkpoint branch into `develop` through PR after remote diff review.
+1. Integrate this T038 acceptance/checkpoint branch into `develop` through PR.
 2. Refresh canonical `develop` identity.
-3. Show D055 launch profile for T039 independent verification: Codex `NEW`, GPT-5.6 Luna, Low; no implementation is expected, only bounded Code Review & Verify of one Orchestrator-owned oracle transition.
+3. Show D055 profile for T039 final verification: Codex `NEW`, GPT-5.6 Luna, Low; this is read-only independent verification with no product implementation expected.
 4. Launch T039 from fresh canonical `develop` using only pointer `docs/tasks/T039-t034-protocol-history-oracle-transition.md` plus D042 freshness.
-5. Executor performs only T039 Code Review & Verify and persists/pushes terminal handoff/head.
-6. Orchestrator independently reviews and accepts T039 if focused/full canonical verification is green and no other T034 semantic drift exists.
-7. Only after T039 acceptance, re-verify T038 from then-current canonical `develop`, preserving its represented implementation history and without semantic redesign.
-8. Only after T038 acceptance/integration may T021-R1 resume on its represented branch.
-9. Do not start T022 or later program work before T021 acceptance.
+5. Executor performs T039 Code Review & Verify only; it may persist/push `handoffs/T039-executor-handoff.json` but must make no product/oracle/Markdown changes.
+6. Orchestrator independently reviews the new T039 remote HEAD. If focused T034, full locked pytest, Ruff check/format and `git diff --check` are green with no semantic drift, accept T039 and persist closure.
+7. After T039 acceptance, resume T021-R1 on its represented history according to its existing authority; do not recreate/rewrite the branch.
+8. Do not start T022 or later unified-refactor work before T021 acceptance.
 
 ## Next chat minimum load
 
@@ -118,4 +116,4 @@ Load only current `develop` identity, `AGENTS.md`, and this checkpoint; then fol
 
 ## Do not
 
-Do not edit any other T034 oracle semantics; do not replace historical `1.14.0` with a new duplicated current `1.15.0` literal; do not mutate T038 implementation while verifying T039; do not integrate T038 before T039 acceptance; do not touch T021 until T038 acceptance; do not start T022 before T021 acceptance; do not write directly to `main`/`develop`.
+Do not treat Orchestrator commit `fb3146cdc80968fa0a583a7a8884635cac193350` as T038 Executor evidence; do not force-rewrite the represented T038 or T021 branch; do not rerun T038 unless a new concrete defect requires re-entry; do not mutate product/oracle semantics during T039 final verification; do not resume T021 before T039 final acceptance; do not start T022 before T021 acceptance; do not write directly to `main`/`develop`.
