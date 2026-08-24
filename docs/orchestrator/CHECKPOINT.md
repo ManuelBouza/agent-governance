@@ -1,9 +1,9 @@
 # Current ChatGPT Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O164  
+Checkpoint-Sequence: O165  
 Canonical-Branch: `develop`  
-Current-Work-Unit: T039 accepted; resume T021-R1 on preserved represented history against fresh canonical develop  
+Current-Work-Unit: T021 accepted/integrated; T022 source-maintainer profile is next executable work  
 Chat-Closure: CONTINUE_CURRENT_CHAT  
 Active-Executor: Codex  
 Active-Executor-Surface: ChatGPT desktop / Codex / native Windows
@@ -12,18 +12,20 @@ Active-Executor-Surface: ChatGPT desktop / Codex / native Windows
 
 - D053 native SDD, D054 execution-mechanics ownership, D040 single current protocol-version authority, D042 freshness, D048 final-publication boundary, D052 conformance ownership, D055 launch profiles and D056 progress-note rules remain controlling.
 - Current routed Core protocol remains `1.15.0`.
-- T034, T035, T036, T037, T038 and T039 are `ACCEPTED`.
-- T038 acceptance review: `docs/reviews/T038-R1.md`; submitted Executor HEAD `cb2e7f86fe08ffd80665b4616d71ebad86a425bf`; integration PR `#217`; integration merge `b02b6bf2a5d5b843b2803fb454b0316779a5dae8`.
-- T039 acceptance review: `docs/reviews/T039-R1.md`; final verification base `dffc2a2fba34080b111ea9ebe5b975acf81cfca2`; submitted Executor HEAD `38aa7dd4c2db46796f526f47ce0484265e12306c`; integration PR `#219`; integration merge `3ad69a70cc2319c8f4c228c6fcefb8148bee289a`.
-- T039 final verification passed focused T034 `3 passed`, full locked pytest `357 passed`, Ruff check/format and `git diff --check`.
-- T039 oracle revision `T039-T034-PROTOCOL-HISTORY-TRANSITION-v1` remains controlling: historical T034 `1.14.0` acceptance is proven historically while current artifact identity derives from current Core.
-- T040 sequencing correction is satisfied; the T038/T039 convergence chain is complete.
-- Orchestrator process incidents on represented T038/T039 branches were explicitly excluded from submitted-head integration and are non-authoritative successor noise. Never use those later Markdown commits as Executor evidence and never rewrite represented history to remove them.
-- Human Owner explicitly resumed T021 on 2026-08-24. T021 remains `REWORK_REQUIRED` under `docs/reviews/T021-R1.md` and is now the next eligible work unit.
-- T021's sole semantic defect remains AC-T021-2: directly constructed unsupported `Profile` identities can bypass `resolve_profile()` and reach the engine Consumer path unless the authoritative engine/profile boundary validates supported identity fail-closed.
-- T021 represented branch is `refactor/t021-consumer-profile-abstraction`. Its prior history-preserving reconciliation anchor is `f078928734be4ed0d272821955ba4d8ccdd7cd53`; prior blocked submitted HEAD is `b2ec49e210a752fa539832e06b48b2bcdc00a8dd`. No T021-R1 correction was committed at that blocked HEAD.
-- T021 represented history MUST be preserved. Reconcile current canonical develop containing accepted T038/T039 into the represented branch without discard/recreation/force-push, then apply only the T021-R1-authorized correction and complete current verification.
-- T022 remains `BLOCKED` until T021 is accepted. MG1/T023 and later unified-refactor work remain ineligible until their declared dependencies are satisfied.
+- T034 through T039 are accepted; T040 sequencing correction is satisfied.
+- T038 review: `docs/reviews/T038-R1.md`; T039 review: `docs/reviews/T039-R1.md`.
+- T021 is now `ACCEPTED`. Review: `docs/reviews/T021-R2.md`.
+- Accepted T021 canonical verification base: `82a5d8741ddea77e2bec6a369dd8fdb17ef9d109`.
+- Accepted T021 reconciliation HEAD: `23be0fe5506d30a90511a1063c02a126da8531c1`.
+- Accepted T021 implementation HEAD: `1beaa1193b8522c63f1d1a11a36f3b8cb15ee367`.
+- Accepted T021 submitted Executor HEAD: `4f55cb41963f173171e637daf6311aaf99312ffc`.
+- T021 integration PR: `#221`; integration merge: `e5bdb3c40236bb146343a405d9d56f2a8ee30877`.
+- T021-R1 AC-T021-2 is resolved: every direct unsupported `Profile` identity is rejected fail-closed at the engine/profile boundary before Consumer target mutation. Consumer/default behavior and T020 artifact compatibility remain green.
+- T021 verification evidence: focused profile `25 passed`, Consumer v1 regression `79 passed`, T020 artifact `4 passed`, full deterministic `382 passed`, Ruff check/format PASS, py_compile PASS, `git diff --check` PASS.
+- T022 dependency on T021 is now satisfied. T022 persisted authority is `docs/tasks/T022-source-maintainer-profile-over-legacy-adapters.md`.
+- T022 objective is to activate a `source-maintainer` runtime profile over explicit legacy source adapters without creating Consumer installation state or changing source persistence semantics.
+- T023 and later unified-refactor work remain gated by their declared dependencies; do not skip T022.
+- Historical Orchestrator Markdown successor incidents on represented Executor branches remain non-authoritative and must not be used as Executor evidence. Never rewrite represented history to remove them.
 
 ## Mandatory Executor prompt transport invariant
 
@@ -58,41 +60,38 @@ complex/high-risk technical work  -> GPT-5.6 Sol / High
 exceptional long-horizon work     -> GPT-5.6 Sol / highest mode only when justified
 ```
 
-## T039 accepted identity
-
-```text
-Task: T039
-Status: ACCEPTED
-Task Contract: docs/tasks/T039-t034-protocol-history-oracle-transition.md
-Review: docs/reviews/T039-R1.md
-Submitted Executor HEAD: 38aa7dd4c2db46796f526f47ce0484265e12306c
-Integration PR: #219
-Integration merge: 3ad69a70cc2319c8f4c228c6fcefb8148bee289a
-```
-
-## T021 active identity
+## T021 accepted identity
 
 ```text
 Task: T021
-Status: REWORK_REQUIRED / HUMAN-RESUMED / NEXT EXECUTABLE WORK
+Status: ACCEPTED
 Task Contract: docs/tasks/T021-consumer-profile-abstraction-zero-drift.md
-Review authority: docs/reviews/T021-R1.md
-Represented branch: refactor/t021-consumer-profile-abstraction
-Prior reconciliation HEAD: f078928734be4ed0d272821955ba4d8ccdd7cd53
-Prior blocked submitted HEAD: b2ec49e210a752fa539832e06b48b2bcdc00a8dd
-Pending semantic correction: AC-T021-2 direct unsupported-Profile fail-closed boundary
-Required action: preserve history, reconcile fresh canonical develop, apply only R1 correction, run complete current verification, persist/push terminal handoff/head
+Review: docs/reviews/T021-R2.md
+Submitted Executor HEAD: 4f55cb41963f173171e637daf6311aaf99312ffc
+Integration PR: #221
+Integration merge: e5bdb3c40236bb146343a405d9d56f2a8ee30877
+```
+
+## T022 next executable identity
+
+```text
+Task: T022
+Status: NEXT EXECUTABLE WORK
+Task Contract: docs/tasks/T022-source-maintainer-profile-over-legacy-adapters.md
+Expected branch: feat/t022-source-maintainer-profile
+Expected handoff: handoffs/T022-executor-handoff.json
+Base: fresh canonical develop after this acceptance/checkpoint integration
 ```
 
 ## Next action
 
-1. Integrate this T039 acceptance/checkpoint branch into `develop` through PR.
+1. Integrate this T021 acceptance/checkpoint branch into `develop` through PR.
 2. Refresh canonical `develop` identity.
-3. Show D055 profile for T021: Codex `NEW`, GPT-5.6 Sol, Medium; the semantic correction is narrow but represented history must be reconciled safely with the now-restored canonical baseline.
-4. Launch T021 from fresh canonical `develop` using only pointer `docs/tasks/T021-consumer-profile-abstraction-zero-drift.md` plus D042 freshness. Current repository instructions/checkpoint route the Executor to `docs/reviews/T021-R1.md` and the represented branch.
-5. Executor preserves represented T021 history, reconciles current develop without force-push/recreation, applies only the T021-R1 correction, runs the complete current verification matrix, persists/pushes terminal handoff/head and returns canonical completion fields.
-6. Orchestrator independently reviews the submitted remote HEAD, complete diff, history preservation and evidence before acceptance/integration.
-7. Do not start T022 or later unified-refactor work before T021 acceptance.
+3. Show D055 profile for T022: Codex `NEW`, GPT-5.6 Sol, Medium; this is standard semantic profile/adaptor implementation with cross-profile isolation requirements.
+4. Launch T022 from fresh canonical `develop` using only pointer `docs/tasks/T022-source-maintainer-profile-over-legacy-adapters.md` plus D042 freshness.
+5. Executor performs only T022 Implement + Code Review & Verify, persists/pushes terminal handoff/head and returns canonical completion fields.
+6. Orchestrator independently reviews T022 remote evidence/diff before acceptance/integration.
+7. Do not start T023 or later work before T022 acceptance and the next declared gate is satisfied.
 
 ## Next chat minimum load
 
@@ -100,4 +99,4 @@ Load only current `develop` identity, `AGENTS.md`, and this checkpoint; then fol
 
 ## Do not
 
-Do not treat post-submission Orchestrator Markdown successors on represented T038/T039 branches as Executor evidence; do not force-rewrite represented T021 history; do not broaden T021 into source-maintainer behavior, Core semantics or unrelated baseline work; do not let Executor edit committed Markdown; do not start T022 before T021 acceptance; do not write directly to `main`/`develop`.
+Do not broaden T022 into Markdown ownership changes, Core protocol semantics, Consumer installation state at source root, a second independently maintained Skill runtime, source persistence convergence, or downstream T023+ scope; do not let Executor edit committed Markdown; do not write directly to `main`/`develop`.
