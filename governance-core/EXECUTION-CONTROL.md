@@ -1,16 +1,18 @@
 # Execution Access and Runbook Control
 
-Execution-Control-Version: 1.0.0
+Execution-Control-Version: 1.1.0
 
 Load this module when planning, authorizing, executing or reviewing work that can inspect or mutate execution state outside ordinary task-local source/test effects, including local-system, remote-system, privileged, credentialed, network, deployment, persistent-data or destructive operations.
 
-This module integrates D033 and D034 into the Governance Core. `EXECUTION.md` remains authoritative for task sequencing/state; this module governs the capability/effect boundary and material execution procedure inside a task.
+This module integrates D033, D034 and D054 into the Governance Core. `EXECUTION.md` remains authoritative for task sequencing/state; this module governs the capability/effect boundary, material execution procedure and bounded adapter-operation resolution inside a task.
 
 ## Core invariants
 
 ```text
 mechanism != authority
 procedure semantics != terminal syntax
+semantic runbook != adapter recipe
+recipe trust != execution authority
 approved runbook != approved invocation
 authority(child) ⊆ authority(parent)
 ```
@@ -18,6 +20,8 @@ authority(child) ⊆ authority(parent)
 A terminal, shell, CLI, API, authenticated session, credential, remote connection or elevated identity is an execution mechanism. Possession or availability does not authorize every effect it can produce.
 
 A runbook defines an operational procedure. Its semantic contract is independent from the terminal, operating system, command interpreter, CLI, API, SDK, remote transport or automation host used to realize it.
+
+A Verified Operation Recipe is an adapter-specific realization of one bounded semantic operation or runbook step. It is technical evidence/cache, not Governance authority, and cannot broaden the task, runbook or Execution Capability Envelope.
 
 ## Execution Capability Envelope
 
@@ -81,6 +85,8 @@ Human Owner approval is required before the bounded material operation proceeds.
 - an operation whose actual target/effect cannot be established confidently.
 
 Approval is for the coherent bounded operation/runbook stage, not normally every adapter command. A material target/effect/privilege change makes the approval stale.
+
+The Human Owner is not the default command runner. Routine Git, uv, shell, CLI, API, SDK and remote-management mechanics inside an authorized task belong to the Implementation Agent. Human interaction is reserved for required approvals/MFA/external gates, material credential/risk decisions, or an explicit request to inspect or execute exact syntax.
 
 ### `DENY`
 
@@ -231,6 +237,80 @@ Human denial                            -> BLOCKED/CANCELLED under controlling w
 
 A client/adapter exit code alone is not a sufficient postcondition for a material remote/system effect when actual target state can be verified independently.
 
+## Executor-owned operation resolution
+
+For each adapter operation, the Implementation Agent follows this order:
+
+```text
+1. resolve semantic operation + actual target/effect context
+2. select/reuse the applicable semantic runbook when required/present
+3. find a compatible VERIFIED operation recipe
+4. if absent/stale, resolve syntax from authoritative version-compatible help/docs/schema
+5. construct a bounded CANDIDATE recipe
+6. preview/dry-run when meaningful and trustworthy
+7. re-evaluate the Execution Capability Envelope against the bound invocation
+8. execute with least privilege and bounded credentials/network
+9. verify target identity + required semantic postconditions
+10. promote to VERIFIED only after evidence proves the recorded binding
+11. reuse only while provenance/binding remains current
+```
+
+Model memory, community examples, generated snippets or search summaries are never sufficient sole authority for a newly learned executable recipe.
+
+Authoritative resolution evidence order is:
+
+1. compatible project/platform-native owned procedure or generated command interface;
+2. installed/version-specific tool help, introspection or schema;
+3. official vendor documentation for the installed tool/API version;
+4. current official vendor documentation only after compatibility is established.
+
+Documentation lookup is an `OBSERVE` operation and remains subject to network/credential policy. Do not pipe or execute dynamically fetched scripts/examples merely because they come from documentation.
+
+If authoritative evidence is unavailable, contradictory, incompatible with the installed version/context, or leaves material target/effect ambiguity, block instead of guessing.
+
+## Verified Operation Recipe lifecycle
+
+A durable recipe must make the following determinable without storing secrets:
+
+- stable `recipe_id` and semantic `operation_id`;
+- optional `runbook_id`/step binding;
+- state: `CANDIDATE | VERIFIED | STALE | REVOKED | SUPERSEDED`;
+- adapter family and exact tool/API identity/version used for verification;
+- platform/command-environment/quoting context when material;
+- target class/resource scope and effect classes;
+- privilege ceiling, credential class and network scope;
+- parameterized non-secret invocation representation;
+- authoritative documentation provenance;
+- preconditions and preview/dry-run capability where applicable;
+- postconditions and expected failure semantics;
+- verification time/evidence reference;
+- explicit staleness triggers.
+
+`VERIFIED` means proven only for the recorded binding. It never means universal compatibility or invocation authority.
+
+Default staleness triggers include tool/API/version drift, changed shell/platform quoting, changed default account/profile/region/cluster/database/repository context, changed authentication/privilege model, changed target/destructive defaults, documentation/schema invalidation, failed postconditions inside the recorded binding, security advisories or Governance-control changes.
+
+A `STALE`, `REVOKED` or `SUPERSEDED` recipe is not executed as trusted cached syntax. Return to authoritative resolution or a current replacement.
+
+Promotion to `VERIFIED` requires authoritative provenance, exact adapter binding, current authorization, successful bounded execution or safe verification as applicable, required semantic postcondition evidence, no unexpected authority/context expansion and a parameterized secret-free representation.
+
+## Native runbook / recipe persistence
+
+Reuse project-native operational providers first. When no adequate native provider exists, Governance-owned persistence is:
+
+```text
+.agent-coordination/runbooks/
+    RUNBOOK.template.md
+    <runbook-id>.md
+    recipes/
+        RUNBOOK-RECIPE.template.json
+        <recipe-id>.json
+```
+
+Bootstrap creates only the reusable skeleton/templates. Do not pre-populate arbitrary command catalogs.
+
+Semantic runbook meaning remains Human/Strategy-owned procedure authority. Adapter recipes are Implementation-owned technical realization/evidence. Deterministic validation may verify recipe structure/trust binding but does not create execution authority. `STATE.json` remains a compact frontier and must not copy the runbook/recipe registry.
+
 ## Terminal/platform-neutral Execution Adapter
 
 An Execution Adapter translates semantic runbook steps into the available project/platform mechanism.
@@ -289,7 +369,9 @@ For material execution/runbook invocation, retain enough sanitized evidence to d
 
 - task/authorization reference;
 - runbook identity/revision;
+- recipe identity/state/binding when reused or learned;
 - adapter identity/version when relevant;
+- authoritative resolution provenance when syntax was learned/refreshed;
 - bound non-secret inputs;
 - actual target/environment/principal;
 - effect classes and resource scope;
@@ -316,6 +398,8 @@ Before F5 passes for a task containing material execution effects, Strategy must
 
 If any of these cannot be established, the task is not READY.
 
+Adapter syntax does not need to be pre-authored by Strategy merely for readiness. When exact mechanics are not yet known, Implementation resolves them inside the approved semantic envelope through the operation-resolution lifecycle above.
+
 ## Blocker routing
 
 Execution-control blockers include at least:
@@ -324,6 +408,7 @@ Execution-control blockers include at least:
 - target/context mismatch;
 - required privilege/credential boundary unavailable;
 - required runbook/procedure absent or stale;
+- compatible VERIFIED recipe absent and authoritative syntax cannot be resolved safely;
 - precondition/checkpoint/postcondition cannot be verified;
 - adapter cannot preserve required semantics;
 - required recovery path is unavailable for the approved risk;
