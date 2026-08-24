@@ -99,7 +99,9 @@ def test_repeated_builds_have_identical_verified_identity(tmp_path: Path, repo_r
     identity = identities[0]
     assert identity["build_schema_version"] == "1.0.0"
     assert identity["skill_version"] == "0.1.0"
-    assert identity["protocol_version"] == "1.14.0"
+    assert identity["protocol_version"] == builder._protocol_version(
+        repo_root / "governance-core" / "GOVERNANCE.md"
+    )
     assert identity["installed_footprint_version"] == "1.0.0"
     assert identity["source_commit"] == commit
 
@@ -241,7 +243,9 @@ def test_artifact_runs_without_source_or_sibling_dependencies(
     assert "STATE is stale" in state.stderr
     state = run_cli(cli, "state", consumer, "--refresh", cwd=isolated)
     assert state.returncode == 0, state.stderr
-    assert json.loads(state.stdout)["protocol_version"] == "1.14.0"
+    assert json.loads(state.stdout)["protocol_version"] == builder._protocol_version(
+        artifact / "core" / "GOVERNANCE.md"
+    )
 
     for event, arguments in (
         ("start", ("--next-action", "Execute T1")),

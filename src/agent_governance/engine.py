@@ -332,7 +332,7 @@ def _bootstrap(
         raise GovernanceError(f"package is incomplete; missing: {', '.join(missing_sources)}")
 
     version = _validate_core(core_source)
-    _validate_assets(assets, version)
+    _validate_assets(assets)
 
     managed = (target / ".agent-governance", target / ".agent-coordination")
     collisions = [str(path) for path in managed if path.exists() or _is_unsafe_link(path)]
@@ -355,7 +355,13 @@ def _bootstrap(
         (coordination_target / "runbooks" / "recipes").mkdir()
         for source_name, relative_target in ASSET_TARGETS.items():
             destination = coordination_target / relative_target
-            shutil.copyfile(assets / source_name, destination)
+            source = assets / source_name
+            if source_name in {"CAPABILITIES.template.json", "STATE.template.json"}:
+                materialized = _read_json(source)
+                materialized["protocol_version"] = version
+                _atomic_write(destination, json.dumps(materialized, indent=2) + "\n")
+            else:
+                shutil.copyfile(source, destination)
         (validate or _validate)(target)
     except Exception:
         for path in reversed(owned_roots):
@@ -1594,7 +1600,7 @@ def _validate_core(core: Path) -> str:
     return version
 
 
-def _validate_assets(assets: Path, version: str) -> None:
+def _validate_assets(assets: Path) -> None:
     for name in (
         "MISSION.template.md",
         "WORKPLAN.template.md",
@@ -1612,10 +1618,8 @@ def _validate_assets(assets: Path, version: str) -> None:
         _read_json(assets / "RUNBOOK-RECIPE.template.json"),
         assets / "RUNBOOK-RECIPE.template.json",
     )
-    if capabilities["protocol_version"] != version or state["protocol_version"] != version:
-        raise GovernanceError(
-            f"package asset protocol_version does not match Governance Core {version}"
-        )
+    if capabilities["protocol_version"] is not None or state["protocol_version"] is not None:
+        raise GovernanceError("package asset templates must use unbound null protocol_version")
     _validate_jsonl(assets / "EXCHANGE.template.jsonl")
 
 
