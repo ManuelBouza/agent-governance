@@ -1,0 +1,54 @@
+{
+  "task_id": "T036",
+  "status": "BLOCKED",
+  "task_contract_path": "docs/tasks/T036-d054-phase-b-oracle-transition.md",
+  "branch": "verify/t036-d054-phase-b-oracle-transition",
+  "implementation_head_sha": "f72b1eb609fb5636f102fdfd69501bfc61618008",
+  "base_branch": "develop",
+  "base_sha": "f72b1eb609fb5636f102fdfd69501bfc61618008",
+  "files_changed": [
+    "handoffs/T036-executor-handoff.json"
+  ],
+  "implementation_summary": "No implementation or oracle changes made; current origin/develop already contains the authorized T036 oracle transition.",
+  "verification": {
+    "commands": [
+      "uv run --locked python -m pytest tests/test_t035_runbook_operation_resolution_conformance.py",
+      "uv run --locked python -m pytest",
+      "uv run --locked ruff check .",
+      "uv run --locked ruff format --check .",
+      "git diff --check"
+    ],
+    "results": [
+      "focused T035 oracle: PASS — 6 passed",
+      "canonical pytest: PASS — 355 passed",
+      "ruff check: PASS — all checks passed",
+      "ruff format --check: BLOCKED — 14 pre-existing files would be reformatted; no formatting changes authorized",
+      "git diff --check: PASS"
+    ],
+    "runtime": "Windows 11 baseline, Python 3.13.14, pytest 9.1.1, Ruff from locked uv environment",
+    "network_required": false
+  },
+  "dependencies_or_config_changes": [],
+  "git_status": "Only untracked pre-existing .worktrees/ remains outside task scope; handoff is the sole tracked task change.",
+  "unresolved_issues": [
+    "Repository-wide Ruff format-check failure is pre-existing and outside T036 scope; formatting would mutate unrelated files."
+  ],
+  "recommended_next_task": "Orchestrator resolves or explicitly accepts the pre-existing Ruff format-check baseline before T036 acceptance.",
+  "chatgpt_read_path": "handoffs/T036-executor-handoff.json",
+  "sdd_profile": "STANDARD",
+  "code_review": {
+    "reviewed_head_sha": "f72b1eb609fb5636f102fdfd69501bfc61618008",
+    "summary": "Read-only review confirms the integrated oracle binds R-T035-P1 to the historical T035 Task Contract and preserves the exact CLI v1 command set; no runtime, current protocol, or other oracle changes were introduced by this executor.",
+    "findings": [
+      "Canonical verification is green except for the pre-existing repository-wide Ruff format baseline."
+    ],
+    "resolved_findings": [],
+    "upstream_reentry_required": true,
+    "upstream_reentry_stage": "Plan & Trace"
+  },
+  "requirement_trace": {
+    "R-T036-1": "tests/test_t035_runbook_operation_resolution_conformance.py::test_t035_preserved_surface_is_historical_and_cli_remains_stable reads docs/tasks/T035-runbook-operation-resolution-readiness.md R-T035-P1.",
+    "R-T036-2": "The same test asserts CLI_V1 exactly equals bootstrap, validate, state, event, skill, ecosystem, archive.",
+    "R-T036-P1-P5": "No T035 oracle semantics or product assets were modified; focused and complete suites passed and the diff is handoff-only."
+  }
+}
