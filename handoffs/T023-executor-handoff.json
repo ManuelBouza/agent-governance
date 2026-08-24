@@ -1,0 +1,90 @@
+{
+  "task_id": "T023",
+  "status": "BLOCKED",
+  "task_contract_path": "docs/tasks/T023-unified-skill-profile-activation-evals.md",
+  "branch": "test/t023-skill-activation-topology-evals",
+  "implementation_head_sha": "9fc4d5039a4f7d8dfeae45228f9fd47f18ff086e",
+  "base_branch": "develop",
+  "base_sha": "04c42e0a4b7c3be6fa64b336df93521d07cd5805",
+  "sdd_profile": "ASSURED",
+  "files_changed": [
+    {
+      "path": "evals/skill_activation_topology/evidence/t023-oracle-defect.json",
+      "classification": "structured-blocker-evidence",
+      "description": "Records the frozen asset identities, preflight result, missing candidate presentation inputs, semantic impact, and required upstream re-entry."
+    },
+    {
+      "path": "handoffs/T023-executor-handoff.json",
+      "classification": "executor-handoff",
+      "description": "Terminal T023 blocker handoff."
+    }
+  ],
+  "implementation_summary": "Established a safe canonical develop baseline, created the authorized topic branch, prepared the locked environment, and performed T023's frozen-oracle preflight. Stopped before candidate construction and before all live comparative trials because MG1 does not persist the exact B0/B1/F2/G3 Codex Skill activation presentations or a deterministic lossless projection that would produce them. No runner, candidate package, trial result, selection claim, or frozen semantic asset was created or changed.",
+  "verification": {
+    "commands": [
+      "git fetch --prune origin",
+      "git worktree add --detach C:\\Manuel\\Projects\\agent-governance\\.worktrees\\t023-current origin/develop",
+      "git rev-parse HEAD; git rev-parse origin/develop",
+      "codex --version; codex exec --help",
+      "git ls-files *SKILL.md",
+      "git hash-object evals/skill_activation_topology/topologies.json evals/skill_activation_topology/corpus.json evals/skill_activation_topology/oracle.json docs/AGENT-GOVERNANCE-CAPABILITY-SOURCE.md docs/MG1-SKILL-ACTIVATION-PREREGISTRATION.md",
+      "uv sync --locked",
+      "uv run --locked pytest -q",
+      "uv run --locked ruff check .",
+      "uv run --locked ruff format --check .",
+      "git diff --check",
+      "git diff --exit-code origin/develop -- docs/AGENT-GOVERNANCE-CAPABILITY-SOURCE.md docs/MG1-SKILL-ACTIVATION-PREREGISTRATION.md evals/skill_activation_topology/topologies.json evals/skill_activation_topology/corpus.json evals/skill_activation_topology/oracle.json"
+    ],
+    "results": {
+      "remote_baseline": "PASS; isolated bootstrap HEAD and origin/develop both 04c42e0a4b7c3be6fa64b336df93521d07cd5805; pre-existing worktrees and unrepresented local state preserved.",
+      "codex_adapter": "AVAILABLE; codex-cli 0.149.0 on native Windows.",
+      "oracle_preflight": "BLOCKED; only the accepted Consumer governance-skill/SKILL.md is tracked. No MG1-frozen B0/B1/F2/G3 Skill activation presentations or exact generator inputs exist.",
+      "live_trials": "NOT RUN; 0 of 360. Running executor-invented presentations would contaminate the frozen comparison.",
+      "locked_environment": "PASS; uv 0.11.32, CPython 3.13.14, pytest 9.1.1, Ruff 0.16.2.",
+      "full_deterministic_regression": "PASS; 405 passed in 67.14s.",
+      "ruff_check": "PASS; All checks passed.",
+      "ruff_format_check": "PASS; 33 files already formatted.",
+      "diff_check": "PASS.",
+      "frozen_asset_integrity": "PASS; all five MG1 frozen assets are byte-identical to origin/develop."
+    },
+    "runtime": "Codex desktop/CLI on native Windows; codex-cli 0.149.0; GPT-5.6 Sol/Medium live cell not entered because the oracle defect precedes trial execution; uv locked CPython 3.13.14 environment.",
+    "network_required": true
+  },
+  "dependencies_or_config_changes": [],
+  "git_status": "All terminal blocker evidence committed before handoff finalization; no unreported in-scope changes and no frozen MG1 asset changes.",
+  "unresolved_issues": [
+    {
+      "type": "ORACLE_DEFECT",
+      "affected_stage": "Specify",
+      "evidence": "evals/skill_activation_topology/evidence/t023-oracle-defect.json",
+      "summary": "The frozen experiment defines candidate IDs and capability mappings but not the actual host-visible activation metadata/body/reference surfaces. Those missing inputs directly determine activation and load metrics, so the Executor cannot construct them without redefining the experiment."
+    }
+  ],
+  "recommended_next_task": "ChatGPT Orchestrator re-enters Specify, persists exact B0/B1/F2/G3 candidate activation presentations or a deterministic lossless generator specification with exact source inputs and load-accounting rules, revises the MG1/oracle identity, integrates that authority into develop, and relaunches T023 from a fresh canonical baseline.",
+  "chatgpt_read_path": "handoffs/T023-executor-handoff.json; evals/skill_activation_topology/evidence/t023-oracle-defect.json",
+  "code_review": {
+    "reviewed_head_sha": "9fc4d5039a4f7d8dfeae45228f9fd47f18ff086e",
+    "summary": "Reviewed the frozen MG1 assets, Task Contract, current tracked Skill surface, required Codex adapter, and structured blocker evidence against the D052/D053 boundary. The terminal state preserves the oracle and stops before any executor-authored candidate presentation or contaminated result.",
+    "findings": [
+      {
+        "severity": "BLOCKER",
+        "type": "ORACLE_DEFECT",
+        "summary": "The independent variable for the live activation experiment is incompletely specified."
+      }
+    ],
+    "resolved_findings": [],
+    "upstream_reentry_required": true,
+    "upstream_reentry_stage": "Specify"
+  },
+  "requirement_trace": {
+    "AC-T023-1": "Not claimable; exact candidate presentation equivalence cannot be proven before candidate surfaces are frozen.",
+    "AC-T023-2": "Not executed; 0/360 trials by fail-closed preflight.",
+    "AC-T023-3": "Not claimable; activation and context/load dimensions depend on missing candidate surfaces.",
+    "AC-T023-4": "Preserved; all frozen MG1 assets remain byte-identical, and no post-hoc oracle or threshold change was made.",
+    "AC-T023-5": "No candidate artifact was constructed; one-product/source/install claims were not broadened.",
+    "AC-T023-6": "No topology outcome selected.",
+    "AC-T023-7": "Satisfied for terminal blocker handling; structured evidence distinguishes the frozen Orchestrator assets from Executor evidence and records zero live trials.",
+    "PRESERVED-frozen-oracle": "Verified byte identity for the five frozen MG1 assets against origin/develop.",
+    "PRESERVED-source-consumer-boundary": "No consumer footprint, source runtime, Core, profile, Skill Markdown, or deterministic behavior was modified."
+  }
+}
