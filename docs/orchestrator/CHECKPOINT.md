@@ -1,31 +1,29 @@
 # Current ChatGPT Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O165  
+Checkpoint-Sequence: O166  
 Canonical-Branch: `develop`  
-Current-Work-Unit: T021 accepted/integrated; T022 source-maintainer profile is next executable work  
+Current-Work-Unit: T022 accepted/integrated; MG1 Skill activation topology/eval pre-registration is next Orchestrator-owned gate before T023  
 Chat-Closure: CONTINUE_CURRENT_CHAT  
-Active-Executor: Codex  
-Active-Executor-Surface: ChatGPT desktop / Codex / native Windows
+Active-Executor: none  
+Active-Executor-Surface: ChatGPT Orchestrator
 
 ## Durable frontier
 
 - D053 native SDD, D054 execution-mechanics ownership, D040 single current protocol-version authority, D042 freshness, D048 final-publication boundary, D052 conformance ownership, D055 launch profiles and D056 progress-note rules remain controlling.
 - Current routed Core protocol remains `1.15.0`.
-- T034 through T039 are accepted; T040 sequencing correction is satisfied.
-- T038 review: `docs/reviews/T038-R1.md`; T039 review: `docs/reviews/T039-R1.md`.
-- T021 is now `ACCEPTED`. Review: `docs/reviews/T021-R2.md`.
-- Accepted T021 canonical verification base: `82a5d8741ddea77e2bec6a369dd8fdb17ef9d109`.
-- Accepted T021 reconciliation HEAD: `23be0fe5506d30a90511a1063c02a126da8531c1`.
-- Accepted T021 implementation HEAD: `1beaa1193b8522c63f1d1a11a36f3b8cb15ee367`.
-- Accepted T021 submitted Executor HEAD: `4f55cb41963f173171e637daf6311aaf99312ffc`.
-- T021 integration PR: `#221`; integration merge: `e5bdb3c40236bb146343a405d9d56f2a8ee30877`.
-- T021-R1 AC-T021-2 is resolved: every direct unsupported `Profile` identity is rejected fail-closed at the engine/profile boundary before Consumer target mutation. Consumer/default behavior and T020 artifact compatibility remain green.
-- T021 verification evidence: focused profile `25 passed`, Consumer v1 regression `79 passed`, T020 artifact `4 passed`, full deterministic `382 passed`, Ruff check/format PASS, py_compile PASS, `git diff --check` PASS.
-- T022 dependency on T021 is now satisfied. T022 persisted authority is `docs/tasks/T022-source-maintainer-profile-over-legacy-adapters.md`.
-- T022 objective is to activate a `source-maintainer` runtime profile over explicit legacy source adapters without creating Consumer installation state or changing source persistence semantics.
-- T023 and later unified-refactor work remain gated by their declared dependencies; do not skip T022.
-- Historical Orchestrator Markdown successor incidents on represented Executor branches remain non-authoritative and must not be used as Executor evidence. Never rewrite represented history to remove them.
+- T021 is `ACCEPTED`; review `docs/reviews/T021-R2.md`; submitted Executor HEAD `4f55cb41963f173171e637daf6311aaf99312ffc`; integration PR `#221`.
+- T022 is `ACCEPTED`; review `docs/reviews/T022-R1.md`.
+- Accepted T022 canonical verification base: `7ad68b2774dafc58208737af66f88fb67cec2e53`.
+- Accepted T022 implementation HEAD: `a32a906a636e49b9392129d42925c30fef07e027`.
+- Accepted T022 submitted Executor HEAD: `35ba704c8e2997f414a5f2a79b23c33b821b8016`.
+- T022 integration PR: `#223`; integration merge: `361e6700d74d47f5805b9af838c1cfa9519766b2`.
+- T022 verification evidence: focused source-profile/adapter `48 passed`; Consumer/profile/shared-engine/artifact regression `110 passed`; full deterministic `405 passed`; Ruff check/format, py_compile and `git diff --check` PASS; no root `.agent-governance` or `.agent-coordination` exists.
+- T022 activates explicit `source-maintainer` routing through exact versioned `agent-governance-source.json`, fail-closed source adapters, live Core/source record routing, Consumer/source isolation and flat `handoffs/*.json` write-path resolution only.
+- T023 is still `BLOCKED` by its own readiness condition. T022 acceptance satisfies only one dependency.
+- Before T023 can start, MG1 must be integrated into `develop` with D050 topology definitions, D052 conformance corpus/expected outcomes, host/model matrix, repeated clean-context trial method, metric definitions, and material-improvement/non-regression thresholds frozen before comparative results.
+- MG1 is ChatGPT Orchestrator-owned Markdown/conformance authority. Executor must not compensate for a missing MG1 by authoring or changing committed Markdown or semantic oracle assets.
+- T025 becomes dependency-eligible after T022 acceptance and may proceed in parallel with the MG1/T023 path, but current critical-path next action is MG1 unless Human reprioritizes.
 
 ## Mandatory Executor prompt transport invariant
 
@@ -60,38 +58,47 @@ complex/high-risk technical work  -> GPT-5.6 Sol / High
 exceptional long-horizon work     -> GPT-5.6 Sol / highest mode only when justified
 ```
 
-## T021 accepted identity
-
-```text
-Task: T021
-Status: ACCEPTED
-Task Contract: docs/tasks/T021-consumer-profile-abstraction-zero-drift.md
-Review: docs/reviews/T021-R2.md
-Submitted Executor HEAD: 4f55cb41963f173171e637daf6311aaf99312ffc
-Integration PR: #221
-Integration merge: e5bdb3c40236bb146343a405d9d56f2a8ee30877
-```
-
-## T022 next executable identity
+## T022 accepted identity
 
 ```text
 Task: T022
-Status: NEXT EXECUTABLE WORK
+Status: ACCEPTED
 Task Contract: docs/tasks/T022-source-maintainer-profile-over-legacy-adapters.md
-Expected branch: feat/t022-source-maintainer-profile
-Expected handoff: handoffs/T022-executor-handoff.json
-Base: fresh canonical develop after this acceptance/checkpoint integration
+Review: docs/reviews/T022-R1.md
+Submitted Executor HEAD: 35ba704c8e2997f414a5f2a79b23c33b821b8016
+Integration PR: #223
+Integration merge: 361e6700d74d47f5805b9af838c1cfa9519766b2
+```
+
+## MG1 next gate
+
+```text
+Gate: MG1 — Skill activation topology and eval pre-registration
+Owner: ChatGPT Orchestrator
+Dependency satisfied: T022 ACCEPTED
+Purpose: freeze T023 candidate topology identities and D052 experiment oracle before comparative results
+Required before T023: integrated MG1 authority + corpus + expected outcomes + thresholds + trial/matrix/metric definitions
+```
+
+## T023 blocked identity
+
+```text
+Task: T023
+Status: BLOCKED PENDING MG1
+Task Contract: docs/tasks/T023-unified-skill-profile-activation-evals.md
+Expected branch: test/t023-skill-activation-topology-evals
+Expected handoff: handoffs/T023-executor-handoff.json
+Do not launch until MG1 is integrated and independently reviewed for completeness.
 ```
 
 ## Next action
 
-1. Integrate this T021 acceptance/checkpoint branch into `develop` through PR.
+1. Integrate this T022 acceptance/checkpoint branch into `develop` through PR.
 2. Refresh canonical `develop` identity.
-3. Show D055 profile for T022: Codex `NEW`, GPT-5.6 Sol, Medium; this is standard semantic profile/adaptor implementation with cross-profile isolation requirements.
-4. Launch T022 from fresh canonical `develop` using only pointer `docs/tasks/T022-source-maintainer-profile-over-legacy-adapters.md` plus D042 freshness.
-5. Executor performs only T022 Implement + Code Review & Verify, persists/pushes terminal handoff/head and returns canonical completion fields.
-6. Orchestrator independently reviews T022 remote evidence/diff before acceptance/integration.
-7. Do not start T023 or later work before T022 acceptance and the next declared gate is satisfied.
+3. Execute MG1 as Orchestrator-owned Plan & Trace / conformance pre-registration work, using D050, D051, D052, the unified refactor plan, current accepted T021/T022 semantics, and T023's readiness requirements.
+4. Persist the smallest complete MG1 authority needed to freeze B0/B1/F2/G3 candidate identities, canonical capability/routing projection source, required corpus and expected classifications, host/model matrix, clean-context repetition method, metrics, installability-feasibility evidence method, and victory/non-regression thresholds.
+5. Integrate MG1 through an Orchestrator PR only after remote diff review.
+6. Only then show D055 and launch T023. T025 may be scheduled in parallel only if explicitly selected without weakening MG1/T023 sequencing.
 
 ## Next chat minimum load
 
@@ -99,4 +106,4 @@ Load only current `develop` identity, `AGENTS.md`, and this checkpoint; then fol
 
 ## Do not
 
-Do not broaden T022 into Markdown ownership changes, Core protocol semantics, Consumer installation state at source root, a second independently maintained Skill runtime, source persistence convergence, or downstream T023+ scope; do not let Executor edit committed Markdown; do not write directly to `main`/`develop`.
+Do not launch T023 before MG1 integration; do not let Executor author or modify committed Markdown or D052 semantic oracle meaning; do not change accepted Core/engine/profile semantics to favor a topology; do not introduce independent Governance products, per-entrypoint version identities, portable Skill-to-Skill dependency, or manual multi-install packaging; do not write directly to `main`/`develop`.
