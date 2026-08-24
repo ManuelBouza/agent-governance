@@ -1,24 +1,23 @@
 {
   "task_id": "T021",
-  "status": "BLOCKED",
+  "status": "DONE",
   "task_contract_path": "docs/tasks/T021-consumer-profile-abstraction-zero-drift.md",
   "review_authority_path": "docs/reviews/T021-R1.md",
   "branch": "refactor/t021-consumer-profile-abstraction",
   "base_branch": "develop",
-  "base_sha": "bfac31d4f7daf14ef04ece3d3e881d96c4fab0c1",
+  "base_sha": "82a5d8741ddea77e2bec6a369dd8fdb17ef9d109",
   "represented_submitted_head_sha": "969e2130ca9abb27c6ae5ad830923582f45b8a2f",
-  "implementation_head_sha": "30bea773560e013811b90366e77735e6f7530e48",
-  "reconciliation_head_sha": "f078928734be4ed0d272821955ba4d8ccdd7cd53",
+  "prior_blocked_head_sha": "b2ec49e210a752fa539832e06b48b2bcdc00a8dd",
+  "reconciliation_head_sha": "23be0fe5506d30a90511a1063c02a126da8531c1",
+  "implementation_head_sha": "1beaa1193b8522c63f1d1a11a36f3b8cb15ee367",
   "files_changed": [
+    "governance-skill/scripts/governance.py",
+    "src/agent_governance/engine.py",
+    "src/agent_governance/profile.py",
+    "tests/test_profile_abstraction.py",
     "handoffs/T021-executor-handoff.json"
   ],
-  "implementation_summary": "Preserved the represented T021 history and reconciled it with current canonical develop through a normal merge. No T021-R1 implementation or test correction was committed because the required current T020 artifact baseline is red on clean canonical develop.",
-  "blocking_issue": {
-    "classification": "pre-existing canonical verification baseline failure outside T021 scope",
-    "description": "Canonical develop declares Governance Core protocol 1.15.0 while governance-skill asset templates and frozen T020 artifact expectations remain at 1.14.0. The built artifact therefore reports 1.15.0 identity and rejects bootstrap because its packaged asset protocol versions are 1.14.0.",
-    "scope_boundary": "T021 explicitly forbids weakening or changing the accepted T020 baseline and does not authorize Governance Core semantics, artifact version migration, asset-version alignment, or unrelated baseline repair.",
-    "required_reentry": "Restore a green canonical T020 artifact-isolation baseline through separately persisted Orchestrator authority, then resume the unchanged T021-R1 correction on this represented branch."
-  },
+  "implementation_summary": "Preserved the represented T021 history, merged current canonical develop without force-push or recreation, and completed only the T021-R1 fail-closed correction. Profile identity validation is centralized in validate_profile(); both resolve_profile() and engine.main() apply that authoritative active-identity rule. Directly constructed unsupported Profile identities, including source-maintainer, arbitrary, empty, whitespace-padded, non-string, and unhashable values, now return the controlled profile-routing error before any Consumer footprint mutation. Consumer behavior, the thin launcher, and the self-contained artifact boundary remain unchanged.",
   "verification": {
     "environment": {
       "platform": "native Windows",
@@ -27,49 +26,56 @@
       "bootstrap": "uv sync --locked succeeded"
     },
     "commands": [
-      "uv run --locked python -m pytest tests/test_governance_artifact.py -q",
-      "C:\\Manuel\\Projects\\agent-governance\\.worktrees\\t021-executor-baseline\\.venv\\Scripts\\python.exe -m pytest tests/test_governance_artifact.py -q (clean origin/develop proof worktree)"
+      "uv run --locked python -m pytest -q tests/test_profile_abstraction.py",
+      "uv run --locked python -m pytest -q tests/test_consumer_v1_characterization.py",
+      "uv run --locked python -m pytest -q tests/test_consumer_governance_cli.py tests/test_consumer_governance_cli_v1.py tests/test_consumer_v1_characterization.py",
+      "uv run --locked python -m pytest -q tests/test_shared_governance_engine.py",
+      "uv run --locked python -m pytest -q tests/test_governance_artifact.py",
+      "uv run --locked python -m pytest -q tests/test_consumer_governance_cli.py tests/test_consumer_governance_cli_v1.py tests/test_consumer_v1_characterization.py tests/test_shared_governance_engine.py tests/test_profile_abstraction.py tests/test_governance_artifact.py",
+      "uv run --locked python -m pytest -q",
+      "uv run --locked ruff check .",
+      "uv run --locked ruff format --check .",
+      "uv run --locked python -m py_compile src/agent_governance/profile.py src/agent_governance/engine.py src/agent_governance/artifact.py governance-skill/scripts/governance.py tests/test_profile_abstraction.py tests/test_shared_governance_engine.py tests/test_consumer_v1_characterization.py tests/test_governance_artifact.py",
+      "git diff --check"
     ],
     "results": {
-      "reconciled_t021_branch": "2 failed, 2 passed",
-      "clean_origin_develop_bfac31d": "2 failed, 2 passed",
-      "failing_tests": [
-        "tests/test_governance_artifact.py::test_repeated_builds_have_identical_verified_identity",
-        "tests/test_governance_artifact.py::test_artifact_runs_without_source_or_sibling_dependencies"
-      ],
-      "failure_evidence": [
-        "artifact identity protocol_version is 1.15.0 but frozen T020 expectation is 1.14.0",
-        "artifact bootstrap returns error: package asset protocol_version does not match Governance Core 1.15.0"
-      ]
+      "focused_profile_abstraction_final": "25 passed in 1.88s",
+      "t018_characterization": "2 passed in 3.62s",
+      "consumer_v1_regression": "79 passed in 34.11s",
+      "t019_shared_engine_structure": "4 passed in 1.39s",
+      "t020_artifact_isolation": "4 passed in 4.14s",
+      "combined_affected_suite_before_final_negative_control_expansion": "108 passed in 40.17s",
+      "full_deterministic_suite_exact_implementation_head": "382 passed in 86.93s",
+      "ruff_check": "All checks passed",
+      "ruff_format_check": "31 files already formatted",
+      "py_compile": "PASS",
+      "diff_check": "PASS"
     },
-    "runtime": "native Windows; uv 0.11.32; CPython 3.13.14; repository-locked environment",
+    "runtime": "repository-locked uv environment on native Windows; deterministic tests used local and synthetic state only",
     "network_required": false
   },
   "sdd_profile": "COMPACT (T021 grandfathered pre-D053 contract)",
   "code_review": {
-    "reviewed_head_sha": "f078928734be4ed0d272821955ba4d8ccdd7cd53",
-    "completed": false,
-    "summary": "T021-R1 implementation review could not begin because the required T020 compatibility gate fails on clean canonical develop.",
-    "result": "BLOCKED before T021-R1 implementation by the mandatory canonical T020 verification gate",
-    "findings": [
-      "The accepted T021-R1 defect remains intentionally uncorrected in this terminal state.",
-      "The baseline failure reproduces at clean origin/develop and is not caused by represented T021 changes."
+    "reviewed_head_sha": "1beaa1193b8522c63f1d1a11a36f3b8cb15ee367",
+    "completed": true,
+    "summary": "Reviewed the complete origin/develop...implementation-head diff against the unchanged T021 contract and T021-R1. The engine now validates supported identity at the authoritative profile boundary before dispatch, while the consumer-only permission defense remains in place. No Markdown, Core semantics, CLI command/footprint, activation surface, dependency, or source-maintainer implementation change is present.",
+    "result": "PASS",
+    "findings": [],
+    "resolved_findings": [
+      "Resolved T021-R1: directly constructed Profile('source-maintainer') and Profile('garbage') previously bypassed resolve_profile() and reached Consumer dispatch.",
+      "Resolved during technical review: an unhashable directly constructed identity could have raised TypeError; validate_profile() now rejects every non-string identity through ProfileError and direct-engine negative controls cover the case."
     ],
-    "resolved_findings": [],
-    "upstream_reentry_required": true,
-    "upstream_reentry_stage": "Plan & Trace"
+    "upstream_reentry_required": false,
+    "upstream_reentry_stage": null
   },
   "requirement_trace": {
-    "AC-T021-1": "BLOCKED: zero-drift verification cannot complete while canonical artifact bootstrap fails before profile routing.",
-    "AC-T021-2": "BLOCKED: T021-R1 correction was not committed because the prerequisite canonical baseline is red.",
-    "AC-T021-3": "BLOCKED: clean origin/develop reproduces two failures in the frozen T020 artifact-isolation suite."
+    "AC-T021-1": "PASS: tests/test_profile_abstraction.py consumer/default assertions; unchanged tests/test_consumer_v1_characterization.py (2 passed); Consumer v1 regression group (79 passed); tests/test_shared_governance_engine.py (4 passed); exact-head full suite (382 passed).",
+    "AC-T021-2": "PASS: tests/test_profile_abstraction.py::test_resolve_profile_rejects_unsupported_or_ambiguous_values plus tests/test_profile_abstraction.py::test_engine_main_rejects_directly_constructed_unsupported_profile. The latter supplies source-maintainer, garbage, empty, whitespace-padded, integer, and list identities directly to engine.main(), asserts return code 1 and controlled unsupported-profile error, and proves no managed footprint is created. Focused suite: 25 passed.",
+    "AC-T021-3": "PASS: tests/test_profile_abstraction.py artifact bundling/artifact-only profile tests; unchanged tests/test_governance_artifact.py (4 passed); exact-head full suite (382 passed)."
   },
   "dependencies_or_config_changes": [],
-  "git_status": "After the reconciliation commit, only the terminal handoff JSON is modified for finalization; no T021-R1 implementation or test delta remains uncommitted.",
-  "unresolved_issues": [
-    "Canonical Governance Core 1.15.0 and packaged asset/frozen T020 1.14.0 identities are inconsistent.",
-    "T021-R1 AC-T021-2 direct-Profile bypass remains pending after the baseline is repaired."
-  ],
-  "recommended_next_task": "Orchestrator re-enters Plan & Trace for the canonical T020/Core 1.15.0 compatibility regression, restores a green develop baseline without expanding T021, and then relaunches T021-R1 on this represented branch.",
+  "git_status": "Implementation and tests are committed at 1beaa1193b8522c63f1d1a11a36f3b8cb15ee367. The final handoff is the only successor change pending its handoff-only commit; no unreported in-scope changes remain.",
+  "unresolved_issues": [],
+  "recommended_next_task": "ChatGPT Orchestrator independently reviews the pushed T021 branch, represented-history preservation, implementation head, final handoff, complete diff, and evidence for Converge/Accept.",
   "chatgpt_read_path": "handoffs/T021-executor-handoff.json"
 }
