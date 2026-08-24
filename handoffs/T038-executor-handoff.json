@@ -1,0 +1,88 @@
+{
+  "task_id": "T038",
+  "status": "BLOCKED",
+  "task_contract_path": "docs/tasks/T038-protocol-derived-consumer-asset-versioning.md",
+  "branch": "fix/t038-protocol-derived-consumer-assets",
+  "implementation_head_sha": "8aa32b32fb15e01bfbc56e327a910b82b3674c32",
+  "base_branch": "develop",
+  "base_sha": "a8f458c8d0334edac8d1a9cdeea7418d5cb860d5",
+  "files_changed": [
+    "governance-skill/assets/CAPABILITIES.template.json",
+    "governance-skill/assets/STATE.template.json",
+    "src/agent_governance/engine.py",
+    "tests/test_consumer_governance_cli.py",
+    "tests/test_governance_artifact.py",
+    "handoffs/T038-executor-handoff.json"
+  ],
+  "implementation_summary": "Implemented the authorized protocol-derived Consumer asset repair: both source JSON templates are explicitly unbound with protocol_version null; package validation rejects either template when bound; bootstrap materializes the strict SemVer already validated from packaged Core into installed STATE.json and CAPABILITIES.json; and T020 artifact/bootstrap expectations derive protocol identity from Core or artifact-local Core. The authorized focused surface is green, but terminal completion is blocked by an unchanged D052 Orchestrator-owned T034 conformance oracle that still compares live Core-derived artifact identity to 1.14.0.",
+  "verification": {
+    "commands": [
+      "uv sync --locked",
+      "uv run --locked python -m pytest tests/test_governance_artifact.py tests/test_consumer_governance_cli.py -q",
+      "uv run --locked python -m pytest tests/test_governance_artifact.py -q",
+      "uv run --locked python -m pytest tests/test_consumer_governance_cli.py::test_bootstrap_creates_canonical_footprint_without_touching_project tests/test_consumer_governance_cli.py::test_bootstrap_rejects_bound_protocol_version_in_package_template -q",
+      "uv run --locked python -m pytest",
+      "uv run --locked ruff check .",
+      "uv run --locked ruff format --check .",
+      "git diff --check",
+      "rg -n '1\\.15\\.0|1\\.14\\.0' governance-skill/assets/STATE.template.json governance-skill/assets/CAPABILITIES.template.json src/agent_governance/engine.py src/agent_governance/artifact.py tests/test_governance_artifact.py tests/test_consumer_governance_cli.py"
+    ],
+    "results": {
+      "environment_sync": "PASS: locked environment synchronized successfully",
+      "combined_authorized_surface": "PASS: 46 passed",
+      "focused_t020_artifact": "PASS: 4 passed",
+      "focused_protocol_derived_assets": "PASS: 3 passed",
+      "full_locked_pytest": "BLOCKED: 356 passed, 1 failed; tests/test_t034_native_sdd_conformance.py::test_core_and_artifact_expect_protocol_1_14_with_sdd expects 1.14.0 while canonical Core-derived artifact identity is 1.15.0",
+      "ruff_check": "PASS: All checks passed",
+      "ruff_format": "PASS: 29 files already formatted",
+      "git_diff_check": "PASS",
+      "current_version_literal_scan": "PASS: no 1.14.0 or 1.15.0 match in the authorized template/runtime/artifact-test surface"
+    },
+    "runtime": "native Windows; Git 2.53.0.windows.2; uv 0.11.32; CPython 3.13.14; pytest 9.1.1; Ruff 0.16.2; repository-locked environment",
+    "network_required": {
+      "provisioning": true,
+      "test_runtime": false
+    }
+  },
+  "dependencies_or_config_changes": [],
+  "git_status": "Implementation commit was clean before handoff creation; final branch is expected to be clean after the handoff-only finalization commit.",
+  "unresolved_issues": [
+    "AC-T038-5 cannot pass because the unchanged frozen T034 Orchestrator conformance oracle asserts that live artifact identity equals historical Protocol 1.14.0 while canonical GOVERNANCE.md is 1.15.0.",
+    "The T034 oracle is outside T038 executor-owned scope and explicitly identifies itself as frozen D052 acceptance semantics that the Executor must not edit."
+  ],
+  "recommended_next_task": "Orchestrator re-enters Plan & Trace to authorize the minimal semantic correction or retirement of the stale T034 live-current-version oracle, then relaunches T038 verification without changing the implemented Consumer CLI behavior.",
+  "chatgpt_read_path": "handoffs/T038-executor-handoff.json",
+  "sdd_profile": "STANDARD",
+  "code_review": {
+    "reviewed_head_sha": "8aa32b32fb15e01bfbc56e327a910b82b3674c32",
+    "summary": "Reviewed the complete five-file implementation diff against T038 requirements, Design, scope, failure behavior and preserved T020/T021/CLI boundaries. Template validation fails before target mutation, materialization uses only the already validated packaged Core version, installed validation remains strict, source/artifact bootstrap paths pass, no artifact.py change was needed, and no Markdown, Core, T021, dependency, command-surface or unrelated behavior changed.",
+    "findings": [
+      "Independent upstream baseline defect: the frozen T034 conformance oracle retains a live exact-current 1.14.0 assertion and fails against canonical Core 1.15.0."
+    ],
+    "resolved_findings": [
+      "Added explicit source-template null and installed-Core-derived identity assertions for both STATE and CAPABILITIES.",
+      "Added negative controls proving either package template is rejected when rebound to the Core-derived concrete version.",
+      "Replaced both free-standing T020 exact-current assertions with Core-derived expectations."
+    ],
+    "upstream_reentry_required": true,
+    "upstream_reentry_stage": "Plan & Trace"
+  },
+  "requirement_trace": {
+    "R-T038-1": "PASS: both source templates contain protocol_version null; focused structural assertions cover both files.",
+    "R-T038-2": "PASS: bootstrap binds _validate_core() output into installed STATE.json and CAPABILITIES.json before ordinary _validate(); source and artifact bootstrap coverage passes.",
+    "R-T038-3": "PASS: _validate_assets rejects any non-null protocol_version in either template before managed target roots are created; two negative parameter cases pass.",
+    "R-T038-4": "PASS within authorized scope: T020 expectations derive from canonical or artifact-local Core and the constrained literal scan is empty.",
+    "R-T038-P1": "PRESERVED: no governance-core file changed; packaged Core remains the sole current authority at 1.15.0.",
+    "R-T038-P2": "PRESERVED: artifact test confirms the seven-command Consumer CLI surface; no parser/command change exists in the diff.",
+    "R-T038-P3": "PRESERVED: installed STATE/CAPABILITIES contain concrete packaged-Core identity and validate successfully.",
+    "R-T038-P4": "PRESERVED on focused evidence: 4 T020 artifact tests and 46 combined artifact/Consumer tests pass, including reproducibility, source independence and isolation.",
+    "R-T038-P5": "PRESERVED: no T021 branch, profile implementation or T021-specific test changed.",
+    "R-T038-P6": "PRESERVED: no committed Markdown, Skill routing, source-maintainer, release, dependency/toolchain or RCAB change.",
+    "AC-T038-1": "PASS",
+    "AC-T038-2": "PASS",
+    "AC-T038-3": "PASS on the focused T020 surface and stable command assertion",
+    "AC-T038-4": "PASS for all executor-owned T038 template/runtime/test changes",
+    "AC-T038-5": "BLOCKED by unchanged D052 T034 oracle; full suite is 356 passed, 1 failed while Ruff and diff checks pass",
+    "AC-T038-6": "PASS: T021 remains untouched"
+  }
+}
