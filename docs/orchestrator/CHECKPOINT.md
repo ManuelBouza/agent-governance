@@ -1,25 +1,27 @@
 # Current ChatGPT Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O157  
+Checkpoint-Sequence: O158  
 Canonical-Branch: `develop`  
-Current-Work-Unit: T036 accepted; D040 Phase-B D054 routed-Core activation is the next eligible Orchestrator-owned Markdown-only work unit from fresh canonical develop  
-Chat-Closure: CONTINUE_CURRENT_CHAT  
+Current-Work-Unit: D054 Phase-B routed-Core activation accepted/integrated; next work must be selected from current canonical program authority without auto-resuming paused T021/T022  
+Chat-Closure: SAFE_TO_CLOSE  
 Active-Executor: Codex  
 Active-Executor-Surface: ChatGPT desktop / Codex / native Windows
 
 ## Durable frontier
 
 - D053 native SDD, D054 execution-mechanics ownership, D042 freshness, D055 launch profiles and D056 progress-note rules remain controlling.
-- T034 and T035 remain `ACCEPTED`; T035 historical oracle baseline remains preserved.
-- T037 is `ACCEPTED`; it restored the canonical repository-context/format verification baseline without semantic product/oracle changes.
-- T036 Oracle revision `T036-D054-ACTIVATION-TRANSITION-v1` is `ACCEPTED`.
-- T036 final independent verification used a fresh isolated native-Windows checkout from canonical base `f72b1eb609fb5636f102fdfd69501bfc61618008` and submitted Executor HEAD `c862da6a09d84d24c6d80b76de892acf06f39cb5`.
-- T036 accepted verification evidence: focused oracle `6 passed`; full deterministic suite `355 passed`; Ruff check PASS; Ruff format PASS; `git diff --check` PASS; no review findings; no product/oracle/runtime/protocol drift.
-- T036 verification handoff integrated through PR #209 at `456e27207f8975a3d815a16cb607ddc491fe0df3`.
-- T036 acceptance is persisted in `docs/reviews/T036-R1.md`.
-- D040 Phase-B D054 routed-Core activation is now structurally eligible and is the next work unit.
-- Phase-B must restart from fresh current canonical `develop`; the stale pre-T036 branch `feat/d054-core-activation` and any unattached draft blobs/state are non-authoritative and MUST NOT be reused.
+- T034, T035, T036 and T037 are `ACCEPTED`.
+- T036 Oracle revision `T036-D054-ACTIVATION-TRANSITION-v1` is accepted and removed the stale future-current-version pin while preserving T035 historical semantics and the exact Consumer CLI v1 command set.
+- T036 accepted verification used a fresh isolated native-Windows checkout: focused oracle `6 passed`, full deterministic suite `355 passed`, Ruff check/format PASS and `git diff --check` PASS.
+- D040 Phase-B D054 routed-Core activation was restarted from fresh canonical `develop` after T036 acceptance; stale pre-T036 branch/blob state was not reused.
+- D054 Phase-B activation branch `feat/d054-phase-b-core-activation` changed only routed Core Markdown and integrated through PR #211 at `37d163975f46b67573ee9ce1ffff6e1745195126`.
+- Current routed Core protocol is `1.15.0`.
+- Activated module versions: `EXECUTION-CONTROL 1.1.0`, `PROTOCOL 1.4.0`, `CONTEXT 1.4.0`.
+- Routed Core now makes Executor-owned adapter mechanics explicit, separates semantic runbooks from Verified Operation Recipes, defines authoritative version-compatible syntax resolution and evidence-gated recipe promotion, routes native `.agent-coordination/runbooks/` persistence, and forbids copying runbook/recipe registries into STATE.
+- Human Owner remains the authority for `REQUIRE_HUMAN`, MFA/external approval, material credential/risk decisions and explicit syntax inspection/execution; routine command copy/paste is not a default Human responsibility.
+- D054 Phase-B acceptance is persisted in `docs/reviews/D054-PHASE-B-R1.md`.
+- The old `feat/d054-core-activation` branch and unattached pre-T036 draft blobs/state remain non-authoritative historical scratch state and MUST NOT be reused.
 - T021/T022 remain paused and MUST NOT auto-resume.
 
 ## Mandatory Executor prompt transport invariant
@@ -72,32 +74,32 @@ Integrated verification: 456e27207f8975a3d815a16cb607ddc491fe0df3
 Acceptance review: docs/reviews/T036-R1.md
 ```
 
-## T037 accepted identity
+## D054 Phase-B accepted identity
 
 ```text
-Task: T037
-Status: ACCEPTED
-Submitted Executor HEAD: 71885c6c22f993c3eb9f5b2346a16f0e47c1a511
-Implementation anchor: 033f4430ee96a9d3e67063630e2b9e0bf52a4615
-Handoff: handoffs/T037-executor-handoff.json
-Integration PR: #207
-Integrated implementation: e078142a7c18b1f87ace09fd6fc717f9b9f50610
-Acceptance review: docs/reviews/T037-R1.md
+Decision: D054
+Status: PHASE-B ACCEPTED / ROUTED CORE ACTIVE
+Migration authority: D040
+Activation branch: feat/d054-phase-b-core-activation
+Activation HEAD: 7ab00e5358ccf021312d3652f428624d6f9b279d
+Integration PR: #211
+Integrated activation: 37d163975f46b67573ee9ce1ffff6e1745195126
+Acceptance review: docs/reviews/D054-PHASE-B-R1.md
+Current Protocol-Version: 1.15.0
 ```
 
 ## Next action
 
-1. Integrate this T036 acceptance/checkpoint Markdown branch into `develop` through PR.
-2. Refresh current canonical `develop` identity after that merge.
-3. Restart D040 Phase-B D054 routed-Core activation as Orchestrator-owned Markdown-only work from a NEW fresh topic branch based on that current `develop`.
-4. Re-read the current D040/D054 controlling Markdown and the routed Core modules required for the Phase-B change; do not reuse stale pre-T036 draft branch/blob state as authority.
-5. Perform the atomic Phase-B Markdown activation under D040 green-baseline rules, review the complete diff, and integrate through PR only if canonical verification remains green.
-6. Do not resume T021/T022 automatically.
+1. Integrate this D054 Phase-B acceptance/checkpoint Markdown branch into `develop` through PR.
+2. On the next orchestration cycle, refresh current canonical `develop` identity.
+3. Read `docs/UNIFIED-GOVERNANCE-REFACTOR-PLAN.md` only as needed to identify the next explicitly authorized, non-paused work unit after D054 Phase-B.
+4. Do not infer or auto-resume T021/T022; if the plan offers no clearly eligible work, stop for Human priority rather than inventing scope.
+5. If the selected next work is executable, persist the required Task Contract/SDD authority before any Executor launch; if Markdown-only, follow normal Orchestrator branch/PR ownership.
 
 ## Next chat minimum load
 
-Load only current `develop` identity, `AGENTS.md`, and this checkpoint; then follow `Next action`.
+Load only current `develop` identity, `AGENTS.md`, and this checkpoint. Then follow `Next action`; load `docs/UNIFIED-GOVERNANCE-REFACTOR-PLAN.md` only at the selection step above.
 
 ## Do not
 
-Do not reuse stale pre-T036 activation branch/blob state; do not bypass D040 atomic migration/green-baseline constraints; do not duplicate current protocol-version authority outside the canonical Core source; do not resume T021/T022 automatically; do not write directly to `main`/`develop`.
+Do not reuse stale pre-T036 activation branch/blob state; do not duplicate current protocol-version authority outside `governance-core/GOVERNANCE.md`; do not treat a VERIFIED recipe as execution authority; do not make the Human Owner the routine terminal operator; do not resume T021/T022 automatically; do not write directly to `main`/`develop`.
