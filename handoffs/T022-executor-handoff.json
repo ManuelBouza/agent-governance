@@ -1,0 +1,72 @@
+{
+  "task_id": "T022",
+  "status": "DONE",
+  "task_contract_path": "docs/tasks/T022-source-maintainer-profile-over-legacy-adapters.md",
+  "branch": "feat/t022-source-maintainer-profile",
+  "implementation_head_sha": "a32a906a636e49b9392129d42925c30fef07e027",
+  "base_branch": "develop",
+  "base_sha": "7ad68b2774dafc58208737af66f88fb67cec2e53",
+  "files_changed": [
+    "agent-governance-source.json",
+    "src/agent_governance/engine.py",
+    "src/agent_governance/profile.py",
+    "src/agent_governance/source_adapter.py",
+    "tests/test_profile_abstraction.py",
+    "tests/test_source_maintainer_profile.py",
+    "handoffs/T022-executor-handoff.json"
+  ],
+  "implementation_summary": "Activated the mutually exclusive source-maintainer profile on the shared deterministic engine while preserving consumer as the default. Added an exact, versioned agent-governance-source.json product signal and a fail-closed source adapter that validates source/consumer ambiguity, routes the live normative Core and current legacy source-maintenance records, exposes source validation/context operations, and limits adapter-resolved writes to flat non-Markdown handoff JSON paths. Consumer commands remain on their exact seven-command CLI surface, source-maintainer rejects every consumer mutation command before mutation, and no consumer installation state is initialized at the source root.",
+  "verification": {
+    "commands": [
+      "uv run --locked python -m pytest -q tests/test_source_maintainer_profile.py tests/test_profile_abstraction.py",
+      "uv run --locked python -m pytest -q tests/test_profile_abstraction.py tests/test_consumer_governance_cli.py tests/test_consumer_governance_cli_v1.py tests/test_consumer_v1_characterization.py tests/test_shared_governance_engine.py tests/test_governance_artifact.py",
+      "uv run --locked python -m pytest -q",
+      "uv run --locked ruff check .",
+      "uv run --locked ruff format --check .",
+      "uv run --locked python -m py_compile src/agent_governance/profile.py src/agent_governance/source_adapter.py src/agent_governance/engine.py src/agent_governance/artifact.py governance-skill/scripts/governance.py tests/test_profile_abstraction.py tests/test_source_maintainer_profile.py",
+      "git diff --check",
+      "Test-Path -LiteralPath .agent-governance; Test-Path -LiteralPath .agent-coordination"
+    ],
+    "results": {
+      "focused_source_profile_and_adapter": "48 passed in 6.01s",
+      "consumer_profile_shared_engine_and_artifact_regression": "110 passed in 39.98s",
+      "full_deterministic_suite": "405 passed in 66.36s",
+      "ruff_check": "All checks passed",
+      "ruff_format_check": "33 files already formatted",
+      "py_compile": "PASS",
+      "diff_check": "PASS",
+      "live_consumer_state_check": "PASS: neither .agent-governance nor .agent-coordination exists at the source repository root"
+    },
+    "runtime": "repository-locked uv environment on native Windows with CPython 3.13.14; deterministic tests used repository and synthetic temporary state only",
+    "network_required": false
+  },
+  "sdd_profile": "COMPACT (T022 grandfathered pre-D053 contract)",
+  "code_review": {
+    "reviewed_head_sha": "a32a906a636e49b9392129d42925c30fef07e027",
+    "completed": true,
+    "summary": "Reviewed the complete origin/develop...implementation-head diff against T022, D044, the unified refactor plan, and the accepted Maintainer Skill contract. The explicit signal is strict and versioned; wrong identity/version/shape, missing or wrong-type legacy records, unsafe links, directory-name-only inference, and mixed source/consumer roots fail closed. The source adapter returns live source paths and never copies bundled Core or initializes consumer state. Consumer parser/commands, default profile, artifact behavior, and mutation surfaces remain isolated. All changed files are authorized non-Markdown implementation, tests, identity configuration, and handoff assets.",
+    "result": "PASS",
+    "findings": [],
+    "resolved_findings": [
+      "Kept the Consumer launcher help and exact seven-command surface unchanged by making the source-only context command profile-specific.",
+      "Tightened legacy-record validation to require the correct file/directory type and reject unsafe links or ambiguous consumer roots.",
+      "Expanded the explicit adapter map to cover Task Contract, handoff, testing, conformance, toolchain, decision, branch, release, checkpoint, Core, Skill, test, and eval source-maintenance records used by the accepted Maintainer Skill contract."
+    ],
+    "upstream_reentry_required": false,
+    "upstream_reentry_stage": null
+  },
+  "requirement_trace": {
+    "explicit_source_product_signal": "agent-governance-source.json plus source_adapter.py exact schema/product/profile validation; negative controls cover missing, partial, wrong-version, wrong-product, wrong-profile, directory-name-only, wrong-type record, unsafe/ambiguous contexts.",
+    "legacy_source_record_routing": "SourceContext.record(), SOURCE_RECORDS, engine source-only validate/context dispatch, and focused live/staged source tests route the normative governance-core and accepted source policy/task/checkpoint/handoff/test/eval records without consumer initialization.",
+    "consumer_non_regression": "Consumer remains the default profile; the exact seven-command Consumer CLI surface is unchanged; the exact implementation-head Consumer/profile/shared-engine/artifact group passed 110 tests and the full suite passed 405 tests.",
+    "cross_profile_mutation_isolation": "Source profile rejects bootstrap/state/event/skill/ecosystem/archive before mutation; Consumer parser does not expose source context; source adapter write resolution allows only handoffs/*.json and rejects Markdown, implementation, consumer-state, nested, and escaping paths; focused negative controls pass.",
+    "live_source_core_and_no_consumer_state": "SourceContext maps core directly to the target repository governance-core; no copy/overwrite operation exists; repository inspection after verification confirms no root .agent-governance or .agent-coordination paths."
+  },
+  "dependencies_or_config_changes": [
+    "Added the versioned source-product identity file agent-governance-source.json; no dependency or toolchain configuration changes."
+  ],
+  "git_status": "Implementation and tests are committed at a32a906a636e49b9392129d42925c30fef07e027. The final handoff is the only successor change pending its handoff-only commit; no unreported in-scope changes remain.",
+  "unresolved_issues": [],
+  "recommended_next_task": "ChatGPT Orchestrator independently reviews the pushed T022 branch, implementation anchor, final handoff, complete diff, profile/mutation isolation evidence, and verification for Converge/Accept.",
+  "chatgpt_read_path": "handoffs/T022-executor-handoff.json"
+}
