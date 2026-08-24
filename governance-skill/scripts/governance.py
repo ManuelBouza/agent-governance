@@ -43,7 +43,8 @@ def _bootstrap(target: Path) -> None:
 
 
 def main(argv: list[str] | None = None) -> int:
-    return _engine.main(argv, package_paths=_package_paths())
+    profile = _engine.resolve_profile()
+    return _engine.main(argv, package_paths=_package_paths(), profile=profile)
 
 
 if __name__ == "__main__":

@@ -48,6 +48,8 @@ else:
     _ctypes = None
     _windows_lock_api = None
 
+from agent_governance.profile import Profile, ProfileError, resolve_profile, validate_profile
+
 CORE_FILES = (
     "ADAPTERS.md",
     "ASSURANCE.md",
@@ -1731,9 +1733,21 @@ def _parser() -> argparse.ArgumentParser:
     return parser
 
 
-def main(argv: list[str] | None = None, *, package_paths: tuple[Path, Path]) -> int:
+def main(
+    argv: list[str] | None = None,
+    *,
+    package_paths: tuple[Path, Path],
+    profile: Profile | None = None,
+) -> int:
     args = _parser().parse_args(argv)
     try:
+        if profile is None:
+            profile = resolve_profile()
+        profile = validate_profile(profile)
+        if profile.grants_source_maintenance:
+            raise GovernanceError(
+                "profile grants source-maintenance permissions; consumer-only runtime"
+            )
         target = _safe_target(args.target)
         if args.command == "bootstrap":
             _bootstrap(target, package_paths)
@@ -1751,7 +1765,7 @@ def main(argv: list[str] | None = None, *, package_paths: tuple[Path, Path]) -> 
             _ecosystem(target, args.facts, args.update)
         else:
             _archive(target, args.prepare)
-    except (GovernanceError, OSError) as error:
+    except (GovernanceError, ProfileError, OSError) as error:
         print(f"error: {error}", file=sys.stderr)
         return 1
     return 0
