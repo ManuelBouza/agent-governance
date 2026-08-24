@@ -49,6 +49,12 @@ else:
     _windows_lock_api = None
 
 from agent_governance.profile import Profile, ProfileError, resolve_profile, validate_profile
+from agent_governance.source_adapter import (
+    SOURCE_RECORD_NAMES,
+    SourceContextError,
+    resolve_source_context,
+    source_context_payload,
+)
 
 CORE_FILES = (
     "ADAPTERS.md",
@@ -1698,7 +1704,7 @@ def _validate(target: Path) -> None:
         raise GovernanceError("STATE exchange_q is ahead of EXCHANGE history")
 
 
-def _parser() -> argparse.ArgumentParser:
+def _parser(profile: Profile | None = None) -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="governance.py")
     subparsers = parser.add_subparsers(dest="command", required=True)
     for command in ("bootstrap", "validate"):
@@ -1730,7 +1736,23 @@ def _parser() -> argparse.ArgumentParser:
     archive = subparsers.add_parser("archive")
     archive.add_argument("target")
     archive.add_argument("--prepare", action="store_true")
+    if profile is not None and profile.is_source_maintainer:
+        context = subparsers.add_parser("context")
+        context.add_argument("target")
+        context.add_argument("--record", choices=sorted(SOURCE_RECORD_NAMES))
     return parser
+
+
+def _source_main(args: argparse.Namespace) -> None:
+    context = resolve_source_context(args.target)
+    if args.command == "validate":
+        print(f"validated source-maintainer context at {context.root}")
+    elif args.command == "context":
+        print(json.dumps(source_context_payload(context, args.record), sort_keys=True))
+    else:
+        raise GovernanceError(
+            f"command {args.command!r} is unavailable for source-maintainer profile"
+        )
 
 
 def main(
@@ -1739,15 +1761,16 @@ def main(
     package_paths: tuple[Path, Path],
     profile: Profile | None = None,
 ) -> int:
-    args = _parser().parse_args(argv)
     try:
         if profile is None:
             profile = resolve_profile()
         profile = validate_profile(profile)
-        if profile.grants_source_maintenance:
-            raise GovernanceError(
-                "profile grants source-maintenance permissions; consumer-only runtime"
-            )
+        args = _parser(profile).parse_args(argv)
+        if profile.is_source_maintainer:
+            _source_main(args)
+            return 0
+        if not profile.is_consumer or profile.grants_source_maintenance:
+            raise GovernanceError("profile is not authorized for consumer runtime")
         target = _safe_target(args.target)
         if args.command == "bootstrap":
             _bootstrap(target, package_paths)
@@ -1765,7 +1788,7 @@ def main(
             _ecosystem(target, args.facts, args.update)
         else:
             _archive(target, args.prepare)
-    except (GovernanceError, ProfileError, OSError) as error:
+    except (GovernanceError, ProfileError, SourceContextError, OSError) as error:
         print(f"error: {error}", file=sys.stderr)
         return 1
     return 0
