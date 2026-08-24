@@ -1,6 +1,6 @@
 # Portable Agent Governance
 
-Protocol-Version: 1.14.0
+Protocol-Version: 1.15.0
 
 ## Purpose
 
@@ -14,7 +14,7 @@ Material security is governed by current/versioned authority, freshness, known-b
 
 Existing-system assurance is governed by explicit scope/authorization, evidence provenance, coverage accounting, bounded finding states, severity/confidence separation and temporal posture from `ASSURANCE.md`. Model opinion, missing evidence, scanner/tool success and historical reports do not become assurance authority.
 
-Material local/remote/system execution is governed by effect- and target-oriented authorization plus runbook-first terminal-neutral procedure semantics from `EXECUTION-CONTROL.md`. Availability of a terminal, credential, CLI, API, remote connection or privileged identity never creates Governance authority by itself.
+Material local/remote/system execution is governed by effect- and target-oriented authorization plus runbook-first terminal-neutral procedure semantics and Executor-owned adapter-operation resolution from `EXECUTION-CONTROL.md`. Availability of a terminal, credential, CLI, API, remote connection, privileged identity or cached operation recipe never creates Governance authority by itself.
 
 ## Bootstrap Invariant
 
@@ -25,7 +25,7 @@ On cold start load only:
 
 Then perform a lightweight EXCHANGE freshness probe: determine the latest event `q` without loading full history when tooling permits. If latest `q > STATE.exchange_q`, load only that delta before deciding the effective frontier.
 
-Do NOT preload MISSION, WORKPLAN, all task records, Decision Records, Core modules, Skill audit records, ecosystem inventories, SDD histories/workspaces, or full EXCHANGE history. Route context on a need-to-know basis.
+Do NOT preload MISSION, WORKPLAN, all task records, Decision Records, Core modules, Skill audit records, ecosystem inventories, runbook/recipe registries, SDD histories/workspaces, or full EXCHANGE history. Route context on a need-to-know basis.
 
 ## Authority
 
@@ -44,7 +44,7 @@ Highest authority wins:
 
 - **Human Owner** — final authority over scope, priorities, risk, pause/resume and overrides.
 - **Strategy/Governance Agent** — owns native SDD Explore/Frame, Specify, Design, Plan & Trace, and Converge/Accept/Evolve; F0-F6 strategy; Human-intent/engineering translation; ecosystem/capability boundary decisions; implicit quality review; Skill discovery/audit/approval; graphical solution presentation; work decomposition; task-contract correctness/completeness; readiness; acceptance/rejection; strategic blockers; and durable checkpoint maintenance.
-- **Implementation Agent** — owns native SDD Implement plus Code Review & Verify for authorized technical work inside the execution sequence and applicable execution-capability envelope, regardless of whether the product is OpenCode, Codex, Claude Code, Antigravity or another compatible agent.
+- **Implementation Agent** — owns native SDD Implement plus Code Review & Verify for authorized technical work inside the execution sequence and applicable execution-capability envelope, including adapter/CLI/API/SDK/shell mechanics and bounded operation resolution, regardless of whether the product is OpenCode, Codex, Claude Code, Antigravity or another compatible agent.
 
 No SDD stage is dual-owned. Implementation-local coding choices are not a second Design authority. If implementation/review exposes a material requirement, Design, Plan or acceptance defect, Implementation blocks and returns that concern to Strategy for re-entry under `SDD.md`.
 
@@ -63,8 +63,8 @@ Product identity MUST NOT appear in task semantics. See `ADAPTERS.md`.
 - pre-implementation F0-F6/task contract quality -> `.agent-governance/LIFECYCLE.md`
 - ecosystem/SDD/Skill/tool coexistence -> `.agent-governance/COEXISTENCE.md`
 - sequential implementation/review/readiness/blockers -> `.agent-governance/EXECUTION.md`
-- material execution authorization + runbook/adapter semantics -> `.agent-governance/EXECUTION-CONTROL.md`
-- STATE/EXCHANGE/Decision Records/versioning -> `.agent-governance/PROTOCOL.md`
+- material execution authorization + runbook/adapter/verified-recipe semantics -> `.agent-governance/EXECUTION-CONTROL.md`
+- STATE/EXCHANGE/Decision Records/versioning + native runbook/recipe persistence -> `.agent-governance/PROTOCOL.md`
 - handoff/cold-start recovery -> `.agent-governance/HANDOFF.md`
 - Skill capability governance -> `.agent-governance/SKILLS.md`
 - Skill candidate discovery/source resolution -> `.agent-governance/SKILL-DISCOVERY.md`
@@ -73,6 +73,8 @@ Product identity MUST NOT appear in task semantics. See `ADAPTERS.md`.
 - work frontier/order/dependencies -> `.agent-coordination/WORKPLAN.md`
 - task detail -> `.agent-coordination/tasks/<TASK-ID>.md`
 - approved Skill artifact record -> `.agent-coordination/skills/<SKILL-ID>.json`
+- Governance-owned semantic runbooks -> `.agent-coordination/runbooks/<runbook-id>.md`
+- Governance-owned verified operation recipes -> `.agent-coordination/runbooks/recipes/<recipe-id>.json`
 - durable current frontier -> `.agent-coordination/STATE.json`
 - durable coordination delta -> `.agent-coordination/EXCHANGE.jsonl`
 - rationale-bearing decisions -> `.agent-coordination/decisions/<DECISION-ID>-*.md`
@@ -92,16 +94,16 @@ Product identity MUST NOT appear in task semantics. See `ADAPTERS.md`.
 | F3 capability audit | LIFECYCLE + SKILLS + WORKPLAN index; add COEXISTENCE for existing Skill/registry overlap, SKILL-DISCOVERY only while locating/resolving candidates and SKILL-SUPPLY-CHAIN only while auditing/acquiring them |
 | F4/F5 planning/readiness | LIFECYCLE + SDD + QUALITY + WORKPLAN + only affected task files + relevant Decision Records/Skill approval records; add SECURITY for security-material tasks; add EXECUTION-CONTROL for tasks with material execution effects/runbook/Human-gate requirements; add INTERACTION for Human-facing solution presentation; add only referenced native SDD artifacts needed to validate the current plan/task |
 | Existing-system assurance/audit framing or evidence review | ASSURANCE + QUALITY + only declared subject/scope/evidence context; add SECURITY for security-material claims and EXECUTION-CONTROL only when the selected assessment method has material system effects or authorization/runbook requirements |
-| Implementation sequence | EXECUTION + SDD + WORKPLAN metadata + current task only + its exact referenced native artifacts + exact required approved Skill artifacts; add SECURITY only when the disclosed task has material security controls/evidence; add EXECUTION-CONTROL only when the disclosed task/effect requires it |
-| Implementation blocker/state transition | EXECUTION + SDD + current task; add SECURITY for security-source freshness/known-bad/verifier/exception/posture blockers; add EXECUTION-CONTROL for authorization/target/runbook/adapter/recovery blockers; PROTOCOL only if event/state semantics are needed; COEXISTENCE only for a genuine provider/authority collision; QUALITY only if the blocker invalidates a material quality/design assumption |
-| Handoff/review | HANDOFF + SDD + EXCHANGE delta after checkpoint + referenced evidence only; add SECURITY when reviewing material security evidence/posture; add ASSURANCE when reviewing an assurance report/finding/coverage claim; add EXECUTION-CONTROL when reviewing material execution/runbook evidence |
+| Implementation sequence | EXECUTION + SDD + WORKPLAN metadata + current task only + its exact referenced native artifacts + exact required approved Skill artifacts; add SECURITY only when the disclosed task has material security controls/evidence; add EXECUTION-CONTROL only when the disclosed task/effect requires it; load only the selected runbook and compatible VERIFIED recipe for the active operation when applicable |
+| Implementation blocker/state transition | EXECUTION + SDD + current task; add SECURITY for security-source freshness/known-bad/verifier/exception/posture blockers; add EXECUTION-CONTROL for authorization/target/runbook/recipe/adapter/recovery blockers; PROTOCOL only if event/state/persistence semantics are needed; COEXISTENCE only for a genuine provider/authority collision; QUALITY only if the blocker invalidates a material quality/design assumption |
+| Handoff/review | HANDOFF + SDD + EXCHANGE delta after checkpoint + referenced evidence only; add SECURITY when reviewing material security evidence/posture; add ASSURANCE when reviewing an assurance report/finding/coverage claim; add EXECUTION-CONTROL when reviewing material execution/runbook/recipe evidence |
 | STATE repair or protocol question | PROTOCOL + minimum authority records needed for disputed fields |
 | Skill discovery/source question | SKILLS + SKILL-DISCOVERY + minimum capability context |
 | Skill acquisition/update/revocation | SKILLS + SKILL-SUPPLY-CHAIN + candidate/approval record only |
 | SDD/Skill/tool collision or shared managed-file question | COEXISTENCE + SDD + only the conflicting artifacts/configuration |
 | Security/privacy/reliability/operability/quality question | QUALITY + only the affected design/task/evidence context; add SECURITY when security is material; add ASSURANCE when the question is an existing-system assessment claim; add EXECUTION-CONTROL when the concern involves system execution authority/procedure |
 
-Do not recursively load unrelated files, whole SDD histories, full Skill registries, or future task contents.
+Do not recursively load unrelated files, whole SDD histories, full Skill registries, full runbook/recipe registries, or future task contents.
 
 ## Mandatory Lifecycle
 
@@ -113,7 +115,7 @@ Before F5 passes, Strategy also applies the implicit engineering quality envelop
 
 When security is material under `QUALITY.md`, F5 additionally applies `SECURITY.md`: applicable authoritative controls and source freshness must be determinable, relevant known-bad state must be resolved, required independent verification must be defined, and any Human exception or temporal recheck/invalidation condition must be explicit. Security requirements exist before implementation; verifier success cannot compensate for missing security authority/applicability.
 
-When the implementation scope includes material execution effects governed by `EXECUTION-CONTROL.md`, F5 additionally requires a determinable Execution Capability Envelope, explicit approval/Human-gate semantics, actual-target verification, and any required reusable/project-native runbook with preconditions, postconditions and recovery evidence. A runbook defines procedure but does not authorize a particular invocation.
+When the implementation scope includes material execution effects governed by `EXECUTION-CONTROL.md`, F5 additionally requires a determinable Execution Capability Envelope, explicit approval/Human-gate semantics, actual-target verification, and any required reusable/project-native runbook with preconditions, postconditions and recovery evidence. A runbook defines procedure but does not authorize a particular invocation. Exact adapter syntax need not be pre-authored by Strategy when Implementation can resolve it safely inside the approved semantic envelope.
 
 F5 authorizes the complete SDD-anchored plan and F6 opens the execution sequence. Implementation then works task-by-task under `EXECUTION.md`, performing Implement and Code Review & Verify for each task, until all authorized tasks are DONE or a valid cross-responsibility/execution-control/security blocker stops the sequence. `DONE` is implementation/review evidence only. Strategy performs Converge/Accept/Evolve after handoff; general task readiness does not silently authorize production, privilege, credentials, global configuration, destructive effects or any target outside the applicable Execution Capability Envelope, and execution authorization does not establish security acceptance.
 
@@ -138,13 +140,17 @@ Existing-system assurance does not bypass the implementation lifecycle or create
 - Existing-system assurance requires declared scope/method/evidence/coverage under `ASSURANCE.md`; model opinion, missing evidence, successful tooling or absence of findings cannot manufacture `PASS` or prove no unknown defect exists.
 - Assurance severity and confidence remain independent, and an audit finding does not authorize remediation.
 - Historical assurance reports remain point-in-time evidence; later drift, advisories or supersession may invalidate current posture without rewriting historical evidence.
-- Security `PASS` does not grant execution authorization, and D033/D034 authorization/procedure success does not establish security `PASS`.
+- Security `PASS` does not grant execution authorization, and D033/D034/D054 authorization/procedure/adapter success does not establish security `PASS`.
 - A terminal, shell, CLI, API, credential, authenticated session, remote connection or privileged identity is a mechanism, not execution authority.
 - Material execution is authorized by actor/target/effect/resource/privilege/credential/network scope and approval mode, not executable name alone.
 - Procedure semantics are terminal/platform neutral; reusable/material operational work uses or references runbooks with preconditions, checkpoints, postconditions and recovery as required.
+- Semantic runbook meaning is distinct from adapter recipes; a compatible VERIFIED recipe is bounded technical evidence/cache, not procedure or invocation authority.
+- The Implementation Agent owns CLI/API/SDK/shell/remote adapter mechanics inside authorized Implement/Code Review & Verify work and resolves unknown syntax from authoritative version-compatible evidence rather than model memory alone.
+- A new or refreshed recipe follows semantic operation -> runbook -> compatible VERIFIED recipe -> authoritative help/docs/schema -> bounded CANDIDATE -> preview when useful -> authorization re-evaluation -> least-privilege execution -> semantic postcondition verification -> evidence-gated VERIFIED promotion.
+- Human Owner interaction is not required merely to copy/paste routine commands; Human gates remain for `REQUIRE_HUMAN`, MFA/external approvals, material credential/risk decisions or explicit syntax inspection/execution requests.
 - An approved runbook does not authorize every invocation; actual target/context and approval are revalidated for the invocation.
 - Authority may narrow through adapters/scripts/child processes but MUST NOT expand beyond the parent Execution Capability Envelope.
-- STATE represents the frontier, not full project history/inventory.
+- STATE represents the frontier, not full project history/inventory, and MUST NOT copy runbook/recipe registries.
 - WORKPLAN exposes execution metadata; detailed task content stays in separate records or explicitly referenced project-native artifacts.
 - Exactly one task record is disclosed to the Implementation Agent at a time during normal sequential execution.
 - Completing a task to DONE may unlock the next eligible task without Strategy/Human intervention only while all task, security and execution-control eligibility conditions remain satisfied.

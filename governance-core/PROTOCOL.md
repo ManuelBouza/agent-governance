@@ -1,8 +1,8 @@
 # Durable Coordination Protocol
 
-Protocol-Module-Version: 1.3.0
+Protocol-Module-Version: 1.4.0
 
-Load this module for STATE reconstruction, EXCHANGE/event semantics, Decision Records, protocol corrections, capability-inventory persistence or version upgrades.
+Load this module for STATE reconstruction, EXCHANGE/event semantics, Decision Records, protocol corrections, capability-inventory persistence, runbook/recipe persistence or version upgrades.
 
 ## STATE
 
@@ -10,7 +10,7 @@ Load this module for STATE reconstruction, EXCHANGE/event semantics, Decision Re
 
 It should contain only fields required to identify the current protocol/mission focus, lifecycle phase/gates, active/ready work, next permitted action, controlling record IDs/paths and the latest incorporated EXCHANGE sequence.
 
-STATE must not contain full work inventories, capability/ecosystem inventories, specification history, decision history or self-referential current commit SHA. The Git commit containing STATE versions the snapshot.
+STATE must not contain full work inventories, capability/ecosystem inventories, runbook/recipe registries, specification history, decision history or self-referential current commit SHA. The Git commit containing STATE versions the snapshot.
 
 If valid EXCHANGE events exist with `q > STATE.exchange_q`, replay those events and relevant authority records before relying on STATE.
 
@@ -31,6 +31,40 @@ CAPABILITIES is evidence/routing metadata, not authority and not a substitute fo
 A material provider/version/path/Skill-selection change invalidates the affected inventory entry until re-evaluated. STATE may point to a current coexistence blocker/decision but does not copy the inventory.
 
 Repositories with no material external capability decisions MAY keep the inventory minimal. Absence of a third-party SDD provider is valid because native `SDD.md` supplies Governance SDD semantics; it does not mean the project operates without SDD discipline.
+
+## RUNBOOKS AND VERIFIED OPERATION RECIPES
+
+Reuse an adequate project-native operational provider first under `COEXISTENCE.md`. When none exists, Governance-owned persistence uses:
+
+```text
+.agent-coordination/runbooks/
+    RUNBOOK.template.md
+    <runbook-id>.md
+    recipes/
+        RUNBOOK-RECIPE.template.json
+        <recipe-id>.json
+```
+
+A semantic runbook and an adapter recipe are different artifacts.
+
+- runbook meaning/procedure authority belongs to Human/Strategy Governance;
+- adapter recipes are Implementation-owned technical realization/evidence;
+- a recipe never broadens the task, runbook or Execution Capability Envelope;
+- STATE may point to a current blocker/runbook when necessary but MUST NOT copy the runbook/recipe registry.
+
+A durable recipe must expose enough secret-free identity to validate at least its `recipe_id`, `operation_id`, optional runbook/step binding, lifecycle state, adapter/tool/API/version/platform binding, target/effect/privilege/credential/network scope, parameterized invocation representation, authoritative provenance, verification evidence/time and staleness triggers.
+
+Lifecycle states are:
+
+```text
+CANDIDATE | VERIFIED | STALE | REVOKED | SUPERSEDED
+```
+
+Only a compatible `VERIFIED` recipe is reusable as trusted cached syntax. `CANDIDATE`, `STALE`, `REVOKED` and `SUPERSEDED` records remain evidence but require authoritative operation resolution or a current replacement before execution.
+
+A recipe may be promoted to `VERIFIED` only after the authorized bounded operation is resolved from authoritative evidence, executed or safely verified as applicable, and the required semantic postcondition is established. Exit status alone is insufficient for material mutation.
+
+Do not persist secrets, tokens, private keys or raw secret-bearing environment state in runbooks, recipes or evidence references.
 
 ## EXCHANGE
 
@@ -83,6 +117,8 @@ Persist the operational effect of approved decisions before a context switch or 
 
 Capability inventory entries are refreshed after the relevant provider/ownership decision exists. Editing CAPABILITIES itself never creates authority.
 
+Runbook/recipe persistence is refreshed only through the owning operational lifecycle. Writing or editing a recipe does not authorize its invocation, and setting `VERIFIED` without the required evidence does not create trust.
+
 Accepted current specification carriers evolve through the governed artifact/task/decision flow; STATE/EXCHANGE may point to the current frontier but must not duplicate full living specification content.
 
 ## Versioning
@@ -99,3 +135,5 @@ Protocol upgrades require an EXCHANGE decision. Work normally completes under th
 EXCHANGE remains append-only for an active mission. Completed missions may be archived under `.agent-coordination/archive/` after authoritative closure. Do not destroy historical audit material.
 
 Capability inventories MAY be archived with the mission when they are mission-specific; project-wide reusable capability entries MAY remain active if still current and validated.
+
+Runbooks/recipes with continuing project-wide operational value MAY remain active across mission archival; stale/revoked/superseded records may be retained as audit evidence according to project policy but never treated as trusted current syntax.
