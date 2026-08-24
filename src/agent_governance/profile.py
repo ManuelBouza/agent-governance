@@ -41,6 +41,18 @@ class Profile:
         return False
 
 
+def validate_profile(profile: object) -> Profile:
+    """Validate a resolved profile against the active runtime identities."""
+
+    if not isinstance(profile, Profile):
+        raise ProfileError(f"profile must be a Profile instance, got {type(profile).__name__}")
+    if not isinstance(profile.name, str) or profile.name not in ACTIVE_PROFILES:
+        raise ProfileError(
+            f"unsupported profile: {profile.name!r}; active profiles: {sorted(ACTIVE_PROFILES)}"
+        )
+    return profile
+
+
 def resolve_profile(name: str | None = None) -> Profile:
     """Resolve a runtime profile by name.
 
@@ -59,8 +71,4 @@ def resolve_profile(name: str | None = None) -> Profile:
             f"profile must be a non-empty string, got {name!r}; "
             f"active profiles: {sorted(ACTIVE_PROFILES)}"
         )
-    if name not in ACTIVE_PROFILES:
-        raise ProfileError(
-            f"unsupported profile: {name!r}; active profiles: {sorted(ACTIVE_PROFILES)}"
-        )
-    return Profile(name=name)
+    return validate_profile(Profile(name=name))

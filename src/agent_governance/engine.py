@@ -48,7 +48,7 @@ else:
     _ctypes = None
     _windows_lock_api = None
 
-from agent_governance.profile import Profile, ProfileError, resolve_profile
+from agent_governance.profile import Profile, ProfileError, resolve_profile, validate_profile
 
 CORE_FILES = (
     "ADAPTERS.md",
@@ -1743,10 +1743,7 @@ def main(
     try:
         if profile is None:
             profile = resolve_profile()
-        if not isinstance(profile, Profile):
-            raise GovernanceError(
-                f"profile must be a Profile instance, got {type(profile).__name__}"
-            )
+        profile = validate_profile(profile)
         if profile.grants_source_maintenance:
             raise GovernanceError(
                 "profile grants source-maintenance permissions; consumer-only runtime"

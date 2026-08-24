@@ -129,6 +129,27 @@ def test_source_maintainer_is_not_active(repo_root: Path) -> None:
         profile_mod.resolve_profile("source-maintainer")
 
 
+@pytest.mark.parametrize("bad_name", ["source-maintainer", "garbage", "", " consumer ", 123, []])
+def test_engine_main_rejects_directly_constructed_unsupported_profile(
+    tmp_path: Path, repo_root: Path, capsys: pytest.CaptureFixture[str], bad_name: object
+) -> None:
+    launcher = repo_root / "governance-skill" / "scripts" / "governance.py"
+    module = load_module(launcher, "t021_engine_rejects_direct_profile")
+    target = tmp_path / "consumer"
+    target.mkdir()
+
+    result = module._engine.main(
+        ["bootstrap", str(target)],
+        package_paths=module._package_paths(),
+        profile=module._engine.Profile(bad_name),
+    )
+
+    assert result == 1
+    assert "unsupported profile" in capsys.readouterr().err
+    assert not (target / ".agent-governance").exists()
+    assert not (target / ".agent-coordination").exists()
+
+
 # -- AC-T021-3: artifact compatibility ----------------------------------------
 
 
