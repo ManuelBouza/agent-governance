@@ -1,27 +1,30 @@
 # Current ChatGPT Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O160  
+Checkpoint-Sequence: O161  
 Canonical-Branch: `develop`  
-Current-Work-Unit: T038 planned to restore the Core-derived Consumer protocol identity baseline; T021-R1 remains blocked pending T038 acceptance/integration  
+Current-Work-Unit: T039 Orchestrator-owned T034 protocol-history oracle transition; T038 implementation is complete but blocked only by the stale T034 live-current-version assertion  
 Chat-Closure: CONTINUE_CURRENT_CHAT  
 Active-Executor: Codex  
 Active-Executor-Surface: ChatGPT desktop / Codex / native Windows
 
 ## Durable frontier
 
-- D053 native SDD, D054 execution-mechanics ownership, D040 single current protocol-version authority, D042 freshness, D048 final-publication boundary, D055 launch profiles and D056 progress-note rules remain controlling.
-- Routed Core protocol remains `1.15.0`. Historical D054 Phase-B acceptance is not rewritten, but its current verification posture was invalidated by fresh T021 evidence showing a canonical Consumer package baseline regression.
-- T034, T035, T036 and T037 remain `ACCEPTED`.
-- Human Owner explicitly resumed T021 on 2026-08-24. T021 remains `REWORK_REQUIRED` under `docs/reviews/T021-R1.md`; its sole semantic defect remains the AC-T021-2 direct unsupported-`Profile` bypass.
-- Fresh T021 execution reconciled represented branch `refactor/t021-consumer-profile-abstraction` with current canonical `develop@bfac31d4f7daf14ef04ece3d3e881d96c4fab0c1` through a history-preserving normal merge. Reconciliation HEAD is `f078928734be4ed0d272821955ba4d8ccdd7cd53`.
-- T021 terminal blocked HEAD is `b2ec49e210a752fa539832e06b48b2bcdc00a8dd`; handoff `handoffs/T021-executor-handoff.json` reports no T021-R1 correction was committed.
-- The blocker reproduces on clean canonical develop: `tests/test_governance_artifact.py` reports `2 failed, 2 passed` because Core is `1.15.0` while `governance-skill/assets/STATE.template.json` and `CAPABILITIES.template.json` still encode `1.14.0`; T020 tests also contain free-standing exact-current `1.14.0` expectations.
-- This is outside T021 scope and recreates D040's cross-owner mutable-current-version synchronization hazard in Consumer asset/template form.
-- T038 is persisted at `docs/tasks/T038-protocol-derived-consumer-asset-versioning.md` to remove that hazard systemically rather than changing literals from `1.14.0` to `1.15.0`.
-- T038 Design: source STATE/CAPABILITIES templates use `protocol_version: null`; bootstrap derives current version from packaged Core and materializes concrete installed values; T020 verification derives expectations from Core/artifact identity; no second current-version authority remains.
-- T021 represented branch MUST remain untouched by T038. After T038 acceptance/integration, relaunch T021-R1 from its represented reconciled branch and independently complete the profile-boundary correction.
-- T022 remains `BLOCKED` until T021 is accepted. MG1/T023 and later unified-refactor work remain ineligible.
+- D053 native SDD, D054 execution-mechanics ownership, D040 single current protocol-version authority, D042 freshness, D048 final-publication boundary, D052 conformance ownership, D055 launch profiles and D056 progress-note rules remain controlling.
+- Current routed Core protocol is `1.15.0`.
+- T034, T035, T036 and T037 remain `ACCEPTED` as historical work units.
+- Human Owner explicitly resumed T021 on 2026-08-24. T021 remains `REWORK_REQUIRED`; its represented branch is history-preserved and reconciled, but no T021-R1 semantic correction has been committed because canonical T020 artifact verification was red.
+- T038 was planned to restore that T020/canonical package baseline without creating a second current-version authority.
+- T038 Executor result at submitted HEAD `6dd2f99c5cc78ddc53f9719b4d2df4dc735d70e7` is `BLOCKED`, with implementation anchor `8aa32b32fb15e01bfbc56e327a910b82b3674c32`, base `a8f458c8d0334edac8d1a9cdeea7418d5cb860d5`, branch `fix/t038-protocol-derived-consumer-assets`, and handoff `handoffs/T038-executor-handoff.json`.
+- T038 implementation is internally green on its authorized surface: combined artifact/Consumer suite `46 passed`, focused T020 artifact `4 passed`, focused protocol-derived asset tests `3 passed`, Ruff check/format PASS and `git diff --check` PASS.
+- T038 changed only the two Consumer JSON templates, engine materialization/validation, Consumer/T020 tests and handoff. It did not change Core, Markdown, T021, CLI commands or artifact builder behavior.
+- T038 source templates now use `protocol_version: null`; bootstrap materializes both installed STATE/CAPABILITIES protocol versions from the already validated packaged Core; T020/current tests derive expectations from Core rather than duplicated literals.
+- Full T038 pytest is `356 passed, 1 failed`. The sole failure is Orchestrator-owned `tests/test_t034_native_sdd_conformance.py::test_core_and_artifact_expect_protocol_1_14_with_sdd`, which still requires a newly built artifact from current Core to report historical T034 version `1.14.0`.
+- This is a D052 oracle lifecycle defect, not a T038 implementation defect. T034's accepted Task Contract remains authoritative historical evidence that T034 materialized Protocol `1.14.0`; current `governance-core/GOVERNANCE.md` remains sole authority for current protocol identity.
+- T039 is persisted at `docs/tasks/T039-t034-protocol-history-oracle-transition.md` with Oracle revision `T039-T034-PROTOCOL-HISTORY-TRANSITION-v1`.
+- T039 changes only the single stale temporal assertion in `tests/test_t034_native_sdd_conformance.py`: historical `1.14.0` is proven from the accepted T034 Task Contract, while a current artifact must equal the protocol dynamically derived from current Core. All other T034 oracle semantics remain frozen.
+- T038 MUST NOT be integrated or accepted until T039 is independently verified and accepted, then T038 is re-verified against fresh canonical develop containing T039.
+- T021 remains blocked pending T038 acceptance. T022 remains blocked until T021 acceptance. MG1/T023 and later unified-refactor work remain ineligible.
 
 ## Mandatory Executor prompt transport invariant
 
@@ -56,16 +59,32 @@ complex/high-risk technical work  -> GPT-5.6 Sol / High
 exceptional long-horizon work     -> GPT-5.6 Sol / highest mode only when justified
 ```
 
-## T038 current identity
+## T039 active identity
+
+```text
+Task: T039
+Status: PLANNED / ORCHESTRATOR-CONFORMANCE GATE
+Task Contract: docs/tasks/T039-t034-protocol-history-oracle-transition.md
+Oracle asset: tests/test_t034_native_sdd_conformance.py
+Oracle revision: T039-T034-PROTOCOL-HISTORY-TRANSITION-v1
+Planning/oracle branch: feat/t039-t034-oracle-transition
+Expected verification branch: verify/t039-t034-oracle-transition
+Expected handoff: handoffs/T039-executor-handoff.json
+Purpose: preserve T034 historical 1.14.0 acceptance without pinning future current artifact identity
+```
+
+## T038 blocked identity
 
 ```text
 Task: T038
-Status: PLANNED / NEXT EXECUTABLE WORK
+Status: BLOCKED BY T039 ORACLE TRANSITION
 Task Contract: docs/tasks/T038-protocol-derived-consumer-asset-versioning.md
-Expected branch: fix/t038-protocol-derived-consumer-assets
-Expected handoff: handoffs/T038-executor-handoff.json
-Base: current canonical develop after this planning/checkpoint PR
-Purpose: restore T020/canonical green baseline by deriving Consumer installed protocol identity from Core
+Branch: fix/t038-protocol-derived-consumer-assets
+Base: a8f458c8d0334edac8d1a9cdeea7418d5cb860d5
+Implementation anchor: 8aa32b32fb15e01bfbc56e327a910b82b3674c32
+Submitted HEAD: 6dd2f99c5cc78ddc53f9719b4d2df4dc735d70e7
+Handoff: handoffs/T038-executor-handoff.json
+Only failing gate: stale D052 T034 exact-current 1.14.0 oracle assertion
 ```
 
 ## T021 blocked identity
@@ -78,20 +97,20 @@ Review authority: docs/reviews/T021-R1.md
 Represented branch: refactor/t021-consumer-profile-abstraction
 Reconciliation HEAD: f078928734be4ed0d272821955ba4d8ccdd7cd53
 Blocked submitted HEAD: b2ec49e210a752fa539832e06b48b2bcdc00a8dd
-Handoff: handoffs/T021-executor-handoff.json
 Pending semantic correction: AC-T021-2 direct unsupported-Profile fail-closed boundary
 ```
 
 ## Next action
 
-1. Integrate this T038 planning/checkpoint Markdown branch into `develop` through PR.
-2. Refresh canonical `develop` identity after merge.
-3. Show D055 launch profile for T038: Codex `NEW`, GPT-5.6 Sol, Medium; this is a bounded but semantic runtime/package baseline repair with future protocol-migration consequences.
-4. Launch T038 from fresh canonical `develop` using only pointer `docs/tasks/T038-protocol-derived-consumer-asset-versioning.md` plus D042 freshness.
-5. Executor performs only T038 Implement + Code Review & Verify, persists/pushes terminal handoff/head, and returns canonical completion fields.
-6. Orchestrator independently reviews T038 remote evidence/diff. If accepted, integrate and persist acceptance/checkpoint.
-7. Only then relaunch T021-R1 on its represented reconciled branch; do not recreate/rewrite that branch history.
-8. Do not start T022 or later program work before T021 acceptance.
+1. Integrate the T039 planning/oracle/checkpoint branch into `develop` through PR after remote diff review.
+2. Refresh canonical `develop` identity.
+3. Show D055 launch profile for T039 independent verification: Codex `NEW`, GPT-5.6 Luna, Low; no implementation is expected, only bounded Code Review & Verify of one Orchestrator-owned oracle transition.
+4. Launch T039 from fresh canonical `develop` using only pointer `docs/tasks/T039-t034-protocol-history-oracle-transition.md` plus D042 freshness.
+5. Executor performs only T039 Code Review & Verify and persists/pushes terminal handoff/head.
+6. Orchestrator independently reviews and accepts T039 if focused/full canonical verification is green and no other T034 semantic drift exists.
+7. Only after T039 acceptance, re-verify T038 from then-current canonical `develop`, preserving its represented implementation history and without semantic redesign.
+8. Only after T038 acceptance/integration may T021-R1 resume on its represented branch.
+9. Do not start T022 or later program work before T021 acceptance.
 
 ## Next chat minimum load
 
@@ -99,4 +118,4 @@ Load only current `develop` identity, `AGENTS.md`, and this checkpoint; then fol
 
 ## Do not
 
-Do not repair T038 by replacing `1.14.0` with another duplicated exact-current literal; do not bump Core protocol; do not modify T021 in T038; do not discard/rewrite represented T021 history; do not start T022 before T021 acceptance; do not write directly to `main`/`develop`.
+Do not edit any other T034 oracle semantics; do not replace historical `1.14.0` with a new duplicated current `1.15.0` literal; do not mutate T038 implementation while verifying T039; do not integrate T038 before T039 acceptance; do not touch T021 until T038 acceptance; do not start T022 before T021 acceptance; do not write directly to `main`/`develop`.

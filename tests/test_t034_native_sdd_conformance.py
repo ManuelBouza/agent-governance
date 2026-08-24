@@ -65,13 +65,23 @@ def test_native_sdd_is_required_installed_core(repo_root: Path, tmp_path: Path) 
     assert "missing" in missing.stderr.lower()
 
 
-def test_core_and_artifact_expect_protocol_1_14_with_sdd(repo_root: Path, tmp_path: Path) -> None:
+def test_core_and_artifact_preserve_t034_protocol_history_with_current_core(
+    repo_root: Path, tmp_path: Path
+) -> None:
     assert "SDD.md" in CORE_REQUIRED_MODULES
+
+    task_contract = (
+        repo_root / "docs" / "tasks" / "T034-native-sdd-executable-materialization.md"
+    ).read_text(encoding="utf-8")
+    assert "R-T034-3 — protocol/package expectations" in task_contract
+    assert "integrated `Protocol-Version: 1.14.0`" in task_contract
+    assert "records protocol version `1.14.0`" in task_contract
 
     builder = _load_module(
         repo_root / "src" / "agent_governance" / "artifact.py",
         "t034_artifact_builder",
     )
+    current_protocol = builder._protocol_version(repo_root / "governance-core" / "GOVERNANCE.md")
     artifact = tmp_path / "governance-skill"
     identity = builder.build_artifact(
         repo_root,
@@ -81,7 +91,7 @@ def test_core_and_artifact_expect_protocol_1_14_with_sdd(repo_root: Path, tmp_pa
         source_commit="d" * 40,
     )
 
-    assert identity["protocol_version"] == "1.14.0"
+    assert identity["protocol_version"] == current_protocol
     assert "core/SDD.md" in {entry["path"] for entry in identity["files"]}
     assert (artifact / "core" / "SDD.md").read_bytes() == (
         repo_root / "governance-core" / "SDD.md"
