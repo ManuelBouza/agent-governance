@@ -1,9 +1,9 @@
 # Current ChatGPT Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O156  
+Checkpoint-Sequence: O157  
 Canonical-Branch: `develop`  
-Current-Work-Unit: T037 accepted/integrated; T036 must now be independently re-verified from fresh canonical develop before D040 Phase-B can resume  
+Current-Work-Unit: T036 accepted; D040 Phase-B D054 routed-Core activation is the next eligible Orchestrator-owned Markdown-only work unit from fresh canonical develop  
 Chat-Closure: CONTINUE_CURRENT_CHAT  
 Active-Executor: Codex  
 Active-Executor-Surface: ChatGPT desktop / Codex / native Windows
@@ -12,13 +12,14 @@ Active-Executor-Surface: ChatGPT desktop / Codex / native Windows
 
 - D053 native SDD, D054 execution-mechanics ownership, D042 freshness, D055 launch profiles and D056 progress-note rules remain controlling.
 - T034 and T035 remain `ACCEPTED`; T035 historical oracle baseline remains preserved.
-- T036 planning/oracle transition `T036-D054-ACTIVATION-TRANSITION-v1` is integrated through PR #204 at `cc4cb59b3979f6260890e94588f3cb071c9b9488`.
-- First T036 independent verification submitted `BLOCKED` at `7919f6050d9d67b3ca27c9d49b9a0f4dd32f6160`; focused oracle passed `6 passed`, with no T036 semantic/runtime drift. Blocking failures were unrelated canonical baseline conditions.
-- T037 restored that canonical baseline. Submitted Executor HEAD `71885c6c22f993c3eb9f5b2346a16f0e47c1a511` changed only the deterministic repository-context manifest plus its handoff. Locked Ruff formatting required no file changes.
-- T037 verification: repository-context `56 passed`; T035/T036 oracle `6 passed`; full pytest PASS; Ruff check PASS; Ruff format PASS; `git diff --check` PASS; no unresolved review findings.
-- T037 implementation integrated through PR #207 at `e078142a7c18b1f87ace09fd6fc717f9b9f50610` and accepted in `docs/reviews/T037-R1.md`.
-- T036 is still not accepted. It must be independently re-verified from fresh canonical `develop` after T037 integration; do not reuse the prior blocked handoff as acceptance evidence.
-- D040 Phase-B D054 routed-Core activation remains BLOCKED pending T036 acceptance.
+- T037 is `ACCEPTED`; it restored the canonical repository-context/format verification baseline without semantic product/oracle changes.
+- T036 Oracle revision `T036-D054-ACTIVATION-TRANSITION-v1` is `ACCEPTED`.
+- T036 final independent verification used a fresh isolated native-Windows checkout from canonical base `f72b1eb609fb5636f102fdfd69501bfc61618008` and submitted Executor HEAD `c862da6a09d84d24c6d80b76de892acf06f39cb5`.
+- T036 accepted verification evidence: focused oracle `6 passed`; full deterministic suite `355 passed`; Ruff check PASS; Ruff format PASS; `git diff --check` PASS; no review findings; no product/oracle/runtime/protocol drift.
+- T036 verification handoff integrated through PR #209 at `456e27207f8975a3d815a16cb607ddc491fe0df3`.
+- T036 acceptance is persisted in `docs/reviews/T036-R1.md`.
+- D040 Phase-B D054 routed-Core activation is now structurally eligible and is the next work unit.
+- Phase-B must restart from fresh current canonical `develop`; the stale pre-T036 branch `feat/d054-core-activation` and any unattached draft blobs/state are non-authoritative and MUST NOT be reused.
 - T021/T022 remain paused and MUST NOT auto-resume.
 
 ## Mandatory Executor prompt transport invariant
@@ -54,18 +55,21 @@ complex/high-risk technical work  -> GPT-5.6 Sol / High
 exceptional long-horizon work     -> GPT-5.6 Sol / highest mode only when justified
 ```
 
-## T036 current identity
+## T036 accepted identity
 
 ```text
 Task: T036
-Status: VERIFICATION REQUIRED AFTER T037
+Status: ACCEPTED
 Task Contract: docs/tasks/T036-d054-phase-b-oracle-transition.md
 Oracle transition: T036-D054-ACTIVATION-TRANSITION-v1
+Planning/oracle PR: #204
 Integrated planning/oracle anchor: cc4cb59b3979f6260890e94588f3cb071c9b9488
-Prior blocked verification HEAD: 7919f6050d9d67b3ca27c9d49b9a0f4dd32f6160
-Prior handoff: handoffs/T036-executor-handoff.json
-Focused oracle from prior run: PASS — 6 passed
-Next requirement: fresh independent verification from current canonical develop
+Accepted verification base: f72b1eb609fb5636f102fdfd69501bfc61618008
+Submitted Executor HEAD: c862da6a09d84d24c6d80b76de892acf06f39cb5
+Handoff: handoffs/T036-executor-handoff.json
+Verification PR: #209
+Integrated verification: 456e27207f8975a3d815a16cb607ddc491fe0df3
+Acceptance review: docs/reviews/T036-R1.md
 ```
 
 ## T037 accepted identity
@@ -83,13 +87,12 @@ Acceptance review: docs/reviews/T037-R1.md
 
 ## Next action
 
-1. Integrate this T037 acceptance/checkpoint Markdown branch into `develop` through PR.
-2. Show D055 launch profile for Codex.
-3. Launch a `NEW` T036 independent verification session from then-current canonical `develop`, using only pointer `docs/tasks/T036-d054-phase-b-oracle-transition.md` plus D042 freshness.
-4. Executor performs only the T036-authorized independent Code Review & Verify and persists a new pushed handoff/head.
-5. ChatGPT reviews that fresh T036 evidence and performs Converge/Accept.
-6. Only after T036 acceptance may D040 Phase-B restart from fresh canonical `develop`.
-7. Do not resume T021/T022 automatically.
+1. Integrate this T036 acceptance/checkpoint Markdown branch into `develop` through PR.
+2. Refresh current canonical `develop` identity after that merge.
+3. Restart D040 Phase-B D054 routed-Core activation as Orchestrator-owned Markdown-only work from a NEW fresh topic branch based on that current `develop`.
+4. Re-read the current D040/D054 controlling Markdown and the routed Core modules required for the Phase-B change; do not reuse stale pre-T036 draft branch/blob state as authority.
+5. Perform the atomic Phase-B Markdown activation under D040 green-baseline rules, review the complete diff, and integrate through PR only if canonical verification remains green.
+6. Do not resume T021/T022 automatically.
 
 ## Next chat minimum load
 
@@ -97,4 +100,4 @@ Load only current `develop` identity, `AGENTS.md`, and this checkpoint; then fol
 
 ## Do not
 
-Do not waive T036 verification; do not modify T035/T036 oracle semantics outside persisted authority; do not activate D054 Core before T036 acceptance; do not reuse stale pre-T036 activation branch state; do not resume T021/T022 automatically; do not write directly to `main`/`develop`.
+Do not reuse stale pre-T036 activation branch/blob state; do not bypass D040 atomic migration/green-baseline constraints; do not duplicate current protocol-version authority outside the canonical Core source; do not resume T021/T022 automatically; do not write directly to `main`/`develop`.
