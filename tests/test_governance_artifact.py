@@ -99,7 +99,7 @@ def test_repeated_builds_have_identical_verified_identity(tmp_path: Path, repo_r
     identity = identities[0]
     assert identity["build_schema_version"] == "1.0.0"
     assert identity["skill_version"] == "0.1.0"
-    assert identity["protocol_version"] == "1.13.0"
+    assert identity["protocol_version"] == "1.14.0"
     assert identity["installed_footprint_version"] == "1.0.0"
     assert identity["source_commit"] == commit
 
@@ -113,6 +113,8 @@ def test_repeated_builds_have_identical_verified_identity(tmp_path: Path, repo_r
         "assets/CAPABILITIES.template.json",
         "assets/EXCHANGE.template.jsonl",
         "assets/MISSION.template.md",
+        "assets/RUNBOOK-RECIPE.template.json",
+        "assets/RUNBOOK.template.md",
         "assets/SKILL-APPROVAL.template.json",
         "assets/STATE.template.json",
         "assets/TASK.template.md",
@@ -161,6 +163,22 @@ def test_repeated_builds_have_identical_verified_identity(tmp_path: Path, repo_r
     assert (artifacts[0] / "governance-artifact-identity.schema.json").read_bytes() == (
         repo_root / "schemas" / "governance-artifact-identity.schema.json"
     ).read_bytes()
+
+
+def test_inventory_uses_canonical_relative_path_string_order(
+    tmp_path: Path, repo_root: Path
+) -> None:
+    builder = load_builder(repo_root)
+    artifact = tmp_path / "artifact"
+    for relative in ("a/file.txt", "Z/file.txt"):
+        path = artifact / relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(relative.encode())
+
+    assert [entry["path"] for entry in builder._inventory(artifact)] == [
+        "Z/file.txt",
+        "a/file.txt",
+    ]
 
 
 def test_artifact_runs_without_source_or_sibling_dependencies(
@@ -223,7 +241,7 @@ def test_artifact_runs_without_source_or_sibling_dependencies(
     assert "STATE is stale" in state.stderr
     state = run_cli(cli, "state", consumer, "--refresh", cwd=isolated)
     assert state.returncode == 0, state.stderr
-    assert json.loads(state.stdout)["protocol_version"] == "1.13.0"
+    assert json.loads(state.stdout)["protocol_version"] == "1.14.0"
 
     for event, arguments in (
         ("start", ("--next-action", "Execute T1")),

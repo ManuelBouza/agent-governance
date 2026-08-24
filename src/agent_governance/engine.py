@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import argparse
-import fcntl
+import errno
 import hashlib
 import json
 import os
@@ -13,8 +13,40 @@ import sys
 import tempfile
 from collections.abc import Callable, Iterator
 from contextlib import contextmanager
+from datetime import datetime
 from pathlib import Path
 from typing import IO
+
+try:
+    import fcntl as _fcntl
+except ImportError:  # pragma: no cover - exercised on native Windows
+    _fcntl = None
+
+if os.name == "nt":  # pragma: no branch - selected once per host
+    import ctypes as _ctypes
+
+    _kernel32 = _ctypes.WinDLL("kernel32", use_last_error=True)
+    _create_mutex = _kernel32.CreateMutexW
+    _create_mutex.argtypes = [_ctypes.c_void_p, _ctypes.c_int, _ctypes.c_wchar_p]
+    _create_mutex.restype = _ctypes.c_void_p
+    _wait_for_single_object = _kernel32.WaitForSingleObject
+    _wait_for_single_object.argtypes = [_ctypes.c_void_p, _ctypes.c_ulong]
+    _wait_for_single_object.restype = _ctypes.c_ulong
+    _release_mutex = _kernel32.ReleaseMutex
+    _release_mutex.argtypes = [_ctypes.c_void_p]
+    _release_mutex.restype = _ctypes.c_int
+    _close_handle = _kernel32.CloseHandle
+    _close_handle.argtypes = [_ctypes.c_void_p]
+    _close_handle.restype = _ctypes.c_int
+    _windows_lock_api = (
+        _create_mutex,
+        _wait_for_single_object,
+        _release_mutex,
+        _close_handle,
+    )
+else:
+    _ctypes = None
+    _windows_lock_api = None
 
 from agent_governance.profile import Profile, ProfileError, resolve_profile
 
@@ -32,6 +64,7 @@ CORE_FILES = (
     "PROTOCOL.md",
     "QUALITY.md",
     "SECURITY.md",
+    "SDD.md",
     "SKILL-DISCOVERY.md",
     "SKILL-SUPPLY-CHAIN.md",
     "SKILLS.md",
@@ -49,6 +82,7 @@ CORE_VERSION_FIELDS = {
     "PROTOCOL.md": "Protocol-Module-Version",
     "QUALITY.md": "Quality-Module-Version",
     "SECURITY.md": "Security-Verification-Version",
+    "SDD.md": "SDD-Version",
     "SKILL-DISCOVERY.md": "Discovery-Version",
     "SKILL-SUPPLY-CHAIN.md": "Supply-Chain-Version",
     "SKILLS.md": "Skills-Version",
@@ -61,8 +95,87 @@ ASSET_TARGETS = {
     "EXCHANGE.template.jsonl": "EXCHANGE.jsonl",
     "TASK.template.md": "tasks/TASK.template.md",
     "SKILL-APPROVAL.template.json": "skills/SKILL-APPROVAL.template.json",
+    "RUNBOOK.template.md": "runbooks/RUNBOOK.template.md",
+    "RUNBOOK-RECIPE.template.json": "runbooks/recipes/RUNBOOK-RECIPE.template.json",
 }
-COORDINATION_DIRS = ("tasks", "skills", "decisions")
+COORDINATION_DIRS = ("tasks", "skills", "decisions", "runbooks")
+RECIPE_FIELDS = {
+    "recipe_id",
+    "status",
+    "operation_id",
+    "runbook_id",
+    "runbook_step",
+    "adapter",
+    "binding",
+    "effect_classes",
+    "invocation",
+    "authoritative_sources",
+    "preconditions",
+    "preview",
+    "postconditions",
+    "verification",
+    "stale_triggers",
+    "supersedes",
+}
+ADAPTER_FIELDS = {"family", "tool", "version", "platform", "shell"}
+BINDING_FIELDS = {
+    "target_class",
+    "resource_scope",
+    "privilege",
+    "credential_class",
+    "network_scope",
+}
+RECIPE_STATES = {"CANDIDATE", "VERIFIED", "STALE", "REVOKED", "SUPERSEDED"}
+ADAPTER_FAMILIES = {
+    "cli",
+    "powershell",
+    "bash",
+    "api",
+    "sdk",
+    "ssh",
+    "remote",
+    "automation",
+    "other",
+}
+INVOCATION_KINDS = {"argv", "shell", "api", "sdk", "remote"}
+SOURCE_CLASSES = {"project_native", "builtin_help", "official_docs", "official_api_schema"}
+EFFECT_CLASSES = {
+    "OBSERVE",
+    "MUTATE_SCOPED",
+    "EXECUTE_LOCAL",
+    "NETWORK_CONNECT",
+    "REMOTE_EXECUTE",
+    "INSTALL_CONFIGURE",
+    "PRIVILEGE_ELEVATE",
+    "SECRET_USE",
+    "DEPLOY_SERVICE_CHANGE",
+    "DATA_MUTATE",
+    "DESTRUCTIVE_IRREVERSIBLE",
+}
+MATERIAL_EFFECTS = {
+    "REMOTE_EXECUTE",
+    "PRIVILEGE_ELEVATE",
+    "SECRET_USE",
+    "DEPLOY_SERVICE_CHANGE",
+    "DATA_MUTATE",
+    "DESTRUCTIVE_IRREVERSIBLE",
+}
+DESIGNATED_SECRET_FIELDS = {
+    "credential_value",
+    "credentialvalue",
+    "secret",
+    "secret_value",
+    "secretvalue",
+    "password",
+    "token",
+    "access_token",
+    "accesstoken",
+    "private_key",
+    "privatekey",
+}
+PRECONDITION_EFFECTS = EFFECT_CLASSES - {"OBSERVE", "EXECUTE_LOCAL"}
+RUNBOOK_STATUSES = {"DRAFT", "READY", "ACTIVE", "SUPERSEDED", "RETIRED"}
+RUNBOOK_OWNERS = {"human", "strategy", "project-native"}
 SOURCE_MARKERS = ("governance-core", "governance-skill", "maintainer-skill")
 SEMVER = re.compile(r"(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)")
 ACTORS = {"human", "strategy", "implementation", "gpt", "oc"}
@@ -160,6 +273,10 @@ class GovernanceError(Exception):
     """Expected fail-closed CLI error."""
 
 
+def _is_unsafe_link(path: Path) -> bool:
+    return path.is_symlink() or path.is_junction()
+
+
 def _protocol_version(governance: Path) -> str:
     try:
         lines = governance.read_text(encoding="utf-8").splitlines()
@@ -186,11 +303,13 @@ def _version_declaration(path: Path, field: str) -> None:
 
 def _safe_target(raw_target: str) -> Path:
     target = Path(raw_target).expanduser()
-    if target.is_symlink() or not target.is_dir():
+    if _is_unsafe_link(target) or not target.is_dir():
         raise GovernanceError(f"target must be an existing, non-symlink directory: {target}")
     target = target.resolve()
     present_markers = [
-        name for name in SOURCE_MARKERS if (target / name).exists() or (target / name).is_symlink()
+        name
+        for name in SOURCE_MARKERS
+        if (target / name).exists() or _is_unsafe_link(target / name)
     ]
     if present_markers:
         raise GovernanceError(
@@ -218,7 +337,7 @@ def _bootstrap(
     _validate_assets(assets, version)
 
     managed = (target / ".agent-governance", target / ".agent-coordination")
-    collisions = [str(path) for path in managed if path.exists() or path.is_symlink()]
+    collisions = [str(path) for path in managed if path.exists() or _is_unsafe_link(path)]
     if collisions:
         raise GovernanceError(
             f"managed path collision; refusing overwrite: {', '.join(collisions)}"
@@ -235,6 +354,7 @@ def _bootstrap(
         owned_roots.append(coordination_target)
         for name in COORDINATION_DIRS:
             (coordination_target / name).mkdir()
+        (coordination_target / "runbooks" / "recipes").mkdir()
         for source_name, relative_target in ASSET_TARGETS.items():
             destination = coordination_target / relative_target
             shutil.copyfile(assets / source_name, destination)
@@ -246,12 +366,12 @@ def _bootstrap(
 
 
 def _required_file(path: Path) -> None:
-    if path.is_symlink() or not path.is_file():
+    if _is_unsafe_link(path) or not path.is_file():
         raise GovernanceError(f"missing or unsafe required file: {path}")
 
 
 def _required_dir(path: Path) -> None:
-    if path.is_symlink() or not path.is_dir():
+    if _is_unsafe_link(path) or not path.is_dir():
         raise GovernanceError(f"missing or unsafe required directory: {path}")
 
 
@@ -275,6 +395,263 @@ def _read_json(path: Path) -> dict[str, object]:
     if not isinstance(value, dict):
         raise GovernanceError(f"JSON document must be an object: {path}")
     return value
+
+
+def _nonempty_string(value: object) -> bool:
+    return isinstance(value, str) and bool(value.strip())
+
+
+def _string_list(value: object, *, allow_empty: bool = True) -> bool:
+    return (
+        isinstance(value, list)
+        and (allow_empty or bool(value))
+        and all(_nonempty_string(item) for item in value)
+    )
+
+
+def _reject_designated_secret_fields(value: object, source: Path) -> None:
+    if isinstance(value, dict):
+        for key, nested in value.items():
+            normalized_key = (
+                re.sub(r"[^a-z0-9]+", "_", key.casefold()).strip("_")
+                if isinstance(key, str)
+                else ""
+            )
+            if normalized_key in DESIGNATED_SECRET_FIELDS:
+                raise GovernanceError(f"recipe contains designated secret-value field in {source}")
+            _reject_designated_secret_fields(nested, source)
+    elif isinstance(value, list):
+        for nested in value:
+            _reject_designated_secret_fields(nested, source)
+
+
+def _valid_rfc3339(value: object) -> bool:
+    if (
+        not _nonempty_string(value)
+        or re.fullmatch(
+            r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})", value
+        )
+        is None
+    ):
+        return False
+    try:
+        parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
+    except ValueError:
+        return False
+    return parsed.tzinfo is not None
+
+
+def _validate_invocation(value: object, source: Path) -> None:
+    if not isinstance(value, dict) or set(value) != {"kind", "template"}:
+        raise GovernanceError(f"recipe invocation has unexpected or missing fields in {source}")
+    kind = value["kind"]
+    template = value["template"]
+    if kind not in INVOCATION_KINDS:
+        raise GovernanceError(f"recipe invocation kind is invalid in {source}")
+    if kind == "argv":
+        valid_template = _string_list(template, allow_empty=False)
+    elif kind == "shell":
+        valid_template = _nonempty_string(template)
+    else:
+        valid_template = isinstance(template, dict) and bool(template)
+    if not valid_template:
+        raise GovernanceError(f"recipe invocation template is invalid in {source}")
+
+
+def _validate_recipe_record(recipe: dict[str, object], source: Path) -> None:
+    if set(recipe) != RECIPE_FIELDS:
+        raise GovernanceError(f"recipe has unexpected or missing top-level fields in {source}")
+    _reject_designated_secret_fields(recipe, source)
+    if not _nonempty_string(recipe["recipe_id"]) or not _nonempty_string(recipe["operation_id"]):
+        raise GovernanceError(f"recipe identity is invalid in {source}")
+    if recipe["status"] not in RECIPE_STATES:
+        raise GovernanceError(f"recipe lifecycle state is invalid in {source}")
+
+    adapter = recipe["adapter"]
+    if not isinstance(adapter, dict) or set(adapter) != ADAPTER_FIELDS:
+        raise GovernanceError(f"recipe adapter has unexpected or missing fields in {source}")
+    if adapter["family"] not in ADAPTER_FAMILIES or not all(
+        _nonempty_string(adapter[field]) for field in ("tool", "version", "platform")
+    ):
+        raise GovernanceError(f"recipe adapter identity is invalid in {source}")
+    if adapter["shell"] is not None and not _nonempty_string(adapter["shell"]):
+        raise GovernanceError(f"recipe adapter shell is invalid in {source}")
+
+    binding = recipe["binding"]
+    if not isinstance(binding, dict) or set(binding) != BINDING_FIELDS:
+        raise GovernanceError(f"recipe binding has unexpected or missing fields in {source}")
+    if not all(
+        _nonempty_string(binding[field])
+        for field in ("target_class", "resource_scope", "privilege", "credential_class")
+    ) or not _string_list(binding["network_scope"]):
+        raise GovernanceError(f"recipe binding is invalid in {source}")
+
+    effects = recipe["effect_classes"]
+    if (
+        not _string_list(effects, allow_empty=False)
+        or len(effects) != len(set(effects))
+        or not set(effects) <= EFFECT_CLASSES
+    ):
+        raise GovernanceError(f"recipe effect classes are invalid in {source}")
+    _validate_invocation(recipe["invocation"], source)
+
+    sources = recipe["authoritative_sources"]
+    if not isinstance(sources, list) or not sources:
+        raise GovernanceError(f"recipe authoritative sources are required in {source}")
+    for item in sources:
+        if not isinstance(item, dict) or set(item) != {"source_class", "reference", "version"}:
+            raise GovernanceError(f"recipe authoritative source is malformed in {source}")
+        if item["source_class"] not in SOURCE_CLASSES or not _nonempty_string(item["reference"]):
+            raise GovernanceError(f"recipe authoritative source is invalid in {source}")
+        if item["version"] is not None and not _nonempty_string(item["version"]):
+            raise GovernanceError(f"recipe authoritative source version is invalid in {source}")
+
+    for field in ("preconditions", "postconditions", "stale_triggers"):
+        if not _string_list(recipe[field]):
+            raise GovernanceError(f"recipe {field} is invalid in {source}")
+    if set(effects) & PRECONDITION_EFFECTS and not recipe["preconditions"]:
+        raise GovernanceError(f"mutation/material recipe lacks preconditions in {source}")
+    if recipe["preview"] is not None and not (
+        _nonempty_string(recipe["preview"])
+        or (isinstance(recipe["preview"], dict) and bool(recipe["preview"]))
+        or (isinstance(recipe["preview"], list) and bool(recipe["preview"]))
+    ):
+        raise GovernanceError(f"recipe preview is invalid in {source}")
+
+    verification = recipe["verification"]
+    if verification is not None:
+        if not isinstance(verification, dict) or set(verification) != {
+            "verified_at",
+            "evidence",
+            "result",
+        }:
+            raise GovernanceError(f"recipe verification is malformed in {source}")
+        if (
+            not _valid_rfc3339(verification["verified_at"])
+            or not _nonempty_string(verification["evidence"])
+            or verification["result"] not in {"pass", "fail"}
+        ):
+            raise GovernanceError(f"recipe verification is invalid in {source}")
+
+    for field in ("runbook_id", "runbook_step", "supersedes"):
+        if recipe[field] is not None and not _nonempty_string(recipe[field]):
+            raise GovernanceError(f"recipe {field} is invalid in {source}")
+    if (recipe["runbook_id"] is None) != (recipe["runbook_step"] is None):
+        raise GovernanceError(f"recipe runbook binding is incomplete in {source}")
+    if recipe["status"] == "SUPERSEDED" and not _nonempty_string(recipe["supersedes"]):
+        raise GovernanceError(f"SUPERSEDED recipe lacks supersession reference in {source}")
+
+    if recipe["status"] == "VERIFIED":
+        if not recipe["postconditions"]:
+            raise GovernanceError(f"VERIFIED recipe lacks postconditions in {source}")
+        if verification is None or verification["result"] != "pass":
+            raise GovernanceError(f"VERIFIED recipe lacks passing verification in {source}")
+        if not any(item["version"] == adapter["version"] for item in sources):
+            raise GovernanceError(
+                f"VERIFIED recipe lacks version-bound authoritative source in {source}"
+            )
+        triggers = [item.casefold() for item in recipe["stale_triggers"]]
+        covers_version_drift = any("version" in item and "drift" in item for item in triggers)
+        covers_failed_replay = any(
+            ("fail" in item) and ("postcondition" in item or "replay" in item) for item in triggers
+        )
+        if not covers_version_drift or not covers_failed_replay:
+            raise GovernanceError(f"VERIFIED recipe stale triggers are incomplete in {source}")
+
+
+def _runbook_index(runbooks: Path) -> dict[str, set[str]]:
+    index: dict[str, set[str]] = {}
+    for path in sorted(runbooks.iterdir(), key=lambda item: item.name):
+        if path.name in {"RUNBOOK.template.md", "recipes"}:
+            continue
+        if _is_unsafe_link(path) or not path.is_file() or path.suffix != ".md":
+            raise GovernanceError(f"unexpected or unsafe native runbook entry: {path}")
+        text = _nonempty_text(path)
+        runbook_id = _metadata(text, "Runbook-ID", path)
+        status = _metadata(text, "Status", path)
+        _metadata(text, "Revision", path)
+        owner = _metadata(text, "Owner", path)
+        if status not in RUNBOOK_STATUSES or owner not in RUNBOOK_OWNERS:
+            raise GovernanceError(f"native runbook metadata is invalid in {path}")
+        if runbook_id in index:
+            raise GovernanceError(f"duplicate native Runbook-ID: {runbook_id}")
+        steps: set[str] = set()
+        for match in re.finditer(
+            r"^### Step\s+(?:`([^`]+)`|([A-Za-z0-9][A-Za-z0-9._-]*))(?:\s|$)",
+            text,
+            re.MULTILINE,
+        ):
+            step = match.group(1) or match.group(2)
+            if step in steps:
+                raise GovernanceError(f"duplicate native runbook step {step} in {path}")
+            steps.add(step)
+        index[runbook_id] = steps
+    return index
+
+
+def _verified_match_key(recipe: dict[str, object]) -> tuple[object, ...]:
+    adapter = recipe["adapter"]
+    binding = recipe["binding"]
+    return (
+        recipe["operation_id"],
+        *(adapter[field] for field in ("family", "tool", "version", "platform", "shell")),
+        *(
+            binding[field]
+            for field in ("target_class", "resource_scope", "privilege", "credential_class")
+        ),
+        tuple(binding["network_scope"]),
+        tuple(sorted(recipe["effect_classes"])),
+        recipe["runbook_id"],
+        recipe["runbook_step"],
+    )
+
+
+def _validate_runbook_registry(coordination: Path) -> None:
+    runbooks = coordination / "runbooks"
+    recipes = runbooks / "recipes"
+    _required_dir(runbooks)
+    _required_dir(recipes)
+    _required_file(runbooks / "RUNBOOK.template.md")
+    _required_file(recipes / "RUNBOOK-RECIPE.template.json")
+    runbook_index = _runbook_index(runbooks)
+
+    records: list[dict[str, object]] = []
+    record_sources: list[Path] = []
+    for path in sorted(recipes.iterdir(), key=lambda item: item.name):
+        if _is_unsafe_link(path) or not path.is_file() or path.suffix != ".json":
+            raise GovernanceError(f"unexpected or unsafe native recipe entry: {path}")
+        record = _read_json(path)
+        _validate_recipe_record(record, path)
+        records.append(record)
+        record_sources.append(path)
+
+    recipe_ids: dict[str, Path] = {}
+    verified_keys: dict[tuple[object, ...], Path] = {}
+    for recipe, source in zip(records, record_sources, strict=True):
+        recipe_id = recipe["recipe_id"]
+        if recipe_id in recipe_ids:
+            raise GovernanceError(
+                f"duplicate recipe_id {recipe_id}: {recipe_ids[recipe_id]}, {source}"
+            )
+        recipe_ids[recipe_id] = source
+        if recipe["status"] == "VERIFIED":
+            key = _verified_match_key(recipe)
+            if key in verified_keys:
+                raise GovernanceError(
+                    f"duplicate exact VERIFIED recipe binding: {verified_keys[key]}, {source}"
+                )
+            verified_keys[key] = source
+
+    for recipe, source in zip(records, record_sources, strict=True):
+        if recipe["status"] == "SUPERSEDED" and (
+            recipe["supersedes"] == recipe["recipe_id"] or recipe["supersedes"] not in recipe_ids
+        ):
+            raise GovernanceError(f"invalid recipe supersession reference in {source}")
+        material = bool(set(recipe["effect_classes"]) & MATERIAL_EFFECTS)
+        if material or recipe["runbook_id"] is not None:
+            steps = runbook_index.get(recipe["runbook_id"])
+            if steps is None or recipe["runbook_step"] not in steps:
+                raise GovernanceError(f"recipe has unresolved native runbook binding in {source}")
 
 
 def _atomic_write(path: Path, content: str) -> None:
@@ -375,13 +752,54 @@ def _locked_exchange(path: Path, *, exclusive: bool) -> Iterator[IO[str]]:
     _required_file(path)
     try:
         with path.open("r+", encoding="utf-8", newline="") as stream:
-            fcntl.flock(stream.fileno(), fcntl.LOCK_EX if exclusive else fcntl.LOCK_SH)
+            lock_token = _acquire_file_lock(stream, exclusive=exclusive)
             try:
                 yield stream
             finally:
-                fcntl.flock(stream.fileno(), fcntl.LOCK_UN)
+                _release_file_lock(stream, lock_token)
     except (OSError, UnicodeError) as error:
         raise GovernanceError(f"cannot lock EXCHANGE {path}: {error}") from error
+
+
+def _acquire_file_lock(stream: IO[str], *, exclusive: bool) -> object | None:
+    if _fcntl is not None:
+        mode = _fcntl.LOCK_EX if exclusive else _fcntl.LOCK_SH
+        _fcntl.flock(stream.fileno(), mode)
+        return None
+    if _windows_lock_api is not None and _ctypes is not None:
+        create_mutex, wait_for_single_object, _release_mutex, close_handle = _windows_lock_api
+        canonical_path = os.path.normcase(os.path.abspath(os.fspath(stream.name)))
+        lock_name = (
+            "Local\\AgentGovernanceExchange-"
+            + hashlib.sha256(canonical_path.encode("utf-8")).hexdigest()
+        )
+        handle = create_mutex(None, False, lock_name)
+        if not handle:
+            raise OSError(_ctypes.get_last_error(), "cannot create Windows EXCHANGE mutex")
+        wait_result = wait_for_single_object(handle, 0xFFFFFFFF)
+        if wait_result != 0:
+            close_handle(handle)
+            if wait_result == 0x80:
+                raise OSError(errno.EOWNERDEAD, "Windows EXCHANGE mutex was abandoned")
+            raise OSError(_ctypes.get_last_error(), "cannot acquire Windows EXCHANGE mutex")
+        return handle
+    raise OSError(errno.ENOSYS, "no supported file-locking backend")
+
+
+def _release_file_lock(stream: IO[str], lock_token: object | None) -> None:
+    if _fcntl is not None:
+        _fcntl.flock(stream.fileno(), _fcntl.LOCK_UN)
+        return
+    if _windows_lock_api is not None and _ctypes is not None and lock_token is not None:
+        _create_mutex, _wait_for_single_object, release_mutex, close_handle = _windows_lock_api
+        if not release_mutex(lock_token):
+            error = _ctypes.get_last_error()
+            close_handle(lock_token)
+            raise OSError(error, "cannot release Windows EXCHANGE mutex")
+        if not close_handle(lock_token):
+            raise OSError(_ctypes.get_last_error(), "cannot close Windows EXCHANGE mutex")
+        return
+    raise OSError(errno.ENOSYS, "no supported file-locking backend")
 
 
 def _metadata(text: str, field: str, source: Path) -> str:
@@ -806,7 +1224,7 @@ def _bounded_artifact(target: Path, raw_path: object, label: str) -> Path:
     if path.is_absolute() or ".." in path.parts:
         raise GovernanceError(f"{label} must be inside target repository")
     resolved = (target / path).resolve()
-    if target not in resolved.parents or not resolved.exists() or resolved.is_symlink():
+    if target not in resolved.parents or not resolved.exists() or _is_unsafe_link(path):
         raise GovernanceError(f"{label} is missing or unsafe")
     return resolved
 
@@ -814,7 +1232,7 @@ def _bounded_artifact(target: Path, raw_path: object, label: str) -> Path:
 def _artifact_digest(path: Path) -> str:
     digest = hashlib.sha256()
     descendants = list(path.rglob("*")) if path.is_dir() else []
-    symlinks = [item for item in descendants if item.is_symlink()]
+    symlinks = [item for item in descendants if _is_unsafe_link(item)]
     if symlinks:
         raise GovernanceError(f"Skill artifact contains unsafe symlink: {symlinks[0]}")
     files = [path] if path.is_file() else sorted(item for item in descendants if item.is_file())
@@ -1065,7 +1483,8 @@ def _archive(target: Path, prepare: bool) -> None:
     exchange = coordination / "EXCHANGE.jsonl"
     with _locked_exchange(exchange, exclusive=prepare) as stream:
         plan = _parse_workplan(coordination)
-        events = _events_from_text(stream.read(), exchange)
+        exchange_content = stream.read()
+        events = _events_from_text(exchange_content, exchange)
         if plan["mission_status"] not in {"COMPLETED", "CANCELLED"}:
             raise GovernanceError("mission is not authoritatively completed or cancelled")
         task_states = _validate_event_history(events, plan)
@@ -1091,7 +1510,7 @@ def _archive(target: Path, prepare: bool) -> None:
         if current_state != derived_state:
             raise GovernanceError("STATE is stale; refresh it before archival")
         destination = coordination / "archive" / plan["mission_id"]
-        if destination.exists() or destination.is_symlink():
+        if destination.exists() or _is_unsafe_link(destination):
             raise GovernanceError("mission archive already exists")
         if not prepare:
             print(json.dumps({"mission_id": plan["mission_id"], "archive": "SAFE"}, sort_keys=True))
@@ -1105,18 +1524,19 @@ def _archive(target: Path, prepare: bool) -> None:
                 "MISSION.md",
                 "WORKPLAN.md",
                 "STATE.json",
-                "EXCHANGE.jsonl",
                 "CAPABILITIES.json",
             ):
                 shutil.copyfile(coordination / name, temporary / name)
+            _atomic_write(temporary / "EXCHANGE.jsonl", exchange_content)
             for name in COORDINATION_DIRS:
                 shutil.copytree(coordination / name, temporary / name)
             temporary.replace(destination)
-            directory_fd = os.open(archive_root, os.O_RDONLY)
-            try:
-                os.fsync(directory_fd)
-            finally:
-                os.close(directory_fd)
+            if os.name != "nt":
+                directory_fd = os.open(archive_root, os.O_RDONLY)
+                try:
+                    os.fsync(directory_fd)
+                finally:
+                    os.close(directory_fd)
         except Exception:
             shutil.rmtree(temporary, ignore_errors=True)
             if created_archive_root:
@@ -1177,7 +1597,12 @@ def _validate_core(core: Path) -> str:
 
 
 def _validate_assets(assets: Path, version: str) -> None:
-    for name in ("MISSION.template.md", "WORKPLAN.template.md", "TASK.template.md"):
+    for name in (
+        "MISSION.template.md",
+        "WORKPLAN.template.md",
+        "TASK.template.md",
+        "RUNBOOK.template.md",
+    ):
         _nonempty_text(assets / name)
     capabilities = _read_json(assets / "CAPABILITIES.template.json")
     state = _read_json(assets / "STATE.template.json")
@@ -1185,6 +1610,10 @@ def _validate_assets(assets: Path, version: str) -> None:
     _validate_capabilities(capabilities)
     _validate_state(state)
     _validate_approval(approval)
+    _validate_recipe_record(
+        _read_json(assets / "RUNBOOK-RECIPE.template.json"),
+        assets / "RUNBOOK-RECIPE.template.json",
+    )
     if capabilities["protocol_version"] != version or state["protocol_version"] != version:
         raise GovernanceError(
             f"package asset protocol_version does not match Governance Core {version}"
@@ -1194,7 +1623,9 @@ def _validate_assets(assets: Path, version: str) -> None:
 
 def _validate(target: Path) -> None:
     present_markers = [
-        name for name in SOURCE_MARKERS if (target / name).exists() or (target / name).is_symlink()
+        name
+        for name in SOURCE_MARKERS
+        if (target / name).exists() or _is_unsafe_link(target / name)
     ]
     if present_markers:
         raise GovernanceError(
@@ -1213,6 +1644,7 @@ def _validate(target: Path) -> None:
 
     for name in COORDINATION_DIRS:
         _required_dir(coordination / name)
+    _required_dir(coordination / "runbooks" / "recipes")
     for relative_target in ASSET_TARGETS.values():
         _required_file(coordination / relative_target)
 
@@ -1224,7 +1656,7 @@ def _validate(target: Path) -> None:
         "EXCHANGE.jsonl",
         *COORDINATION_DIRS,
     }
-    if (coordination / "archive").is_dir() and not (coordination / "archive").is_symlink():
+    if (coordination / "archive").is_dir() and not _is_unsafe_link(coordination / "archive"):
         expected_coordination.add("archive")
     unexpected_coordination = sorted(
         path.name for path in coordination.iterdir() if path.name not in expected_coordination
@@ -1237,10 +1669,12 @@ def _validate(target: Path) -> None:
         str(path.relative_to(target))
         for root in (core, coordination)
         for path in root.rglob("*")
-        if path.is_symlink()
+        if _is_unsafe_link(path)
     )
     if unsafe_symlinks:
         raise GovernanceError(f"unsafe managed symlinks: {', '.join(unsafe_symlinks)}")
+
+    _validate_runbook_registry(coordination)
 
     version = _validate_core(core)
 

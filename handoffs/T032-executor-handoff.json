@@ -1,0 +1,144 @@
+{
+  "task_id": "T032",
+  "status": "DONE",
+  "task_contract_path": "docs/tasks/T032-rcab-snapshot-live-separation.md",
+  "branch": "fix/t032-rcab-snapshot-live-separation",
+  "implementation_head_sha": "eb7f8f53883b6ae13b2d8f8ef5623642d4626255",
+  "base_branch": "develop",
+  "base_sha": "7141b18d1a3f62a9b8e35b1d3b5e7628dd101dcf",
+  "files_changed": [
+    "tools/repository_context.py",
+    "tests/test_repository_context.py",
+    "baselines/repository-context-manifest-v1.json",
+    "handoffs/T032-executor-handoff.json"
+  ],
+  "implementation_summary": "Completed T032-R1 after cleanly merging exact origin/develop into the preserved rejected T032 history. Snapshot schema 1.2.0 carries canonical registry semantics, explicit projected exclusions, and a non-self-referential SHA-256 identity over every canonical epoch-evidence field. Offline integrity validation requires canonical JSON bytes; validates exact path, class, route, physical metric, and SHA types, values, uniqueness, and ordering; recomputes registry identity from snapshot-carried semantics; and exactly recomputes bootstrap/router files, current metrics, accepted reference, deltas, warning flag and reasons, and ratchet candidate. Explicit fresh/stale/tampered currentness and historical-snapshot/live-state separation remain intact. D047 remains 2 files / 21,471 bytes / 298 lines / 5% warning / non-blocking.",
+  "merge": {
+    "develop_sha": "7141b18d1a3f62a9b8e35b1d3b5e7628dd101dcf",
+    "merge_commit_sha": "4206b155cd7b22c74e80de183740a8ea81f1482a",
+    "outcome": "clean ort merge with no manual conflict resolution"
+  },
+  "verification": {
+    "commands": [
+      "uv run --locked ruff check .",
+      "uv run --locked ruff format --check .",
+      "uv run --locked python -m pytest tests/test_repository_context.py -q",
+      "uv run --locked python -m pytest tests/test_source_consumer_separation.py tests/test_governance_artifact.py -q",
+      "uv run --locked python -m pytest",
+      "python3 -m py_compile tools/repository_context.py tests/test_repository_context.py",
+      "python3 tools/repository_context.py --validate-snapshot baselines/repository-context-manifest-v1.json",
+      "python3 tools/repository_context.py --live-status > /dev/null",
+      "python3 -m json.tool baselines/repository-context-manifest-v1.json >/dev/null",
+      "python3 tools/repository_context.py --manifest --output /tmp/opencode/t032-snapshot-a.json && python3 tools/repository_context.py --manifest --output /tmp/opencode/t032-snapshot-b.json && cmp baselines/repository-context-manifest-v1.json /tmp/opencode/t032-snapshot-a.json && cmp /tmp/opencode/t032-snapshot-a.json /tmp/opencode/t032-snapshot-b.json",
+      "git diff --check && git diff --name-only HEAD && git diff --name-only HEAD -- '*.md'"
+    ],
+    "results": {
+      "ruff_check": "PASS: All checks passed",
+      "ruff_format": "PASS: 26 files already formatted",
+      "focused_repository_context": "PASS: 56 passed",
+      "t020_isolation": "PASS: 9 passed",
+      "full_deterministic_suite": "PASS: 321 passed in 14.90s",
+      "python_compilation": "PASS: exit 0",
+      "snapshot_integrity_cli": "PASS: snapshot integrity OK",
+      "live_status_cli": "PASS: exit 0",
+      "manifest_json_parse": "PASS: exit 0",
+      "repeated_snapshot_byte_identity": "PASS: committed snapshot and two independent generations are byte-identical",
+      "git_diff_check": "PASS: exit 0",
+      "scope_inspection": "PASS: authored implementation diff contains only baselines/repository-context-manifest-v1.json, tests/test_repository_context.py, and tools/repository_context.py; Markdown diff is empty"
+    },
+    "runtime": "Python 3.13.14; deterministic local Git/filesystem/pytest execution; no model, tokenizer, embeddings, telemetry, remote retrieval, or test-runtime network",
+    "network_required": false,
+    "acceptance_criteria_mapping": {
+      "AC-T032-1": {
+        "evidence_type": "deterministic canonical identity",
+        "tests": [
+          "test_ac_rcab_1_deterministic_projection_byte_identical",
+          "test_ac_rcab_1_no_self_reference",
+          "test_ac_t032_1_epoch_snapshot_semantics_machine_visible",
+          "test_ac_t032_1_snapshot_integrity_validates_without_currentness",
+          "test_manifest_does_not_embed_git_sha"
+        ],
+        "result": "PASS: schema 1.2.0 payload digest binds complete canonical epoch evidence without Git or digest self-reference; repeated committed and generated snapshots are byte-identical"
+      },
+      "AC-T032-2": {
+        "evidence_type": "deterministic live-source recomputation",
+        "tests": [
+          "test_ac_t032_2_live_status_from_current_source",
+          "test_ac_t032_2_live_status_recomputes_ratchet_from_current",
+          "test_live_status_on_real_repository"
+        ],
+        "result": "PASS: live status derives current registry, physical metrics, content identity, and bootstrap/router state from current source rather than snapshot values"
+      },
+      "AC-T032-3": {
+        "evidence_type": "deterministic negative controls and explicit currentness",
+        "tests": [
+          "test_ac_t032_3_explicit_currentness_fresh_and_stale",
+          "test_ac_t032_3_tampered_projection_detected_by_integrity",
+          "test_ac_t032_3_tampered_projection_detected_by_currentness",
+          "test_ac_t032_3_entry_type_value_controls_reject_tampering",
+          "test_ac_t032_3_entry_canonical_order_rejects_tampering",
+          "test_ac_t032_3_class_and_routes_must_match_registry_semantics",
+          "test_ac_t032_3_focused_physical_metrics_bound_by_payload_digest",
+          "test_ac_t032_3_registry_identity_recomputed_from_snapshot_semantics",
+          "test_ac_t032_3_bootstrap_state_recomputed_from_snapshot_entries",
+          "test_ac_t032_3_noncanonical_json_bytes_rejected"
+        ],
+        "result": "PASS: fresh accepted; stale and tampered rejected; every R1 tamper class independently rejected"
+      },
+      "AC-T032-4": {
+        "evidence_type": "historical-snapshot regression isolation",
+        "tests": [
+          "test_ac_t032_4_historical_snapshot_does_not_poison_regression",
+          "test_manifest_snapshot_integrity_on_real_repository"
+        ],
+        "result": "PASS: legitimate source advance preserves historical snapshot integrity, makes explicit currentness stale, and leaves live status current; full suite 321 passed"
+      },
+      "AC-T032-5": {
+        "evidence_type": "deterministic D047 ratchet preservation",
+        "tests": [
+          "test_ac_t032_5_d047_ratchet_preserved",
+          "test_ac_t032_5_warning_only_live_status_is_success",
+          "test_ac_rcab_3_warning_ratchet_below_threshold",
+          "test_ac_rcab_3_warning_ratchet_above_byte_threshold",
+          "test_ac_rcab_3_warning_ratchet_file_count_growth",
+          "test_ac_rcab_3_warning_ratchet_ratchet_candidate",
+          "test_ac_rcab_3_warning_only_exit_success"
+        ],
+        "result": "PASS: 2 files / 21,471 bytes / 298 lines / 5% warning / non-blocking unchanged"
+      },
+      "AC-T032-6": {
+        "evidence_type": "source-only package isolation",
+        "tests": [
+          "test_ac_t032_6_source_only_package_isolation",
+          "test_ac_rcab_5_manifest_stays_outside_consumer_package",
+          "test_ac_rcab_6_no_mutation_drift",
+          "test_snapshot_v1_0_0_backwards_compatible_integrity",
+          "tests/test_source_consumer_separation.py",
+          "tests/test_governance_artifact.py"
+        ],
+        "result": "PASS: T020 isolation 9 passed; no Consumer/Core/Skill/runtime/profile/dependency/network drift"
+      }
+    },
+    "r1_negative_controls": {
+      "entry_metadata_class": "test_ac_t032_3_class_and_routes_must_match_registry_semantics[class]",
+      "entry_metadata_routes": "test_ac_t032_3_class_and_routes_must_match_registry_semantics[routes]",
+      "focused_physical_metrics": "test_ac_t032_3_focused_physical_metrics_bound_by_payload_digest",
+      "registry_identity": "test_ac_t032_3_registry_identity_recomputed_from_snapshot_semantics",
+      "bootstrap_files": "test_ac_t032_3_bootstrap_state_recomputed_from_snapshot_entries[files]",
+      "bootstrap_current": "test_ac_t032_3_bootstrap_state_recomputed_from_snapshot_entries[current]",
+      "bootstrap_accepted_reference": "test_ac_t032_3_bootstrap_state_recomputed_from_snapshot_entries[accepted_reference]",
+      "bootstrap_delta": "test_ac_t032_3_bootstrap_state_recomputed_from_snapshot_entries[delta]",
+      "bootstrap_warning": "test_ac_t032_3_bootstrap_state_recomputed_from_snapshot_entries[warning]",
+      "bootstrap_warning_reasons": "test_ac_t032_3_bootstrap_state_recomputed_from_snapshot_entries[warning_reasons]",
+      "bootstrap_ratchet_candidate": "test_ac_t032_3_bootstrap_state_recomputed_from_snapshot_entries[ratchet_candidate]",
+      "canonical_json_bytes": "test_ac_t032_3_noncanonical_json_bytes_rejected",
+      "entry_type_value_order": "test_ac_t032_3_entry_type_value_controls_reject_tampering and test_ac_t032_3_entry_canonical_order_rejects_tampering"
+    }
+  },
+  "dependencies_or_config_changes": "none",
+  "git_status": "clean at implementation_head_sha before handoff-only finalization",
+  "unresolved_issues": [],
+  "recommended_next_task": "ChatGPT Orchestrator reviews the pushed T032-R1 handoff and exact remote diff. Do not resume T021 until T032 is accepted and integrated.",
+  "chatgpt_read_path": "docs/reviews/T032-R1.md",
+  "skill_resolution": "paths-injected"
+}

@@ -1,10 +1,10 @@
 # L005 — T031 premature remote publication
 
 Learning ID: L005  
-State: CONTROL_PLANNED  
+State: CONTROL_INTEGRATED  
 Fingerprint: `workflow.premature_remote_publication`
 
-## Detection
+## Initial detection — T031
 
 Detected during T031 execution/review.
 
@@ -16,17 +16,11 @@ Observed remote history:
 
 The final successor changes only handoff metadata (`PARTIAL` -> `DONE`); no implementation/test/eval changes occur after the implementation anchor.
 
-## Analysis
+The pre-D048 lifecycle ordered verification and handoff before push but did not unambiguously state that a normal task continuing toward `DONE` must keep intermediate progress local and use one planned final publication boundary. T031 was therefore treated as a policy-precision gap rather than retroactive violation.
 
-The existing lifecycle already ordered verification and handoff before push, but did not unambiguously state that a normal task continuing toward `DONE` must keep intermediate progress local and use one planned final publication boundary.
+## Integrated control
 
-Therefore this occurrence is treated as a **policy precision gap**, not as a violation of a previously explicit single-push prohibition.
-
-The intermediate publication was confined to the authorized T031 topic branch. It did not mutate `develop`, did not change accepted product authority, and did not invalidate the final D029 identity chain.
-
-## Selected systemic control
-
-D048 establishes the prospective rule:
+D048 and the updated `docs/EXECUTOR-HANDOFFS.md` are integrated in canonical Git and establish:
 
 ```text
 normal task still executing
@@ -40,12 +34,41 @@ normal task still executing
 
 Exceptions require either an explicitly contracted intermediate remote checkpoint or a genuinely terminal `BLOCKED/PARTIAL` outcome.
 
-D048 is the decision authority and `docs/EXECUTOR-HANDOFFS.md` carries the operational publication sequence consumed by Task Contract handoffs.
+This moves L005 from `CONTROL_PLANNED` to `CONTROL_INTEGRATED`. It is not `VERIFIED`.
+
+## Recurrence before verification — T021
+
+During the first T021 execution, after D048 was already canonical, the executor attempted:
+
+`git push -u origin refactor/t021-consumer-profile-abstraction`
+
+while its own visible task state still showed independent T021 verification/final handoff and commit/push verification as pending.
+
+Independent GitHub inspection at that moment showed the T021 branch was absent remotely. The Human Owner rejected the permission request and instructed the executor to continue locally. The final T021 handoff later states that no intermediate remote publication occurred.
+
+Therefore the prohibited publication was **attempted but contained before remote mutation**.
+
+Under EGLL this is a second occurrence of the same fingerprint **before** L005 reached `VERIFIED`. It raises priority but is not labelled `CONTROL_FAILURE`, because the architecture reserves that state for a verified-control recurrence or a demonstrated failure of an already verified promised property.
+
+## Updated analysis
+
+The recurrence demonstrates that normative Markdown alone is insufficient evidence that the executor host will obey the publication boundary without an additional observable control surface.
+
+The Human permission gate provided effective containment in this occurrence, but manual intervention is not sufficient systemic verification.
+
+A stronger supplementary control must be evaluated before L005 can reach `VERIFIED`, preferentially one that can deterministically prevent or at least detect an uncontracted initial remote publication without pretending to know private model intent. Candidate layers include a source-maintenance publication wrapper/precondition, host command policy, or equivalent auditable mechanism that can distinguish initial publication from authorized rework/checkpoints.
+
+No such mechanism is accepted merely by naming it here; it requires a separate Task/Decision if implemented.
 
 ## Verification status
 
-L005 is `CONTROL_PLANNED`, not `VERIFIED`.
+L005 remains **not VERIFIED**.
 
-Verification requires at least one future representative normal-task execution demonstrating that no uncontracted intermediate push occurs before the final publication boundary, plus a representative explicitly contracted checkpoint path demonstrating that legitimate checkpoint publication remains allowed.
+Verification now requires both:
 
-Do not treat ordinary Git history cleanup or branch deletion as verification of this control.
+1. representative bad/good replay for any stronger selected publication control; and
+2. evidence that explicitly authorized intermediate checkpoint publication remains possible while uncontracted normal-task progress publication is prevented or deterministically surfaced.
+
+A future normal task that simply happens not to push early is useful evidence but is not, by itself, sufficient to prove systemic enforcement.
+
+Do not treat branch cleanup, a Human permission rejection, or prose compliance alone as verification of this control.

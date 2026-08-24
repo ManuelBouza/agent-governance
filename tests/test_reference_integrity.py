@@ -387,3 +387,36 @@ def test_parent_traversal_reference_is_outside_repository(tmp_path: Path) -> Non
     )
     resolved, _ = _resolve(reference, repo_root)
     assert is_inside_repository(resolved, repo_root) is False
+
+
+@pytest.mark.parametrize(
+    "taxonomy",
+    [
+        "ADDED / MODIFIED / REMOVED / PRESERVED",
+        "ADDED/MODIFIED/REMOVED/PRESERVED",
+        "Converge / Accept",
+        "Converge/Accept",
+        "Converge / Accept / Evolve",
+        "Converge/Accept/Evolve",
+    ],
+)
+def test_sdd_taxonomy_is_not_classified_as_a_repository_path(taxonomy: str) -> None:
+    """Accepted slash-separated SDD terms are prose, not repository paths."""
+
+    assert looks_like_path(taxonomy) is False
+
+
+@pytest.mark.parametrize(
+    "concrete_path",
+    [
+        "docs/tasks/T034-native-sdd-executable-materialization.md",
+        "governance-core/SDD.md",
+        "src/agent_governance/artifact.py",
+        ".github/workflows/check.yml",
+        "../outside.md",
+    ],
+)
+def test_concrete_slash_paths_remain_path_candidates(concrete_path: str) -> None:
+    """The taxonomy correction must not weaken concrete path classification."""
+
+    assert looks_like_path(concrete_path) is True

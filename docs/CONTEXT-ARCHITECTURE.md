@@ -4,6 +4,7 @@ Status: ACTIVE
 Controlling decision: `docs/decisions/D046-agent-capability-engineering-and-context-architecture.md`
 Consumer precursor: `governance-core/CONTEXT.md`
 RCAB v1 policy: `docs/decisions/D047-rcab-context-map-and-ratchet-policy.md`
+RCAB snapshot/live refinement: `docs/decisions/D049-rcab-snapshot-live-separation.md`
 Context map: `docs/CONTEXT-MAP.md`
 
 ## Purpose
@@ -71,7 +72,9 @@ The 5% band is a review-sensitivity margin, not a model-capacity claim, safety t
 
 `focused`, `task`, `evidence`, `generated-data` and `exempt-on-demand` artifacts have no RCAB v1 absolute physical-size warning. Their size remains report-only evidence until observed load/routing evidence justifies a class-specific policy.
 
-The first allowed blocking RCAB checks are mechanically decidable integrity failures: malformed/ambiguous map registry, duplicate/conflicting classifications, missing registered targets, stale/non-reproducible generated projection, and source/distribution leakage already covered by package-isolation verification.
+The allowed blocking RCAB checks are mechanically decidable integrity failures such as malformed/ambiguous map registry, duplicate/conflicting classifications, missing registered targets, non-reproducible canonical projections, explicit currentness failures when a workflow intentionally requests live comparison, and source/distribution leakage already covered by package-isolation verification.
+
+A historical committed snapshot being older than current registered source is not, by itself, a generic blocking condition under D049.
 
 The accepted reference does not silently ratchet. A lower observed footprint may be reported as a ratchet candidate, but changing the authoritative reference requires an Orchestrator-owned reviewed policy/baseline update.
 
@@ -91,15 +94,46 @@ A generated manifest may project registered paths, classifications, metrics, has
 
 Generated indexes/manifests:
 
-- MUST be reproducible and canonically ordered;
-- MUST identify the Git/content revision they represent;
-- MUST be verifiably fresh if committed/used as a gate;
+- MUST be reproducible and canonically ordered for the inputs they represent;
+- MUST identify a deterministic content epoch/identity sufficient to distinguish snapshot content;
+- MAY remain as historical snapshot evidence after repository authority advances;
+- MUST prove live currentness against the exact candidate state before being used as a live merge/release/currentness gate;
 - MUST NOT duplicate or supersede normative authority;
 - MUST NOT require embeddings/vector infrastructure for initial operation.
 
-The RCAB v1 manifest uses registered-content identity rather than requiring the Git SHA of the commit that contains the manifest itself, avoiding a D029-like self-reference problem.
+The RCAB manifest uses registered-content identity rather than requiring the Git SHA of the commit that contains the manifest itself, avoiding a D029-like self-reference problem.
 
 Do not expand the context map into a repository-wide catalog merely because more files can be indexed. Add stable routes only when they reduce real discovery/load cost.
+
+## Snapshot evidence vs live RCAB state
+
+D049 separates two concerns that T031 initially coupled.
+
+### Committed snapshot
+
+`baselines/repository-context-manifest-v1.json` is a deterministic evidence snapshot for one registry/content epoch. Its stored metrics and hashes describe that epoch. The snapshot does not become normative authority and does not claim that mutable registered files have not changed since generation.
+
+Normal accepted Markdown evolution may therefore make an older snapshot differ from live source without making the ordinary deterministic suite red solely for that reason.
+
+### Live state
+
+Current RCAB state must be derived from current authority:
+
+```text
+current docs/CONTEXT-MAP.md registry
+        + current tracked registered files
+        -> live integrity + current metrics + ratchet warning
+```
+
+Live status MUST NOT trust the committed snapshot as current.
+
+### Explicit currentness comparison
+
+A workflow may explicitly compare a snapshot against current registered content. That deterministic operation may report/fail stale or tampered state when currentness is the requirement being checked.
+
+Fixture coverage must continue proving fresh/stale/tampered comparison. The ordinary full deterministic regression path, however, must not assume that every historical snapshot is required to equal today's mutable source state.
+
+Snapshot refresh is an explicit RCAB maintenance action, not an incidental requirement attached to every registered Markdown change.
 
 ## Markdown decomposition
 
@@ -126,7 +160,9 @@ JSON/JSONL/evidence/generated data MAY grow physically when normal reads are bou
 
 ## Deterministic context checks
 
-Once their semantics are explicitly represented, suitable hard checks include broken registered references, stale generated manifests, forbidden recursive includes, duplicate canonical authority identities, and source/distribution boundary leaks.
+Once their semantics are explicitly represented, suitable hard checks include broken registered references, forbidden recursive includes, duplicate canonical authority identities, non-reproducible generated projections, explicit live-currentness mismatch where a workflow intentionally requires currentness, and source/distribution boundary leaks.
+
+Historical snapshot age alone is evidence, not a default hard failure.
 
 Size, fan-out and navigation metrics start as evidence/warnings unless a later accepted baseline/decision makes a particular regression mechanically blocking.
 
@@ -143,3 +179,5 @@ In particular, repository-context measurement/lint tooling MUST NOT be placed in
 Material context regressions or incidents may become EGLL cases when they represent a reusable failure/control class. A warning alone is not automatically a learning incident.
 
 Possible fingerprints must be selected from observed evidence, not predeclared as ceremony. Mechanically decidable context failures should eventually be promoted to deterministic controls with bad-case/good-case replay.
+
+L006 records the T021-era discovery that continuously coupling a committed RCAB snapshot to mutable live registered Markdown can poison unrelated deterministic baselines. D049/T032 are the selected control path.

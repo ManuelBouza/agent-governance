@@ -85,16 +85,16 @@
       "partition": "validation",
       "category": "positive",
       "expected_activation": true,
-      "surface_tags": ["bootstrap_install", "no_sdd", "no_unsolicited_sdd"],
+      "surface_tags": ["bootstrap_install", "no_sdd", "native_sdd_fallback", "no_unsolicited_external_sdd"],
       "synthetic": true,
       "source_independent": true,
-      "prompt": "Bootstrap Agent Governance here; no SDD exists, so continue without proposing or installing one.",
+      "prompt": "Bootstrap Agent Governance here; its native SDD applies because no adequate external SDD provider exists, and do not propose or install an external SDD framework merely to obtain SDD coverage.",
       "coexistence": {
         "shape": "no_sdd",
         "existing_capabilities": [],
         "managed_surfaces": [],
         "governance_overlap": false,
-        "expected_behaviors": ["refuse_unsolicited_sdd"]
+        "expected_behaviors": ["use_native_sdd", "refuse_unsolicited_external_sdd"]
       }
     },
     {
@@ -424,16 +424,16 @@
       "partition": "validation",
       "category": "near_miss",
       "expected_activation": false,
-      "surface_tags": ["governed_repo_feature_test", "no_sdd", "no_unsolicited_sdd"],
+      "surface_tags": ["governed_repo_feature_test", "no_sdd", "native_sdd_fallback", "no_unsolicited_external_sdd"],
       "synthetic": true,
       "source_independent": true,
-      "prompt": "In this governed repository with no SDD, write the requested validator tests without installing extra workflow tooling.",
+      "prompt": "In this governed repository with native Agent Governance SDD but no adequate external SDD provider, write the requested validator tests without installing an external SDD framework.",
       "coexistence": {
         "shape": "no_sdd",
         "existing_capabilities": [],
         "managed_surfaces": [],
         "governance_overlap": false,
-        "expected_behaviors": ["refuse_unsolicited_sdd"]
+        "expected_behaviors": ["use_native_sdd", "refuse_unsolicited_external_sdd"]
       }
     },
     {
