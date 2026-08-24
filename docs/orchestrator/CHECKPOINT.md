@@ -1,9 +1,9 @@
 # Current ChatGPT Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O154  
+Checkpoint-Sequence: O155  
 Canonical-Branch: `develop`  
-Current-Work-Unit: T036 D054 Phase-B oracle transition planning/conformance gate integrated; independent Executor Code Review & Verify is the next required action before D040 Phase-B may resume  
+Current-Work-Unit: T036 independent verification is BLOCKED by pre-existing canonical baseline failures; T037 baseline restoration is planned and must execute before T036 can be re-verified  
 Chat-Closure: CONTINUE_CURRENT_CHAT  
 Active-Executor: Codex  
 Active-Executor-Surface: ChatGPT desktop / Codex / native Windows
@@ -12,24 +12,23 @@ Active-Executor-Surface: ChatGPT desktop / Codex / native Windows
 
 - D053 native SDD remains accepted with single-owner stages.
 - D054 Executor-owned execution mechanics and RB001 source bootstrap remain integrated and controlling.
-- D042 requires canonical GitHub remote synchronization/freshness before the Executor loads `AGENTS.md` or persisted execution authority.
+- D042 requires canonical GitHub remote synchronization/freshness before the Executor loads repository instructions or execution authority.
 - D055 requires a Human-facing Executor Launch Profile before every Executor prompt; `docs/EXECUTOR-LAUNCH-PROFILES.md` carries the current Codex mapping and pointer-only prompt shape.
 - D056 requires concise Human-visible progress notes around meaningful GitHub/remote operation phases.
-- T034 is `ACCEPTED` and integrated.
-- T035 is `ACCEPTED`; its implementation-time oracle revision `T035-D054-v1` remains the frozen historical baseline and T035 accepted evidence remains unchanged.
-- During D040 Phase-B preparation, Orchestrator discovered that the T035 preserved-surface test projected T035's historical `Protocol-Version == 1.14.0` requirement as a live current-version assertion, which would make the separately authorized Phase-B protocol bump knowingly red.
-- D040 forbids a knowingly red protocol-transition baseline; D052 requires persisted Orchestrator correction when an Orchestrator-owned oracle conflicts with controlling normative semantics.
-- T036 `docs/tasks/T036-d054-phase-b-oracle-transition.md` was therefore created with Test-Authorship-Mode `orchestrator-conformance` and integrated through PR #204 at `cc4cb59b3979f6260890e94588f3cb071c9b9488`.
-- T036 Oracle revision `T036-D054-ACTIVATION-TRANSITION-v1` changes only the temporal binding of the T035 preserved-protocol assertion: it now verifies the accepted T035 contract recorded `1.14.0` preservation during T035 instead of pinning the repository's future current protocol version. All other T035 oracle semantics and the CLI v1 exact-set assertion remain unchanged.
-- T036 has **not** been accepted yet. Its next required gate is independent Executor Code Review & Verify plus persisted handoff evidence from current canonical `develop`.
-- D040 Phase-B D054 routed-Core activation is BLOCKED pending T036 acceptance. The prior uncommitted activation preparation MUST NOT be treated as repository authority or reused from stale branch state; restart Phase-B from fresh canonical `develop` after T036 acceptance.
+- T034 and T035 remain `ACCEPTED`; T035 historical oracle baseline remains preserved.
+- T036 planning/oracle transition `T036-D054-ACTIVATION-TRANSITION-v1` is integrated through PR #204 at `cc4cb59b3979f6260890e94588f3cb071c9b9488`.
+- T036 independent Executor verification submitted `BLOCKED` at `7919f6050d9d67b3ca27c9d49b9a0f4dd32f6160`, handoff `handoffs/T036-executor-handoff.json`.
+- T036 focused oracle verification passed `6 passed`; Executor review found no T036 runtime/oracle drift.
+- T036 full canonical verification is blocked by two unrelated baseline conditions: `tests/test_repository_context.py` reports the committed repository-context manifest is non-canonical, and repository-wide `ruff format --check .` reports 14 pre-existing files require formatting.
+- The persisted repository-context manifest records an older checkpoint identity than current canonical state, so deterministic manifest regeneration is required rather than an oracle waiver.
+- T037 `docs/tasks/T037-canonical-verification-baseline-restoration.md` is the separate executor-owned work unit for deterministic manifest regeneration plus formatter-only repository normalization. It forbids semantic product/test/oracle changes.
+- T036 remains unaccepted. After T037 acceptance/integration, T036 must be re-verified independently from fresh canonical `develop`.
+- D040 Phase-B D054 routed-Core activation remains BLOCKED pending T036 acceptance.
 - T021/T022 remain paused and MUST NOT auto-resume.
 
 ## Mandatory Executor prompt transport invariant
 
 Every prompt sent to the active Executor remains pointer-only and includes D042 freshness.
-
-Canonical shape:
 
 ```text
 Operate as the Agente de IA Ejecutor for <repository>.
@@ -44,11 +43,11 @@ Load current repository instructions, then execute exactly:
 Return only the output required by that persisted authority.
 ```
 
-Do not carry task requirements, acceptance criteria, implementation instructions, copied contract text, or routine Git/CLI/uv/PowerShell commands in the prompt. Exact adapter mechanics belong to the Executor under D054. `CONTINUE` preserves chat context only; it never exempts D042 remote synchronization/freshness.
+Do not copy Task Contract semantics or routine command syntax into the transport prompt. D054 leaves adapter mechanics to the Executor.
 
 ## D055 launch invariant
 
-Before every Executor prompt, ChatGPT Orchestrator shows:
+Before every Executor prompt, show:
 
 ```text
 Executor: <active concrete executor>
@@ -68,71 +67,45 @@ complex/high-risk technical work  -> GPT-5.6 Sol / High
 exceptional long-horizon work     -> GPT-5.6 Sol / highest mode only when justified
 ```
 
-## T035 accepted identity
-
-```text
-Task: T035
-Status: ACCEPTED
-Submitted Executor HEAD: 7c90ba89644d6d4d25d92ba30a96bfd25a6253d5
-Implementation anchor: 05130a1993c04e489ff69d4c60c8de5ad5f09685
-Implementation PR: #201
-Integrated implementation: 29bc0aacb80bc8adb19072a5634d4fed715e3779
-Handoff: handoffs/T035-executor-handoff.json
-Acceptance review: docs/reviews/T035-R1.md
-Oracle: T035-D054-v1 — FROZEN historical implementation-time baseline
-Acceptance PR: #202
-Accepted develop anchor: 218e279bc7be6efdffe9b30b183a05e888d3f99a
-```
-
 ## T036 current identity
 
 ```text
 Task: T036
-Status: PLANNED / CONFORMANCE GATE INTEGRATED / VERIFICATION REQUIRED
+Status: BLOCKED — upstream canonical baseline
 Task Contract: docs/tasks/T036-d054-phase-b-oracle-transition.md
-Test-Authorship-Mode: orchestrator-conformance
 Oracle transition: T036-D054-ACTIVATION-TRANSITION-v1
-Planning/oracle PR: #204
 Integrated planning/oracle anchor: cc4cb59b3979f6260890e94588f3cb071c9b9488
-Expected Executor verification branch: verify/t036-d054-phase-b-oracle-transition
-Expected handoff: handoffs/T036-executor-handoff.json
+Submitted verification HEAD: 7919f6050d9d67b3ca27c9d49b9a0f4dd32f6160
+Handoff: handoffs/T036-executor-handoff.json
+Focused oracle: PASS — 6 passed
+Blockers: repository-context manifest canonicality; repository-wide Ruff formatting baseline
 ```
 
-## Orchestrator branch-mutation containment
+## T037 current identity
 
-During T035 convergence, ChatGPT Orchestrator mistakenly created `docs/reviews/T035-R1.md` on the represented Executor branch after the submitted Executor HEAD. This was an Orchestrator ownership/workflow error, not an Executor defect.
-
-Containment:
-
-- no direct write to `develop`/`main` occurred;
-- the submitted Executor HEAD `7c90ba89644d6d4d25d92ba30a96bfd25a6253d5` remained intact as an immutable commit;
-- PR #201 integrated only an integration branch created exactly from that submitted HEAD;
-- the accidental post-submission Markdown commit on `feat/t035-runbook-operation-resolution-readiness` was excluded from acceptance/integration;
-- history was not rewritten or force-pushed;
-- durable acceptance Markdown was integrated separately through PR #202.
-
-Do not use the current tip of the represented Executor branch as T035 accepted identity. Use the submitted Executor HEAD and integrated commits recorded above.
+```text
+Task: T037
+Status: PLANNED — planning integration required before Executor launch
+Task Contract: docs/tasks/T037-canonical-verification-baseline-restoration.md
+Expected Executor branch: fix/t037-canonical-verification-baseline-restoration
+Expected handoff: handoffs/T037-executor-handoff.json
+Purpose: restore canonical verification baseline only; no semantic product/oracle change
+```
 
 ## Next action
 
-1. Show the D055 launch profile for active Executor Codex.
-2. Launch a `NEW` Executor session for T036 because this is a new Task Contract/work unit.
-3. Use current canonical `develop` containing `cc4cb59b3979f6260890e94588f3cb071c9b9488` and send only the pointer-only prompt to `docs/tasks/T036-d054-phase-b-oracle-transition.md`, including D042 remote freshness.
-4. Executor performs only T036-authorized independent Code Review & Verify and persists/pushes `handoffs/T036-executor-handoff.json` on `verify/t036-d054-phase-b-oracle-transition`.
-5. ChatGPT Orchestrator then reviews the remote handoff/branch/evidence and performs T036 Converge/Accept.
-6. Only after T036 acceptance may D040 Phase-B D054 routed-Core activation restart from a fresh branch based on then-current canonical `develop`.
+1. Integrate the T037 Task Contract/checkpoint planning branch into `develop` through PR.
+2. Show the D055 launch profile for Codex.
+3. Launch a `NEW` Executor session for T037 from then-current canonical `develop` using only the pointer to `docs/tasks/T037-canonical-verification-baseline-restoration.md`, with D042 freshness.
+4. Review the submitted T037 handoff/head/diff/evidence and perform T037 Converge/Accept; integrate only if zero semantic drift and all required gates are green.
+5. Re-run T036 independent verification from fresh canonical `develop`; T036 acceptance still requires its own clean verification handoff.
+6. Only after T036 acceptance may D040 Phase-B restart from fresh canonical `develop`.
 7. Do not resume T021/T022 automatically.
 
 ## Next chat minimum load
 
-Load only:
-
-- current `develop` identity;
-- `AGENTS.md`;
-- this checkpoint.
-
-Then follow `Next action`. Do not reconstruct the frontier from prior chat history or Project Memory.
+Load only current `develop` identity, `AGENTS.md`, and this checkpoint; then follow `Next action`.
 
 ## Do not
 
-Do not omit D042 remote freshness from an Executor prompt; do not duplicate task semantics into the prompt; do not give routine CLI/API/shell commands to the Human; do not edit any T035 oracle semantics outside the exact T036-authorized temporal-binding transition; do not activate D054 routed Core semantics before T036 acceptance; do not reuse the stale pre-T036 activation branch as authority; do not use the polluted represented T035 Executor branch tip as accepted T035 identity; do not resume T021/T022 automatically; do not expose private chain-of-thought instead of D056 progress notes; and do not write directly to `main`/`develop`.
+Do not waive the T036 canonical baseline gate; do not edit T035/T036 oracle semantics to bypass unrelated failures; do not allow T037 to introduce semantic code/test/config changes; do not activate D054 Core before T036 acceptance; do not resume T021/T022 automatically; do not write directly to `main`/`develop`.
