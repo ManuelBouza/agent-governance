@@ -1,9 +1,9 @@
 """Orchestrator-owned conformance oracle for T035 runbook operation readiness.
 
 This file is the semantic acceptance projection for Oracle-ID
-T035-RUNBOOK-OPERATION-READINESS, revision T035-D054-v1. Executor
-implementation may satisfy and execute it but must not edit its semantic
-assertions.
+T035-RUNBOOK-OPERATION-READINESS. T035-D054-v1 remains the frozen
+implementation-time baseline; T036-D054-ACTIVATION-TRANSITION-v1 narrows only
+the preserved-protocol assertion to its accepted T035 historical scope.
 """
 
 from __future__ import annotations
@@ -391,13 +391,19 @@ def test_unsafe_recipe_path_fails_closed_without_platform_skip(
         _assert_validate(cli, target, repo_root, succeeds=False)
 
 
-def test_t035_does_not_expand_routed_protocol_or_cli(repo_root: Path) -> None:
+def test_t035_preserved_surface_is_historical_and_cli_remains_stable(repo_root: Path) -> None:
+    task_contract = (
+        repo_root / "docs" / "tasks" / "T035-runbook-operation-resolution-readiness.md"
+    ).read_text(encoding="utf-8")
+    assert (
+        "**R-T035-P1** — current routed `Protocol-Version` remains `1.14.0` throughout "
+        "T035 implementation; no routed Core Markdown is edited."
+    ) in task_contract
+
     engine = _load_module(
         repo_root / "src" / "agent_governance" / "engine.py",
         "t035_engine_preserved_surface",
     )
-    assert engine._protocol_version(repo_root / "governance-core" / "GOVERNANCE.md") == "1.14.0"
-
     parser = engine._parser()
     subparsers = next(
         action for action in parser._actions if isinstance(action, argparse._SubParsersAction)
