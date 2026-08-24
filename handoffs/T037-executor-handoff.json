@@ -1,0 +1,58 @@
+{
+  "task_id": "T037",
+  "status": "DONE",
+  "task_contract_path": "docs/tasks/T037-canonical-verification-baseline-restoration.md",
+  "branch": "fix/t037-canonical-verification-baseline-restoration",
+  "implementation_head_sha": "033f4430ee96a9d3e67063630e2b9e0bf52a4615",
+  "base_branch": "develop",
+  "base_sha": "d43fb5cc04538dda1f4cd315875401d21043647f",
+  "sdd_profile": "STANDARD",
+  "files_changed": [
+    {
+      "path": "baselines/repository-context-manifest-v1.json",
+      "classification": "manifest-regeneration",
+      "description": "Deterministically regenerated with tools/repository_context.py --manifest against the T037 base state."
+    }
+  ],
+  "implementation_summary": "Regenerated the canonical repository-context manifest. The locked Ruff formatter reported 29 files unchanged, so no formatter-only source changes were required.",
+  "verification": {
+    "commands": [
+      "uv run --locked python tools/repository_context.py --manifest --output baselines/repository-context-manifest-v1.json",
+      "uv run --locked pytest tests/test_repository_context.py -q",
+      "uv run --locked pytest tests/test_t035_runbook_operation_resolution_conformance.py -q",
+      "uv run --locked pytest -q --tb=no",
+      "uv run --locked ruff check .",
+      "uv run --locked ruff format --check .",
+      "git diff --check"
+    ],
+    "results": {
+      "manifest_generation": "PASS; one manifest-only line replacement produced",
+      "repository_context": "PASS; 56 passed in 14.62s",
+      "t035_t036_oracle": "PASS; 6 passed in 5.82s",
+      "full_pytest": "PASS; full locked suite completed without a failure signal",
+      "ruff_check": "PASS; All checks passed",
+      "ruff_format": "PASS; 29 files already formatted before regeneration and 29 files left unchanged when formatter was applied",
+      "git_diff_check": "PASS"
+    },
+    "runtime": "native Windows; CPython 3.13.14; pytest 9.1.1; locked uv environment",
+    "network_required": false
+  },
+  "dependencies_or_config_changes": [],
+  "git_status": "clean before handoff finalization",
+  "code_review": {
+    "reviewed_head_sha": "033f4430ee96a9d3e67063630e2b9e0bf52a4615",
+    "summary": "Reviewed the implementation diff and formatter result against T037. The sole implementation change is the canonical generator output for the authorized manifest; no formatter, test, oracle, product, protocol, or configuration file changed.",
+    "findings": [],
+    "resolved_findings": [],
+    "upstream_reentry_required": false,
+    "upstream_reentry_stage": null
+  },
+  "requirement_trace": {
+    "R-T037-1": "Canonical generator command and passing repository-context test suite (56 passed).",
+    "R-T037-2": "Locked Ruff formatter applied with 29 files unchanged; repository-wide format check passed.",
+    "R-T037-P1..P6": "Diff review shows only baselines/repository-context-manifest-v1.json changed; focused T035/T036 oracle passed; lint and diff checks passed."
+  },
+  "unresolved_issues": [],
+  "recommended_next_task": "ChatGPT Orchestrator Converge/Accept review of T037; after acceptance/integration, independently re-verify T036 from fresh canonical develop.",
+  "chatgpt_read_path": "docs/tasks/T037-canonical-verification-baseline-restoration.md; handoffs/T037-executor-handoff.json"
+}
