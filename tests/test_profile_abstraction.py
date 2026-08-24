@@ -94,7 +94,6 @@ def test_engine_main_accepts_consumer_profile_without_behavior_change(
 @pytest.mark.parametrize(
     "bad_name",
     [
-        "source-maintainer",
         "maintainer",
         "admin",
         "",
@@ -115,21 +114,20 @@ def test_resolve_profile_rejects_unsupported_or_ambiguous_values(
         profile_mod.resolve_profile(bad_name)  # type: ignore[arg-type]
 
 
-def test_no_active_profile_grants_source_maintenance(repo_root: Path) -> None:
+def test_consumer_profile_does_not_grant_source_maintenance(repo_root: Path) -> None:
     profile_mod = load_profile(repo_root)
-    for name in profile_mod.ACTIVE_PROFILES:
-        profile = profile_mod.resolve_profile(name)
-        assert not profile.grants_source_maintenance, name
+    profile = profile_mod.resolve_profile("consumer")
+    assert not profile.grants_source_maintenance
 
 
-def test_source_maintainer_is_not_active(repo_root: Path) -> None:
+def test_source_maintainer_is_an_explicit_non_default_profile(repo_root: Path) -> None:
     profile_mod = load_profile(repo_root)
-    assert "source-maintainer" not in profile_mod.ACTIVE_PROFILES
-    with pytest.raises(profile_mod.ProfileError):
-        profile_mod.resolve_profile("source-maintainer")
+    assert "source-maintainer" in profile_mod.ACTIVE_PROFILES
+    assert profile_mod.resolve_profile().name == "consumer"
+    assert profile_mod.resolve_profile("source-maintainer").is_source_maintainer
 
 
-@pytest.mark.parametrize("bad_name", ["source-maintainer", "garbage", "", " consumer ", 123, []])
+@pytest.mark.parametrize("bad_name", ["garbage", "", " consumer ", 123, []])
 def test_engine_main_rejects_directly_constructed_unsupported_profile(
     tmp_path: Path, repo_root: Path, capsys: pytest.CaptureFixture[str], bad_name: object
 ) -> None:

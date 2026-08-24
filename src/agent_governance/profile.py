@@ -1,7 +1,8 @@
 """Runtime profile abstraction for Agent Governance.
 
-``consumer`` is the only active profile.  Unsupported or ambiguous profile
-values are rejected rather than routed with broader permissions.
+``consumer`` and ``source-maintainer`` are mutually exclusive active
+profiles. Unsupported or ambiguous profile values are rejected rather than
+routed with broader permissions.
 
 Profiles are implementation context, not normative authority.  No profile
 default grants source-maintenance permissions.
@@ -14,7 +15,7 @@ class ProfileError(Exception):
     """Fail-closed profile-routing error."""
 
 
-ACTIVE_PROFILES = frozenset({"consumer"})
+ACTIVE_PROFILES = frozenset({"consumer", "source-maintainer"})
 DEFAULT_PROFILE = "consumer"
 
 
@@ -22,8 +23,9 @@ DEFAULT_PROFILE = "consumer"
 class Profile:
     """Resolved operational profile.
 
-    ``consumer`` is the only active profile.  The ``source-maintainer``
-    profile is reserved for T022 and is not active in T021.
+    Profile identity selects an adapter boundary. Source-maintainer context
+    still requires the explicit source-product signal validated by that
+    adapter.
     """
 
     name: str
@@ -34,11 +36,11 @@ class Profile:
 
     @property
     def is_source_maintainer(self) -> bool:
-        return False
+        return self.name == "source-maintainer"
 
     @property
     def grants_source_maintenance(self) -> bool:
-        return False
+        return self.is_source_maintainer
 
 
 def validate_profile(profile: object) -> Profile:
