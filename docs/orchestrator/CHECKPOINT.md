@@ -1,28 +1,26 @@
 # Current ChatGPT Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O158  
+Checkpoint-Sequence: O159  
 Canonical-Branch: `develop`  
-Current-Work-Unit: D054 Phase-B routed-Core activation accepted/integrated; next work must be selected from current canonical program authority without auto-resuming paused T021/T022  
-Chat-Closure: SAFE_TO_CLOSE  
+Current-Work-Unit: T021-R1 rework explicitly resumed by Human Owner; reconcile represented T021 branch with fresh canonical develop, correct only the accepted review defect, then re-verify  
+Chat-Closure: CONTINUE_CURRENT_CHAT  
 Active-Executor: Codex  
 Active-Executor-Surface: ChatGPT desktop / Codex / native Windows
 
 ## Durable frontier
 
-- D053 native SDD, D054 execution-mechanics ownership, D042 freshness, D055 launch profiles and D056 progress-note rules remain controlling.
-- T034, T035, T036 and T037 are `ACCEPTED`.
-- T036 Oracle revision `T036-D054-ACTIVATION-TRANSITION-v1` is accepted and removed the stale future-current-version pin while preserving T035 historical semantics and the exact Consumer CLI v1 command set.
-- T036 accepted verification used a fresh isolated native-Windows checkout: focused oracle `6 passed`, full deterministic suite `355 passed`, Ruff check/format PASS and `git diff --check` PASS.
-- D040 Phase-B D054 routed-Core activation was restarted from fresh canonical `develop` after T036 acceptance; stale pre-T036 branch/blob state was not reused.
-- D054 Phase-B activation branch `feat/d054-phase-b-core-activation` changed only routed Core Markdown and integrated through PR #211 at `37d163975f46b67573ee9ce1ffff6e1745195126`.
-- Current routed Core protocol is `1.15.0`.
-- Activated module versions: `EXECUTION-CONTROL 1.1.0`, `PROTOCOL 1.4.0`, `CONTEXT 1.4.0`.
-- Routed Core now makes Executor-owned adapter mechanics explicit, separates semantic runbooks from Verified Operation Recipes, defines authoritative version-compatible syntax resolution and evidence-gated recipe promotion, routes native `.agent-coordination/runbooks/` persistence, and forbids copying runbook/recipe registries into STATE.
-- Human Owner remains the authority for `REQUIRE_HUMAN`, MFA/external approval, material credential/risk decisions and explicit syntax inspection/execution; routine command copy/paste is not a default Human responsibility.
-- D054 Phase-B acceptance is persisted in `docs/reviews/D054-PHASE-B-R1.md`.
-- The old `feat/d054-core-activation` branch and unattached pre-T036 draft blobs/state remain non-authoritative historical scratch state and MUST NOT be reused.
-- T021/T022 remain paused and MUST NOT auto-resume.
+- D053 native SDD, D054 execution-mechanics ownership, D042 freshness, D048 final-publication boundary, D055 launch profiles and D056 progress-note rules remain controlling.
+- D054 Phase-B is `ACCEPTED`; routed Core protocol is `1.15.0`.
+- T034, T035, T036 and T037 remain `ACCEPTED`.
+- Human Owner explicitly authorized resumption of T021 on 2026-08-24 after O158 stopped for priority rather than auto-resuming paused T021/T022.
+- T021 remains `REWORK_REQUIRED` under `docs/reviews/T021-R1.md`; the unchanged Task Contract is `docs/tasks/T021-consumer-profile-abstraction-zero-drift.md`.
+- T021-R1's sole semantic defect is the AC-T021-2 fail-closed bypass: directly constructed unsupported `Profile` identities can reach the engine boundary without authoritative active-profile validation. Rework must preserve AC-T021-1 consumer zero drift and AC-T021-3 T020 artifact compatibility.
+- The prior RCAB baseline blocker recorded by the original T021 handoff is no longer active; T037 restored the canonical verification baseline and later T036 fresh verification passed the full native-Windows suite.
+- Represented T021 topic branch remains `refactor/t021-consumer-profile-abstraction`. Its previously verified submitted HEAD is `969e2130ca9abb27c6ae5ad830923582f45b8a2f`, with implementation anchor `30bea773560e013811b90366e77735e6f7530e48`.
+- Against pre-resume canonical `develop@fbced51621cda93c070326d3b9d7415b3d811dc5`, the represented T021 branch is 2 commits ahead and 195 commits behind with merge-base `53b9c39c1111f4b871ef73b7447510195f672ea2`. Its net task delta remains limited to the original five authorized non-Markdown files.
+- T021 history MUST be reconciled with current `develop` without discarding/recreating represented work or force-pushing rewritten history.
+- T022 remains `BLOCKED` until T021 is accepted. MG1/T023 and downstream unified-refactor work remain ineligible until their declared dependencies are satisfied.
 
 ## Mandatory Executor prompt transport invariant
 
@@ -41,7 +39,7 @@ Load current repository instructions, then execute exactly:
 Return only the output required by that persisted authority.
 ```
 
-Do not duplicate Task Contract semantics or routine command syntax in the transport prompt.
+Do not duplicate Task Contract/review semantics or routine command syntax in the transport prompt.
 
 ## D055 launch invariant
 
@@ -57,49 +55,33 @@ complex/high-risk technical work  -> GPT-5.6 Sol / High
 exceptional long-horizon work     -> GPT-5.6 Sol / highest mode only when justified
 ```
 
-## T036 accepted identity
+## T021 active identity
 
 ```text
-Task: T036
-Status: ACCEPTED
-Task Contract: docs/tasks/T036-d054-phase-b-oracle-transition.md
-Oracle transition: T036-D054-ACTIVATION-TRANSITION-v1
-Planning/oracle PR: #204
-Integrated planning/oracle anchor: cc4cb59b3979f6260890e94588f3cb071c9b9488
-Accepted verification base: f72b1eb609fb5636f102fdfd69501bfc61618008
-Submitted Executor HEAD: c862da6a09d84d24c6d80b76de892acf06f39cb5
-Handoff: handoffs/T036-executor-handoff.json
-Verification PR: #209
-Integrated verification: 456e27207f8975a3d815a16cb607ddc491fe0df3
-Acceptance review: docs/reviews/T036-R1.md
-```
-
-## D054 Phase-B accepted identity
-
-```text
-Decision: D054
-Status: PHASE-B ACCEPTED / ROUTED CORE ACTIVE
-Migration authority: D040
-Activation branch: feat/d054-phase-b-core-activation
-Activation HEAD: 7ab00e5358ccf021312d3652f428624d6f9b279d
-Integration PR: #211
-Integrated activation: 37d163975f46b67573ee9ce1ffff6e1745195126
-Acceptance review: docs/reviews/D054-PHASE-B-R1.md
-Current Protocol-Version: 1.15.0
+Task: T021
+Status: REWORK_REQUIRED / HUMAN-RESUMED
+Task Contract: docs/tasks/T021-consumer-profile-abstraction-zero-drift.md
+Review authority: docs/reviews/T021-R1.md
+Topic branch: refactor/t021-consumer-profile-abstraction
+Previously verified submitted HEAD: 969e2130ca9abb27c6ae5ad830923582f45b8a2f
+Implementation anchor: 30bea773560e013811b90366e77735e6f7530e48
+Prior handoff: handoffs/T021-executor-handoff.json
+Current required action: history-preserving reconciliation with fresh develop + T021-R1 correction + complete re-verification
 ```
 
 ## Next action
 
-1. Integrate this D054 Phase-B acceptance/checkpoint Markdown branch into `develop` through PR.
-2. On the next orchestration cycle, refresh current canonical `develop` identity.
-3. Read `docs/UNIFIED-GOVERNANCE-REFACTOR-PLAN.md` only as needed to identify the next explicitly authorized, non-paused work unit after D054 Phase-B.
-4. Do not infer or auto-resume T021/T022; if the plan offers no clearly eligible work, stop for Human priority rather than inventing scope.
-5. If the selected next work is executable, persist the required Task Contract/SDD authority before any Executor launch; if Markdown-only, follow normal Orchestrator branch/PR ownership.
+1. Integrate this Human-authorized T021 resume checkpoint into `develop` through PR.
+2. Show D055 profile: Codex `NEW`, GPT-5.6 Sol, Medium, because the task is narrow but the represented branch is materially stale and must be reconciled safely before rework.
+3. Launch T021 from current canonical `develop` using only pointer `docs/tasks/T021-consumer-profile-abstraction-zero-drift.md` plus D042 freshness; current repository instructions/checkpoint route the executor to `docs/reviews/T021-R1.md` and the represented branch.
+4. Executor preserves represented T021 history, reconciles with current `develop`, applies only T021-R1-authorized correction, runs the complete current verification matrix, persists a terminal handoff, performs the D048 final push, and returns canonical completion fields.
+5. Orchestrator independently reviews the submitted remote HEAD, complete diff and evidence before acceptance/integration.
+6. Do not start T022, MG1/T023 or later program work before T021 acceptance.
 
 ## Next chat minimum load
 
-Load only current `develop` identity, `AGENTS.md`, and this checkpoint. Then follow `Next action`; load `docs/UNIFIED-GOVERNANCE-REFACTOR-PLAN.md` only at the selection step above.
+Load only current `develop` identity, `AGENTS.md`, and this checkpoint; then follow `Next action`.
 
 ## Do not
 
-Do not reuse stale pre-T036 activation branch/blob state; do not duplicate current protocol-version authority outside `governance-core/GOVERNANCE.md`; do not treat a VERIFIED recipe as execution authority; do not make the Human Owner the routine terminal operator; do not resume T021/T022 automatically; do not write directly to `main`/`develop`.
+Do not discard or rewrite represented T021 history; do not absorb unrelated baseline/RCAB work; do not broaden T021 into source-maintainer behavior; do not edit committed Markdown from the Executor; do not start T022 before T021 acceptance; do not write directly to `main`/`develop`.
