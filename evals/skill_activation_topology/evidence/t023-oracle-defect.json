@@ -1,0 +1,87 @@
+{
+  "schema_version": "1.0.0",
+  "task_id": "T023",
+  "status": "BLOCKED",
+  "blocker_type": "ORACLE_DEFECT",
+  "base": {
+    "branch": "develop",
+    "sha": "04c42e0a4b7c3be6fa64b336df93521d07cd5805",
+    "remote": "https://github.com/ManuelBouza/agent-governance.git"
+  },
+  "oracle_identity": {
+    "oracle_id": "MG1-T023-TOPOLOGY-ORACLE-v1",
+    "capability_source_epoch": "MG1-2026-08-24-v1",
+    "corpus_id": "MG1-T023-CORPUS-v1",
+    "candidate_ids": [
+      "B0",
+      "B1",
+      "F2",
+      "G3"
+    ]
+  },
+  "frozen_asset_git_blob_ids": {
+    "docs/AGENT-GOVERNANCE-CAPABILITY-SOURCE.md": "aef3a78452880e3aa0bb3bac014c21d85f7ed444",
+    "docs/MG1-SKILL-ACTIVATION-PREREGISTRATION.md": "0374014245eea7c115506a00b276e9fe364270c9",
+    "evals/skill_activation_topology/corpus.json": "4a767032d1504c4ea4b39ea8ac7bd373961f3a43",
+    "evals/skill_activation_topology/oracle.json": "774d459d797b790b2d905ced561c71ca4b8558d1",
+    "evals/skill_activation_topology/topologies.json": "909bbb144e63473df2029bd57489d78ca4f1afee"
+  },
+  "preflight": {
+    "codex_cli_version": "0.149.0",
+    "required_live_cell": {
+      "host": "Codex",
+      "platform": "native Windows",
+      "model": "GPT-5.6 Sol",
+      "effort": "Medium"
+    },
+    "acceptance_trial_count": 360,
+    "live_trials_executed": 0,
+    "reason_no_trials_executed": "The missing frozen candidate activation presentations affect every comparative trial, so observing results from executor-invented presentations would contaminate the pre-registered experiment."
+  },
+  "observed_frozen_definition": {
+    "topologies_json_provides": [
+      "candidate IDs and names",
+      "entrypoint IDs",
+      "capability-to-entrypoint mappings",
+      "single-product identity",
+      "portable Skill-to-Skill invocation prohibition"
+    ],
+    "capability_source_provides": [
+      "capability-family semantics",
+      "positive and negative intent boundaries",
+      "ambiguous and multi-intent semantics"
+    ],
+    "tracked_skill_surfaces": [
+      "governance-skill/SKILL.md"
+    ],
+    "tracked_t023_candidate_skill_surfaces": [],
+    "current_skill_surface_limitation": "governance-skill/SKILL.md is the accepted Consumer Governance Skill and explicitly excludes source-product maintenance; it is not an MG1-frozen B0, B1, F2, or G3 presentation."
+  },
+  "missing_semantic_inputs": [
+    "Exact Codex activation metadata and description for every B0/B1/F2/G3 entrypoint.",
+    "Exact Skill body/routing text exposed to the host for every candidate entrypoint.",
+    "Exact progressive reference set and load order for every candidate and capability route.",
+    "A deterministic projection rule that produces those exact presentation surfaces from the frozen capability source without executor-authored activation wording.",
+    "The candidate-specific byte-accounting input set required to compute comparable loaded_reference_bytes."
+  ],
+  "semantic_impact": [
+    "Activation precision, recall, F1, false-activation, wrong-specialist, overactivation, and semantic-outcome results depend on the missing metadata/body wording.",
+    "Median and p95 loaded-reference bytes cannot be compared without frozen candidate reference surfaces and load paths.",
+    "Executor construction of those surfaces would change the independent variable and could change which candidate passes the frozen selection rule while implementation remains otherwise identical."
+  ],
+  "authority_boundary": {
+    "affected_d053_stage": "Specify",
+    "executor_action": "Stopped before candidate construction and before live comparative trials.",
+    "frozen_assets_modified": false,
+    "required_reentry": "Persist and integrate exact candidate activation presentations, or a deterministic lossless generator specification plus exact source inputs and load-accounting rules, under a revised frozen MG1/oracle identity before relaunching T023."
+  },
+  "affected_acceptance_claims": [
+    "AC-T023-1",
+    "AC-T023-2",
+    "AC-T023-3",
+    "AC-T023-4",
+    "AC-T023-5",
+    "AC-T023-6",
+    "AC-T023-7"
+  ]
+}
