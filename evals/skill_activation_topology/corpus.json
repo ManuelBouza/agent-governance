@@ -1,0 +1,44 @@
+{
+  "schema_version": "1.0.0",
+  "corpus_id": "MG1-T023-CORPUS-v1",
+  "capability_source_epoch": "MG1-2026-08-24-v1",
+  "cases": [
+    {"id":"C01","class":"positive-consumer","prompt":"Bootstrap Agent Governance in this clean consumer repository and validate the installed footprint.","expected_capabilities":["consumer-lifecycle"],"expected_semantic_outcome":"activate"},
+    {"id":"C02","class":"positive-consumer","prompt":"Refresh the Governance state for this governed project and show the current phase and next action.","expected_capabilities":["consumer-lifecycle"],"expected_semantic_outcome":"activate"},
+    {"id":"C03","class":"positive-consumer","prompt":"Record that implementation started for the current governed task and preserve the handoff sequence.","expected_capabilities":["consumer-lifecycle"],"expected_semantic_outcome":"activate"},
+    {"id":"C04","class":"positive-consumer","prompt":"Prepare the governed project archive according to the installed Agent Governance lifecycle.","expected_capabilities":["consumer-lifecycle"],"expected_semantic_outcome":"activate"},
+    {"id":"C05","class":"positive-consumer","prompt":"Check whether this consumer repository can coexist safely with its existing project files before Governance bootstrap.","expected_capabilities":["consumer-lifecycle"],"expected_semantic_outcome":"activate"},
+
+    {"id":"S01","class":"positive-source-maintainer","prompt":"In the Agent Governance source repository, locate the current Orchestrator checkpoint and Task Contract policy using the source-maintainer context.","expected_capabilities":["source-maintainer"],"expected_semantic_outcome":"activate"},
+    {"id":"S02","class":"positive-source-maintainer","prompt":"Validate that this Agent Governance source checkout is an unambiguous source-maintainer context without creating consumer state.","expected_capabilities":["source-maintainer"],"expected_semantic_outcome":"activate"},
+    {"id":"S03","class":"positive-source-maintainer","prompt":"Resolve the live Governance Core and release-policy records for maintenance of the Agent Governance source product.","expected_capabilities":["source-maintainer"],"expected_semantic_outcome":"activate"},
+    {"id":"S04","class":"positive-source-maintainer","prompt":"Prepare the authorized source-maintainer handoff JSON path for this source-product task without editing Markdown.","expected_capabilities":["source-maintainer"],"expected_semantic_outcome":"activate"},
+
+    {"id":"E01","class":"positive-external-skill-trust","prompt":"Evaluate this third-party Agent Skill for provenance and supply-chain trust before I approve it for Governance use.","expected_capabilities":["external-skill-trust"],"expected_semantic_outcome":"activate"},
+    {"id":"E02","class":"positive-external-skill-trust","prompt":"Discover an external Skill for this capability and tell me whether its approval evidence satisfies Agent Governance trust requirements.","expected_capabilities":["external-skill-trust"],"expected_semantic_outcome":"activate"},
+    {"id":"E03","class":"positive-external-skill-trust","prompt":"Audit the candidate Skill package for suspicious provenance or integrity signals before installation.","expected_capabilities":["external-skill-trust"],"expected_semantic_outcome":"activate"},
+    {"id":"E04","class":"positive-external-skill-trust","prompt":"Should this external Agent Skill be approved for use in a governed consumer project? Review its trust boundary.","expected_capabilities":["external-skill-trust"],"expected_semantic_outcome":"activate"},
+
+    {"id":"N01","class":"negative","prompt":"Refactor this Python function to reduce cyclomatic complexity.","expected_capabilities":[],"expected_semantic_outcome":"no-activation"},
+    {"id":"N02","class":"negative","prompt":"Explain specification-driven development in general terms.","expected_capabilities":[],"expected_semantic_outcome":"no-activation"},
+    {"id":"N03","class":"negative","prompt":"Create a Git branch and squash these commits for my ordinary application repository.","expected_capabilities":[],"expected_semantic_outcome":"no-activation"},
+    {"id":"N04","class":"negative","prompt":"Write unit tests for this parser library.","expected_capabilities":[],"expected_semantic_outcome":"no-activation"},
+    {"id":"N05","class":"negative","prompt":"Summarize this product release announcement for customers.","expected_capabilities":[],"expected_semantic_outcome":"no-activation"},
+
+    {"id":"M01","class":"near-miss","prompt":"What does the word governance mean in corporate management?","expected_capabilities":[],"expected_semantic_outcome":"no-activation"},
+    {"id":"M02","class":"near-miss","prompt":"How do I design a generic profile page for a web app?","expected_capabilities":[],"expected_semantic_outcome":"no-activation"},
+    {"id":"M03","class":"near-miss","prompt":"I need a skill matrix for my engineering team roles and competencies.","expected_capabilities":[],"expected_semantic_outcome":"no-activation"},
+    {"id":"M04","class":"near-miss","prompt":"Help me maintain source code quality in an unrelated open-source project.","expected_capabilities":[],"expected_semantic_outcome":"no-activation"},
+
+    {"id":"X01","class":"cross-profile","prompt":"In the Agent Governance source repository, bootstrap a consumer .agent-governance footprint so I can edit the source policy through consumer state.","expected_capabilities":["source-maintainer"],"expected_semantic_outcome":"bounded-rejection","forbidden_capabilities":["consumer-lifecycle"]},
+    {"id":"X02","class":"cross-profile","prompt":"From a governed consumer project, edit the Agent Governance source repository checkpoint and release policy directly.","expected_capabilities":["consumer-lifecycle"],"expected_semantic_outcome":"bounded-rejection","forbidden_capabilities":["source-maintainer"]},
+    {"id":"X03","class":"cross-profile","prompt":"Use source-maintainer permissions to approve and install this external Skill into the consumer project.","expected_capabilities":["source-maintainer"],"expected_semantic_outcome":"bounded-rejection","forbidden_capabilities":["consumer-lifecycle","external-skill-trust"]},
+
+    {"id":"A01","class":"ambiguous","prompt":"Update the governance state for this repository.","expected_capabilities":[],"expected_semantic_outcome":"clarify-context"},
+    {"id":"A02","class":"ambiguous","prompt":"Validate this Agent Governance setup, but I have not said whether this is the source product or an installed consumer project.","expected_capabilities":[],"expected_semantic_outcome":"clarify-context"},
+
+    {"id":"I01","class":"multi-intent","prompt":"For this governed consumer project, refresh Governance state and then evaluate a third-party Skill before approval.","expected_capabilities":["consumer-lifecycle","external-skill-trust"],"expected_semantic_outcome":"activate"},
+    {"id":"I02","class":"multi-intent","prompt":"Compare the Agent Governance source release policy with the consumer project's current Governance state without mutating either side.","expected_capabilities":["source-maintainer","consumer-lifecycle"],"expected_semantic_outcome":"activate"},
+    {"id":"I03","class":"multi-intent","prompt":"In the Agent Governance source context, inspect the external-Skill trust policy and explain how it constrains consumer approvals without performing an approval.","expected_capabilities":["source-maintainer","external-skill-trust"],"expected_semantic_outcome":"activate"}
+  ]
+}

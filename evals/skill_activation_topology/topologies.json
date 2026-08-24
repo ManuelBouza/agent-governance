@@ -1,0 +1,48 @@
+{
+  "schema_version": "1.0.0",
+  "capability_source_epoch": "MG1-2026-08-24-v1",
+  "product_id": "agent-governance",
+  "distribution_identity": "single-product",
+  "candidates": {
+    "B0": {
+      "name": "unified-dispatcher-baseline",
+      "entrypoints": ["agent-governance"],
+      "capability_to_entrypoints": {
+        "consumer-lifecycle": ["agent-governance"],
+        "source-maintainer": ["agent-governance"],
+        "external-skill-trust": ["agent-governance"]
+      },
+      "portable_skill_to_skill_required": false
+    },
+    "B1": {
+      "name": "thin-single-router",
+      "entrypoints": ["agent-governance-router"],
+      "capability_to_entrypoints": {
+        "consumer-lifecycle": ["agent-governance-router"],
+        "source-maintainer": ["agent-governance-router"],
+        "external-skill-trust": ["agent-governance-router"]
+      },
+      "portable_skill_to_skill_required": false
+    },
+    "F2": {
+      "name": "generated-profile-peers",
+      "entrypoints": ["consumer-governance", "source-maintainer"],
+      "capability_to_entrypoints": {
+        "consumer-lifecycle": ["consumer-governance"],
+        "source-maintainer": ["source-maintainer"],
+        "external-skill-trust": ["consumer-governance"]
+      },
+      "portable_skill_to_skill_required": false
+    },
+    "G3": {
+      "name": "hybrid-challenger",
+      "entrypoints": ["consumer-lifecycle", "source-maintainer", "external-skill-trust"],
+      "capability_to_entrypoints": {
+        "consumer-lifecycle": ["consumer-lifecycle"],
+        "source-maintainer": ["source-maintainer"],
+        "external-skill-trust": ["external-skill-trust"]
+      },
+      "portable_skill_to_skill_required": false
+    }
+  }
+}

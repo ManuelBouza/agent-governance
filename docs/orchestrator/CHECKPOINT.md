@@ -1,29 +1,29 @@
 # Current ChatGPT Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O166  
+Checkpoint-Sequence: O167  
 Canonical-Branch: `develop`  
-Current-Work-Unit: T022 accepted/integrated; MG1 Skill activation topology/eval pre-registration is next Orchestrator-owned gate before T023  
+Current-Work-Unit: MG1 pre-registration authored; integrate MG1, then launch T023 from the exact post-MG1 canonical baseline  
 Chat-Closure: CONTINUE_CURRENT_CHAT  
 Active-Executor: none  
 Active-Executor-Surface: ChatGPT Orchestrator
 
 ## Durable frontier
 
-- D053 native SDD, D054 execution-mechanics ownership, D040 single current protocol-version authority, D042 freshness, D048 final-publication boundary, D052 conformance ownership, D055 launch profiles and D056 progress-note rules remain controlling.
+- D053 native SDD, D054 execution-mechanics ownership, D040 single current protocol-version authority, D042 freshness, D048 final-publication boundary, D050 topology evaluation, D051 one-product/single-install, D052 conformance ownership, D055 launch profiles and D056 progress-note rules remain controlling.
 - Current routed Core protocol remains `1.15.0`.
-- T021 is `ACCEPTED`; review `docs/reviews/T021-R2.md`; submitted Executor HEAD `4f55cb41963f173171e637daf6311aaf99312ffc`; integration PR `#221`.
-- T022 is `ACCEPTED`; review `docs/reviews/T022-R1.md`.
-- Accepted T022 canonical verification base: `7ad68b2774dafc58208737af66f88fb67cec2e53`.
-- Accepted T022 implementation HEAD: `a32a906a636e49b9392129d42925c30fef07e027`.
-- Accepted T022 submitted Executor HEAD: `35ba704c8e2997f414a5f2a79b23c33b821b8016`.
-- T022 integration PR: `#223`; integration merge: `361e6700d74d47f5805b9af838c1cfa9519766b2`.
-- T022 verification evidence: focused source-profile/adapter `48 passed`; Consumer/profile/shared-engine/artifact regression `110 passed`; full deterministic `405 passed`; Ruff check/format, py_compile and `git diff --check` PASS; no root `.agent-governance` or `.agent-coordination` exists.
-- T022 activates explicit `source-maintainer` routing through exact versioned `agent-governance-source.json`, fail-closed source adapters, live Core/source record routing, Consumer/source isolation and flat `handoffs/*.json` write-path resolution only.
-- T023 is still `BLOCKED` by its own readiness condition. T022 acceptance satisfies only one dependency.
-- Before T023 can start, MG1 must be integrated into `develop` with D050 topology definitions, D052 conformance corpus/expected outcomes, host/model matrix, repeated clean-context trial method, metric definitions, and material-improvement/non-regression thresholds frozen before comparative results.
-- MG1 is ChatGPT Orchestrator-owned Markdown/conformance authority. Executor must not compensate for a missing MG1 by authoring or changing committed Markdown or semantic oracle assets.
-- T025 becomes dependency-eligible after T022 acceptance and may proceed in parallel with the MG1/T023 path, but current critical-path next action is MG1 unless Human reprioritizes.
+- T021 is `ACCEPTED`; review `docs/reviews/T021-R2.md`.
+- T022 is `ACCEPTED`; review `docs/reviews/T022-R1.md`; submitted Executor HEAD `35ba704c8e2997f414a5f2a79b23c33b821b8016`; integration PR `#223`; merge `361e6700d74d47f5805b9af838c1cfa9519766b2`.
+- T022 full deterministic evidence is `405 passed`; Consumer/source-maintainer isolation and no source-root Consumer footprint are accepted.
+- MG1 has been authored before T023 comparative results under Oracle revision `MG1-T023-TOPOLOGY-ORACLE-v1` and Capability-Source-Epoch `MG1-2026-08-24-v1`.
+- MG1 canonical capability source: `docs/AGENT-GOVERNANCE-CAPABILITY-SOURCE.md`.
+- MG1 gate: `docs/MG1-SKILL-ACTIVATION-PREREGISTRATION.md`.
+- MG1 topology identities: `evals/skill_activation_topology/topologies.json`.
+- MG1 frozen corpus: `evals/skill_activation_topology/corpus.json`, Corpus-ID `MG1-T023-CORPUS-v1`, 30 cases across positive Consumer/source/external-trust, negative, near-miss, cross-profile, ambiguous and multi-intent classes.
+- MG1 selection oracle: `evals/skill_activation_topology/oracle.json`; required B0/B1/F2/G3 candidates, 3 clean-context trials per case/candidate, required Codex/native-Windows/GPT-5.6-Sol/Medium live cell, deterministic load evidence, mandatory invariants, qualifying thresholds and material-improvement rule are frozen.
+- Executor may implement runner/adapters/result collection and supplementary diagnostics but must not alter MG1 corpus membership, expected semantic outcomes, topology mapping, thresholds or selection meaning. Suspected semantic oracle defects require upstream Orchestrator re-entry.
+- T023 remains blocked until this MG1 branch is integrated. After integration, T023 becomes the next critical-path executable work.
+- T025 is dependency-eligible after T022 and may proceed in parallel only if explicitly prioritized; it does not replace the MG1 -> T023 critical path.
 
 ## Mandatory Executor prompt transport invariant
 
@@ -58,47 +58,42 @@ complex/high-risk technical work  -> GPT-5.6 Sol / High
 exceptional long-horizon work     -> GPT-5.6 Sol / highest mode only when justified
 ```
 
-## T022 accepted identity
-
-```text
-Task: T022
-Status: ACCEPTED
-Task Contract: docs/tasks/T022-source-maintainer-profile-over-legacy-adapters.md
-Review: docs/reviews/T022-R1.md
-Submitted Executor HEAD: 35ba704c8e2997f414a5f2a79b23c33b821b8016
-Integration PR: #223
-Integration merge: 361e6700d74d47f5805b9af838c1cfa9519766b2
-```
-
-## MG1 next gate
+## MG1 identity
 
 ```text
 Gate: MG1 — Skill activation topology and eval pre-registration
+Status: AUTHORED / PENDING INTEGRATION
 Owner: ChatGPT Orchestrator
-Dependency satisfied: T022 ACCEPTED
-Purpose: freeze T023 candidate topology identities and D052 experiment oracle before comparative results
-Required before T023: integrated MG1 authority + corpus + expected outcomes + thresholds + trial/matrix/metric definitions
+Gate authority: docs/MG1-SKILL-ACTIVATION-PREREGISTRATION.md
+Capability source: docs/AGENT-GOVERNANCE-CAPABILITY-SOURCE.md
+Oracle: evals/skill_activation_topology/oracle.json
+Corpus: evals/skill_activation_topology/corpus.json
+Topologies: evals/skill_activation_topology/topologies.json
+Oracle revision: MG1-T023-TOPOLOGY-ORACLE-v1
+Capability source epoch: MG1-2026-08-24-v1
 ```
 
-## T023 blocked identity
+## T023 next identity after MG1 integration
 
 ```text
 Task: T023
-Status: BLOCKED PENDING MG1
+Status: BLOCKED UNTIL MG1 MERGE; THEN NEXT EXECUTABLE
 Task Contract: docs/tasks/T023-unified-skill-profile-activation-evals.md
 Expected branch: test/t023-skill-activation-topology-evals
 Expected handoff: handoffs/T023-executor-handoff.json
-Do not launch until MG1 is integrated and independently reviewed for completeness.
+Test authorship: mixed
+Required execution: frozen MG1/D052 experiment; no semantic oracle mutation
 ```
 
 ## Next action
 
-1. Integrate this T022 acceptance/checkpoint branch into `develop` through PR.
-2. Refresh canonical `develop` identity.
-3. Execute MG1 as Orchestrator-owned Plan & Trace / conformance pre-registration work, using D050, D051, D052, the unified refactor plan, current accepted T021/T022 semantics, and T023's readiness requirements.
-4. Persist the smallest complete MG1 authority needed to freeze B0/B1/F2/G3 candidate identities, canonical capability/routing projection source, required corpus and expected classifications, host/model matrix, clean-context repetition method, metrics, installability-feasibility evidence method, and victory/non-regression thresholds.
-5. Integrate MG1 through an Orchestrator PR only after remote diff review.
-6. Only then show D055 and launch T023. T025 may be scheduled in parallel only if explicitly selected without weakening MG1/T023 sequencing.
+1. Review the complete MG1 branch diff and ensure it changes only Orchestrator-owned Markdown plus D052 conformance assets.
+2. Integrate MG1 into `develop` through PR.
+3. Refresh canonical `develop` identity and confirm all MG1 assets exist at that exact baseline.
+4. Show D055 for T023: Codex `NEW`, GPT-5.6 Sol, Medium; T023 requires standard harness implementation plus a substantial controlled eval matrix, but no semantic redesign.
+5. Launch T023 using only pointer `docs/tasks/T023-unified-skill-profile-activation-evals.md` plus D042 freshness.
+6. Executor must execute the frozen MG1 oracle exactly, preserve Orchestrator-owned semantic assets, and return `BLOCKED` rather than substitute/redefine the required live cell or thresholds.
+7. Orchestrator independently reviews T023 evidence and applies the frozen selection rule before accepting any topology.
 
 ## Next chat minimum load
 
@@ -106,4 +101,4 @@ Load only current `develop` identity, `AGENTS.md`, and this checkpoint; then fol
 
 ## Do not
 
-Do not launch T023 before MG1 integration; do not let Executor author or modify committed Markdown or D052 semantic oracle meaning; do not change accepted Core/engine/profile semantics to favor a topology; do not introduce independent Governance products, per-entrypoint version identities, portable Skill-to-Skill dependency, or manual multi-install packaging; do not write directly to `main`/`develop`.
+Do not launch T023 before MG1 integration; do not modify MG1 semantic assets after comparative results without explicit Orchestrator restart authority; do not change Core/engine/profile behavior to favor a candidate; do not introduce independent products, per-entrypoint versions, portable Skill-to-Skill dependency or multi-install packaging; do not let Executor edit committed Markdown; do not write directly to `main`/`develop`.

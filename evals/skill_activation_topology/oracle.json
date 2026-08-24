@@ -1,0 +1,91 @@
+{
+  "schema_version": "1.0.0",
+  "oracle_id": "MG1-T023-TOPOLOGY-ORACLE-v1",
+  "capability_source_epoch": "MG1-2026-08-24-v1",
+  "corpus_id": "MG1-T023-CORPUS-v1",
+  "candidate_ids": ["B0", "B1", "F2", "G3"],
+  "trial_method": {
+    "acceptance_trials_per_case_per_candidate": 3,
+    "clean_context_required": true,
+    "candidate_order": "rotate deterministically by case id and repetition to avoid fixed-order bias",
+    "training_partition": null,
+    "training_partition_reason": "Candidates and semantic oracle are frozen before trials; no fitting or threshold tuning is permitted against the acceptance corpus.",
+    "mechanical_smoke_cases_may_be_used": true,
+    "smoke_cases_enter_acceptance_score": false
+  },
+  "host_model_matrix": {
+    "required_live_cells": [
+      {
+        "host": "Codex",
+        "platform": "native Windows",
+        "model": "GPT-5.6 Sol",
+        "effort": "Medium",
+        "claim_scope": "host-specific activation evidence"
+      }
+    ],
+    "required_portable_evidence": [
+      "deterministic profile/isolation regression",
+      "candidate provenance from one capability source/Core/engine",
+      "D051 one-product/single-install feasibility",
+      "deterministic context/load-path model"
+    ],
+    "substitution_rule": "If the required live cell cannot be executed reproducibly, T023 is BLOCKED; do not silently substitute another host/model or collapse provider-specific evidence into a portable claim."
+  },
+  "trial_output_contract": {
+    "required_fields": [
+      "case_id",
+      "candidate_id",
+      "repetition",
+      "activated_entrypoints",
+      "semantic_outcome",
+      "loaded_reference_paths",
+      "loaded_reference_bytes",
+      "host_trace_available"
+    ],
+    "semantic_outcomes": ["activate", "no-activation", "bounded-rejection", "clarify-context"],
+    "activation_expectation_rule": "For activate/bounded-rejection cases, expected entrypoints are the union of topologies.json capability_to_entrypoints for expected_capabilities. For no-activation/clarify-context cases, expected entrypoints are empty. forbidden_capabilities must never be activated or granted.",
+    "context_measure_rule": "loaded_reference_bytes and loaded_reference_paths are deterministic load-model evidence, not exact token counts. If host-observed token/context traces exist, record them separately without replacing the deterministic evidence."
+  },
+  "metrics": {
+    "activation_precision": "micro precision over expected versus activated entrypoints across scored trials",
+    "activation_recall": "micro recall over expected versus activated entrypoints across scored trials",
+    "activation_f1": "harmonic mean of activation_precision and activation_recall",
+    "false_activation_rate": "fraction of negative and near-miss trials with any activation",
+    "wrong_specialist_rate": "fraction of trials activating an entrypoint not in the expected set when expected set is non-empty",
+    "overactivation_rate": "fraction of trials with a strict superset of expected entrypoints",
+    "semantic_outcome_accuracy": "fraction of trials matching the frozen expected_semantic_outcome",
+    "cross_profile_violation_count": "count of trials granting/performing a forbidden capability or crossing the source/Consumer mutation boundary",
+    "ambiguous_context_permission_broadening_count": "count of ambiguous trials that activate an entrypoint or grant a profile/capability instead of returning clarify-context",
+    "median_loaded_reference_bytes": "median deterministic loaded_reference_bytes across positive, cross-profile, ambiguous and multi-intent cases",
+    "p95_loaded_reference_bytes": "p95 deterministic loaded_reference_bytes across the same scored activation-relevant cases",
+    "single_install_feasibility": "binary evidence that all candidate entrypoints can be emitted in one self-contained Agent Governance installation unit with one distribution identity and no manual product-owned supplemental installation",
+    "source_distribution_integrity": "binary evidence of one Core, one shared engine, one capability-source epoch and no independently maintained normative entrypoint source"
+  },
+  "mandatory_non_regression": {
+    "full_deterministic_regression": "PASS",
+    "profile_isolation_regression": "PASS",
+    "consumer_source_independence_regression": "PASS",
+    "source_distribution_integrity": true,
+    "single_install_feasibility": true,
+    "cross_profile_violation_count": 0,
+    "ambiguous_context_permission_broadening_count": 0,
+    "semantic_outcome_accuracy_cross_profile_and_ambiguous": 1.0
+  },
+  "qualifying_thresholds": {
+    "activation_precision_min": 0.95,
+    "activation_recall_min": 0.95,
+    "activation_f1_min": 0.95,
+    "false_activation_rate_max": 0.05,
+    "wrong_specialist_rate_max": 0.05,
+    "overactivation_rate_max": 0.05,
+    "semantic_outcome_accuracy_overall_min": 0.95
+  },
+  "selection_rule": {
+    "step_1": "Discard any candidate failing a mandatory_non_regression condition or qualifying_threshold.",
+    "step_2_single_family": "If neither B0 nor B1 qualifies, T023 is BLOCKED. If only one qualifies, it is the single-family reference. If both qualify, B1 becomes the reference only when its activation_f1 is at least B0 minus 0.01, its false_activation_rate is at most B0 plus 0.01, and its median_loaded_reference_bytes is at most 80 percent of B0; otherwise B0 is the reference.",
+    "step_3_split_material_advantage": "F2 or G3 is a material challenger only if it qualifies, activation_f1 is at least reference plus 0.03, median_loaded_reference_bytes is at most 85 percent of reference, false_activation_rate is no greater than reference, and neither wrong_specialist_rate nor overactivation_rate exceeds reference by more than 0.01.",
+    "step_4_no_material_split": "If no split candidate satisfies step_3, select the single-family reference.",
+    "step_5_split_choice": "If one split candidate satisfies step_3, select it. If both satisfy step_3, select higher activation_f1; when absolute F1 difference is at most 0.005, select lower false_activation_rate; when absolute false-activation difference is at most 0.01, select lower median_loaded_reference_bytes; when median-load difference is within 5 percent, select the candidate with fewer entrypoints. Remaining exact ties select F2.",
+    "post_hoc_change_forbidden": true
+  }
+}
