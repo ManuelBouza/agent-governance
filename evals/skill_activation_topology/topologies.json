@@ -1,7 +1,7 @@
 {
-  "schema_version": "2.0.0",
-  "capability_source_epoch": "MG1-2026-08-25-v2",
-  "presentation_revision": "MG1-T023-PRESENTATIONS-v2",
+  "schema_version": "3.0.0",
+  "capability_source_epoch": "MG1-2026-08-25-v3",
+  "presentation_revision": "MG1-T023-PRESENTATIONS-v3",
   "presentation_manifest": "evals/skill_activation_topology/presentations/manifest.json",
   "product_id": "agent-governance",
   "distribution_identity": "single-product",
@@ -9,6 +9,7 @@
     "B0": {
       "name": "unified-dispatcher-baseline",
       "entrypoints": ["agent-governance"],
+      "ambiguous_entrypoints": ["agent-governance"],
       "capability_to_entrypoints": {
         "consumer-lifecycle": ["agent-governance"],
         "source-maintainer": ["agent-governance"],
@@ -19,6 +20,7 @@
     "B1": {
       "name": "thin-single-router",
       "entrypoints": ["agent-governance-router"],
+      "ambiguous_entrypoints": ["agent-governance-router"],
       "capability_to_entrypoints": {
         "consumer-lifecycle": ["agent-governance-router"],
         "source-maintainer": ["agent-governance-router"],
@@ -29,6 +31,7 @@
     "F2": {
       "name": "generated-profile-peers",
       "entrypoints": ["consumer-governance", "source-maintainer"],
+      "ambiguous_entrypoints": [],
       "capability_to_entrypoints": {
         "consumer-lifecycle": ["consumer-governance"],
         "source-maintainer": ["source-maintainer"],
@@ -39,6 +42,7 @@
     "G3": {
       "name": "hybrid-challenger",
       "entrypoints": ["consumer-lifecycle", "source-maintainer", "external-skill-trust"],
+      "ambiguous_entrypoints": [],
       "capability_to_entrypoints": {
         "consumer-lifecycle": ["consumer-lifecycle"],
         "source-maintainer": ["source-maintainer"],
