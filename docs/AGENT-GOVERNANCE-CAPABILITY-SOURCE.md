@@ -2,7 +2,7 @@
 
 Status: `MG1-FROZEN-FOR-T023`  
 Authority: ChatGPT Orchestrator under D050 / D052  
-Capability-Source-Epoch: `MG1-2026-08-24-v1`
+Capability-Source-Epoch: `MG1-2026-08-25-v2`
 
 ## Purpose
 
@@ -18,15 +18,7 @@ Profile: `consumer`
 Actor/context: governed Consumer repository.  
 Risk/mutation boundary: durable Consumer `.agent-governance/` / `.agent-coordination/` footprint only through accepted Consumer runtime semantics.
 
-Intents include:
-
-- bootstrap and validate a Consumer installation;
-- inspect/refresh Governance state;
-- record lifecycle events and sequencing/handoff state;
-- mission/workplan and task-governance interactions;
-- archive preparation;
-- coexistence and ordinary Consumer governance guidance;
-- external Skill discovery/approval/audit when that capability is not projected as a separate activation peer.
+Intents include bootstrap/validate, state, lifecycle events, mission/workplan/task sequencing, handoffs, archive preparation, coexistence and ordinary Consumer Governance guidance. External Skill discovery/approval/audit remains a Consumer capability even when projected as a separate activation peer.
 
 ### `source-maintainer`
 
@@ -34,53 +26,32 @@ Profile: `source-maintainer`
 Actor/context: Agent Governance source repository identified by the exact supported source-product signal.  
 Risk/mutation boundary: source adapters and source-only policy records; no Consumer installation state at source root.
 
-Intents include:
-
-- inspect/validate source-maintainer context;
-- locate live Core, Task Contracts, checkpoint, decisions, testing/eval and handoff records;
-- reason about source-maintenance workflow, branching, release and verification policy;
-- resolve authorized source handoff JSON paths;
-- maintain strict source/Consumer isolation.
+Intents include source context validation, live Core/Task Contract/checkpoint/decision/testing/handoff routing, source workflow/branch/release policy and authorized source handoff JSON paths.
 
 ### `external-skill-trust`
 
 Profile: `consumer` capability surface, not a third runtime profile.  
-Actor/context: Consumer/user evaluating external Agent Skills or supply-chain trust.  
-Risk boundary: discovery, approval and audit semantics already governed by accepted Consumer Skill trust mechanisms; no broadened package/runtime authority.
+Actor/context: Consumer/user evaluating external Agent Skills or supply-chain trust.
 
-Intents include:
+Intents include external Skill discovery, provenance/trust review, approval eligibility and supply-chain audit. It grants neither source-maintainer authority nor independent product identity.
 
-- discover or evaluate an external Skill;
-- inspect candidate provenance/trust evidence;
-- decide whether a candidate is eligible for Governance approval;
-- reason about supply-chain risk and approval boundaries.
+## Negative and ambiguous intents
 
-## Negative / non-Governance intents
+Agent Governance SHOULD NOT activate for ordinary coding, generic SDD/tooling, generic Git operations, unrelated documentation/release work, or generic package/Skill installation without an Agent Governance intent. Near-miss words such as `agent`, `governance`, `skill`, `source`, `profile`, `task`, or `release` are insufficient alone.
 
-Agent Governance SHOULD NOT activate for ordinary coding, generic SDD/tooling questions, generic Git operations, unrelated documentation editing, broad product advice, or generic package installation where no Governance, source-maintenance or external-Skill-trust intent is present.
-
-Near-miss wording containing terms such as `agent`, `governance`, `skill`, `source`, `profile`, `task`, or `release` is insufficient by itself.
-
-## Ambiguous intents
-
-When a prompt plausibly refers to more than one Governance context but lacks enough information to identify the required profile/capability safely, the expected semantic outcome is bounded clarification/insufficient-context behavior rather than silent permission broadening.
+When a prompt plausibly refers to multiple Governance contexts but lacks enough information to identify the required profile safely, the expected outcome is bounded clarification rather than permission broadening.
 
 ## Multi-intent behavior
 
-A prompt may legitimately require multiple capability families. The topology projection determines whether those families map to one activated entrypoint or multiple generated peers. Multiple activation is correct only when required by the frozen case expectation; unnecessary peer activation counts as overactivation.
+A request may legitimately require multiple capability families. The topology determines whether those families map to one or several entrypoints. Multiple activation is correct only when required by the frozen case expectation; unnecessary peers count as overactivation.
 
-## Frozen topology projection rule
+## Frozen projection authority
 
-The exact B0/B1/F2/G3 entrypoint identities and capability-to-entrypoint mapping are frozen in:
+Exact candidate mapping: `evals/skill_activation_topology/topologies.json`  
+Exact host-visible presentation sources and load plans: `evals/skill_activation_topology/presentations/manifest.json`  
+Frozen acceptance corpus: `evals/skill_activation_topology/corpus.json`  
+Frozen metric/trial/matrix/selection oracle: `evals/skill_activation_topology/oracle.json`
 
-`evals/skill_activation_topology/topologies.json`
+The seven candidate `SKILL.md` files and three shared capability references under `evals/skill_activation_topology/presentations/` are part of the D052 semantic oracle. T023 may copy them byte-for-byte into isolated temporary host-visible candidate directories but must not rewrite or synthesize their wording.
 
-The frozen acceptance corpus is:
-
-`evals/skill_activation_topology/corpus.json`
-
-The frozen metric, trial, matrix and selection oracle is:
-
-`evals/skill_activation_topology/oracle.json`
-
-T023 may implement technical runners/adapters and supplementary diagnostics, but MUST NOT modify this document or those three semantic assets unless a new persisted Orchestrator revision explicitly restarts the experiment before the affected comparative claim.
+MG1 v1 was superseded before any comparative trial because it lacked exact candidate presentation surfaces. T023 blocker evidence at `b7402bbaea52d7ac4342b848c73bf56a7bb4bbef` records `0/360` trials. This v2 revision changes presentation completeness only; corpus expectations and selection thresholds remain unchanged.
