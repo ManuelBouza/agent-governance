@@ -1,0 +1,127 @@
+{
+  "task_id": "T023",
+  "status": "BLOCKED",
+  "task_contract_path": "docs/tasks/T023-unified-skill-profile-activation-evals.md",
+  "branch": "test/t023-skill-activation-topology-evals",
+  "implementation_head_sha": "f87b924f1b9481dde68279f24ff4c4c35f51c868",
+  "base_branch": "develop",
+  "base_sha": "c7239ffd5b97d225e85499c25a6afd6d9880cdf9",
+  "files_changed": [
+    "evals/skill_activation_topology/evidence/mg1-v2-codex-windows-gpt-5.6-sol-medium/deterministic-evidence.json",
+    "evals/skill_activation_topology/evidence/mg1-v2-codex-windows-gpt-5.6-sol-medium/metrics.json",
+    "evals/skill_activation_topology/evidence/mg1-v2-codex-windows-gpt-5.6-sol-medium/oracle-diagnostics.json",
+    "evals/skill_activation_topology/evidence/mg1-v2-codex-windows-gpt-5.6-sol-medium/raw-trials.jsonl",
+    "evals/skill_activation_topology/evidence/mg1-v2-codex-windows-gpt-5.6-sol-medium/run-metadata.json",
+    "evals/skill_activation_topology/evidence/mg1-v2-codex-windows-gpt-5.6-sol-medium/selection.json",
+    "evals/skill_activation_topology/evidence/mg1-v2-codex-windows-gpt-5.6-sol-medium/trials.jsonl",
+    "evals/skill_activation_topology/harness.py",
+    "handoffs/T023-executor-handoff.json",
+    "tests/test_skill_activation_topology_harness.py"
+  ],
+  "implementation_summary": "Started from exact current canonical develop c7239ffd5b97d225e85499c25a6afd6d9880cdf9 while preserving the prior blocked T023 branch state separately. Implemented the non-Markdown MG1-v2 technical harness, exact byte-copy candidate materialization, clean-session Codex adapter, observable host-trace activation grading, frozen metric/selection computation, deterministic provenance/installability evidence, resume-integrity controls, and deterministic tests. Executed all 360 required Codex/native-Windows/GPT-5.6-Sol/Medium trials and retained raw plus structured evidence. Deterministic regressions pass, but frozen selection returns BLOCKED because neither B0 nor B1 qualifies; all four candidates fail mandatory live-routing conditions. Code review also records a suspected semantic oracle defect: deterministic loaded-reference bytes have zero candidate variance, making the frozen 80/85 percent context-improvement conditions unreachable. No frozen oracle, corpus, topology, presentation Markdown, Core/runtime semantics, dependency, or configuration changed.",
+  "sdd_profile": "ASSURED",
+  "test_authorship_mode": "mixed",
+  "oracle": {
+    "oracle_id": "MG1-T023-TOPOLOGY-ORACLE-v2",
+    "capability_source_epoch": "MG1-2026-08-25-v2",
+    "presentation_revision": "MG1-T023-PRESENTATIONS-v2",
+    "corpus_id": "MG1-T023-CORPUS-v1",
+    "frozen_asset_sha256": {
+      "evals/skill_activation_topology/oracle.json": "4cd207d06bfbc37ff6dfe44e0a35c74656820c50723d289ca1bcc55de62b297b",
+      "evals/skill_activation_topology/corpus.json": "6843b045bd400476a28a2a39af2f7a7026ba978154802140bf5112b0c2f95c26",
+      "evals/skill_activation_topology/topologies.json": "9730cf0fe32e2045884732ec3cad85fb2c3bbb3c391281a518f7a0ec34aa65e6",
+      "evals/skill_activation_topology/presentations/manifest.json": "e68d0d06679178cb0e3b97448ee93e049b3ff0e40a91c61d93b2a2fdba10994b"
+    },
+    "semantic_drift": false
+  },
+  "verification": {
+    "commands": [
+      "git fetch origin --prune",
+      "uv run --locked ruff check .",
+      "uv run --locked ruff format --check .",
+      "uv run --locked python evals/skill_activation_topology/harness.py validate",
+      "uv run --locked python evals/skill_activation_topology/harness.py run --output evals/skill_activation_topology/evidence/mg1-v2-codex-windows-gpt-5.6-sol-medium --workers 4 --model gpt-5.6-sol --effort medium --timeout-seconds 300 --full-acceptance",
+      "uv run --locked python evals/skill_activation_topology/harness.py verify --output evals/skill_activation_topology/evidence/mg1-v2-codex-windows-gpt-5.6-sol-medium --timeout-seconds 900",
+      "uv run --locked python evals/skill_activation_topology/harness.py score --output evals/skill_activation_topology/evidence/mg1-v2-codex-windows-gpt-5.6-sol-medium",
+      "uv run --locked python -m pytest tests/test_profile_abstraction.py tests/test_source_maintainer_profile.py",
+      "uv run --locked python -m pytest tests/test_source_consumer_separation.py tests/test_consumer_v1_characterization.py",
+      "uv run --locked python -m pytest",
+      "git diff --check",
+      "git diff --name-only -- '*.md'",
+      "git diff --quiet origin/develop -- evals/skill_activation_topology/oracle.json evals/skill_activation_topology/corpus.json evals/skill_activation_topology/topologies.json evals/skill_activation_topology/presentations"
+    ],
+    "results": {
+      "baseline_identity": "PASS: fetched origin/develop c7239ffd5b97d225e85499c25a6afd6d9880cdf9 before authority loading; the previous pushed blocked T023 state b7402bbaea52d7ac4342b848c73bf56a7bb4bbef was preserved separately and the submitted branch was recreated from fresh develop without continuing blocked history.",
+      "frozen_input_validation": "PASS: MG1-T023-TOPOLOGY-ORACLE-v2, MG1-2026-08-25-v2, MG1-T023-PRESENTATIONS-v2 and MG1-T023-CORPUS-v1 resolve consistently; schedule is exactly 360 trials.",
+      "live_matrix": "PASS EXECUTION / BLOCKED OUTCOME: all 360 required trials completed from 2026-08-25T07:01:45.050613+00:00 through 2026-08-25T07:51:30.350914+00:00 using Codex CLI 0.149.0, native Windows, gpt-5.6-sol, Medium, one fresh Codex thread and disposable Git workspace per trial. Exactly 360 structured and 360 raw records are retained; every trial has a host trace.",
+      "frozen_selection": "BLOCKED: B0, B1, F2 and G3 all fail qualification. B0 F1=0.8261/false-activation=0.6667/overactivation=0.2667/cross-profile violations=3/ambiguous broadenings=6. B1 F1=0.7808/false-activation=0.9630/overactivation=0.3556/cross-profile violations=3/ambiguous broadenings=6. F2 F1=0.8906/wrong-specialist=0.0444/overactivation=0.0778/cross-profile violations=3/ambiguous broadenings=4. G3 F1=0.8406/wrong-specialist=0.0889/overactivation=0.0778/cross-profile violations=3/ambiguous broadenings=3. Neither B0 nor B1 qualifies, so the frozen rule yields no selected candidate.",
+      "evidence_recomputation": "PASS: deterministic test proves exactly one record for every 30-case x 4-candidate x 3-repetition key, raw/structured key parity, metric recomputation equality, selection recomputation equality, and the candidate-invariant deterministic load diagnostic.",
+      "ruff_check": "PASS: All checks passed.",
+      "ruff_format": "PASS: 35 files already formatted.",
+      "full_deterministic_suite": "PASS: 417 tests passed in 68.94 seconds on native Windows with no skip, xfail, oracle mutation, or threshold weakening.",
+      "profile_isolation_regression": "PASS: 48 tests passed.",
+      "consumer_source_independence_regression": "PASS: 8 tests passed.",
+      "source_distribution_integrity": "PASS: all candidates are exact byte-copy projections under one product/capability-source epoch; no portable Skill-to-Skill dependency or independent runtime authority was introduced.",
+      "single_install_feasibility": "PASS: every candidate materializes under one distribution root with no manual product-owned support installation; final wrapper/install proof remains T024/T029 scope.",
+      "ownership_drift": "PASS: no committed Markdown or frozen MG1 semantic asset changed relative to origin/develop.",
+      "diff_check": "PASS: no whitespace errors."
+    },
+    "runtime": "Native Windows 11 / NTFS; PowerShell; Git 2.53.0.windows.2; uv 0.11.32; CPython 3.13.14; pytest 9.1.1; Ruff 0.16.2; Codex CLI 0.149.0; gpt-5.6-sol Medium live cell.",
+    "network_required": true,
+    "network_detail": "Network was required for canonical Git fetch/push and the 360 live Codex provider trials. Locked Ruff/pytest, metric recomputation, byte-copy/provenance, profile-isolation, source-independence and installability-feasibility verification required no test-runtime network.",
+    "acceptance_criteria_mapping": {
+      "AC-T023-1": "PASS: all candidates use frozen presentations over unchanged Core/engine/profile semantics; 417 deterministic tests pass.",
+      "AC-T023-2": "PASS: exact 30-case corpus x four candidates x three clean trials completed with raw and structured evidence retained.",
+      "AC-T023-3": "PASS: activation, routing, overactivation, isolation, deterministic context/load path, source/distribution and single-install feasibility dimensions are persisted; live host claims are labelled Codex/native-Windows-specific.",
+      "AC-T023-4": "PASS preservation / REENTRY REQUIRED: frozen inputs, outcomes and thresholds are unchanged and executed as integrated. The suspected candidate-invariant context-load defect is reported rather than corrected by the Executor.",
+      "AC-T023-5": "PASS: one Core/engine/product/capability epoch and one-install feasibility are preserved for every candidate.",
+      "AC-T023-6": "BLOCKED: frozen evidence yields no qualifying B0/B1 reference and therefore no permitted selected topology.",
+      "AC-T023-7": "PASS: Orchestrator-owned assets are byte-identical; executor harness/tests/evidence are separate and prove the required oracle was executed."
+    }
+  },
+  "code_review": {
+    "reviewed_head_sha": "f87b924f1b9481dde68279f24ff4c4c35f51c868",
+    "summary": "Reviewed the complete implementation/evidence anchor against the frozen MG1-v2 oracle, Task Contract scope, D052 ownership boundary, observable-trace grading, isolation, portability labelling, source/distribution integrity, selection implementation and terminal publication requirements. The harness performs exact byte-copy materialization, grades activation from successful host Skill reads, retains raw responses and diagnostics, recomputes frozen metrics, fails closed on stale resume identity and does not edit semantic assets. Deterministic and live execution completed, but the evidence cannot produce an accepted topology and a suspected semantic oracle defect requires upstream Specify re-entry.",
+    "findings": [
+      "BLOCKING RESULT: neither B0 nor B1 qualifies; all candidates fail mandatory live-routing conditions, so AC-T023-6 cannot be satisfied under the frozen rule.",
+      "UPSTREAM ORACLE DEFECT SUSPECTED: loaded_reference_bytes is candidate-invariant for all 30 cases under the frozen manifest rule, making the B1 80 percent and split-challenger 85 percent context-improvement comparisons unreachable while activation-surface bytes are excluded from those comparisons."
+    ],
+    "resolved_findings": [
+      "Normalized doubled Windows path separators before deriving observed Skill/reference reads from Codex JSONL traces.",
+      "Used fresh persisted Codex threads with automatic review so the host could read frozen Skill bodies/references without sharing conversational context or granting unsandboxed machine access.",
+      "Separated model-reported labels from successful host-read activation evidence and retained invalid self-report labels as diagnostics instead of scoring them as entrypoints.",
+      "Made fresh runs clear stale local journals and made resumed runs reject mismatched case/candidate/repetition, presentation epoch, model or effort.",
+      "Added deterministic completeness, recomputation, selection, oracle-diagnostic and resume-integrity coverage, then reran all gates."
+    ],
+    "upstream_reentry_required": true,
+    "upstream_reentry_stage": "Specify"
+  },
+  "requirement_trace": {
+    "AC-T023-1": "evals/skill_activation_topology/evidence/mg1-v2-codex-windows-gpt-5.6-sol-medium/deterministic-evidence.json plus 417-test full suite.",
+    "AC-T023-2": "evals/skill_activation_topology/evidence/mg1-v2-codex-windows-gpt-5.6-sol-medium/trials.jsonl and raw-trials.jsonl; exact 360-key recomputation test.",
+    "AC-T023-3": "metrics.json, deterministic-evidence.json, run-metadata.json and per-trial load/trace fields.",
+    "AC-T023-4": "frozen SHA-256 identities in deterministic-evidence.json and handoff oracle field; oracle-diagnostics.json reports the suspected defect without mutation.",
+    "AC-T023-5": "deterministic-evidence.json candidate provenance, exact byte copies, one distribution root and single-install/source-integrity flags.",
+    "AC-T023-6": "selection.json records BLOCKED because neither B0 nor B1 qualifies; metrics.json contains the frozen-rule inputs.",
+    "AC-T023-7": "Git frozen-asset diff check, raw materialization records and tests/test_skill_activation_topology_harness.py.",
+    "PRESERVED-CORE-ENGINE-PROFILES": "No Core/runtime/profile source changed; complete deterministic/profile/source-independence suites pass.",
+    "PRESERVED-D052-ORACLE": "No corpus, oracle, topology, presentation SKILL.md/reference or threshold changed.",
+    "PRESERVED-D051-DISTRIBUTION": "Every candidate remains one product/source epoch and one-install feasible without portable Skill-to-Skill invocation."
+  },
+  "dependencies_or_config_changes": [],
+  "git_status": "clean at implementation_head_sha before handoff-only finalization",
+  "unresolved_issues": [
+    {
+      "type": "NO_QUALIFYING_TOPOLOGY",
+      "evidence": "evals/skill_activation_topology/evidence/mg1-v2-codex-windows-gpt-5.6-sol-medium/selection.json",
+      "detail": "Neither B0 nor B1 qualifies; no candidate can be selected under the frozen rule."
+    },
+    {
+      "type": "ORACLE_DEFECT_SUSPECTED",
+      "evidence": "evals/skill_activation_topology/evidence/mg1-v2-codex-windows-gpt-5.6-sol-medium/oracle-diagnostics.json",
+      "detail": "Frozen deterministic context-load comparisons are candidate-invariant and cannot recognize the required 20/15 percent material improvement."
+    }
+  ],
+  "recommended_next_task": "ChatGPT Orchestrator performs Specify re-entry, independently reviews the pushed live evidence and oracle diagnostic, and persists any MG1 oracle/selection revision before a fresh T023 relaunch. Do not select a topology or alter thresholds from this blocked branch without that durable authority.",
+  "chatgpt_read_path": "handoffs/T023-executor-handoff.json"
+}

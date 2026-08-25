@@ -1,0 +1,36 @@
+{
+  "diagnostic_id": "T023-ORACLE-DIAGNOSTIC-001",
+  "status": "ORACLE_DEFECT_SUSPECTED",
+  "oracle_id": "MG1-T023-TOPOLOGY-ORACLE-v2",
+  "affected_selection_steps": [
+    "step_2_single_family",
+    "step_3_split_material_advantage"
+  ],
+  "observation": "The frozen manifest byte-accounting rule makes loaded_reference_bytes depend only on the case expected-capability set and shared reference files. It does not depend on candidate activation surfaces. All 30 corpus cases therefore have identical deterministic loaded_reference_bytes across B0, B1, F2, and G3.",
+  "mathematical_effect": {
+    "b1_reference_condition": "B1 median_loaded_reference_bytes <= 0.80 * B0",
+    "split_material_condition": "challenger median_loaded_reference_bytes <= 0.85 * reference",
+    "observed_activation_relevant_median_loaded_reference_bytes": {
+      "B0": 960,
+      "B1": 960,
+      "F2": 960,
+      "G3": 960
+    },
+    "candidate_variance_case_count": 0,
+    "corpus_case_count": 30,
+    "effect": "Neither the 80 percent nor 85 percent context-load improvement can be satisfied by any candidate under the frozen deterministic load rule. Candidate SKILL.md activation-surface byte differences are measured separately but are not used by these selection comparisons."
+  },
+  "activation_surface_bytes": {
+    "B0/agent-governance": 1551,
+    "B1/agent-governance-router": 903,
+    "F2/consumer-governance": 820,
+    "F2/source-maintainer": 656,
+    "G3/consumer-lifecycle": 646,
+    "G3/external-skill-trust": 659,
+    "G3/source-maintainer": 601
+  },
+  "current_result_interaction": "The executed matrix is independently BLOCKED because neither B0 nor B1 qualifies and every candidate fails mandatory live-routing conditions. This diagnostic does not change the executed metrics or frozen selection result, but it blocks any claim that the frozen context-load rule was capable of recognizing candidate material advantage.",
+  "executor_action": "No corpus, presentation, expected outcome, metric, threshold, or selection rule was changed.",
+  "upstream_reentry_required": true,
+  "earliest_reentry_stage": "Specify"
+}

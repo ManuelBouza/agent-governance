@@ -1,0 +1,16 @@
+{
+  "capability_source_epoch": "MG1-2026-08-25-v2",
+  "clean_context": "one new codex exec thread and disposable workspace per trial",
+  "codex_cli": "codex-cli 0.149.0",
+  "completed_at": "2026-08-25T07:51:30.350914+00:00",
+  "completed_trials": 360,
+  "corpus_id": "MG1-T023-CORPUS-v1",
+  "effort": "medium",
+  "host": "Codex",
+  "model": "gpt-5.6-sol",
+  "oracle_id": "MG1-T023-TOPOLOGY-ORACLE-v2",
+  "platform": "native Windows (Windows-11-10.0.26200-SP0)",
+  "presentation_revision": "MG1-T023-PRESENTATIONS-v2",
+  "scheduled_trials": 360,
+  "started_at": "2026-08-25T07:01:45.050613+00:00"
+}

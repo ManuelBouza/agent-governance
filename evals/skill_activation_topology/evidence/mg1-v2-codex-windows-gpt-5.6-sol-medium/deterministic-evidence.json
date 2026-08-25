@@ -1,0 +1,274 @@
+{
+  "candidates": {
+    "B0": {
+      "entrypoint_count": 1,
+      "manual_support_install_required": false,
+      "materialization": {
+        "candidate_id": "B0",
+        "capability_source_epoch": "MG1-2026-08-25-v2",
+        "construction": "byte-copy",
+        "files": [
+          {
+            "bytes": 1551,
+            "sha256": "04847ad3f33355b067dc5e868530095ec07dc291ec2965a0e8bfa7e3109b2e92",
+            "source": "evals/skill_activation_topology/presentations/B0/agent-governance/SKILL.md",
+            "target": ".agents/skills/agent-governance/SKILL.md"
+          },
+          {
+            "bytes": 1198,
+            "sha256": "46ee41af7d4f7f8b1b1e97492aed1c844f3a94e14fbe530c5b2a337764b6c063",
+            "source": "evals/skill_activation_topology/presentations/shared/consumer-lifecycle.md",
+            "target": ".agents/skills/agent-governance/references/consumer-lifecycle.md"
+          },
+          {
+            "bytes": 928,
+            "sha256": "b1afb7f07a616bac844205e7095b996f5dde77521741adc377a5c8f74acbb522",
+            "source": "evals/skill_activation_topology/presentations/shared/source-maintainer.md",
+            "target": ".agents/skills/agent-governance/references/source-maintainer.md"
+          },
+          {
+            "bytes": 960,
+            "sha256": "254124e52d50a0f615b652d770a67f75d7543b23385e382bf52eabf8e13ccafb",
+            "source": "evals/skill_activation_topology/presentations/shared/external-skill-trust.md",
+            "target": ".agents/skills/agent-governance/references/external-skill-trust.md"
+          }
+        ],
+        "presentation_revision": "MG1-T023-PRESENTATIONS-v2"
+      },
+      "one_distribution_root": true,
+      "single_install_feasibility": true,
+      "source_distribution_integrity": true
+    },
+    "B1": {
+      "entrypoint_count": 1,
+      "manual_support_install_required": false,
+      "materialization": {
+        "candidate_id": "B1",
+        "capability_source_epoch": "MG1-2026-08-25-v2",
+        "construction": "byte-copy",
+        "files": [
+          {
+            "bytes": 903,
+            "sha256": "0cc5c8ba9a645e4d6afaec06e1d3e8d86fa85465f89e4d3bd0b2c5d0c66d269c",
+            "source": "evals/skill_activation_topology/presentations/B1/agent-governance-router/SKILL.md",
+            "target": ".agents/skills/agent-governance-router/SKILL.md"
+          },
+          {
+            "bytes": 1198,
+            "sha256": "46ee41af7d4f7f8b1b1e97492aed1c844f3a94e14fbe530c5b2a337764b6c063",
+            "source": "evals/skill_activation_topology/presentations/shared/consumer-lifecycle.md",
+            "target": ".agents/skills/agent-governance-router/references/consumer-lifecycle.md"
+          },
+          {
+            "bytes": 928,
+            "sha256": "b1afb7f07a616bac844205e7095b996f5dde77521741adc377a5c8f74acbb522",
+            "source": "evals/skill_activation_topology/presentations/shared/source-maintainer.md",
+            "target": ".agents/skills/agent-governance-router/references/source-maintainer.md"
+          },
+          {
+            "bytes": 960,
+            "sha256": "254124e52d50a0f615b652d770a67f75d7543b23385e382bf52eabf8e13ccafb",
+            "source": "evals/skill_activation_topology/presentations/shared/external-skill-trust.md",
+            "target": ".agents/skills/agent-governance-router/references/external-skill-trust.md"
+          }
+        ],
+        "presentation_revision": "MG1-T023-PRESENTATIONS-v2"
+      },
+      "one_distribution_root": true,
+      "single_install_feasibility": true,
+      "source_distribution_integrity": true
+    },
+    "F2": {
+      "entrypoint_count": 2,
+      "manual_support_install_required": false,
+      "materialization": {
+        "candidate_id": "F2",
+        "capability_source_epoch": "MG1-2026-08-25-v2",
+        "construction": "byte-copy",
+        "files": [
+          {
+            "bytes": 820,
+            "sha256": "b02c9ffcb6b477a15d56440be94010f6b6d3886f0904ea37735987dce996a2d8",
+            "source": "evals/skill_activation_topology/presentations/F2/consumer-governance/SKILL.md",
+            "target": ".agents/skills/consumer-governance/SKILL.md"
+          },
+          {
+            "bytes": 1198,
+            "sha256": "46ee41af7d4f7f8b1b1e97492aed1c844f3a94e14fbe530c5b2a337764b6c063",
+            "source": "evals/skill_activation_topology/presentations/shared/consumer-lifecycle.md",
+            "target": ".agents/skills/consumer-governance/references/consumer-lifecycle.md"
+          },
+          {
+            "bytes": 960,
+            "sha256": "254124e52d50a0f615b652d770a67f75d7543b23385e382bf52eabf8e13ccafb",
+            "source": "evals/skill_activation_topology/presentations/shared/external-skill-trust.md",
+            "target": ".agents/skills/consumer-governance/references/external-skill-trust.md"
+          },
+          {
+            "bytes": 656,
+            "sha256": "8d0923ef071ae416607cbc681762f58726519de0f2fc9c6b52d5ed23a756eee8",
+            "source": "evals/skill_activation_topology/presentations/F2/source-maintainer/SKILL.md",
+            "target": ".agents/skills/source-maintainer/SKILL.md"
+          },
+          {
+            "bytes": 928,
+            "sha256": "b1afb7f07a616bac844205e7095b996f5dde77521741adc377a5c8f74acbb522",
+            "source": "evals/skill_activation_topology/presentations/shared/source-maintainer.md",
+            "target": ".agents/skills/source-maintainer/references/source-maintainer.md"
+          }
+        ],
+        "presentation_revision": "MG1-T023-PRESENTATIONS-v2"
+      },
+      "one_distribution_root": true,
+      "single_install_feasibility": true,
+      "source_distribution_integrity": true
+    },
+    "G3": {
+      "entrypoint_count": 3,
+      "manual_support_install_required": false,
+      "materialization": {
+        "candidate_id": "G3",
+        "capability_source_epoch": "MG1-2026-08-25-v2",
+        "construction": "byte-copy",
+        "files": [
+          {
+            "bytes": 646,
+            "sha256": "88d9b89bfa81c6178353f90a532aa3736dda898bed8672b84294a0ef3d30102e",
+            "source": "evals/skill_activation_topology/presentations/G3/consumer-lifecycle/SKILL.md",
+            "target": ".agents/skills/consumer-lifecycle/SKILL.md"
+          },
+          {
+            "bytes": 1198,
+            "sha256": "46ee41af7d4f7f8b1b1e97492aed1c844f3a94e14fbe530c5b2a337764b6c063",
+            "source": "evals/skill_activation_topology/presentations/shared/consumer-lifecycle.md",
+            "target": ".agents/skills/consumer-lifecycle/references/consumer-lifecycle.md"
+          },
+          {
+            "bytes": 601,
+            "sha256": "0540e8c70cfcae340a8b7e1f9e4935764c1606a89d634171e9e95b40adf2262a",
+            "source": "evals/skill_activation_topology/presentations/G3/source-maintainer/SKILL.md",
+            "target": ".agents/skills/source-maintainer/SKILL.md"
+          },
+          {
+            "bytes": 928,
+            "sha256": "b1afb7f07a616bac844205e7095b996f5dde77521741adc377a5c8f74acbb522",
+            "source": "evals/skill_activation_topology/presentations/shared/source-maintainer.md",
+            "target": ".agents/skills/source-maintainer/references/source-maintainer.md"
+          },
+          {
+            "bytes": 659,
+            "sha256": "46fe08a6e292793bf919c078f9597b481aefbe87d288fbe0327dd25570c2a8f5",
+            "source": "evals/skill_activation_topology/presentations/G3/external-skill-trust/SKILL.md",
+            "target": ".agents/skills/external-skill-trust/SKILL.md"
+          },
+          {
+            "bytes": 960,
+            "sha256": "254124e52d50a0f615b652d770a67f75d7543b23385e382bf52eabf8e13ccafb",
+            "source": "evals/skill_activation_topology/presentations/shared/external-skill-trust.md",
+            "target": ".agents/skills/external-skill-trust/references/external-skill-trust.md"
+          }
+        ],
+        "presentation_revision": "MG1-T023-PRESENTATIONS-v2"
+      },
+      "one_distribution_root": true,
+      "single_install_feasibility": true,
+      "source_distribution_integrity": true
+    }
+  },
+  "capability_source_epoch": "MG1-2026-08-25-v2",
+  "consumer_source_independence_regression": "PASS",
+  "corpus_id": "MG1-T023-CORPUS-v1",
+  "frozen_asset_sha256": {
+    "evals/skill_activation_topology/corpus.json": "6843b045bd400476a28a2a39af2f7a7026ba978154802140bf5112b0c2f95c26",
+    "evals/skill_activation_topology/oracle.json": "4cd207d06bfbc37ff6dfe44e0a35c74656820c50723d289ca1bcc55de62b297b",
+    "evals/skill_activation_topology/presentations/manifest.json": "e68d0d06679178cb0e3b97448ee93e049b3ff0e40a91c61d93b2a2fdba10994b",
+    "evals/skill_activation_topology/topologies.json": "9730cf0fe32e2045884732ec3cad85fb2c3bbb3c391281a518f7a0ec34aa65e6"
+  },
+  "full_deterministic_regression": "PASS",
+  "oracle_id": "MG1-T023-TOPOLOGY-ORACLE-v2",
+  "presentation_revision": "MG1-T023-PRESENTATIONS-v2",
+  "profile_isolation_regression": "PASS",
+  "quality_gate": "PASS",
+  "runtime": {
+    "network_required": false,
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python": "3.13.14"
+  },
+  "verification_runs": {
+    "consumer_source_independence": {
+      "command": [
+        "uv",
+        "run",
+        "--locked",
+        "python",
+        "-m",
+        "pytest",
+        "tests/test_source_consumer_separation.py",
+        "tests/test_consumer_v1_characterization.py"
+      ],
+      "duration_seconds": 1.120422,
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "============================= test session starts =============================\nplatform win32 -- Python 3.13.14, pytest-9.1.1, pluggy-1.6.0\nrootdir: C:\\Manuel\\Projects\\agent-governance\\.worktrees\\t023-current\nconfigfile: pyproject.toml\ncollected 8 items\n\ntests\\test_source_consumer_separation.py ......                          [ 75%]\ntests\\test_consumer_v1_characterization.py ..                            [100%]\n\n============================== 8 passed in 0.64s ==============================\n"
+    },
+    "full_pytest": {
+      "command": [
+        "uv",
+        "run",
+        "--locked",
+        "python",
+        "-m",
+        "pytest"
+      ],
+      "duration_seconds": 69.441835,
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "============================= test session starts =============================\nplatform win32 -- Python 3.13.14, pytest-9.1.1, pluggy-1.6.0\nrootdir: C:\\Manuel\\Projects\\agent-governance\\.worktrees\\t023-current\nconfigfile: pyproject.toml\ntestpaths: tests\ncollected 417 items\n\ntests\\test_assurance_audit_contract.py ..........                        [  2%]\ntests\\test_canonical_layout.py ......................................    [ 11%]\ntests\\test_coexistence_classification.py .................               [ 15%]\ntests\\test_consumer_governance_cli.py .................................. [ 23%]\n........                                                                 [ 25%]\ntests\\test_consumer_governance_cli_v1.py ............................... [ 33%]\n....                                                                     [ 34%]\ntests\\test_consumer_governance_trigger_corpus.py ....................... [ 39%]\n.......                                                                  [ 41%]\ntests\\test_consumer_v1_characterization.py ..                            [ 41%]\ntests\\test_d032_policy_contract.py .............                         [ 44%]\ntests\\test_execution_control_contract.py ...........                     [ 47%]\ntests\\test_governance_artifact.py ....                                   [ 48%]\ntests\\test_governance_learning.py ........                               [ 50%]\ntests\\test_harness_foundation.py .......                                 [ 52%]\ntests\\test_profile_abstraction.py .......................                [ 57%]\ntests\\test_reference_integrity.py ...................................... [ 66%]\n.........                                                                [ 68%]\ntests\\test_repository_context.py ....................................... [ 78%]\n.................                                                        [ 82%]\ntests\\test_runbook_recipe_validation.py .........                        [ 84%]\ntests\\test_security_verification_contract.py .........                   [ 86%]\ntests\\test_shared_governance_engine.py ....                              [ 87%]\ntests\\test_skill_activation_topology_harness.py ............             [ 90%]\ntests\\test_source_consumer_separation.py ......                          [ 91%]\ntests\\test_source_maintainer_profile.py .........................        [ 97%]\ntests\\test_t034_native_sdd_conformance.py ...                            [ 98%]\ntests\\test_t035_runbook_operation_resolution_conformance.py ......       [100%]\n\n======================= 417 passed in 68.94s (0:01:08) ========================\n"
+    },
+    "profile_isolation": {
+      "command": [
+        "uv",
+        "run",
+        "--locked",
+        "python",
+        "-m",
+        "pytest",
+        "tests/test_profile_abstraction.py",
+        "tests/test_source_maintainer_profile.py"
+      ],
+      "duration_seconds": 5.765752,
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "============================= test session starts =============================\nplatform win32 -- Python 3.13.14, pytest-9.1.1, pluggy-1.6.0\nrootdir: C:\\Manuel\\Projects\\agent-governance\\.worktrees\\t023-current\nconfigfile: pyproject.toml\ncollected 48 items\n\ntests\\test_profile_abstraction.py .......................                [ 47%]\ntests\\test_source_maintainer_profile.py .........................        [100%]\n\n============================= 48 passed in 5.31s ==============================\n"
+    },
+    "ruff_check": {
+      "command": [
+        "uv",
+        "run",
+        "--locked",
+        "ruff",
+        "check",
+        "."
+      ],
+      "duration_seconds": 0.084832,
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "All checks passed!\n"
+    },
+    "ruff_format_check": {
+      "command": [
+        "uv",
+        "run",
+        "--locked",
+        "ruff",
+        "format",
+        "--check",
+        "."
+      ],
+      "duration_seconds": 0.082563,
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "35 files already formatted\n"
+    }
+  }
+}
