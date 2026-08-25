@@ -1,0 +1,67 @@
+{
+  "schema_version": "1.0.0",
+  "presentation_revision": "MG1-T023-PRESENTATIONS-v2",
+  "capability_source_epoch": "MG1-2026-08-25-v2",
+  "encoding": "utf-8",
+  "construction_rule": "Create isolated candidate Skill directories by byte-copying the exact SKILL.md sources and shared references declared here. No rewriting, synthesis, summarization, frontmatter substitution, or semantic augmentation is permitted.",
+  "byte_accounting": {
+    "activation_surface_bytes": "UTF-8 byte length of each activated entrypoint SKILL.md, reported separately.",
+    "loaded_reference_bytes": "UTF-8 byte sum of unique reference files in the ordered load plan for the case's expected capability set; each unique path counts once.",
+    "token_claim": "Byte counts are deterministic load-model evidence and must not be described as exact tokens."
+  },
+  "shared_references": {
+    "consumer-lifecycle": "evals/skill_activation_topology/presentations/shared/consumer-lifecycle.md",
+    "source-maintainer": "evals/skill_activation_topology/presentations/shared/source-maintainer.md",
+    "external-skill-trust": "evals/skill_activation_topology/presentations/shared/external-skill-trust.md"
+  },
+  "candidates": {
+    "B0": {
+      "entrypoints": {
+        "agent-governance": {
+          "skill_source": "evals/skill_activation_topology/presentations/B0/agent-governance/SKILL.md",
+          "capabilities": ["consumer-lifecycle", "source-maintainer", "external-skill-trust"]
+        }
+      },
+      "load_order": ["consumer-lifecycle", "source-maintainer", "external-skill-trust"]
+    },
+    "B1": {
+      "entrypoints": {
+        "agent-governance-router": {
+          "skill_source": "evals/skill_activation_topology/presentations/B1/agent-governance-router/SKILL.md",
+          "capabilities": ["consumer-lifecycle", "source-maintainer", "external-skill-trust"]
+        }
+      },
+      "load_order": ["consumer-lifecycle", "source-maintainer", "external-skill-trust"]
+    },
+    "F2": {
+      "entrypoints": {
+        "consumer-governance": {
+          "skill_source": "evals/skill_activation_topology/presentations/F2/consumer-governance/SKILL.md",
+          "capabilities": ["consumer-lifecycle", "external-skill-trust"]
+        },
+        "source-maintainer": {
+          "skill_source": "evals/skill_activation_topology/presentations/F2/source-maintainer/SKILL.md",
+          "capabilities": ["source-maintainer"]
+        }
+      },
+      "load_order": ["consumer-lifecycle", "source-maintainer", "external-skill-trust"]
+    },
+    "G3": {
+      "entrypoints": {
+        "consumer-lifecycle": {
+          "skill_source": "evals/skill_activation_topology/presentations/G3/consumer-lifecycle/SKILL.md",
+          "capabilities": ["consumer-lifecycle"]
+        },
+        "source-maintainer": {
+          "skill_source": "evals/skill_activation_topology/presentations/G3/source-maintainer/SKILL.md",
+          "capabilities": ["source-maintainer"]
+        },
+        "external-skill-trust": {
+          "skill_source": "evals/skill_activation_topology/presentations/G3/external-skill-trust/SKILL.md",
+          "capabilities": ["external-skill-trust"]
+        }
+      },
+      "load_order": ["consumer-lifecycle", "source-maintainer", "external-skill-trust"]
+    }
+  }
+}

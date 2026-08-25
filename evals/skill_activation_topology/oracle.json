@@ -1,7 +1,11 @@
 {
-  "schema_version": "1.0.0",
-  "oracle_id": "MG1-T023-TOPOLOGY-ORACLE-v1",
-  "capability_source_epoch": "MG1-2026-08-24-v1",
+  "schema_version": "2.0.0",
+  "oracle_id": "MG1-T023-TOPOLOGY-ORACLE-v2",
+  "capability_source_epoch": "MG1-2026-08-25-v2",
+  "presentation_revision": "MG1-T023-PRESENTATIONS-v2",
+  "presentation_manifest": "evals/skill_activation_topology/presentations/manifest.json",
+  "supersedes_oracle_id": "MG1-T023-TOPOLOGY-ORACLE-v1",
+  "supersession_reason": "Pre-trial Specify correction: v1 lacked exact host-visible candidate presentation surfaces; blocker evidence records 0 of 360 live trials.",
   "corpus_id": "MG1-T023-CORPUS-v1",
   "candidate_ids": ["B0", "B1", "F2", "G3"],
   "trial_method": {
@@ -11,7 +15,8 @@
     "training_partition": null,
     "training_partition_reason": "Candidates and semantic oracle are frozen before trials; no fitting or threshold tuning is permitted against the acceptance corpus.",
     "mechanical_smoke_cases_may_be_used": true,
-    "smoke_cases_enter_acceptance_score": false
+    "smoke_cases_enter_acceptance_score": false,
+    "candidate_construction": "byte-copy only from the frozen presentation manifest; no Executor-authored activation wording"
   },
   "host_model_matrix": {
     "required_live_cells": [
@@ -38,13 +43,14 @@
       "repetition",
       "activated_entrypoints",
       "semantic_outcome",
+      "activation_surface_bytes",
       "loaded_reference_paths",
       "loaded_reference_bytes",
       "host_trace_available"
     ],
     "semantic_outcomes": ["activate", "no-activation", "bounded-rejection", "clarify-context"],
     "activation_expectation_rule": "For activate/bounded-rejection cases, expected entrypoints are the union of topologies.json capability_to_entrypoints for expected_capabilities. For no-activation/clarify-context cases, expected entrypoints are empty. forbidden_capabilities must never be activated or granted.",
-    "context_measure_rule": "loaded_reference_bytes and loaded_reference_paths are deterministic load-model evidence, not exact token counts. If host-observed token/context traces exist, record them separately without replacing the deterministic evidence."
+    "context_measure_rule": "Use the exact manifest byte_accounting rule. activation_surface_bytes records activated SKILL.md bytes separately. loaded_reference_bytes counts only unique manifest-listed progressive references required by the expected capability route. Byte measures are deterministic load-model evidence, not exact token counts."
   },
   "metrics": {
     "activation_precision": "micro precision over expected versus activated entrypoints across scored trials",
