@@ -1,6 +1,8 @@
 {
-  "schema_version": "1.0.0",
-  "capability_source_epoch": "MG1-2026-08-24-v1",
+  "schema_version": "2.0.0",
+  "capability_source_epoch": "MG1-2026-08-25-v2",
+  "presentation_revision": "MG1-T023-PRESENTATIONS-v2",
+  "presentation_manifest": "evals/skill_activation_topology/presentations/manifest.json",
   "product_id": "agent-governance",
   "distribution_identity": "single-product",
   "candidates": {
