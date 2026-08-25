@@ -5,86 +5,75 @@ Date: 2026-08-25
 Owner: ChatGPT Orchestrator  
 Applies to: `T023`  
 Test-Authorship-Mode: `mixed`  
-Oracle revision: `MG1-T023-TOPOLOGY-ORACLE-v2`  
-Capability-Source-Epoch: `MG1-2026-08-25-v2`  
-Presentation revision: `MG1-T023-PRESENTATIONS-v2`
+Oracle revision: `MG1-T023-TOPOLOGY-ORACLE-v3`  
+Capability-Source-Epoch: `MG1-2026-08-25-v3`  
+Presentation revision: `MG1-T023-PRESENTATIONS-v3`  
+Corpus: `MG1-T023-CORPUS-v2`
 
-## Revision reason
+## Restart boundary
 
-T023 v1 preflight stopped with `ORACLE_DEFECT` at Executor HEAD `b7402bbaea52d7ac4342b848c73bf56a7bb4bbef` because MG1 had not frozen the exact host-visible B0/B1/F2/G3 Skill presentation surfaces. The blocker records `0/360` live trials. No candidate performance was observed before this revision.
+MG1-v2 is closed `BLOCKED`. It executed all 360 required live trials; review: `docs/reviews/T023-R1.md`. No topology was selected. V2 evidence remains immutable and is not rescored.
 
-This v2 revision corrects that Specify defect only. Corpus membership, expected semantic outcomes, required live cell, repetition method, metric meanings, qualifying thresholds, mandatory non-regression boundaries and final selection rule are unchanged.
+V3 is a new pre-registered experiment under `docs/tasks/T042-mg1-v3-independent-holdout-restart.md`. It uses new candidate wording, a fresh 40-case acceptance holdout and corrected selection semantics. V2 cases may be run only as non-scored diagnostics; v2 results may not be used to tune v3 after holdout execution starts.
 
-## Frozen capability and topology authority
+## Frozen authority
 
-Canonical capability source: `docs/AGENT-GOVERNANCE-CAPABILITY-SOURCE.md`  
-Topology mapping: `evals/skill_activation_topology/topologies.json`  
-Presentation manifest: `evals/skill_activation_topology/presentations/manifest.json`  
-Acceptance corpus: `evals/skill_activation_topology/corpus.json` (`MG1-T023-CORPUS-v1`)  
-Selection oracle: `evals/skill_activation_topology/oracle.json`
+- Capability source: `docs/AGENT-GOVERNANCE-CAPABILITY-SOURCE.md`
+- Candidate mapping: `evals/skill_activation_topology/topologies.json`
+- Exact presentation manifest: `evals/skill_activation_topology/presentations/manifest.json`
+- V3 presentation sources: `evals/skill_activation_topology/presentations-v3/`
+- Acceptance holdout: `evals/skill_activation_topology/corpus.json`
+- Selection oracle: `evals/skill_activation_topology/oracle.json`
 
-Required candidates remain exactly B0, B1, F2 and G3. All remain projections of one Agent Governance product, one Core, one shared deterministic engine and one capability-source epoch. Portable Skill-to-Skill invocation remains forbidden.
+Required candidates remain exactly B0, B1, F2 and G3. All are projections of one Agent Governance product, one Core, one shared engine and one capability-source epoch. Portable Skill-to-Skill invocation remains forbidden.
 
-## Exact candidate presentations
+## Candidate presentation semantics
 
-The D052 oracle now includes exact `SKILL.md` sources for all seven entrypoints:
+B0 is the unified dispatcher baseline and deliberately loads all three capability references after activation.
 
-- B0: `agent-governance`;
-- B1: `agent-governance-router`;
-- F2: `consumer-governance`, `source-maintainer`;
-- G3: `consumer-lifecycle`, `source-maintainer`, `external-skill-trust`.
+B1 is a thin neutral router. It classifies first, loads only required capability references, and may activate without loading a reference when explicit Agent Governance context is source-versus-Consumer ambiguous and clarification is required.
 
-The exact files live under `evals/skill_activation_topology/presentations/`. Three shared references encode the constant capability semantics: Consumer Lifecycle, Source Maintainer and External Skill Trust.
+F2 exposes Consumer Governance and Source Maintainer peers. G3 exposes Consumer Lifecycle, Source Maintainer and External Skill Trust peers. Profile-specific peers do not activate for unresolved source-versus-Consumer ambiguity.
 
-T023 candidate construction is mechanical byte-copy only according to `presentations/manifest.json`. The Executor may not synthesize, rewrite, shorten, expand or substitute activation wording or progressive references.
+All files are exact Orchestrator-owned D052 assets and may only be byte-copied by the Executor.
 
-## Frozen trial method
+## Fresh holdout and trial method
 
-Required live cell remains:
+The v3 holdout contains 40 exact prompts spanning positive Consumer, source-maintainer, external trust, negative, near-miss, cross-profile, ambiguous and multi-intent classes. None of those exact prompt strings was executed in MG1-v2.
+
+Required live cell:
 
 - Host: Codex
 - Platform: native Windows
 - Model: GPT-5.6 Sol
 - Effort: Medium
 
-Each of 30 cases is executed 3 times for each of 4 candidates in clean context: 360 scored trials. Candidate order rotates deterministically. Mechanical smoke cases do not enter acceptance scores.
+Each case executes 3 clean-context trials for each of four candidates: **480 scored trials**. Candidate order rotates deterministically. Mechanical smoke and v2 regression cases do not enter acceptance scores.
 
-If the required live cell cannot be executed reproducibly, T023 is `BLOCKED`; substitution is forbidden.
+## Clarification and cross-profile semantics
 
-## Metrics and deterministic load accounting
+For `clarify-context`, no profile/capability permission may be granted and no governed mutation may occur. Neutral B0/B1 activation solely to ask for missing context is permitted and is not permission broadening. Their expected ambiguous entrypoint is frozen in `topologies.json`; F2/G3 have none.
 
-The existing routing/semantic metrics remain unchanged: activation precision/recall/F1, false activation, wrong specialist, overactivation, semantic-outcome accuracy, cross-profile violations, ambiguous-context permission broadening, median/p95 loaded-reference bytes, single-install feasibility and source/distribution integrity.
+For `bounded-rejection`, activation of the legitimate current-context capability is permitted. A violation exists when a forbidden capability/profile is granted/performed or the required bounded rejection is not returned.
 
-The v2 presentation manifest fixes the previously missing load inputs:
+## Context/load accounting
 
-- `activation_surface_bytes` = UTF-8 bytes of activated `SKILL.md` surfaces, reported separately;
-- `loaded_reference_bytes` = UTF-8 byte sum of unique exact shared reference files required by the expected capability route, counted once per unique path;
-- byte measures are deterministic load-model evidence, not exact token counts.
+V3 selection uses `observed_context_bytes`: the UTF-8 byte sum of unique successfully host-read materialized candidate `SKILL.md` files plus unique successfully host-read candidate references in that trial. Only host-observed successful reads count; model self-report does not.
+
+`activation_surface_bytes` and `loaded_reference_bytes` remain separately reported diagnostics. Byte measures are not exact token counts.
 
 ## Mandatory boundaries and thresholds
 
-All MG1 v1 values remain unchanged. Selected candidates require deterministic/profile/source-independence PASS, one-product/source/install integrity, zero cross-profile violations, zero ambiguous permission broadening and perfect bounded behavior on cross-profile/ambiguous cases.
+Every qualifying candidate must preserve deterministic/profile/source-independence PASS, one-product/source/install integrity, zero forbidden capability grants/operations, zero ambiguous permission broadening, and 100% correct semantic outcome for cross-profile/ambiguous cases.
 
-Qualifying thresholds remain: precision >= 0.95; recall >= 0.95; F1 >= 0.95; false activation <= 0.05; wrong specialist <= 0.05; overactivation <= 0.05; overall semantic-outcome accuracy >= 0.95.
+Routing thresholds remain: precision/recall/F1 >= 0.95; false activation/wrong-specialist/overactivation <= 0.05; overall semantic-outcome accuracy >= 0.95.
 
-The B0/B1 single-family reference rule, F2/G3 material-advantage rule and tie-break sequence remain byte-for-byte semantically unchanged in `oracle.json`.
+Selection remains D050-consistent: B1 replaces B0 only with routing non-regression and >=20% median observed-context reduction. F2/G3 count as material challengers only with >=0.03 absolute F1 advantage, >=15% median observed-context reduction, no worse false activation, and <=0.01 wrong-specialist/overactivation regression versus the single-family reference.
 
-## D052 ownership boundary
+If neither B0 nor B1 qualifies, the result is `BLOCKED`; thresholds may not be weakened after results are seen.
 
-Frozen Orchestrator-owned semantic assets now include:
+## Ownership boundary
 
-- this gate;
-- `docs/AGENT-GOVERNANCE-CAPABILITY-SOURCE.md`;
-- `evals/skill_activation_topology/topologies.json`;
-- `evals/skill_activation_topology/corpus.json`;
-- `evals/skill_activation_topology/oracle.json`;
-- `evals/skill_activation_topology/presentations/manifest.json`;
-- all seven candidate `SKILL.md` files and three shared references under `evals/skill_activation_topology/presentations/`.
+The frozen semantic assets above are Orchestrator-owned under D052. Executor owns harness/provider mechanics, trial isolation, byte-copy materialization, observed-trace extraction, metric computation, result evidence, supplementary diagnostics and ordinary technical tests.
 
-Executor ownership remains technical runner/provider adapters, isolated candidate materialization, trial execution, result collection, metric computation, load instrumentation, package-feasibility plumbing, supplementary diagnostics and ordinary regression tests.
-
-A suspected semantic defect requires another persisted Orchestrator re-entry; the Executor must not mutate these frozen meanings.
-
-## T023 readiness
-
-After this T041/MG1-v2 revision is reviewed and integrated into canonical `develop`, T023 may be relaunched from a fresh baseline. The previous blocked T023 branch is evidence only and must not be merged or used as an implementation base.
+If a semantic defect is suspected, stop the affected claim and report it. Do not mutate corpus membership, expected outcomes, presentation wording, thresholds or selection meaning.
