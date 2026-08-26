@@ -1,0 +1,101 @@
+{
+  "disposition": "Required live cell is incomplete. Do not infer a routing failure, replace the missing observation, or score a partial acceptance matrix. Persisted Orchestrator recovery/re-entry authority is required.",
+  "last_recorded_event_at": "2026-08-26T06:11:25.377Z",
+  "observable_session_events": [
+    {
+      "ordinal": 12,
+      "payload": {
+        "call_id": "call_kh8nLNkp8bMmKK6AXhWdEvUc",
+        "id": "ctc_05dc013702ca6b6a016a8e837d80a887d1a5b5a174e45e4a10",
+        "input": "const r = await tools.exec_command({cmd:\"Get-Content -LiteralPath '.agents/skills/consumer-lifecycle/SKILL.md'\",\"max_output_tokens\":6000});text(r.output)\n",
+        "internal_chat_message_metadata_passthrough": {
+          "create_time": 1787724666.801503,
+          "turn_id": "01a03cb1-8658-79a0-8d24-07d6b43f717e"
+        },
+        "name": "exec",
+        "status": "completed",
+        "type": "custom_tool_call"
+      },
+      "timestamp": "2026-08-26T06:11:10.231Z",
+      "type": "response_item"
+    },
+    {
+      "ordinal": 14,
+      "payload": {
+        "call_id": "call_kh8nLNkp8bMmKK6AXhWdEvUc",
+        "id": "ctco_01a03cb1-bd50-7ec3-9412-8f6ac10e5c2a",
+        "internal_chat_message_metadata_passthrough": {
+          "create_time": 1787724676.4322028,
+          "turn_id": "01a03cb1-8658-79a0-8d24-07d6b43f717e"
+        },
+        "output": [
+          {
+            "text": "Script completed\nWall time 6.1 seconds\nOutput:\n",
+            "type": "input_text"
+          },
+          {
+            "text": "---\r\nname: consumer-lifecycle\r\ndescription: Use only for explicit Agent Governance lifecycle/state/coexistence work in an adopting or governed Consumer repository. Do not use for the canonical Agent Governance source product, external Skill trust review, generic governance, coding, SDD, Git, releases, or ordinary project maintenance. If Consumer context is not explicit enough to distinguish it from the canonical source product, do not activate this peer.\r\n---\r\n\r\n# Consumer Lifecycle peer\r\n\r\nRead only `references/consumer-lifecycle.md`.\r\n\r\nOperate only within accepted Consumer Governance semantics. Never edit the canonical Agent Governance source product or acquire source-maintainer capability. Cross-profile source mutations must be rejected without granting the forbidden capability.\r\n",
+            "type": "input_text"
+          }
+        ],
+        "type": "custom_tool_call_output"
+      },
+      "timestamp": "2026-08-26T06:11:16.432Z",
+      "type": "response_item"
+    },
+    {
+      "ordinal": 16,
+      "payload": {
+        "call_id": "call_rHvd7d3LIxWRE5bxG55sr89I",
+        "id": "ctc_05dc013702ca6b6a016a8e83864fa487d19daba959581ba403",
+        "input": "const r = await tools.exec_command({cmd:\"Get-Content -LiteralPath '.agents/skills/consumer-lifecycle/references/consumer-lifecycle.md'\",\"max_output_tokens\":6000});text(r.output)\n",
+        "internal_chat_message_metadata_passthrough": {
+          "create_time": 1787724677.087575,
+          "turn_id": "01a03cb1-8658-79a0-8d24-07d6b43f717e"
+        },
+        "name": "exec",
+        "status": "completed",
+        "type": "custom_tool_call"
+      },
+      "timestamp": "2026-08-26T06:11:19.091Z",
+      "type": "response_item"
+    },
+    {
+      "ordinal": 18,
+      "payload": {
+        "call_id": "call_rHvd7d3LIxWRE5bxG55sr89I",
+        "id": "ctco_01a03cb1-d7a4-71f1-af98-f811b54e18d9",
+        "internal_chat_message_metadata_passthrough": {
+          "create_time": 1787724683.172359,
+          "turn_id": "01a03cb1-8658-79a0-8d24-07d6b43f717e"
+        },
+        "output": [
+          {
+            "text": "Script completed\nWall time 4.0 seconds\nOutput:\n",
+            "type": "input_text"
+          },
+          {
+            "text": "# Consumer lifecycle reference\r\n\r\nUse only inside an adopting/governed Consumer repository.\r\n\r\nAllowed scope: bootstrap/validate installed Agent Governance, inspect or refresh governance state, lifecycle events, sequencing/handoffs, archive readiness, coexistence, and other Consumer-governance operations already defined by the accepted Consumer runtime.\r\n\r\nDo not edit the canonical Agent Governance source repository, source checkpoint, source release policy, or source Task Contracts. If the repository role is unclear, ask whether this is an installed Consumer project or the canonical Agent Governance source product before granting Consumer mutation authority.\r\n",
+            "type": "input_text"
+          }
+        ],
+        "type": "custom_tool_call_output"
+      },
+      "timestamp": "2026-08-26T06:11:23.172Z",
+      "type": "response_item"
+    }
+  ],
+  "provider_or_network_root_cause_established": false,
+  "retry_performed": false,
+  "runner_error": "HC04--G3--r2: Codex exceeded the 300-second trial timeout",
+  "selection_performed": false,
+  "session_id": "01a03cb1-8585-79d0-987a-c904d0f38930",
+  "session_log_projection": "Only visible assistant commentary/final and tool calls/results; no base instructions, private reasoning, authentication or unrelated sessions.",
+  "session_started_at": "2026-08-26T06:11:02.283Z",
+  "source_session_log_sha256": "9fa64e2dcee0556041dddeeb150994930825e77b6977adeb55808f47ea316a33",
+  "status": "BLOCKED",
+  "structured_final_response_available": false,
+  "timeout_seconds": 300,
+  "trial_key": "HC04--G3--r2",
+  "type": "LIVE_TRIAL_TIMEOUT_UNCLASSIFIED"
+}
