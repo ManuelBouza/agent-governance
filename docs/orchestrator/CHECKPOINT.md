@@ -1,12 +1,12 @@
 # Current ChatGPT Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O173  
+Checkpoint-Sequence: O174  
 Canonical-Branch: `develop`  
-Current-Work-Unit: T023 MG1-v3 closed execution-incomplete; T043/MG1-v4 recovery is the current Orchestrator gate, then T023 full restart  
+Current-Work-Unit: T043/MG1-v4 integrated; T023 full 480-observation restart is next executable work  
 Chat-Closure: CONTINUE_CURRENT_CHAT  
-Active-Executor: none  
-Active-Executor-Surface: ChatGPT Orchestrator
+Active-Executor: Codex  
+Active-Executor-Surface: ChatGPT desktop / Codex / native Windows
 
 ## Durable frontier
 
@@ -19,14 +19,14 @@ Active-Executor-Surface: ChatGPT Orchestrator
 - V3 attempted 75 clean sessions, retained 74 complete observations, and stopped on `HC04--G3--r2` after one 300-second unclassified timeout. No retry, partial scoring, or topology selection occurred.
 - Frozen v3 corpus, topologies, presentation wording, thresholds and selection semantics remain valid and unchanged.
 - The 74 v3 complete observations are diagnostic only and must never enter a later acceptance score.
-- T043 is the Orchestrator-owned execution-recovery authority: `docs/tasks/T043-mg1-v4-uniform-execution-recovery.md`.
+- T043/MG1-v4 is integrated by PR `#233`, merge `d801c3c0bed34bad5568d7948c484f2468874584`.
 - MG1-v4 oracle identity: `MG1-T023-TOPOLOGY-ORACLE-v4`; execution epoch: `MG1-T023-EXECUTION-v4`.
 - Capability source remains `MG1-2026-08-25-v3`; presentations remain `MG1-T023-PRESENTATIONS-v3`; corpus remains `MG1-T023-CORPUS-v2`.
 - V4 requires a complete restart from zero: 40 cases x 4 candidates x 3 repetitions = 480 logical scored observations.
 - Each logical observation permits at most two attempts, each in a fresh Codex thread/disposable workspace with identical frozen inputs and a uniform 600-second timeout.
 - Failed attempts are retained but never scored. The first valid structured observation is the sole scored result. Two failed attempts for any logical observation block the full run; partial metrics/selection are forbidden.
 - Retry/failure counts are diagnostic only. Routing thresholds, context-selection semantics and D050 material-improvement percentages remain unchanged.
-- T025 remains independently dependency-eligible but is not the selected critical-path action.
+- T023 is now the next critical-path executable work. T025 remains independently dependency-eligible but is not selected.
 
 ## Process incident
 
@@ -69,32 +69,34 @@ exceptional long-horizon work     -> GPT-5.6 Sol / highest mode only when justif
 
 ```text
 Task: T043
-Status: ORCHESTRATOR-CONFORMANCE / PENDING INTEGRATION
+Status: INTEGRATED / CONTROLLING
 Task Contract: docs/tasks/T043-mg1-v4-uniform-execution-recovery.md
+Integration PR: #233
+Integration merge: d801c3c0bed34bad5568d7948c484f2468874584
 Oracle: MG1-T023-TOPOLOGY-ORACLE-v4
 Execution epoch: MG1-T023-EXECUTION-v4
 Capability source epoch: MG1-2026-08-25-v3
 Presentation revision: MG1-T023-PRESENTATIONS-v3
 Corpus: MG1-T023-CORPUS-v2
-Scored matrix after integration: 480 logical observations
+Scored matrix: 480 logical observations
 ```
 
-## T023 re-entry identity
+## T023 next executable identity
 
 ```text
 Task: T023
-Status: BLOCKED UNTIL T043/MG1-v4 INTEGRATION; THEN FULL RESTART
+Status: FULL RESTART FROM FRESH DEVELOP / V4
 Task Contract: docs/tasks/T023-unified-skill-profile-activation-evals.md
 Expected branch: test/t023-skill-activation-topology-evals
 Expected handoff: handoffs/T023-executor-handoff.json
 Previous v3 submitted HEAD: 2c412022a449b8ae78466decded515fdef71b042
 Previous v3 result: BLOCKED / execution-incomplete
-Previous v3 scored observations allowed in v4: 0
+Previous v3 observations allowed in v4 score: 0
 ```
 
 ## Next action
 
-1. Review and integrate `docs/t043-mg1-v4-execution-recovery` into `develop` through an Orchestrator PR.
+1. Integrate this O174 checkpoint branch into `develop` through PR.
 2. Refresh canonical `develop` identity.
 3. Show D055 for T023: Codex `NEW`, GPT-5.6 Sol, High.
 4. Relaunch T023 from fresh canonical `develop` using only `docs/tasks/T023-unified-skill-profile-activation-evals.md` plus D042 freshness.
