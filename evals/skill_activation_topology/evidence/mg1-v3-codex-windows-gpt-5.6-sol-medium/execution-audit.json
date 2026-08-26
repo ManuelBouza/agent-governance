@@ -1,0 +1,89 @@
+{
+  "task_id": "T023",
+  "oracle_id": "MG1-T023-TOPOLOGY-ORACLE-v3",
+  "status": "BLOCKED",
+  "base_sha": "722f8fc018a942fbe116d62e76aeda1300ceec69",
+  "human_egress_approval": {
+    "date": "2026-08-26",
+    "destination": "OpenAI/Codex service using the configured account",
+    "scope": "Frozen T023/MG1-v3 prompts and materialized candidate Skill/reference contents for the required 480 live trials.",
+    "credentials_persisted": false
+  },
+  "identities": {
+    "core_tree": "a823100bcc635b6b709419762b1e76bdea47710b",
+    "src_tree": "805b5100a3f7e3fca8a21611942fa76aee72e345",
+    "governance_skill_tree": "2b0356069bb4b5769078968b19c0505c27cec6bd",
+    "source_signal_blob": "ad8fb3634591216194a4cfded0305e53ee66ed04",
+    "executed_harness_sha256": "17de52aad08f5ad3507a45c8c81851272f7118cda4737c81bbc7a3fd6af14c88"
+  },
+  "isolation": {
+    "primary_session_count": 75,
+    "unique_workspace_count": 75,
+    "completed_session_count": 74,
+    "incomplete_session_count": 1,
+    "orphaned_t023_processes_after_shutdown": 0,
+    "inspection": "Primary Codex session metadata was filtered by this run's exact disposable-workspace prefix; parent/guardian sessions and unrelated tasks were excluded."
+  },
+  "completed_trial_trace_audit": {
+    "command_execution_events": 182,
+    "failed_command_events": 3,
+    "file_change_events": 0,
+    "provider_error_or_turn_failed_events": 0,
+    "mutation_or_external_operation_commands_observed": 0,
+    "failed_commands": [
+      {
+        "trial": "HC03--F2--r1",
+        "operation": "Get-Content AGENTS.md",
+        "exit_code": 1,
+        "classification": "Synthetic workspace has no AGENTS.md; not a provider/network error."
+      },
+      {
+        "trial": "HC03--G3--r1",
+        "operation": "Get-Content AGENTS.md",
+        "exit_code": 1,
+        "classification": "Synthetic workspace has no AGENTS.md; not a provider/network error."
+      },
+      {
+        "trial": "HS01--F2--r1",
+        "operation": "rg --files with source/checkpoint/Core patterns",
+        "exit_code": 1,
+        "classification": "No matching fixture files; not a provider/network error."
+      }
+    ]
+  },
+  "timeout_trace_audit": {
+    "trial": "HC04--G3--r2",
+    "successful_candidate_reads": 2,
+    "final_response_available": false,
+    "transport_specific_failure_available": false,
+    "root_cause": "UNKNOWN",
+    "raw_cli_timeout_output_retained": false,
+    "recovery": "Visible tool-call/result evidence recovered from the exact primary persisted Codex session; system/developer instructions and private reasoning were not exported."
+  },
+  "context_evidence": {
+    "claim_scope": "Host-specific successful candidate-file reads; UTF-8 bytes, not exact tokens or whole-session context.",
+    "selection_metric": "observed_context_bytes = unique successful candidate SKILL.md bytes + unique successful candidate reference bytes",
+    "reference_metric": "loaded_reference_bytes is host-read diagnostic evidence only",
+    "rfo_compatible_evidence": "Per-trial activated_entrypoints and loaded_reference_paths identify distinct successfully read candidate artifacts.",
+    "navigation_evidence": "Raw tool traces retain the observed Skill-to-local-reference read sequence.",
+    "limitations": "No complete-matrix context comparison, whole-host TMC/CAR, exact-token claim, or cross-host routing portability claim is made."
+  },
+  "distribution_evidence": {
+    "one_product": true,
+    "one_core": true,
+    "one_engine": true,
+    "one_capability_source_epoch": true,
+    "byte_copy_candidate_materialization": true,
+    "feasibility_scope": "Architectural/materialization evidence only; final platform-specific single-install and wrapper proof remains T024/T029."
+  },
+  "preservation": {
+    "frozen_v3_assets_changed": false,
+    "closed_v2_evidence_changed": false,
+    "committed_markdown_changed": false,
+    "core_runtime_profiles_changed": false,
+    "partial_acceptance_scores_computed": false,
+    "selection_rule_applied": false,
+    "additional_live_retries": 0
+  },
+  "required_reentry": "Orchestrator must persist disposition/recovery authority for the unclassified incomplete trial before any continuation or new experiment. No threshold, prompt, presentation, or model/effort change is proposed."
+}

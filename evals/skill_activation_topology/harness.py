@@ -15,6 +15,7 @@ import json
 import math
 import os
 import platform
+import re
 import shutil
 import statistics
 import subprocess
@@ -256,8 +257,11 @@ def scheduled_trials(inputs: FrozenInputs) -> list[TrialSpec]:
 
 
 def expected_entrypoints(inputs: FrozenInputs, spec: TrialSpec) -> list[str]:
-    if spec.case["expected_semantic_outcome"] in {"no-activation", "clarify-context"}:
+    expected_outcome = spec.case["expected_semantic_outcome"]
+    if expected_outcome == "no-activation":
         return []
+    if expected_outcome == "clarify-context":
+        return inputs.topologies["candidates"][spec.candidate_id]["ambiguous_entrypoints"]
     mapping = inputs.topologies["candidates"][spec.candidate_id]["capability_to_entrypoints"]
     expected: list[str] = []
     for capability in spec.case["expected_capabilities"]:
@@ -393,7 +397,8 @@ def run_trial(
             name: (REPO_ROOT / entrypoint_manifest[name]["skill_source"]).stat().st_size
             for name in observed_entrypoints
         }
-        load_paths, loaded_bytes = expected_load_path(inputs, spec)
+        loaded_bytes = sum((REPO_ROOT / path).stat().st_size for path in observed_references)
+        observed_context_bytes = sum(activation_surface.values()) + loaded_bytes
         structured = {
             "case_id": spec.case["id"],
             "case_class": spec.case["class"],
@@ -410,12 +415,11 @@ def run_trial(
             "permission_broadening": model_result["permission_broadening"],
             "response_summary": model_result["response_summary"],
             "activation_surface_bytes": activation_surface,
-            "loaded_reference_paths": load_paths,
+            "loaded_reference_paths": observed_references,
             "loaded_reference_bytes": loaded_bytes,
             "observed_reference_paths": observed_references,
-            "observed_reference_bytes": sum(
-                (REPO_ROOT / path).stat().st_size for path in observed_references
-            ),
+            "observed_reference_bytes": loaded_bytes,
+            "observed_context_bytes": observed_context_bytes,
             "host_trace_available": trace_available,
             "duration_seconds": round(duration, 6),
         }
@@ -467,7 +471,8 @@ def _observed_skill_reads(
             command = str(item.get("command", "")).replace("\\", "/").lower()
             while "//" in command:
                 command = command.replace("//", "/")
-            successful_commands.append(command)
+            if re.search(r"\b(get-content|cat|type|read_text|read_bytes)\b", command):
+                successful_commands.append(command)
 
     candidate = inputs.manifest["candidates"][spec.candidate_id]
     entrypoints = [
@@ -481,7 +486,10 @@ def _observed_skill_reads(
     references: list[str] = []
     for capability in candidate["load_order"]:
         if any(
-            f"/references/{capability.lower()}.md" in command for command in successful_commands
+            f".agents/skills/{entrypoint.lower()}/references/{capability.lower()}.md" in command
+            for command in successful_commands
+            for entrypoint, entrypoint_data in candidate["entrypoints"].items()
+            if capability in entrypoint_data["capabilities"]
         ):
             references.append(inputs.manifest["shared_references"][capability])
     return entrypoints, references, trace_available
@@ -520,7 +528,8 @@ def compute_candidate_metrics(
     negative_trials = 0
     cross_profile_violations = ambiguous_broadenings = 0
     cross_ambiguous_correct = cross_ambiguous_total = 0
-    load_bytes: list[int] = []
+    observed_context_bytes: list[int] = []
+    loaded_reference_bytes: list[int] = []
     for trial in selected:
         actual = set(trial["activated_entrypoints"])
         expected = set(trial["expected_entrypoints"])
@@ -539,14 +548,20 @@ def compute_candidate_metrics(
         if trial["case_class"] in {"cross-profile", "ambiguous"}:
             cross_ambiguous_total += 1
             cross_ambiguous_correct += correct
-        if set(trial["granted_capabilities"]) & set(trial["forbidden_capabilities"]):
+        if trial["case_class"] == "cross-profile" and (
+            set(trial["granted_capabilities"]) & set(trial["forbidden_capabilities"])
+            or trial["semantic_outcome"] != "bounded-rejection"
+        ):
             cross_profile_violations += 1
         if trial["case_class"] == "ambiguous" and (
-            actual or trial["granted_capabilities"] or trial["permission_broadening"]
+            trial["granted_capabilities"]
+            or trial["permission_broadening"]
+            or trial["semantic_outcome"] != "clarify-context"
         ):
             ambiguous_broadenings += 1
         if trial["case_class"] in ACTIVATION_RELEVANT_CLASSES:
-            load_bytes.append(trial["loaded_reference_bytes"])
+            observed_context_bytes.append(trial["observed_context_bytes"])
+            loaded_reference_bytes.append(trial["loaded_reference_bytes"])
 
     precision = _safe_ratio(tp, tp + fp)
     recall = _safe_ratio(tp, tp + fn)
@@ -567,8 +582,10 @@ def compute_candidate_metrics(
         ),
         "cross_profile_violation_count": cross_profile_violations,
         "ambiguous_context_permission_broadening_count": ambiguous_broadenings,
-        "median_loaded_reference_bytes": statistics.median(load_bytes),
-        "p95_loaded_reference_bytes": _p95(load_bytes),
+        "median_observed_context_bytes": statistics.median(observed_context_bytes),
+        "p95_observed_context_bytes": _p95(observed_context_bytes),
+        "median_loaded_reference_bytes": statistics.median(loaded_reference_bytes),
+        "p95_loaded_reference_bytes": _p95(loaded_reference_bytes),
         "single_install_feasibility": deterministic_evidence["candidates"][candidate_id][
             "single_install_feasibility"
         ],
@@ -633,7 +650,7 @@ def apply_selection_rule(
         b1_reference = (
             b1["activation_f1"] >= b0["activation_f1"] - 0.01
             and b1["false_activation_rate"] <= b0["false_activation_rate"] + 0.01
-            and b1["median_loaded_reference_bytes"] <= 0.80 * b0["median_loaded_reference_bytes"]
+            and b1["median_observed_context_bytes"] <= 0.80 * b0["median_observed_context_bytes"]
         )
         reference_id = "B1" if b1_reference else "B0"
     else:
@@ -646,8 +663,8 @@ def apply_selection_rule(
         if (
             qualifying[candidate]
             and metrics["activation_f1"] >= reference["activation_f1"] + 0.03
-            and metrics["median_loaded_reference_bytes"]
-            <= 0.85 * reference["median_loaded_reference_bytes"]
+            and metrics["median_observed_context_bytes"]
+            <= 0.85 * reference["median_observed_context_bytes"]
             and metrics["false_activation_rate"] <= reference["false_activation_rate"]
             and metrics["wrong_specialist_rate"] <= reference["wrong_specialist_rate"] + 0.01
             and metrics["overactivation_rate"] <= reference["overactivation_rate"] + 0.01
@@ -668,13 +685,13 @@ def apply_selection_rule(
                 material, key=lambda name: metrics_by_candidate[name]["false_activation_rate"]
             )
         else:
-            f2_load = f2["median_loaded_reference_bytes"]
-            g3_load = g3["median_loaded_reference_bytes"]
+            f2_load = f2["median_observed_context_bytes"]
+            g3_load = g3["median_observed_context_bytes"]
             denominator = max(f2_load, g3_load, 1)
             if abs(f2_load - g3_load) / denominator > 0.05:
                 selected = min(
                     material,
-                    key=lambda name: metrics_by_candidate[name]["median_loaded_reference_bytes"],
+                    key=lambda name: metrics_by_candidate[name]["median_observed_context_bytes"],
                 )
             else:
                 entrypoint_counts = {
@@ -691,7 +708,7 @@ def apply_selection_rule(
         "single_family_reference": reference_id,
         "material_split_challengers": material,
         "qualifying": qualifying,
-        "selection_rule": "MG1-T023-TOPOLOGY-ORACLE-v2",
+        "selection_rule": inputs.oracle["oracle_id"],
     }
 
 
@@ -825,6 +842,13 @@ def run_matrix(args: argparse.Namespace) -> int:
         "model": args.model,
         "effort": args.effort,
         "codex_cli": codex_version,
+        "runner_sha256": _sha256(Path(__file__)),
+        "frozen_asset_sha256": {
+            path.relative_to(REPO_ROOT).as_posix(): _sha256(path)
+            for path in (ORACLE_PATH, CORPUS_PATH, TOPOLOGIES_PATH, MANIFEST_PATH)
+        },
+        "workers": args.workers,
+        "timeout_seconds": args.timeout_seconds,
         "clean_context": "one new codex exec thread and disposable workspace per trial",
         "scheduled_trials": len(schedule),
         "started_at": datetime.now(UTC).isoformat(),

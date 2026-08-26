@@ -1,0 +1,9 @@
+{
+  "completed_trials": 74,
+  "oracle_id": "MG1-T023-TOPOLOGY-ORACLE-v3",
+  "reason": "incomplete live matrix; unclassified timeout; frozen selection rule not applied",
+  "required_trials": 480,
+  "scored": false,
+  "selected_candidate": null,
+  "status": "BLOCKED"
+}
