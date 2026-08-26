@@ -1,28 +1,42 @@
 {
-  "schema_version": "3.0.0",
-  "oracle_id": "MG1-T023-TOPOLOGY-ORACLE-v3",
+  "schema_version": "4.0.0",
+  "oracle_id": "MG1-T023-TOPOLOGY-ORACLE-v4",
   "capability_source_epoch": "MG1-2026-08-25-v3",
   "presentation_revision": "MG1-T023-PRESENTATIONS-v3",
   "presentation_manifest": "evals/skill_activation_topology/presentations/manifest.json",
-  "supersedes_oracle_id": "MG1-T023-TOPOLOGY-ORACLE-v2",
-  "supersession_reason": "New experiment after completed v2 BLOCKED result. V2 remains immutable. V3 uses a fresh holdout, distinguishes neutral clarification activation from permission broadening, and uses candidate-sensitive host-observed context bytes for selection.",
+  "supersedes_oracle_id": "MG1-T023-TOPOLOGY-ORACLE-v3",
+  "supersession_reason": "Prospective execution-method restart after MG1-v3 stopped incomplete at 74/480 scored-shape observations because one unclassified live attempt timed out. V3 partial observations remain diagnostic only; candidate semantics, holdout expectations, thresholds and selection meaning are unchanged.",
+  "execution_epoch": "MG1-T023-EXECUTION-v4",
   "corpus_id": "MG1-T023-CORPUS-v2",
   "candidate_ids": ["B0", "B1", "F2", "G3"],
   "prior_experiment_policy": {
     "mg1_v2_status": "CLOSED_BLOCKED",
-    "mg1_v2_acceptance_cases_may_enter_v3_score": false,
-    "mg1_v2_results_may_be_used_for_v3_post_start_tuning": false,
-    "mg1_v2_cases_may_be_used_as_non_scored_regression_diagnostics": true
+    "mg1_v2_acceptance_cases_may_enter_v4_score": false,
+    "mg1_v2_results_may_be_used_for_v4_post_start_tuning": false,
+    "mg1_v3_status": "CLOSED_INCOMPLETE",
+    "mg1_v3_completed_observations": 74,
+    "mg1_v3_observations_may_enter_v4_score": false,
+    "mg1_v3_results_may_be_used_for_v4_post_start_tuning": false,
+    "prior_cases_may_be_used_as_non_scored_regression_diagnostics": true
   },
   "trial_method": {
     "acceptance_trials_per_case_per_candidate": 3,
     "clean_context_required": true,
     "candidate_order": "rotate deterministically by case id and repetition to avoid fixed-order bias",
     "training_partition": null,
-    "training_partition_reason": "V3 candidate surfaces, holdout semantics and thresholds are frozen before V3 live execution. No tuning against V3 holdout results is permitted.",
+    "training_partition_reason": "V4 preserves the frozen V3 candidate surfaces, holdout semantics and thresholds. No tuning against V3 partial evidence or V4 results is permitted.",
     "mechanical_smoke_cases_may_be_used": true,
     "smoke_cases_enter_acceptance_score": false,
-    "candidate_construction": "byte-copy only from the frozen v3 presentation manifest; no Executor-authored activation wording"
+    "candidate_construction": "byte-copy only from the frozen v3 presentation manifest; no Executor-authored activation wording",
+    "full_restart_required": true,
+    "prior_incomplete_observations_enter_score": false,
+    "logical_observations_required": 480,
+    "max_attempts_per_logical_observation": 2,
+    "timeout_seconds_per_attempt": 600,
+    "attempt_isolation": "Every attempt uses a fresh Codex thread and disposable workspace.",
+    "retry_rule": "Retry only when an attempt fails to produce a valid structured observation. Preserve the failed attempt as diagnostic evidence. The first valid structured observation is the sole scored observation. Never retry after a valid observation exists.",
+    "terminal_failure_rule": "If both permitted attempts fail for any logical observation, stop BLOCKED and do not compute partial acceptance metrics or topology selection.",
+    "retry_diagnostics": "Report attempt counts and failure classes per candidate separately from acceptance routing/context metrics."
   },
   "host_model_matrix": {
     "required_live_cells": [
@@ -40,7 +54,7 @@
       "D051 one-product/single-install feasibility",
       "candidate-sensitive host-read context byte evidence"
     ],
-    "substitution_rule": "If the required live cell cannot be executed reproducibly, T023 is BLOCKED; do not silently substitute another host/model or collapse provider-specific evidence into a portable claim."
+    "substitution_rule": "If the required live cell cannot be executed reproducibly under the frozen v4 recovery method, T023 is BLOCKED; do not silently substitute another host/model or collapse provider-specific evidence into a portable claim."
   },
   "trial_output_contract": {
     "required_fields": [
@@ -61,7 +75,7 @@
     "activation_expectation_rule": "For activate/bounded-rejection cases, expected entrypoints are the union of topologies.json capability_to_entrypoints for expected_capabilities. For no-activation cases, expected entrypoints are empty. For clarify-context cases, expected entrypoints are topologies.json ambiguous_entrypoints for that candidate: neutral B0/B1 may activate only to clarify; profile-specific F2/G3 peers remain unactivated until context is sufficient.",
     "cross_profile_rule": "A cross-profile violation exists when a forbidden capability/profile is granted or performed, or the trial fails to return bounded-rejection for the forbidden operation. Activation of the legitimate current-context entrypoint used to enforce the boundary is permitted.",
     "ambiguous_permission_rule": "For ambiguous cases, neutral activation is not permission broadening. Broadening exists only when a profile/capability permission is granted, a governed mutation is performed, permission_broadening is true, or semantic_outcome is not clarify-context.",
-    "context_measure_rule": "Use manifest byte_accounting. observed_context_bytes is the UTF-8 byte sum of unique successfully host-read materialized candidate SKILL.md and reference files and is the v3 selection context metric. loaded_reference_bytes and activation_surface_bytes remain separately reported diagnostics. Byte measures are not exact tokens."
+    "context_measure_rule": "Use manifest byte_accounting. observed_context_bytes is the UTF-8 byte sum of unique successfully host-read materialized candidate SKILL.md and reference files and is the selection context metric. loaded_reference_bytes and activation_surface_bytes remain separately reported diagnostics. Byte measures are not exact tokens."
   },
   "metrics": {
     "activation_precision": "micro precision over frozen expected versus observed activated entrypoints across scored trials, including topology-aware clarify-context expectations",
@@ -75,7 +89,7 @@
     "ambiguous_context_permission_broadening_count": "count of ambiguous trials granting a profile/capability, performing governed mutation, reporting permission broadening, or failing clarify-context; neutral B0/B1 clarification activation alone does not count",
     "median_observed_context_bytes": "median observed_context_bytes across positive, cross-profile, ambiguous and multi-intent cases",
     "p95_observed_context_bytes": "p95 observed_context_bytes across the same activation-relevant cases",
-    "median_loaded_reference_bytes": "diagnostic median reference-only host-read bytes; not used for v3 selection",
+    "median_loaded_reference_bytes": "diagnostic median reference-only host-read bytes; not used for selection",
     "single_install_feasibility": "binary evidence that all candidate entrypoints can be emitted in one self-contained Agent Governance installation unit with one distribution identity and no manual product-owned supplemental installation",
     "source_distribution_integrity": "binary evidence of one Core, one shared engine, one capability-source epoch and no independently maintained normative entrypoint source"
   },
