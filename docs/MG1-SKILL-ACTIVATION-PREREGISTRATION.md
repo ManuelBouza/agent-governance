@@ -1,29 +1,32 @@
 # MG1 — Skill Activation Topology and Eval Pre-registration Gate
 
 Status: `READY_FOR_INTEGRATION`  
-Date: 2026-08-25  
+Date: 2026-08-26  
 Owner: ChatGPT Orchestrator  
 Applies to: `T023`  
 Test-Authorship-Mode: `mixed`  
-Oracle revision: `MG1-T023-TOPOLOGY-ORACLE-v3`  
+Oracle revision: `MG1-T023-TOPOLOGY-ORACLE-v4`  
+Execution epoch: `MG1-T023-EXECUTION-v4`  
 Capability-Source-Epoch: `MG1-2026-08-25-v3`  
 Presentation revision: `MG1-T023-PRESENTATIONS-v3`  
 Corpus: `MG1-T023-CORPUS-v2`
 
 ## Restart boundary
 
-MG1-v2 is closed `BLOCKED`. It executed all 360 required live trials; review: `docs/reviews/T023-R1.md`. No topology was selected. V2 evidence remains immutable and is not rescored.
+MG1-v2 is closed `BLOCKED`; no topology was selected. MG1-v3 is closed `EXECUTION-INCOMPLETE`: it attempted 75 sessions, retained 74 complete observations and stopped on one unclassified timeout. Review: `docs/reviews/T023-R2.md`.
 
-V3 is a new pre-registered experiment under `docs/tasks/T042-mg1-v3-independent-holdout-restart.md`. It uses new candidate wording, a fresh 40-case acceptance holdout and corrected selection semantics. V2 cases may be run only as non-scored diagnostics; v2 results may not be used to tune v3 after holdout execution starts.
+Neither v2 nor the 74 completed v3 observations may enter the v4 acceptance score. They remain diagnostic evidence only.
+
+V4 is a prospective execution-method restart under `docs/tasks/T043-mg1-v4-uniform-execution-recovery.md`. It does not change candidate semantics, holdout membership/expectations, thresholds or selection meaning.
 
 ## Frozen authority
 
 - Capability source: `docs/AGENT-GOVERNANCE-CAPABILITY-SOURCE.md`
 - Candidate mapping: `evals/skill_activation_topology/topologies.json`
 - Exact presentation manifest: `evals/skill_activation_topology/presentations/manifest.json`
-- V3 presentation sources: `evals/skill_activation_topology/presentations-v3/`
+- V3 presentation sources retained for v4: `evals/skill_activation_topology/presentations-v3/`
 - Acceptance holdout: `evals/skill_activation_topology/corpus.json`
-- Selection oracle: `evals/skill_activation_topology/oracle.json`
+- Selection/execution oracle: `evals/skill_activation_topology/oracle.json`
 
 Required candidates remain exactly B0, B1, F2 and G3. All are projections of one Agent Governance product, one Core, one shared engine and one capability-source epoch. Portable Skill-to-Skill invocation remains forbidden.
 
@@ -37,9 +40,9 @@ F2 exposes Consumer Governance and Source Maintainer peers. G3 exposes Consumer 
 
 All files are exact Orchestrator-owned D052 assets and may only be byte-copied by the Executor.
 
-## Fresh holdout and trial method
+## Holdout and uniform v4 execution method
 
-The v3 holdout contains 40 exact prompts spanning positive Consumer, source-maintainer, external trust, negative, near-miss, cross-profile, ambiguous and multi-intent classes. None of those exact prompt strings was executed in MG1-v2.
+The acceptance holdout contains 40 exact prompts spanning positive Consumer, source-maintainer, external trust, negative, near-miss, cross-profile, ambiguous and multi-intent classes.
 
 Required live cell:
 
@@ -48,7 +51,11 @@ Required live cell:
 - Model: GPT-5.6 Sol
 - Effort: Medium
 
-Each case executes 3 clean-context trials for each of four candidates: **480 scored trials**. Candidate order rotates deterministically. Mechanical smoke and v2 regression cases do not enter acceptance scores.
+The v4 acceptance run starts from zero and requires exactly 40 x 4 x 3 = **480 logical scored observations**. Candidate order rotates deterministically.
+
+Each logical observation permits at most two attempts. Every attempt uses a fresh Codex thread and disposable workspace, the same frozen prompt/candidate/repetition/materialization, and a uniform 600-second timeout. Failed attempts are retained as diagnostic evidence and never scored. The first valid structured result is the sole scored observation. A logical observation with two failed attempts blocks the entire acceptance run; partial metrics or topology selection are forbidden.
+
+Retry counts/failure classes are reported per candidate as diagnostics. Mechanical smoke and prior-experiment regression cases do not enter acceptance scores.
 
 ## Clarification and cross-profile semantics
 
@@ -58,7 +65,7 @@ For `bounded-rejection`, activation of the legitimate current-context capability
 
 ## Context/load accounting
 
-V3 selection uses `observed_context_bytes`: the UTF-8 byte sum of unique successfully host-read materialized candidate `SKILL.md` files plus unique successfully host-read candidate references in that trial. Only host-observed successful reads count; model self-report does not.
+Selection uses `observed_context_bytes`: the UTF-8 byte sum of unique successfully host-read materialized candidate `SKILL.md` files plus unique successfully host-read candidate references in that trial. Only host-observed successful reads count; model self-report does not.
 
 `activation_surface_bytes` and `loaded_reference_bytes` remain separately reported diagnostics. Byte measures are not exact token counts.
 
@@ -74,6 +81,6 @@ If neither B0 nor B1 qualifies, the result is `BLOCKED`; thresholds may not be w
 
 ## Ownership boundary
 
-The frozen semantic assets above are Orchestrator-owned under D052. Executor owns harness/provider mechanics, trial isolation, byte-copy materialization, observed-trace extraction, metric computation, result evidence, supplementary diagnostics and ordinary technical tests.
+The frozen semantic assets above are Orchestrator-owned under D052. Executor owns harness/provider mechanics, trial isolation/recovery plumbing, byte-copy materialization, observed-trace extraction, metric computation, result evidence, supplementary diagnostics and ordinary technical tests.
 
-If a semantic defect is suspected, stop the affected claim and report it. Do not mutate corpus membership, expected outcomes, presentation wording, thresholds or selection meaning.
+If a semantic defect is suspected, stop the affected claim and report it. Do not mutate corpus membership, expected outcomes, presentation wording, thresholds, execution-recovery meaning or selection meaning.
