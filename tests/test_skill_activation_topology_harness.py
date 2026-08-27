@@ -1,9 +1,11 @@
-"""Deterministic technical coverage for the T023 MG1-v3 harness."""
+"""Deterministic technical coverage for the T023 MG1-v4 harness."""
 
 from __future__ import annotations
 
+import hashlib
 import importlib.util
 import json
+import subprocess
 import sys
 from collections import Counter
 from itertools import product
@@ -32,8 +34,8 @@ def frozen(harness):
     return harness.load_frozen_inputs()
 
 
-def test_frozen_mg1_v3_inputs_validate_and_schedule_480_trials(harness, frozen) -> None:
-    assert frozen.oracle["oracle_id"] == "MG1-T023-TOPOLOGY-ORACLE-v3"
+def test_frozen_mg1_v4_inputs_validate_and_schedule_480_trials(harness, frozen) -> None:
+    assert frozen.oracle["oracle_id"] == "MG1-T023-TOPOLOGY-ORACLE-v4"
     assert frozen.oracle["capability_source_epoch"] == "MG1-2026-08-25-v3"
     assert frozen.oracle["presentation_revision"] == "MG1-T023-PRESENTATIONS-v3"
     assert len(harness.scheduled_trials(frozen)) == 480
@@ -343,7 +345,8 @@ def test_resume_rejects_changed_model_effort_or_frozen_identity(harness, frozen)
 
 
 def test_persisted_live_evidence_is_complete_and_recomputable(harness, frozen) -> None:
-    evidence = harness.HERE / "evidence" / "mg1-v3-codex-windows-gpt-5.6-sol-medium"
+    evidence = harness.HERE / "evidence" / "mg1-v4-codex-windows-gpt-5.6-sol-medium"
+    harness.validate_complete_evidence(frozen, evidence)
     metadata = harness._load_json(evidence / "run-metadata.json")
     assert metadata["oracle_id"] == frozen.oracle["oracle_id"]
     assert metadata["runner_sha256"] == harness._sha256(Path(harness.__file__))
@@ -479,6 +482,186 @@ def test_preserved_v3_records_have_frozen_identity_and_host_trace_integrity(
         assert len(threads) == 1
         thread_ids.update(threads)
     assert len(thread_ids) == len(workspaces) == len(trials)
-    assert metadata["runner_sha256"] == harness._sha256(Path(harness.__file__))
-    for relative, digest in metadata["frozen_asset_sha256"].items():
-        assert harness._sha256(harness.REPO_ROOT / relative) == digest
+    # V3 is diagnostic history, bound to its own immutable implementation, not v4 code/oracle.
+    for relative, digest in {
+        "evals/skill_activation_topology/harness.py": metadata["runner_sha256"],
+        **metadata["frozen_asset_sha256"],
+    }.items():
+        historical = subprocess.check_output(
+            ["git", "show", f"f1e64000eace20ff22761ac9db56a42e974b2fac:{relative}"],
+            cwd=harness.REPO_ROOT,
+        )
+        assert digest in {
+            hashlib.sha256(historical).hexdigest(),
+            hashlib.sha256(historical.replace(b"\r\n", b"\n").replace(b"\n", b"\r\n")).hexdigest(),
+        }
+
+
+@pytest.mark.parametrize("failures", [0, 1, 2])
+def test_uniform_recovery_retains_failures_and_stops_after_first_valid(
+    harness, frozen, tmp_path, monkeypatch, failures
+):
+    spec = harness.scheduled_trials(frozen)[0]
+    calls = []
+
+    def run_trial(inputs, trial, *, attempt, **kwargs):
+        calls.append(attempt)
+        raw = {"attempt": attempt, "partial_stdout": "visible timeout evidence"}
+        if attempt <= failures:
+            raise harness.AttemptFailure("TIMEOUT_UNCLASSIFIED", "timeout", raw)
+        # A semantically wrong but structurally valid observation MUST NOT be retried.
+        return {"semantic_outcome": "no-activation"}, raw
+
+    monkeypatch.setattr(harness, "run_trial", run_trial)
+    result = harness.execute_logical_observation(frozen, spec, output=tmp_path)
+    assert calls == list(range(1, min(failures + 1, 2) + 1))
+    records = [harness._load_json(path) for path in sorted((tmp_path / "attempts").glob("*.json"))]
+    assert [record["status"] for record in records] == ["FAILED"] * failures + (
+        ["VALID"] if failures < 2 else []
+    )
+    assert all(record["raw"]["partial_stdout"] == "visible timeout evidence" for record in records)
+    assert (result is None) == (failures == 2)
+    with pytest.raises(harness.HarnessError, match="overwrite attempt"):
+        harness.execute_logical_observation(frozen, spec, output=tmp_path)
+
+
+def test_timeout_retains_visible_streams_and_retry_has_fresh_workspace(
+    harness, frozen, tmp_path, monkeypatch
+):
+    spec = harness.scheduled_trials(frozen)[0]
+    workspaces = []
+
+    def run(command, **kwargs):
+        if command[0] == "git":
+            return subprocess.CompletedProcess(command, 0, "", "")
+        workspaces.append(command[command.index("--cd") + 1])
+        assert kwargs["timeout"] == 600
+        assert kwargs["input"] == harness._trial_prompt(spec.case)
+        raise subprocess.TimeoutExpired(
+            command, 600, output=b'{"type":"thread.started"}\n', stderr=b"partial error"
+        )
+
+    monkeypatch.setattr(harness.subprocess, "run", run)
+    workspace_parent = tmp_path / "workspaces"
+    workspace_parent.mkdir()
+    result = harness.execute_logical_observation(
+        frozen,
+        spec,
+        output=tmp_path,
+        codex_command="codex",
+        model="gpt-5.6-sol",
+        effort="medium",
+        timeout_seconds=600,
+        workspace_parent=workspace_parent,
+    )
+    assert result is None
+    assert len(workspaces) == len(set(workspaces)) == 2
+    for path in (tmp_path / "attempts").glob("*.json"):
+        record = harness._load_json(path)
+        assert record["failure_class"] == "TIMEOUT_UNCLASSIFIED"
+        assert record["raw"]["stdout_jsonl"] == '{"type":"thread.started"}\n'
+        assert record["raw"]["stderr"] == "partial error"
+
+
+@pytest.mark.parametrize(
+    "change",
+    [
+        {"model": "other"},
+        {"effort": "high"},
+        {"timeout_seconds": 300},
+        {"resume": True},
+        {"case": ["HC01"]},
+    ],
+)
+def test_execution_rejects_nonuniform_configuration(harness, frozen, monkeypatch, change):
+    args = harness.build_parser().parse_args(["run", "--output", "unused", "--full-acceptance"])
+    monkeypatch.setattr(harness.platform, "system", lambda: "Windows")
+    for field, value in change.items():
+        setattr(args, field, value)
+    with pytest.raises(harness.HarnessError):
+        harness.validate_execution_config(frozen, args)
+
+
+def test_terminal_exhaustion_stops_new_work_and_exports_without_scoring(
+    harness, frozen, tmp_path, monkeypatch
+):
+    args = harness.build_parser().parse_args(
+        ["run", "--output", str(tmp_path / "run"), "--full-acceptance", "--workers", "1"]
+    )
+    calls = []
+
+    def run_trial(inputs, spec, **kwargs):
+        calls.append((spec.key, kwargs["attempt"]))
+        raise harness.AttemptFailure(
+            "HOST_NONZERO_EXIT", "synthetic failure", {"trial_key": spec.key}
+        )
+
+    monkeypatch.setattr(harness, "run_trial", run_trial)
+    monkeypatch.setattr(harness, "_codex_version", lambda _: "synthetic")
+    monkeypatch.setattr(harness.platform, "system", lambda: "Windows")
+    assert harness.run_matrix(args) == 1
+    assert calls == [(harness.scheduled_trials(frozen)[0].key, attempt) for attempt in (1, 2)]
+    assert len(harness.load_trials(args.output / "failed-attempts.jsonl")) == 2
+    assert harness._load_json(args.output / "completeness.json")["completed"] == 0
+    assert not (args.output / "metrics.json").exists()
+    with pytest.raises(harness.HarnessError, match="incomplete"):
+        harness.score_matrix(args)
+    with pytest.raises(harness.HarnessError, match="overwrite existing"):
+        harness.run_matrix(args)
+
+
+@pytest.mark.parametrize(
+    "corruption",
+    [
+        "prior_epoch",
+        "duplicate_trial",
+        "retry_after_valid",
+        "changed_prompt",
+        "reused_workspace",
+        "changed_context_bytes",
+    ],
+)
+def test_scoring_gate_rejects_corrupted_live_evidence(harness, frozen, monkeypatch, corruption):
+    """Technical evidence bindings, without modifying the frozen acceptance meaning."""
+    evidence = harness.HERE / "evidence" / "mg1-v4-codex-windows-gpt-5.6-sol-medium"
+    metadata = harness._load_json(evidence / "run-metadata.json")
+    records = {
+        name: harness.load_trials(evidence / name)
+        for name in ("trials.jsonl", "raw-trials.jsonl", "attempts.jsonl")
+    }
+    if corruption == "prior_epoch":
+        metadata["execution_epoch"] = "MG1-T023-EXECUTION-v3"
+    elif corruption == "duplicate_trial":
+        records["trials.jsonl"][-1] = records["trials.jsonl"][0]
+    elif corruption == "retry_after_valid":
+        import copy
+
+        first = next(item for item in records["attempts.jsonl"] if item["status"] == "VALID")
+        extra = copy.deepcopy(first)
+        extra["attempt"] += 1
+        records["attempts.jsonl"].append(extra)
+    elif corruption == "changed_prompt":
+        records["raw-trials.jsonl"][0]["prompt"] += " altered"
+    elif corruption == "reused_workspace":
+        raw = records["raw-trials.jsonl"][1]
+        first_command = records["raw-trials.jsonl"][0]["command"]
+        raw["command"][raw["command"].index("--cd") + 1] = first_command[
+            first_command.index("--cd") + 1
+        ]
+        item = next(
+            item
+            for item in records["attempts.jsonl"]
+            if item["trial_key"] == raw["trial_key"] and item["status"] == "VALID"
+        )
+        item["raw"] = raw
+    else:
+        records["trials.jsonl"][0]["observed_context_bytes"] += 1
+    original_load = harness._load_json
+    monkeypatch.setattr(
+        harness,
+        "_load_json",
+        lambda path: metadata if path.name == "run-metadata.json" else original_load(path),
+    )
+    monkeypatch.setattr(harness, "load_trials", lambda path: records[path.name])
+    with pytest.raises(harness.HarnessError):
+        harness.validate_complete_evidence(frozen, evidence)

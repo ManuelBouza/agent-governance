@@ -2,78 +2,78 @@
   "task_id": "T023",
   "status": "BLOCKED",
   "task_contract_path": "docs/tasks/T023-unified-skill-profile-activation-evals.md",
-  "branch": "test/t023-skill-activation-topology-evals",
-  "implementation_head_sha": "f1e64000eace20ff22761ac9db56a42e974b2fac",
+  "branch": "test/t023-skill-activation-topology-evals-v4",
+  "implementation_head_sha": "144446495a7c97f61e5879f96abdf1a004a75f9b",
   "base_branch": "develop",
-  "base_sha": "722f8fc018a942fbe116d62e76aeda1300ceec69",
+  "base_sha": "78a59760fe296004cf3e785b5b9eb05fa2aed32f",
   "sdd_profile": "ASSURED",
   "test_authorship_mode": "mixed",
-  "controlling_restart": "docs/tasks/T042-mg1-v3-independent-holdout-restart.md",
+  "controlling_restart": "docs/tasks/T043-mg1-v4-uniform-execution-recovery.md",
   "files_changed": [
     "evals/skill_activation_topology/harness.py",
-    "evals/skill_activation_topology/finalize_incomplete.py",
     "tests/test_skill_activation_topology_harness.py",
-    "evals/skill_activation_topology/evidence/mg1-v3-codex-windows-gpt-5.6-sol-medium/completeness.json",
-    "evals/skill_activation_topology/evidence/mg1-v3-codex-windows-gpt-5.6-sol-medium/deterministic-evidence.json",
-    "evals/skill_activation_topology/evidence/mg1-v3-codex-windows-gpt-5.6-sol-medium/execution-audit.json",
-    "evals/skill_activation_topology/evidence/mg1-v3-codex-windows-gpt-5.6-sol-medium/failure-evidence.json",
-    "evals/skill_activation_topology/evidence/mg1-v3-codex-windows-gpt-5.6-sol-medium/raw-trials.jsonl",
-    "evals/skill_activation_topology/evidence/mg1-v3-codex-windows-gpt-5.6-sol-medium/run-metadata.json",
-    "evals/skill_activation_topology/evidence/mg1-v3-codex-windows-gpt-5.6-sol-medium/selection.json",
-    "evals/skill_activation_topology/evidence/mg1-v3-codex-windows-gpt-5.6-sol-medium/trials.jsonl",
+    "evals/skill_activation_topology/evidence/mg1-v4-codex-windows-gpt-5.6-sol-medium/attempts.jsonl",
+    "evals/skill_activation_topology/evidence/mg1-v4-codex-windows-gpt-5.6-sol-medium/completeness.json",
+    "evals/skill_activation_topology/evidence/mg1-v4-codex-windows-gpt-5.6-sol-medium/deterministic-evidence.json",
+    "evals/skill_activation_topology/evidence/mg1-v4-codex-windows-gpt-5.6-sol-medium/execution-audit.json",
+    "evals/skill_activation_topology/evidence/mg1-v4-codex-windows-gpt-5.6-sol-medium/failed-attempts.jsonl",
+    "evals/skill_activation_topology/evidence/mg1-v4-codex-windows-gpt-5.6-sol-medium/raw-trials.jsonl",
+    "evals/skill_activation_topology/evidence/mg1-v4-codex-windows-gpt-5.6-sol-medium/retry-diagnostics.json",
+    "evals/skill_activation_topology/evidence/mg1-v4-codex-windows-gpt-5.6-sol-medium/run-metadata.json",
+    "evals/skill_activation_topology/evidence/mg1-v4-codex-windows-gpt-5.6-sol-medium/selection.json",
+    "evals/skill_activation_topology/evidence/mg1-v4-codex-windows-gpt-5.6-sol-medium/trials.jsonl",
     "handoffs/T023-executor-handoff.json"
   ],
-  "implementation_summary": "Started from fetched current canonical develop 722f8fc018a942fbe116d62e76aeda1300ceec69, preserving represented prior task history and unrelated local work. Mechanically adapted the existing harness to frozen MG1-v3 clarification expectations, cross-profile/ambiguity grading, host-read reference/context bytes and selection fields. Added technical evidence-integrity coverage and an incomplete-run evidence exporter. The approved live matrix started with the exact required Codex/native-Windows/gpt-5.6-sol/Medium cell: 75 distinct clean sessions were attempted, 74 completed, and HC04--G3--r2 exceeded the runner's 300-second timeout after successful candidate reads without a structured final response. The cause cannot be attributed specifically to provider/network instability. No failed sample was replaced or retried, no additional live invocation occurred after the runner terminated, no partial acceptance metric or topology selection was computed, and no frozen semantic asset was changed. The 74 raw/structured records and a sanitized observable timeout-session projection are retained.",
+  "implementation_summary": "Started from an isolated checkout at exact fetched origin/develop 78a59760fe296004cf3e785b5b9eb05fa2aed32f without changing existing local branches/worktrees. Used a new v4 topic branch because the contract's original expected branch was already merged and frozen. Mechanically implemented the frozen T043/MG1-v4 two-attempt recovery protocol: 600-second uniform attempts, fresh Codex thread/disposable workspace per attempt, durable failed-attempt evidence, first-valid-only scoring, bounded scheduling after terminal exhaustion, and complete-epoch validation before metrics or selection. The explicitly authorized live run completed 31/480 logical observations, then the configured Codex account hit its usage limit. Four in-flight logical observations each exhausted both permitted attempts, all eight failures were preserved, new scheduling stopped immediately, and 445 observations remain missing. No partial metrics or topology selection was computed. Frozen corpus, presentations, expectations, thresholds, Core, engine, profiles, prior evidence and all committed Markdown remain unchanged.",
   "oracle": {
-    "oracle_id": "MG1-T023-TOPOLOGY-ORACLE-v3",
+    "oracle_id": "MG1-T023-TOPOLOGY-ORACLE-v4",
+    "execution_epoch": "MG1-T023-EXECUTION-v4",
     "capability_source_epoch": "MG1-2026-08-25-v3",
     "presentation_revision": "MG1-T023-PRESENTATIONS-v3",
     "corpus_id": "MG1-T023-CORPUS-v2",
     "frozen_asset_sha256": {
-      "evals/skill_activation_topology/oracle.json": "ddbc082606e31ac0d05e705abbd18668a3bf79df6ad09fc912d51f5f8e5887f5",
+      "evals/skill_activation_topology/oracle.json": "414df2e8f230abc2849f8f1e159b7aa34d08050e0b5ce7e51678aa403c602f0c",
       "evals/skill_activation_topology/corpus.json": "911ea6a3fbc7504a0e787bb534afe1812c4689e03b288bdc1482ec44093e5da7",
       "evals/skill_activation_topology/topologies.json": "2d5726799b3ca33641ac10b0a06c01cec1f5bc65b18389ac94f97ea56697a60b",
       "evals/skill_activation_topology/presentations/manifest.json": "1b5fd0bc52d23e20c25b52dcd681fd2025640811c60890e59275a281f88c1e90"
     },
     "semantic_drift": false,
-    "closed_v2_evidence_changed": false
+    "prior_v2_v3_evidence_changed": false
   },
   "verification": {
     "commands": [
       "git fetch origin --prune",
-      "git merge --ff-only origin/develop",
-      "codex --version",
-      "codex exec --help",
+      "uv sync --locked",
       "uv run --locked python evals/skill_activation_topology/harness.py validate",
-      "uv run --locked python -m pytest tests/test_skill_activation_topology_harness.py -k \"not persisted_live_evidence\"",
-      "uv run --locked python evals/skill_activation_topology/harness.py run --output evals/skill_activation_topology/evidence/mg1-v3-codex-windows-gpt-5.6-sol-medium --workers 4 --timeout-seconds 300 --full-acceptance",
-      "uv run --locked python evals/skill_activation_topology/finalize_incomplete.py --output evals/skill_activation_topology/evidence/mg1-v3-codex-windows-gpt-5.6-sol-medium --failed-key HC04--G3--r2 --session-log C:/Users/Manuel/.codex/sessions/2026/08/26/rollout-2026-08-26T08-11-02-01a03cb1-8585-79d0-987a-c904d0f38930.jsonl",
-      "uv run --locked python evals/skill_activation_topology/harness.py verify --output evals/skill_activation_topology/evidence/mg1-v3-codex-windows-gpt-5.6-sol-medium --timeout-seconds 900",
+      "uv run --locked python -m pytest tests/test_skill_activation_topology_harness.py -k 'not persisted_live_evidence_is_complete_and_recomputable'",
+      "uv run --locked python -m pytest -k 'not persisted_live_evidence_is_complete_and_recomputable'",
+      "uv run --locked python evals/skill_activation_topology/harness.py run --output evals/skill_activation_topology/evidence/mg1-v4-codex-windows-gpt-5.6-sol-medium --codex-command C:/Users/Manuel/AppData/Local/Programs/OpenAI/Codex/bin/codex.exe --model gpt-5.6-sol --effort medium --workers 4 --timeout-seconds 600 --full-acceptance",
+      "uv run --locked python evals/skill_activation_topology/harness.py score --output evals/skill_activation_topology/evidence/mg1-v4-codex-windows-gpt-5.6-sol-medium",
+      "uv run --locked python evals/skill_activation_topology/harness.py verify --output evals/skill_activation_topology/evidence/mg1-v4-codex-windows-gpt-5.6-sol-medium --timeout-seconds 900",
       "uv run --locked ruff check .",
       "uv run --locked ruff format --check .",
       "uv run --locked python -m pytest",
       "uv run --locked python -m pytest tests/test_profile_abstraction.py tests/test_source_maintainer_profile.py",
       "uv run --locked python -m pytest tests/test_source_consumer_separation.py tests/test_consumer_v1_characterization.py",
-      "git diff --cached --check",
-      "git diff --quiet 722f8fc018a942fbe116d62e76aeda1300ceec69 -- governance-core src governance-skill agent-governance-source.json",
-      "git diff --quiet 722f8fc018a942fbe116d62e76aeda1300ceec69 -- '*.md' evals/skill_activation_topology/oracle.json evals/skill_activation_topology/corpus.json evals/skill_activation_topology/topologies.json evals/skill_activation_topology/presentations evals/skill_activation_topology/presentations-v3 evals/skill_activation_topology/evidence/mg1-v2-codex-windows-gpt-5.6-sol-medium"
+      "git diff --check",
+      "git diff --quiet 78a59760fe296004cf3e785b5b9eb05fa2aed32f -- '*.md' governance-core src governance-skill agent-governance-source.json evals/skill_activation_topology/oracle.json evals/skill_activation_topology/corpus.json evals/skill_activation_topology/topologies.json evals/skill_activation_topology/presentations evals/skill_activation_topology/presentations-v3 evals/skill_activation_topology/evidence/mg1-v2-codex-windows-gpt-5.6-sol-medium evals/skill_activation_topology/evidence/mg1-v3-codex-windows-gpt-5.6-sol-medium"
     ],
     "results": {
-      "baseline": "PASS: canonical remote was fetched before authority loading; clean represented T023 worktree advanced by fast-forward from 2da17551d42b5a2fc6b37ad952ea835a1a89bcbe to exact origin/develop 722f8fc018a942fbe116d62e76aeda1300ceec69. On continuation, a fresh fetch confirmed the same canonical base and preserved both local Python edits.",
-      "frozen_input_validation": "PASS: 40 holdout cases, four candidates, three repetitions, 480 scheduled trials. The new holdout has no exact prompt in the closed 30-case v2 evidence.",
-      "live_matrix": "BLOCKED / INCOMPLETE: 75 attempted clean sessions, 74 successful structured/raw records, one unclassified 300-second timeout, 405 trials not started. There are 406 missing acceptance observations including the timeout. No retry, substitution, or partial scoring.",
-      "selection": "NOT APPLIED: selection.json is an explicitly unscored BLOCKED disposition, not a qualification comparison. No topology is selected.",
-      "partial_evidence_integrity": "PASS: 24 focused technical tests passed with the full-matrix completeness test deliberately excluded only from that focused preflight. Each preserved observation matches its frozen prompt/expected fields, exact byte-copy provenance, raw model response and successful host-read trace; unique completed threads/workspaces and byte arithmetic are checked. All 74 journals were compared to their exports before duplicate local journals were removed.",
-      "full_deterministic_suite": "FAIL: 429 passed, 1 failed in 96.46 seconds. Sole failure is test_persisted_live_evidence_is_complete_and_recomputable: expected 480 completed trials, observed 74. No skip, xfail, threshold weakening or corpus mutation was used in the full run.",
-      "profile_isolation_regression": "PASS: 48 passed in 8.09 seconds.",
-      "consumer_source_independence_regression": "PASS: 8 passed in 0.84 seconds.",
-      "ruff_check": "PASS: All checks passed.",
-      "ruff_format": "PASS: 36 files already formatted.",
-      "trace_audit": "74 completed transcripts contain 182 command events, three missing-file/no-match outcomes, zero file-change events and zero provider-error/turn-failed events. No mutation/external-operation command was observed. The timeout session shows two successful candidate reads but no final response; its cause remains UNKNOWN.",
-      "source_distribution_and_install_feasibility": "PASS as architectural/materialization evidence: all four candidates are byte-copy projections from one capability epoch under one distribution root, with unchanged Core/engine/profile sources and no portable Skill-to-Skill dependency. Final wrapper/install execution remains T024/T029.",
-      "ownership_and_history": "PASS: frozen v3 corpus/oracle/topologies/manifest/presentation Markdown, all committed Markdown, Core/runtime/profile sources, and closed v2 evidence are unchanged from the base.",
-      "diff_check": "PASS: staged whitespace validation is clean.",
-      "privacy": "No credential-like patterns were found in the exported evidence. The timeout-session export excludes base instructions, private reasoning, authentication and unrelated sessions."
+      "baseline": "PASS: canonical remote fetched; isolated base and origin/develop both 78a59760fe296004cf3e785b5b9eb05fa2aed32f; existing local work preserved.",
+      "frozen_input_validation": "PASS: oracle v4, 40 cases, B0/B1/F2/G3, three repetitions and exact 480-observation schedule validated.",
+      "recovery_harness": "PASS: 34 focused tests before launch; technical tests cover two-attempt exhaustion, timeout-stream retention, fresh workspaces, forbidden configuration changes, terminal scheduling stop and scoring-evidence integrity.",
+      "preflight_regression": "PASS: 439 passed and only the not-yet-produced live-evidence completeness test was excluded before launch.",
+      "live_matrix": "BLOCKED: 31 valid logical observations and eight failed attempts across four exhausted logical observations; remaining 445 observations were not completed. All failed attempts contain a Codex usage-limit turn failure. No result from v2/v3 entered v4.",
+      "selection": "NOT APPLIED: incomplete execution is explicitly BLOCKED; metrics.json does not exist and selection.json selects no candidate.",
+      "scoring_gate": "PASS (fail-closed): scoring rejected the incomplete/mismatched execution with exit 1 and produced no metrics.",
+      "full_deterministic_suite": "FAIL as required for incomplete evidence: 445 passed, 1 failed in 120.92 seconds. Sole failure is test_persisted_live_evidence_is_complete_and_recomputable. No skip, xfail, weakening or partial score was used.",
+      "profile_isolation_regression": "PASS: 48 passed in 7.38 seconds.",
+      "consumer_source_independence_regression": "PASS: 8 passed in 5.57 seconds.",
+      "quality_gate": "PASS: Ruff check and format check.",
+      "trace_audit": "PASS for retained evidence: 39 unique threads and 39 unique disposable workspaces; 31 valid and eight failed attempts; 170 command events, zero file-change events and zero external-operation commands. All eight failures contain usage-limit evidence.",
+      "source_distribution_and_install_feasibility": "PASS within T023 scope: all candidates remain byte-copy projections under one distribution root from one capability source/Core/engine, without portable Skill-to-Skill dependence. Final wrapper/install proof remains T024/T029.",
+      "ownership_and_history": "PASS: no committed Markdown, frozen semantic asset, Core/runtime/profile source, or v2/v3 evidence changed from the canonical base.",
+      "privacy": "PASS: no private-key, GitHub-token or OpenAI-key patterns found in exported v4 evidence."
     },
     "runtime": {
       "platform": "Native Windows 11 10.0.26200 / NTFS",
@@ -87,116 +87,110 @@
       "model": "gpt-5.6-sol",
       "effort": "medium",
       "workers": 4,
-      "timeout_seconds": 300
+      "timeout_seconds_per_attempt": 600
     },
     "network_required": true,
-    "network_detail": "Canonical Git fetch/final push and live Codex provider calls require network. The Human explicitly approved transmission of the frozen prompts and candidate Skill/reference contents to the configured OpenAI/Codex service on 2026-08-26. Deterministic tests, byte-copy/provenance checks, evidence export and technical scoring-unit tests use local/synthetic state.",
-    "evidence_root": "evals/skill_activation_topology/evidence/mg1-v3-codex-windows-gpt-5.6-sol-medium"
+    "network_detail": "Canonical Git fetch/final push and explicitly approved live Codex provider calls require network. Deterministic verification is local.",
+    "evidence_root": "evals/skill_activation_topology/evidence/mg1-v4-codex-windows-gpt-5.6-sol-medium"
   },
   "code_review": {
-    "reviewed_head_sha": "f1e64000eace20ff22761ac9db56a42e974b2fac",
-    "summary": "Reviewed the complete T023 delta against the frozen v3 oracle, T042 restart, T023 scope, D052 ownership, D051 source/install boundaries and D048 publication sequence. The executed runner hash is retained and unchanged since live launch. Mechanical grading uses topology-aware clarification entrypoints, does not count neutral clarification activation as permission broadening, counts failed bounded rejection, and uses successful candidate-file context bytes in the frozen selection formula. Supplementary tests cover these mechanisms, provenance, independent sessions, holdout disjointness and raw-to-structured integrity. No incomplete matrix was scored. The exporter is evidence-only: it validates frozen identity, preserves completed records and visible failure trace, marks missing observations explicitly, and performs no live retry. Technical review is complete for this terminal blocker state, not a claim of T023 acceptance.",
+    "reviewed_head_sha": "144446495a7c97f61e5879f96abdf1a004a75f9b",
+    "summary": "Reviewed the implementation/evidence delta against T023, T043, the v4 oracle, D048 and the D052 ownership boundary. Attempt recovery is uniform and bounded, each attempt is isolated and journaled, success is first-valid-only, terminal exhaustion stops new scheduling, and complete epoch/identity/provenance/thread/workspace/trace bindings gate scoring. The runner hash in evidence matches the reviewed implementation. No incomplete matrix was scored and no frozen semantic asset was altered. Technical review is complete for the terminal blocker state, not T023 acceptance.",
     "findings": [
-      "BLOCKER: HC04--G3--r2 produced no final response within 300 seconds. The visible trace does not establish a provider/network-specific cause, so the missing outcome cannot be distinguished or safely replaced under an invented retry policy.",
-      "ACCEPTANCE INCOMPLETE: 74/480 observations exist. The full deterministic gate remains red on its unmodified completeness requirement; no candidate qualification or selection claim is valid.",
-      "EVIDENCE LIMITATION: the inherited runner timeout path did not persist partial CLI stdout/stderr. The exact primary Codex session's visible tool-call/result projection was recovered instead; it is not represented as a complete CLI transcript or a diagnosis of the stall."
+      "BLOCKER: the configured Codex account reached its usage limit; four logical observations exhausted both frozen attempts and the v4 epoch is incomplete at 31/480.",
+      "ACCEPTANCE INCOMPLETE: the unmodified full suite is red only on persisted live-evidence completeness; no candidate qualification or selection is valid.",
+      "EXTERNAL CAPACITY: all eight failed attempts reached fresh threads/workspaces and then terminated with an explicit usage-limit event; no further attempt is authorized in this epoch."
     ],
     "resolved_findings": [
-      "Replaced v2 clarification-entrypoint and ambiguity-broadening mechanics with the exact frozen v3 semantics.",
-      "Changed reference diagnostics from expected-capability byte heuristics to observed successful reads and wired observed_context_bytes through v3 material-selection comparisons.",
-      "Restricted observed-read extraction to read operations and materialized candidate paths, with deduplication and negative technical checks.",
-      "Bound run metadata to executed harness and frozen-input hashes, model/effort, workers and timeout.",
-      "Preserved the terminal incomplete run as raw/structured evidence without weakening the completeness gate or scoring a subset."
+      "Implemented and tested the frozen 600-second/two-attempt recovery method with retained failure evidence.",
+      "Added fail-closed complete-epoch validation before metrics/selection and stopped queued scheduling after exhaustion.",
+      "Verified export parity before removing duplicate local attempt journals; canonical aggregated raw/structured/failure evidence remains tracked."
     ],
     "upstream_reentry_required": true,
     "upstream_reentry_stage": "Specify",
-    "reentry_scope": "Orchestrator disposition of the unclassified incomplete live observation and any explicitly persisted recovery/restart/retry method. No assertion is made that v3 expected outcomes or thresholds are defective."
+    "reentry_scope": "Persisted disposition of the blocked v4 epoch and any new execution epoch/capacity-readiness method before another acceptance run. No semantic oracle defect is asserted."
   },
   "requirement_trace": {
     "AC-T023-1": {
       "status": "PARTIAL",
       "evidence": [
-        "evals/skill_activation_topology/evidence/mg1-v3-codex-windows-gpt-5.6-sol-medium/deterministic-evidence.json",
-        "evals/skill_activation_topology/evidence/mg1-v3-codex-windows-gpt-5.6-sol-medium/execution-audit.json"
+        "evals/skill_activation_topology/evidence/mg1-v4-codex-windows-gpt-5.6-sol-medium/deterministic-evidence.json",
+        "evals/skill_activation_topology/evidence/mg1-v4-codex-windows-gpt-5.6-sol-medium/execution-audit.json"
       ],
-      "detail": "Core/engine/profiles unchanged; 429 tests pass, but the full gate fails on live-matrix completeness."
+      "detail": "Core/engine/profiles unchanged and focused regressions pass; full gate is red only because the live matrix is incomplete."
     },
     "AC-T023-2": {
       "status": "BLOCKED",
       "evidence": [
-        "evals/skill_activation_topology/evidence/mg1-v3-codex-windows-gpt-5.6-sol-medium/completeness.json",
-        "evals/skill_activation_topology/evidence/mg1-v3-codex-windows-gpt-5.6-sol-medium/trials.jsonl",
-        "evals/skill_activation_topology/evidence/mg1-v3-codex-windows-gpt-5.6-sol-medium/raw-trials.jsonl",
-        "evals/skill_activation_topology/evidence/mg1-v3-codex-windows-gpt-5.6-sol-medium/failure-evidence.json"
+        "evals/skill_activation_topology/evidence/mg1-v4-codex-windows-gpt-5.6-sol-medium/completeness.json",
+        "evals/skill_activation_topology/evidence/mg1-v4-codex-windows-gpt-5.6-sol-medium/trials.jsonl",
+        "evals/skill_activation_topology/evidence/mg1-v4-codex-windows-gpt-5.6-sol-medium/attempts.jsonl"
       ],
-      "detail": "Only 74 of the exact 480 required observations completed."
+      "detail": "31/480 valid logical observations; four observations exhausted both attempts."
     },
     "AC-T023-3": {
       "status": "PARTIAL",
       "evidence": [
-        "evals/skill_activation_topology/evidence/mg1-v3-codex-windows-gpt-5.6-sol-medium/run-metadata.json",
-        "evals/skill_activation_topology/evidence/mg1-v3-codex-windows-gpt-5.6-sol-medium/trials.jsonl",
-        "evals/skill_activation_topology/evidence/mg1-v3-codex-windows-gpt-5.6-sol-medium/execution-audit.json"
+        "evals/skill_activation_topology/evidence/mg1-v4-codex-windows-gpt-5.6-sol-medium/trials.jsonl",
+        "evals/skill_activation_topology/evidence/mg1-v4-codex-windows-gpt-5.6-sol-medium/retry-diagnostics.json",
+        "evals/skill_activation_topology/evidence/mg1-v4-codex-windows-gpt-5.6-sol-medium/execution-audit.json"
       ],
-      "detail": "Per-trial host-read context and routing evidence retained; full comparative metrics intentionally not computed."
+      "detail": "Retained trials contain routing and observed load-path data; incomplete comparative metrics are forbidden and absent."
     },
     "AC-T023-4": {
       "status": "PRESERVED",
       "evidence": [
-        "evals/skill_activation_topology/evidence/mg1-v3-codex-windows-gpt-5.6-sol-medium/deterministic-evidence.json",
-        "evals/skill_activation_topology/evidence/mg1-v3-codex-windows-gpt-5.6-sol-medium/run-metadata.json"
+        "evals/skill_activation_topology/evidence/mg1-v4-codex-windows-gpt-5.6-sol-medium/run-metadata.json",
+        "evals/skill_activation_topology/evidence/mg1-v4-codex-windows-gpt-5.6-sol-medium/selection.json"
       ],
-      "detail": "Frozen assets and thresholds unchanged; no post-result tuning or selection."
+      "detail": "Frozen hashes/thresholds/expected outcomes unchanged; scoring rejected the incomplete epoch."
     },
     "AC-T023-5": {
       "status": "PASS_WITH_SCOPE_LIMIT",
       "evidence": [
-        "evals/skill_activation_topology/evidence/mg1-v3-codex-windows-gpt-5.6-sol-medium/deterministic-evidence.json",
-        "evals/skill_activation_topology/evidence/mg1-v3-codex-windows-gpt-5.6-sol-medium/execution-audit.json"
+        "evals/skill_activation_topology/evidence/mg1-v4-codex-windows-gpt-5.6-sol-medium/deterministic-evidence.json"
       ],
-      "detail": "One-product/source/install feasibility preserved; final platform installation remains out of scope."
+      "detail": "One-product/source/install feasibility preserved; final platform packaging remains out of scope."
     },
     "AC-T023-6": {
       "status": "BLOCKED",
       "evidence": [
-        "evals/skill_activation_topology/evidence/mg1-v3-codex-windows-gpt-5.6-sol-medium/selection.json"
+        "evals/skill_activation_topology/evidence/mg1-v4-codex-windows-gpt-5.6-sol-medium/selection.json"
       ],
-      "detail": "Incomplete matrix; no candidate is selected or accepted."
+      "detail": "No valid topology outcome exists for an incomplete epoch."
     },
     "AC-T023-7": {
       "status": "PRESERVED_PARTIAL_EXECUTION",
       "evidence": [
-        "evals/skill_activation_topology/evidence/mg1-v3-codex-windows-gpt-5.6-sol-medium/raw-trials.jsonl",
-        "evals/skill_activation_topology/evidence/mg1-v3-codex-windows-gpt-5.6-sol-medium/failure-evidence.json",
-        "tests/test_skill_activation_topology_harness.py"
+        "evals/skill_activation_topology/evidence/mg1-v4-codex-windows-gpt-5.6-sol-medium/raw-trials.jsonl",
+        "evals/skill_activation_topology/evidence/mg1-v4-codex-windows-gpt-5.6-sol-medium/failed-attempts.jsonl",
+        "evals/skill_activation_topology/evidence/mg1-v4-codex-windows-gpt-5.6-sol-medium/execution-audit.json"
       ],
-      "detail": "Ownership and exact-input execution demonstrated for completed records; missing trials remain explicit."
+      "detail": "Frozen oracle was executed exactly; all valid/failed attempts are distinct and no semantic asset changed."
     },
-    "PRESERVED-CORE-ENGINE-PROFILES": "evals/skill_activation_topology/evidence/mg1-v3-codex-windows-gpt-5.6-sol-medium/execution-audit.json identities plus 48-test profile and 8-test source-independence PASS.",
-    "PRESERVED-D052-ORACLE": "evals/skill_activation_topology/evidence/mg1-v3-codex-windows-gpt-5.6-sol-medium/run-metadata.json frozen hashes and zero semantic-asset Git delta.",
-    "PRESERVED-CLOSED-V2": "No changes to evals/skill_activation_topology/evidence/mg1-v2-codex-windows-gpt-5.6-sol-medium; no v2 acceptance score recomputed.",
-    "PRESERVED-D051-DISTRIBUTION": "evals/skill_activation_topology/evidence/mg1-v3-codex-windows-gpt-5.6-sol-medium/deterministic-evidence.json all candidate provenance and single-install feasibility records."
+    "PRESERVED-D052-ORACLE": "evals/skill_activation_topology/evidence/mg1-v4-codex-windows-gpt-5.6-sol-medium/run-metadata.json frozen hashes plus zero protected-path Git delta.",
+    "PRESERVED-D051-DISTRIBUTION": "evals/skill_activation_topology/evidence/mg1-v4-codex-windows-gpt-5.6-sol-medium/deterministic-evidence.json candidate provenance/install-feasibility evidence.",
+    "PRESERVED-V2-V3-HISTORY": "No changes to closed v2/v3 evidence and zero prior observations in the v4 score."
   },
   "dependencies_or_config_changes": [],
-  "git_status": "Clean at implementation_head_sha; the only subsequent intended change is this handoff-only finalization commit. Duplicate generated journals and the empty workspace directory were removed only after exact export parity verification; all observations remain in tracked evidence.",
+  "git_status": "Clean at implementation_head_sha; only this handoff finalization is expected afterward.",
   "unresolved_issues": [
     {
-      "type": "LIVE_TRIAL_TIMEOUT_UNCLASSIFIED",
-      "trial_key": "HC04--G3--r2",
-      "evidence": "evals/skill_activation_topology/evidence/mg1-v3-codex-windows-gpt-5.6-sol-medium/failure-evidence.json",
-      "detail": "No structured final response; cause UNKNOWN; no retry performed."
+      "type": "EXTERNAL_USAGE_LIMIT",
+      "evidence": "evals/skill_activation_topology/evidence/mg1-v4-codex-windows-gpt-5.6-sol-medium/failed-attempts.jsonl",
+      "detail": "All eight failed attempts terminated with the configured Codex account usage limit."
     },
     {
       "type": "INCOMPLETE_ACCEPTANCE_MATRIX",
-      "evidence": "evals/skill_activation_topology/evidence/mg1-v3-codex-windows-gpt-5.6-sol-medium/completeness.json",
-      "detail": "74 completed, one incomplete timeout, 405 not started; full gate fails its 480-trial requirement."
+      "evidence": "evals/skill_activation_topology/evidence/mg1-v4-codex-windows-gpt-5.6-sol-medium/completeness.json",
+      "detail": "31 completed, four exhausted, 445 missing; no partial metrics allowed."
     },
     {
       "type": "NO_TOPOLOGY_SELECTION",
-      "evidence": "evals/skill_activation_topology/evidence/mg1-v3-codex-windows-gpt-5.6-sol-medium/selection.json",
-      "detail": "Frozen comparative selection was not applied to incomplete evidence."
+      "evidence": "evals/skill_activation_topology/evidence/mg1-v4-codex-windows-gpt-5.6-sol-medium/selection.json",
+      "detail": "No candidate selected or accepted."
     }
   ],
-  "recommended_next_task": "ChatGPT Orchestrator reviews the pushed blocker evidence and persists the disposition/recovery or restart method before relaunching T023. Preserve observed v3 evidence and the frozen semantic assets; do not infer a preferred topology, weaken thresholds, silently retry the missing observation, or advance T024 from this incomplete run.",
+  "recommended_next_task": "ChatGPT Orchestrator reviews the pushed v4 blocker evidence and persists any new execution epoch plus capacity-readiness/restart authority before relaunch. Do not reuse v4 observations in a later acceptance score or weaken the frozen semantic oracle.",
   "chatgpt_read_path": "handoffs/T023-executor-handoff.json"
 }

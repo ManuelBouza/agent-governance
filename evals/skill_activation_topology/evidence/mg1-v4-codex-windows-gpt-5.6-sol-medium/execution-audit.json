@@ -1,0 +1,89 @@
+{
+  "attempt_failure_classes": {
+    "HOST_NONZERO_EXIT": 8
+  },
+  "attempts_failed": 8,
+  "attempts_total": 39,
+  "attempts_valid": 31,
+  "command_events": 170,
+  "credential_pattern_hits": {
+    "github_token": 0,
+    "openai_key": 0,
+    "private_key": 0
+  },
+  "event_types": {
+    "error": 8,
+    "item.completed": 151,
+    "item.started": 85,
+    "thread.started": 39,
+    "turn.completed": 31,
+    "turn.failed": 8,
+    "turn.started": 39
+  },
+  "evidence_files": {
+    "attempts.jsonl": {
+      "bytes": 400085,
+      "sha256": "ce928e7d6c18965977a3aadfb4a8b8f7e5bd86678c1e57a5bf12028f5e9d449d"
+    },
+    "completeness.json": {
+      "bytes": 9714,
+      "sha256": "3156500ff92ca7ea34a2a7fc859d0b3b8dc71be59c2aa46f4b82070fcc7a7f72"
+    },
+    "deterministic-evidence.json": {
+      "bytes": 17765,
+      "sha256": "36df518ef98c64b1c409009a3311dad2c4ec408d21d56216f907f1d62241f668"
+    },
+    "failed-attempts.jsonl": {
+      "bytes": 54386,
+      "sha256": "f2eb388d22491c2fb42b91f53a787d76ed41a25e0cfe8b6273f3cae801b8ab11"
+    },
+    "raw-trials.jsonl": {
+      "bytes": 298307,
+      "sha256": "0120141023c2103b9df5d2730fe789e0c65cc68f325860ef4c7e08d0e242f28f"
+    },
+    "retry-diagnostics.json": {
+      "bytes": 448,
+      "sha256": "2afd89c1c1a4c955d2c0eb956ee783f2cd3748ffeab0a273e7e42ce92cf6b96e"
+    },
+    "run-metadata.json": {
+      "bytes": 1425,
+      "sha256": "92369fcf82fa454366aee5b5d077eeabfcbb61e3216f0fbbd86d3d75742dfb40"
+    },
+    "selection.json": {
+      "bytes": 132,
+      "sha256": "19956d1130756f0e8eb9f902ad168a47ddfca3ae5d291fa02ebdafc155aee3c0"
+    },
+    "trials.jsonl": {
+      "bytes": 39518,
+      "sha256": "752319a0a0343558e7aaf4ba7b0325568ea7acd5fb43f632e59650fa93d8e842"
+    }
+  },
+  "execution_epoch": "MG1-T023-EXECUTION-v4",
+  "exhausted_observations": [
+    "HC03--B1--r3",
+    "HC03--B0--r3",
+    "HC03--F2--r3",
+    "HC02--B1--r3"
+  ],
+  "external_operation_commands": [],
+  "file_change_events": 0,
+  "item_types": {
+    "agent_message": 66,
+    "command_execution": 170
+  },
+  "logical_observations_required": 480,
+  "logical_observations_valid": 31,
+  "oracle_id": "MG1-T023-TOPOLOGY-ORACLE-v4",
+  "partial_acceptance_metrics_computed": false,
+  "raw_structured_count_match": true,
+  "schema_version": "1.0.0",
+  "selection": {
+    "reason": "incomplete v4 execution; no acceptance metrics computed",
+    "selected_candidate": null,
+    "status": "BLOCKED"
+  },
+  "terminal_status": "BLOCKED",
+  "unique_attempt_threads": true,
+  "unique_attempt_workspaces": true,
+  "usage_limit_failures": 8
+}

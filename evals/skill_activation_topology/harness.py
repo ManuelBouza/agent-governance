@@ -21,6 +21,7 @@ import statistics
 import subprocess
 import tempfile
 import time
+from collections import Counter
 from collections.abc import Iterable
 from dataclasses import dataclass
 from datetime import UTC, datetime
@@ -92,6 +93,15 @@ observable handling as:
 
 class HarnessError(RuntimeError):
     """Fail-closed error for malformed frozen inputs or unusable live evidence."""
+
+
+class AttemptFailure(HarnessError):
+    """An unscored attempt, including its visible execution evidence."""
+
+    def __init__(self, failure_class: str, message: str, raw: dict[str, Any]):
+        super().__init__(message)
+        self.failure_class = failure_class
+        self.raw = raw
 
 
 @dataclass(frozen=True)
@@ -304,6 +314,7 @@ def run_trial(
     effort: str,
     timeout_seconds: int,
     workspace_parent: Path,
+    attempt: int = 1,
 ) -> tuple[dict[str, Any], dict[str, Any]]:
     started = time.monotonic()
     with tempfile.TemporaryDirectory(prefix=f"t023-{spec.key}-", dir=workspace_parent) as temporary:
@@ -344,6 +355,8 @@ def run_trial(
         ]
         environment = os.environ.copy()
         environment["NO_COLOR"] = "1"
+        failure_class = None
+        failure_message = None
         try:
             completed = subprocess.run(
                 command,
@@ -357,13 +370,31 @@ def run_trial(
                 env=environment,
             )
         except subprocess.TimeoutExpired as exc:
-            raise HarnessError(
-                f"{spec.key}: Codex exceeded the {timeout_seconds}-second trial timeout"
-            ) from exc
+            # TimeoutExpired carries bytes even with text=True on some Python versions.
+            def decode(value: str | bytes | None) -> str:
+                return (
+                    value.decode("utf-8", errors="replace")
+                    if isinstance(value, bytes)
+                    else value or ""
+                )
+
+            completed = subprocess.CompletedProcess(
+                command, -1, decode(exc.stdout), decode(exc.stderr)
+            )
+            failure_class = "TIMEOUT_UNCLASSIFIED"
+            failure_message = f"{spec.key}: exceeded {timeout_seconds}-second attempt timeout"
+        except OSError as exc:
+            completed = subprocess.CompletedProcess(command, -1, "", str(exc))
+            failure_class = "HOST_LAUNCH_ERROR"
+            failure_message = f"{spec.key}: cannot launch Codex: {exc}"
         duration = time.monotonic() - started
         final_raw = final_path.read_text(encoding="utf-8") if final_path.is_file() else ""
         raw_record = {
             "trial_key": spec.key,
+            "attempt": attempt,
+            "oracle_id": inputs.oracle["oracle_id"],
+            "execution_epoch": inputs.oracle["execution_epoch"],
+            "timeout_seconds": timeout_seconds,
             "command": command,
             "prompt": _trial_prompt(spec.case),
             "returncode": completed.returncode,
@@ -373,15 +404,21 @@ def run_trial(
             "duration_seconds": round(duration, 6),
             "materialization": provenance,
         }
+        if failure_class:
+            raise AttemptFailure(failure_class, failure_message, raw_record)
         if completed.returncode != 0:
-            raise HarnessError(
-                f"{spec.key}: Codex exited {completed.returncode}: {completed.stderr.strip()}"
+            raise AttemptFailure(
+                "HOST_NONZERO_EXIT", f"{spec.key}: Codex exited {completed.returncode}", raw_record
             )
         try:
             model_result = json.loads(final_raw)
-        except json.JSONDecodeError as exc:
-            raise HarnessError(f"{spec.key}: invalid structured final response: {exc}") from exc
-        _validate_model_result(inputs, spec, model_result)
+            _validate_model_result(inputs, spec, model_result)
+        except (json.JSONDecodeError, HarnessError) as exc:
+            raise AttemptFailure(
+                "INVALID_STRUCTURED_RESULT",
+                f"{spec.key}: invalid structured response: {exc}",
+                raw_record,
+            ) from exc
 
         observed_entrypoints, observed_references, trace_available = _observed_skill_reads(
             inputs, spec, completed.stdout
@@ -400,6 +437,8 @@ def run_trial(
         loaded_bytes = sum((REPO_ROOT / path).stat().st_size for path in observed_references)
         observed_context_bytes = sum(activation_surface.values()) + loaded_bytes
         structured = {
+            "attempt": attempt,
+            "execution_epoch": inputs.oracle["execution_epoch"],
             "case_id": spec.case["id"],
             "case_class": spec.case["class"],
             "candidate_id": spec.candidate_id,
@@ -432,17 +471,24 @@ def _validate_model_result(
     if not isinstance(model_result, dict) or set(model_result) != set(TRIAL_SCHEMA["required"]):
         raise HarnessError(f"{spec.key}: structured result keys do not match trial contract")
     activated = model_result["activated_entrypoints"]
-    if not isinstance(activated, list) or len(activated) != len(set(activated)):
+    if not isinstance(activated, list) or not all(isinstance(value, str) for value in activated):
+        raise HarnessError(f"{spec.key}: activated_entrypoints must contain text")
+    if len(activated) != len(set(activated)):
         raise HarnessError(f"{spec.key}: activated_entrypoints must be a unique list")
     if not all(isinstance(value, str) for value in activated):
         raise HarnessError(f"{spec.key}: activated_entrypoints must contain text")
     known_capabilities = set(inputs.manifest["shared_references"])
     granted = model_result["granted_capabilities"]
-    if not isinstance(granted, list) or len(granted) != len(set(granted)):
+    if not isinstance(granted, list) or not all(isinstance(value, str) for value in granted):
+        raise HarnessError(f"{spec.key}: granted_capabilities must contain text")
+    if len(granted) != len(set(granted)):
         raise HarnessError(f"{spec.key}: granted_capabilities must be a unique list")
     if set(granted) - known_capabilities:
         raise HarnessError(f"{spec.key}: result names an unknown capability")
-    if model_result["semantic_outcome"] not in ALLOWED_OUTCOMES:
+    if (
+        not isinstance(model_result["semantic_outcome"], str)
+        or model_result["semantic_outcome"] not in ALLOWED_OUTCOMES
+    ):
         raise HarnessError(f"{spec.key}: result names an unknown semantic outcome")
     if not isinstance(model_result["permission_broadening"], bool):
         raise HarnessError(f"{spec.key}: permission_broadening must be boolean")
@@ -809,18 +855,65 @@ def _validate_partial(
         raise HarnessError(f"{spec.key}: resumed model/effort differs from this run")
 
 
+def execute_logical_observation(
+    inputs: FrozenInputs, spec: TrialSpec, *, output: Path, **kwargs: Any
+) -> tuple[dict[str, Any], dict[str, Any]] | None:
+    """Persist each attempt; never retry a valid observation or score a failure."""
+    limit = inputs.oracle["trial_method"]["max_attempts_per_logical_observation"]
+    for attempt in range(1, limit + 1):
+        journal = output / "attempts" / f"{spec.key}--a{attempt}.json"
+        if journal.exists():
+            raise HarnessError(f"refusing to overwrite attempt journal: {journal.name}")
+        record = {
+            "trial_key": spec.key,
+            "candidate_id": spec.candidate_id,
+            "attempt": attempt,
+            "execution_epoch": inputs.oracle["execution_epoch"],
+            "status": "STARTED",
+            "started_at": datetime.now(UTC).isoformat(),
+        }
+        _json_dump(journal, record)
+        try:
+            structured, raw = run_trial(inputs, spec, attempt=attempt, **kwargs)
+        except AttemptFailure as exc:
+            record.update(
+                status="FAILED", failure_class=exc.failure_class, error=str(exc), raw=exc.raw
+            )
+        except HarnessError as exc:
+            # Setup failed before the model invocation; there is no observation to score.
+            record.update(status="FAILED", failure_class="ATTEMPT_SETUP_ERROR", error=str(exc))
+        else:
+            record.update(status="VALID", structured=structured, raw=raw)
+        record["completed_at"] = datetime.now(UTC).isoformat()
+        _json_dump(journal, record)
+        if record["status"] == "VALID":
+            return structured, raw
+        print(f"failed attempt {attempt}/{limit} {spec.key}: {record['failure_class']}", flush=True)
+    return None
+
+
+def validate_execution_config(inputs: FrozenInputs, args: argparse.Namespace) -> None:
+    method = inputs.oracle["trial_method"]
+    if args.model != "gpt-5.6-sol" or args.effort != "medium" or platform.system() != "Windows":
+        raise HarnessError("required live cell is native Windows / GPT-5.6 Sol / Medium")
+    if args.timeout_seconds != method["timeout_seconds_per_attempt"]:
+        raise HarnessError("per-attempt timeout must match the frozen oracle")
+    if args.resume:
+        raise HarnessError("v4 requires a fresh output; automatic resume is not supported")
+    if args.full_acceptance and (args.case or args.candidate or args.repetition):
+        raise HarnessError("full acceptance cannot use trial filters")
+    if len(scheduled_trials(inputs)) != method["logical_observations_required"]:
+        raise HarnessError("frozen schedule does not match required logical observations")
+
+
 def run_matrix(args: argparse.Namespace) -> int:
     inputs = load_frozen_inputs()
+    validate_execution_config(inputs, args)
     output = args.output.resolve()
-    partial_dir = output / ".partial"
     workspace_parent = output / ".workspaces"
-    if not args.resume:
-        if partial_dir.is_dir():
-            shutil.rmtree(partial_dir)
-        if workspace_parent.is_dir():
-            shutil.rmtree(workspace_parent)
-    partial_dir.mkdir(parents=True, exist_ok=True)
-    workspace_parent.mkdir(parents=True, exist_ok=True)
+    if output.exists() and any(output.iterdir()):
+        raise HarnessError("refusing to overwrite existing run evidence")
+    workspace_parent.mkdir(parents=True, exist_ok=False)
     schedule = scheduled_trials(inputs)
     if args.case:
         schedule = [spec for spec in schedule if spec.case["id"] in set(args.case)]
@@ -834,6 +927,7 @@ def run_matrix(args: argparse.Namespace) -> int:
     codex_version = _codex_version(args.codex_command)
     run_metadata = {
         "oracle_id": inputs.oracle["oracle_id"],
+        "execution_epoch": inputs.oracle["execution_epoch"],
         "corpus_id": inputs.oracle["corpus_id"],
         "presentation_revision": inputs.oracle["presentation_revision"],
         "capability_source_epoch": inputs.oracle["capability_source_epoch"],
@@ -849,78 +943,115 @@ def run_matrix(args: argparse.Namespace) -> int:
         },
         "workers": args.workers,
         "timeout_seconds": args.timeout_seconds,
-        "clean_context": "one new codex exec thread and disposable workspace per trial",
+        "max_attempts_per_logical_observation": inputs.oracle["trial_method"][
+            "max_attempts_per_logical_observation"
+        ],
+        "full_acceptance": args.full_acceptance,
+        "clean_context": "one new codex exec thread and disposable workspace per attempt",
         "scheduled_trials": len(schedule),
         "started_at": datetime.now(UTC).isoformat(),
     }
     _json_dump(output / "run-metadata.json", run_metadata)
 
-    pending: list[TrialSpec] = []
     results: dict[str, tuple[dict[str, Any], dict[str, Any]]] = {}
-    for spec in schedule:
-        partial_path = partial_dir / f"{spec.key}.json"
-        if args.resume and partial_path.is_file():
-            structured, raw = _read_partial(partial_path)
-            _validate_partial(
-                inputs,
-                spec,
-                structured,
-                raw,
-                model=args.model,
-                effort=args.effort,
-            )
-            results[spec.key] = (structured, raw)
-        else:
-            pending.append(spec)
 
-    def execute(spec: TrialSpec) -> tuple[TrialSpec, dict[str, Any], dict[str, Any]]:
-        structured, raw = run_trial(
+    def execute(spec: TrialSpec):
+        return execute_logical_observation(
             inputs,
             spec,
+            output=output,
             codex_command=args.codex_command,
             model=args.model,
             effort=args.effort,
             timeout_seconds=args.timeout_seconds,
             workspace_parent=workspace_parent,
         )
-        _json_dump(partial_dir / f"{spec.key}.json", {"structured": structured, "raw": raw})
-        return spec, structured, raw
 
-    completed_count = len(results)
-    if pending:
-        executor = concurrent.futures.ThreadPoolExecutor(max_workers=args.workers)
-        try:
-            futures = {executor.submit(execute, spec): spec for spec in pending}
-            for future in concurrent.futures.as_completed(futures):
-                spec, structured, raw = future.result()
-                results[spec.key] = (structured, raw)
-                completed_count += 1
-                print(
-                    f"completed {completed_count}/{len(schedule)} {spec.key}",
-                    flush=True,
-                )
-        except BaseException:
-            for future in futures:
-                future.cancel()
-            executor.shutdown(wait=True, cancel_futures=True)
-            raise
-        else:
-            executor.shutdown(wait=True)
+    blocked: list[str] = []
+    pending = iter(schedule)
+    # Keep only active work submitted, so terminal failure cannot drain a queued matrix.
+    with concurrent.futures.ThreadPoolExecutor(max_workers=args.workers) as executor:
+        futures = {}
+        for spec in list(schedule)[: args.workers]:
+            next(pending)
+            futures[executor.submit(execute, spec)] = spec
+        while futures:
+            done, _ = concurrent.futures.wait(
+                futures, return_when=concurrent.futures.FIRST_COMPLETED
+            )
+            for future in done:
+                spec = futures.pop(future)
+                result = future.result()
+                if result is None:
+                    blocked.append(spec.key)
+                else:
+                    results[spec.key] = result
+                    print(f"completed {len(results)}/{len(schedule)} {spec.key}", flush=True)
+            if not blocked:
+                for _ in range(args.workers - len(futures)):
+                    spec = next(pending, None)
+                    if spec is not None:
+                        futures[executor.submit(execute, spec)] = spec
 
-    structured_trials = [results[spec.key][0] for spec in schedule]
-    raw_trials = [results[spec.key][1] for spec in schedule]
+    structured_trials = [results[spec.key][0] for spec in schedule if spec.key in results]
+    raw_trials = [results[spec.key][1] for spec in schedule if spec.key in results]
     _jsonl_dump(output / "trials.jsonl", structured_trials)
     _jsonl_dump(output / "raw-trials.jsonl", raw_trials)
     run_metadata["completed_at"] = datetime.now(UTC).isoformat()
     run_metadata["completed_trials"] = len(structured_trials)
+    run_metadata["status"] = "BLOCKED" if blocked else "COMPLETE"
     _json_dump(output / "run-metadata.json", run_metadata)
-
+    attempts = [_load_json(path) for path in sorted((output / "attempts").glob("*.json"))]
+    _jsonl_dump(output / "attempts.jsonl", attempts)
+    _jsonl_dump(
+        output / "failed-attempts.jsonl", [item for item in attempts if item["status"] == "FAILED"]
+    )
+    _json_dump(
+        output / "retry-diagnostics.json",
+        {
+            candidate: {
+                "attempts": sum(item["candidate_id"] == candidate for item in attempts),
+                "retries": sum(
+                    item["candidate_id"] == candidate and item["attempt"] > 1 for item in attempts
+                ),
+                "failure_classes": dict(
+                    Counter(
+                        item["failure_class"]
+                        for item in attempts
+                        if item["candidate_id"] == candidate and item["status"] == "FAILED"
+                    )
+                ),
+            }
+            for candidate in inputs.oracle["candidate_ids"]
+        },
+    )
+    _json_dump(
+        output / "completeness.json",
+        {
+            "execution_epoch": inputs.oracle["execution_epoch"],
+            "required": inputs.oracle["trial_method"]["logical_observations_required"],
+            "completed": len(results),
+            "exhausted_observations": blocked,
+            "missing_observations": [spec.key for spec in schedule if spec.key not in results],
+            "partial_scoring_permitted": False,
+        },
+    )
     if args.full_acceptance:
         deterministic = build_deterministic_evidence(inputs)
         _json_dump(output / "deterministic-evidence.json", deterministic)
-    shutil.rmtree(partial_dir)
-    shutil.rmtree(workspace_parent)
-    return 0
+    if blocked:
+        _json_dump(
+            output / "selection.json",
+            {
+                "status": "BLOCKED",
+                "selected_candidate": None,
+                "reason": "incomplete v4 execution; no acceptance metrics computed",
+            },
+        )
+    # Each TemporaryDirectory owns its own verified disposable target. Never recursively
+    # delete a caller-supplied output directory or discard evidence from a previous run.
+    workspace_parent.rmdir()
+    return 1 if blocked else 0
 
 
 def load_trials(path: Path) -> list[dict[str, Any]]:
@@ -938,10 +1069,162 @@ def load_trials(path: Path) -> list[dict[str, Any]]:
     return trials
 
 
+def validate_complete_evidence(inputs: FrozenInputs, output: Path) -> None:
+    """Fail closed before scoring: exact matrix, epoch, attempts and raw trace binding."""
+    metadata = _load_json(output / "run-metadata.json")
+    method = inputs.oracle["trial_method"]
+    expected_count = method["logical_observations_required"]
+    if (
+        metadata.get("oracle_id") != inputs.oracle["oracle_id"]
+        or metadata.get("execution_epoch") != inputs.oracle["execution_epoch"]
+        or metadata.get("scheduled_trials") != expected_count
+        or metadata.get("completed_trials") != expected_count
+        or metadata.get("status") != "COMPLETE"
+        or metadata.get("full_acceptance") is not True
+        or metadata.get("model") != "gpt-5.6-sol"
+        or metadata.get("effort") != "medium"
+        or metadata.get("host") != "Codex"
+        or metadata.get("timeout_seconds") != method["timeout_seconds_per_attempt"]
+        or metadata.get("runner_sha256") != _sha256(Path(__file__))
+    ):
+        raise HarnessError("incomplete or mismatched execution epoch/configuration")
+    for path in (ORACLE_PATH, CORPUS_PATH, TOPOLOGIES_PATH, MANIFEST_PATH):
+        if metadata["frozen_asset_sha256"].get(path.relative_to(REPO_ROOT).as_posix()) != _sha256(
+            path
+        ):
+            raise HarnessError("run frozen input hash mismatch")
+    trials = load_trials(output / "trials.jsonl")
+    raw_trials = load_trials(output / "raw-trials.jsonl")
+    attempts = load_trials(output / "attempts.jsonl")
+    expected = {spec.key: spec for spec in scheduled_trials(inputs)}
+    trial_keys = [
+        f"{trial['case_id']}--{trial['candidate_id']}--r{trial['repetition']}" for trial in trials
+    ]
+    raw_keys = [raw["trial_key"] for raw in raw_trials]
+    if (
+        len(trials) != expected_count
+        or len(raw_trials) != expected_count
+        or set(trial_keys) != set(expected)
+        or set(raw_keys) != set(expected)
+    ):
+        raise HarnessError("exactly one scored observation per frozen logical identity is required")
+    if {item["trial_key"] for item in attempts} != set(expected):
+        raise HarnessError("attempt journal matrix mismatch")
+    raw_by_key = dict(zip(raw_keys, raw_trials, strict=True))
+    trial_by_key = dict(zip(trial_keys, trials, strict=True))
+    thread_ids: set[str] = set()
+    workspaces: set[str] = set()
+    for key, spec in expected.items():
+        history = sorted(
+            (item for item in attempts if item["trial_key"] == key),
+            key=lambda item: item["attempt"],
+        )
+        if not 1 <= len(history) <= method["max_attempts_per_logical_observation"] or [
+            item["attempt"] for item in history
+        ] != list(range(1, len(history) + 1)):
+            raise HarnessError(f"{key}: invalid attempt count/order")
+        if [item["status"] for item in history] != ["FAILED"] * (len(history) - 1) + ["VALID"]:
+            raise HarnessError(f"{key}: retry after valid observation or incomplete attempts")
+        trial, raw = trial_by_key[key], raw_by_key[key]
+        if history[-1]["structured"] != trial or history[-1]["raw"] != raw:
+            raise HarnessError(f"{key}: scored result differs from first valid attempt")
+        for item in history:
+            if item["execution_epoch"] != inputs.oracle["execution_epoch"]:
+                raise HarnessError(f"{key}: prior epoch attempt")
+            attempt_raw = item.get("raw")
+            if attempt_raw is None:
+                if item.get("failure_class") != "ATTEMPT_SETUP_ERROR":
+                    raise HarnessError(f"{key}: missing raw failure evidence")
+                continue
+            if (
+                attempt_raw.get("execution_epoch") != inputs.oracle["execution_epoch"]
+                or attempt_raw.get("oracle_id") != inputs.oracle["oracle_id"]
+                or attempt_raw.get("attempt") != item["attempt"]
+                or attempt_raw.get("timeout_seconds") != method["timeout_seconds_per_attempt"]
+            ):
+                raise HarnessError(f"{key}: attempt epoch/timeout mismatch")
+            _validate_partial(
+                inputs, spec, trial, attempt_raw, model="gpt-5.6-sol", effort="medium"
+            )
+            if attempt_raw["prompt"] != _trial_prompt(spec.case):
+                raise HarnessError(f"{key}: attempt prompt changed")
+            for record in attempt_raw["materialization"]["files"]:
+                if record["sha256"] != _sha256(REPO_ROOT / record["source"]):
+                    raise HarnessError(f"{key}: candidate bytes changed")
+            command = attempt_raw["command"]
+            workspace = command[command.index("--cd") + 1]
+            if workspace in workspaces:
+                raise HarnessError(f"{key}: workspace reused")
+            workspaces.add(workspace)
+            threads = []
+            for line in attempt_raw["stdout_jsonl"].splitlines():
+                try:
+                    event = json.loads(line)
+                except json.JSONDecodeError:
+                    continue
+                if event.get("type") == "thread.started":
+                    threads.append(event["thread_id"])
+            if (
+                len(threads) > 1
+                or (item["status"] == "VALID" and len(threads) != 1)
+                or set(threads) & thread_ids
+            ):
+                raise HarnessError(f"{key}: missing or reused fresh thread")
+            thread_ids.update(threads)
+        model_result = json.loads(raw["final_message"])
+        _validate_model_result(inputs, spec, model_result)
+        if (
+            raw["returncode"] != 0
+            or trial.get("attempt") != history[-1]["attempt"]
+            or trial.get("execution_epoch") != inputs.oracle["execution_epoch"]
+        ):
+            raise HarnessError(f"{key}: scored attempt identity/exit mismatch")
+        for field in (
+            "semantic_outcome",
+            "granted_capabilities",
+            "permission_broadening",
+            "response_summary",
+        ):
+            if trial[field] != model_result[field]:
+                raise HarnessError(f"{key}: structured result does not match raw response")
+        if (
+            trial["reported_activated_entrypoints"] != model_result["activated_entrypoints"]
+            or trial["expected_entrypoints"] != expected_entrypoints(inputs, spec)
+            or trial["expected_semantic_outcome"] != spec.case["expected_semantic_outcome"]
+            or trial["case_class"] != spec.case["class"]
+            or trial["forbidden_capabilities"] != spec.case.get("forbidden_capabilities", [])
+        ):
+            raise HarnessError(f"{key}: scored classification binding mismatch")
+        entrypoints, references, trace = _observed_skill_reads(inputs, spec, raw["stdout_jsonl"])
+        surfaces = {
+            name: (
+                REPO_ROOT
+                / inputs.manifest["candidates"][spec.candidate_id]["entrypoints"][name][
+                    "skill_source"
+                ]
+            )
+            .stat()
+            .st_size
+            for name in entrypoints
+        }
+        reference_bytes = sum((REPO_ROOT / path).stat().st_size for path in references)
+        if (
+            not trace
+            or trial["host_trace_available"] is not True
+            or trial["activated_entrypoints"] != entrypoints
+            or trial["loaded_reference_paths"] != references
+            or trial["activation_surface_bytes"] != surfaces
+            or trial["loaded_reference_bytes"] != reference_bytes
+            or trial["observed_context_bytes"] != sum(surfaces.values()) + reference_bytes
+        ):
+            raise HarnessError(f"{key}: observed host-read evidence mismatch")
+
+
 def score_matrix(args: argparse.Namespace) -> int:
     inputs = load_frozen_inputs()
     output = args.output.resolve()
     trials = load_trials(output / "trials.jsonl")
+    validate_complete_evidence(inputs, output)
     deterministic = _load_json(output / "deterministic-evidence.json")
     metrics = {
         candidate: compute_candidate_metrics(inputs, candidate, trials, deterministic)
@@ -1075,7 +1358,7 @@ def build_parser() -> argparse.ArgumentParser:
     run.add_argument("--model", default="gpt-5.6-sol")
     run.add_argument("--effort", default="medium")
     run.add_argument("--workers", type=int, default=4)
-    run.add_argument("--timeout-seconds", type=int, default=300)
+    run.add_argument("--timeout-seconds", type=int, default=600)
     run.add_argument("--case", action="append")
     run.add_argument("--candidate", action="append", choices=("B0", "B1", "F2", "G3"))
     run.add_argument("--repetition", action="append", type=int, choices=(1, 2, 3))
