@@ -1,0 +1,28 @@
+{
+  "B0": {
+    "attempts": 10,
+    "failure_classes": {
+      "HOST_NONZERO_EXIT": 2
+    },
+    "retries": 1
+  },
+  "B1": {
+    "attempts": 11,
+    "failure_classes": {
+      "HOST_NONZERO_EXIT": 4
+    },
+    "retries": 2
+  },
+  "F2": {
+    "attempts": 10,
+    "failure_classes": {
+      "HOST_NONZERO_EXIT": 2
+    },
+    "retries": 1
+  },
+  "G3": {
+    "attempts": 8,
+    "failure_classes": {},
+    "retries": 0
+  }
+}
