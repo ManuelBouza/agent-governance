@@ -1,9 +1,9 @@
 # Current ChatGPT Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O179  
+Checkpoint-Sequence: O180  
 Canonical-Branch: `develop`  
-Current-Work-Unit: T023 MG1-v6 closed BLOCKED / NO QUALIFYING SINGLE-FAMILY REFERENCE; topology work re-enters Specify before any new live experiment  
+Current-Work-Unit: T046/MG1-v7 stimulus-isolated evaluation revision ready for integration; no live v7 execution yet  
 Chat-Closure: CONTINUE_CURRENT_CHAT  
 Active-Executor: none  
 Active-Executor-Surface: ChatGPT Orchestrator
@@ -15,47 +15,67 @@ Active-Executor-Surface: ChatGPT Orchestrator
 - T023 v2: closed `BLOCKED / EXPERIMENT CLOSED`; review `docs/reviews/T023-R1.md`.
 - T023 v3: closed `BLOCKED / EXECUTION-INCOMPLETE`; review `docs/reviews/T023-R2.md`.
 - T023 v4: closed `BLOCKED / EXTERNAL CAPACITY`; review `docs/reviews/T023-R3.md`.
-- T023 v5: `SUPERSEDED_PRE_EXECUTION / METHOD EFFICIENCY REVISION`; review `docs/reviews/T023-R4.md`.
+- T023 v5: `SUPERSEDED_PRE_EXECUTION`; review `docs/reviews/T023-R4.md`.
 - T023 v6: closed `BLOCKED / NO QUALIFYING SINGLE-FAMILY REFERENCE / EXPERIMENT CLOSED`; review `docs/reviews/T023-R5.md`.
-- V6 submitted Executor branch: `test/t023-skill-activation-topology-evals-v6`.
-- V6 submitted HEAD: `6fae8c8d7b15979895cf951b87e9145368e86daf`; implementation/review anchor `074ad9d7b3c438bcd1748ebdf9cc6c0c7508aa17`; exact live-runner anchor `b752940b8fa4b9cca87faa70d75b8f95201985a0`.
-- V6 launch base: `develop@f9c7c3f7e90a7996e56d1065401a2936f3c25d42`.
-- V6 evidence integration PR: `#240`; merge `15aa0831dd10faa8736ec219f1b847c600f71167`.
-- V6 oracle/execution identity remains `MG1-T023-TOPOLOGY-ORACLE-v6` / `MG1-T023-EXECUTION-v6`; capability source `MG1-2026-08-25-v3`; presentations `MG1-T023-PRESENTATIONS-v3`; corpus `MG1-T023-CORPUS-v2`.
-- Stage R completed validly with 167 observations: 160 mandatory B0/B1 observations plus seven disagreement-triggered B0 thirds. There were zero non-capacity model failures.
-- Three explicit Codex usage-limit events were correctly recorded as non-attempt capacity pauses. The same v6 epoch resumed with 113 prior valid observations preserved and no valid observation rerun or replaced.
-- B0: precision `0.8529411765`, recall `1.0`, F1 `0.9206349206`, false activation `0.4545454545`, overactivation `0.125`, semantic accuracy `0.975`, median observed context `3107` bytes, zero cross-profile/ambiguous mandatory violations.
-- B1: precision `0.8787878788`, recall `1.0`, F1 `0.9354838710`, false activation `0.3636363636`, overactivation `0.1`, semantic accuracy `0.975`, median observed context `1956` bytes, zero cross-profile violations but two ambiguous-context permission broadenings; cross-profile+ambiguous semantic accuracy `0.875`.
-- Neither B0 nor B1 qualifies under the frozen thresholds. Therefore no single-family reference exists. The frozen rule correctly forbade Stage C and F2/G3 received zero live v6 acceptance observations.
-- No topology is selected. T023 is not accepted.
-- The dominant reference-family failure is excessive activation / insufficient discrimination, not recall loss: both candidates retained recall `1.0` while precision, false-activation and overactivation gates failed; B1 also violated the zero-tolerance ambiguous boundary.
-- Full deterministic regression passed: 444 tests. Profile isolation passed: 48. Consumer/source independence passed: 8. Source/distribution and single-install feasibility evidence remains green within T023 scope.
-- V6 is a valid experimental failure, not an execution-incomplete, external-capacity, harness or oracle-defect result.
-- V2/v3/v4/v6 observations are diagnostic only for future design work and MUST NOT enter any future acceptance score. V5 had no live acceptance observations.
+- V6 submitted HEAD `6fae8c8d7b15979895cf951b87e9145368e86daf`; evidence PR `#240`, merge `15aa0831dd10faa8736ec219f1b847c600f71167`.
+- V6 Stage R used 167 valid observations. B0/B1 both failed qualification; Stage C was correctly not executed.
+- V6 remains immutable and its observations are diagnostic only for future design; none may enter v7 scoring.
 
-## T023 terminal identity
+## V6 post-close confound analysis
+
+`docs/research/MG1-V6-CONFOUND-ANALYSIS.md` records two material measurement confounds discovered from closed v6 traces:
+
+1. model-visible evaluation prose itself repeatedly named Agent Governance/Agent Skills/activation/routing and induced candidate inspection in negative cases; `HN01--B0--r1` explicitly consulted the Skill because the turn was an activation evaluation;
+2. disposable workspaces were nested beneath the canonical `agent-governance` checkout, allowing ambiguous cases such as `HA03--B1--r1` to infer canonical source identity from host/environment context not supplied by the corpus prompt.
+
+Therefore the next Specify revision isolates the method before changing candidate presentation semantics. This refines O179's provisional expectation of immediate presentation redesign: presentation v3 remains frozen for v7 so the confounds can be tested independently.
+
+## T046 / MG1-v7 proposed authority
 
 ```text
-Task: T023
-Status: BLOCKED / EXPERIMENT CLOSED / NO TOPOLOGY SELECTED
-Task Contract: docs/tasks/T023-unified-skill-profile-activation-evals.md
-Controlling v6 revision: docs/tasks/T045-mg1-v6-efficient-paired-evaluation.md
-Review: docs/reviews/T023-R5.md
-Evidence PR: #240
-Evidence merge: 15aa0831dd10faa8736ec219f1b847c600f71167
-Selected topology: none
-Required re-entry for continuation: Specify
+Task: T046
+Status: ORCHESTRATOR-CONFORMANCE / READY_FOR_INTEGRATION
+Task Contract: docs/tasks/T046-mg1-v7-stimulus-isolated-evaluation.md
+Research: docs/research/MG1-V6-CONFOUND-ANALYSIS.md
+Oracle: MG1-T023-TOPOLOGY-ORACLE-v7
+Execution epoch: MG1-T023-EXECUTION-v7
+Capability source epoch: MG1-2026-08-25-v3
+Presentation revision: MG1-T023-PRESENTATIONS-v3 (UNCHANGED)
+Corpus: MG1-T023-CORPUS-v3 (fresh 40 prompts)
+Trial envelope: MG1-T023-TRIAL-ENVELOPE-v2
 ```
+
+V7 method changes:
+
+- exact model-visible turn = fresh corpus prompt + blank line + `Return only the required structured record.`;
+- no domain-bearing evaluator wrapper;
+- read-only/safety enforcement out of band;
+- fresh OS-temporary workspace outside and not linked to canonical source checkout;
+- controlled per-case `fixture_role` = neutral/source/consumer;
+- ambiguous/negative/near-miss cases always neutral;
+- scored activation comes from host-observable candidate `SKILL.md` body read/use; metadata discovery and model self-report alone do not count;
+- fresh 40-case holdout with unchanged semantic class counts;
+- B0/B1/F2/G3 presentation/reference bytes unchanged.
+
+Preserved from v6:
+
+- paired 2+1 case scoring;
+- Stage R B0/B1 first: 160–240 valid observations;
+- Stage C F2/G3 only if a reference exists;
+- all numeric qualification thresholds and D050 selection percentages;
+- zero-tolerance cross-profile/ambiguous safety boundaries;
+- capacity-aware pause/resume, 600-second timeout, fresh thread/workspace and two non-capacity attempts;
+- required live cell Codex / native Windows / GPT-5.6 Sol / Medium.
 
 ## Next action
 
-1. Integrate this O179 closure branch through PR and refresh canonical `develop`.
-2. Do **not** relaunch T023 under v6 and do not execute F2/G3 retroactively.
-3. Re-enter D053 at **Specify** for activation discrimination if topology work is to continue.
-4. Orchestrator should analyze the v6 negative/near-miss false-activation cases and the two B1 ambiguous permission broadenings, distinguishing presentation-trigger defects from any deeper topology limitation.
-5. Before any new live execution, persist a new candidate/presentation revision and a new prospective oracle/execution epoch. Preserve the 40-case evidence only as diagnostic design input; do not import v6 observations into the new score.
-6. Do not weaken the existing quality/safety thresholds merely to make B0/B1 qualify. Any threshold revision would require independent upstream justification rather than result-driven tuning.
-7. Do not route topology-dependent downstream packaging/release work until an activation topology is accepted.
+1. Review the full `spec/t046-mg1-v7-stimulus-isolated-eval` diff against canonical `develop@a8e289faf9fafb659087c2851b22bcbdae68caa0`.
+2. Confirm only Orchestrator Markdown plus authorized D052 corpus/oracle/envelope assets changed; confirm presentation/topology/reference bytes did not change.
+3. Integrate T046/MG1-v7 through PR.
+4. Refresh canonical `develop` and checkpoint v7 as `INTEGRATED / CONTROLLING`.
+5. Only then show D055 and relaunch T023 from fresh canonical develop.
+6. Executor mechanically implements the frozen neutral-envelope, neutral-workspace, fixture and host-observable activation method; it must not change presentation bytes or acceptance semantics.
+7. Orchestrator independently reviews v7 evidence. If no reference still exists, only then re-enter Specify for presentation/topology redesign.
 
 ## Next chat minimum load
 
@@ -63,4 +83,4 @@ Load only current `develop` identity, `AGENTS.md`, and this checkpoint; then fol
 
 ## Do not
 
-Do not rescore or mutate MG1-v6; do not execute its challenger stage after the terminal no-reference gate; do not reuse v6 observations in a future acceptance score; do not tune the corpus/presentations/thresholds post hoc and call the result v6; do not ask an Executor to redesign activation semantics without a new persisted Orchestrator specification; do not write directly to `main`/`develop`.
+Do not relaunch v6; do not import any prior observation into v7 score; do not change B0/B1/F2/G3 presentation/reference bytes in v7; do not append domain-bearing evaluator prose; do not run neutral/ambiguous/negative trials inside or beneath the canonical source checkout; do not treat metadata discovery or model self-report alone as scored activation; do not weaken thresholds/selection rules; do not write directly to `main`/`develop`.

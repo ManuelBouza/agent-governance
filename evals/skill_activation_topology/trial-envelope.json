@@ -1,0 +1,74 @@
+{
+  "schema_version": "1.0.0",
+  "envelope_id": "MG1-T023-TRIAL-ENVELOPE-v2",
+  "user_suffix": "Return only the required structured record.",
+  "stimulus_rule": "The model-visible natural-language user turn is exactly the corpus prompt, two newlines, and user_suffix. No other evaluator prose may be appended or prepended.",
+  "forbidden_added_terms_casefold": [
+    "agent governance",
+    "agent-governance",
+    "agent skill",
+    "consumer",
+    "source-maintainer",
+    "source_maintainer",
+    "external-skill-trust",
+    "consumer-lifecycle",
+    "activation evaluation",
+    "routing evaluation"
+  ],
+  "execution_boundary": {
+    "read_only_enforced_out_of_band": true,
+    "no_domain_bearing_safety_wrapper": true,
+    "output_schema_must_be_domain_neutral": true,
+    "model_self_report_is_not_activation_authority": true
+  },
+  "workspace_root_policy": {
+    "must_be_outside_canonical_repository": true,
+    "must_not_be_descendant_or_link_to_canonical_repository": true,
+    "must_not_contain_git_metadata_for_canonical_repository": true,
+    "forbidden_root_substrings_casefold": [
+      "agent-governance",
+      "agent_governance",
+      "consumer",
+      "source-maintainer",
+      "source_maintainer"
+    ]
+  },
+  "fixtures": {
+    "neutral": {
+      "files": []
+    },
+    "source": {
+      "files": [
+        {
+          "path": "agent-governance-source.json",
+          "json": {
+            "signal_schema_version": "1.0.0",
+            "product_id": "agent-governance",
+            "profile": "source-maintainer"
+          }
+        }
+      ]
+    },
+    "consumer": {
+      "directories": [
+        ".agent-governance"
+      ],
+      "files": [
+        {
+          "path": ".agent-governance/fixture.json",
+          "json": {
+            "fixture_schema_version": "1.0.0",
+            "profile": "consumer",
+            "synthetic": true
+          }
+        }
+      ]
+    }
+  },
+  "activation_observation": {
+    "scored_source": "host_trace",
+    "entrypoint_activation_rule": "Count an entrypoint as activated only when host evidence shows a successful read or host-use of that candidate SKILL.md body after discovery. Metadata/name/description discovery alone is not activation.",
+    "self_report_role": "diagnostic_only",
+    "reference_context_rule": "observed_context_bytes continues to sum unique successfully host-read candidate SKILL.md and reference files according to the frozen presentation manifest."
+  }
+}

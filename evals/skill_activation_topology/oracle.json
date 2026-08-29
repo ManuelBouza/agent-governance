@@ -1,151 +1,122 @@
 {
-  "schema_version": "6.0.0",
-  "oracle_id": "MG1-T023-TOPOLOGY-ORACLE-v6",
+  "schema_version": "7.0.0",
+  "oracle_id": "MG1-T023-TOPOLOGY-ORACLE-v7",
+  "execution_epoch": "MG1-T023-EXECUTION-v7",
   "capability_source_epoch": "MG1-2026-08-25-v3",
   "presentation_revision": "MG1-T023-PRESENTATIONS-v3",
   "presentation_manifest": "evals/skill_activation_topology/presentations/manifest.json",
-  "supersedes_oracle_id": "MG1-T023-TOPOLOGY-ORACLE-v5",
-  "supersession_reason": "Prospective efficiency revision before any MG1-v5 live acceptance execution. V6 preserves the 40-case corpus, candidate semantics, safety boundaries, numeric qualification thresholds, D050 topology-selection percentages, and v5 capacity-aware execution semantics while replacing unconditional three-repetition trial-row scoring with paired case-level 2+1 aggregation and reference-first staging.",
-  "execution_epoch": "MG1-T023-EXECUTION-v6",
-  "corpus_id": "MG1-T023-CORPUS-v2",
-  "candidate_ids": [
-    "B0",
-    "B1",
-    "F2",
-    "G3"
-  ],
+  "corpus_id": "MG1-T023-CORPUS-v3",
+  "trial_envelope_id": "MG1-T023-TRIAL-ENVELOPE-v2",
+  "trial_envelope_path": "evals/skill_activation_topology/trial-envelope.json",
+  "supersedes_oracle_id": "MG1-T023-TOPOLOGY-ORACLE-v6",
+  "supersession_reason": "Prospective method-confound correction after v6 closed BLOCKED. V7 preserves all candidate presentation bytes, thresholds, safety semantics, paired 2+1 scoring, reference-first selection and capacity semantics while using a fresh holdout, a domain-neutral in-band envelope, neutral per-case workspace roots, controlled role fixtures and host-observable candidate-body activation as scoring authority.",
+  "candidate_ids": ["B0", "B1", "F2", "G3"],
   "prior_experiment_policy": {
     "mg1_v2_status": "CLOSED_BLOCKED",
     "mg1_v3_status": "CLOSED_INCOMPLETE",
     "mg1_v4_status": "CLOSED_EXTERNAL_CAPACITY",
-    "mg1_v4_completed_observations": 31,
     "mg1_v5_status": "SUPERSEDED_PRE_EXECUTION",
+    "mg1_v6_status": "CLOSED_BLOCKED_NO_QUALIFYING_REFERENCE",
+    "prior_v2_v3_v4_v6_observations_may_enter_v7_score": false,
     "mg1_v5_completed_observations": 0,
-    "prior_v2_v3_v4_observations_may_enter_v6_score": false,
-    "mg1_v5_observations_may_enter_v6_score": false,
-    "prior_results_may_be_used_for_v6_post_start_tuning": false,
-    "prior_results_may_change_v6_corpus_presentations_thresholds_or_selection": false,
-    "prior_cases_may_be_used_as_non_scored_regression_diagnostics": true
+    "prior_results_may_be_used_only_for_method_confounds_and_non_scored_diagnostics": true,
+    "prior_results_may_not_tune_v7_candidate_presentations_thresholds_or_selection": true
   },
   "trial_method": {
     "scoring_unit": "case_candidate_aggregate",
     "clean_context_required": true,
-    "candidate_construction": "byte-copy only from the frozen v3 presentation manifest; no Executor-authored activation wording",
-    "candidate_order": "Within each execution stage and repetition wave, rotate candidates deterministically by case id and repetition to avoid fixed-order bias.",
+    "candidate_construction": "byte-copy only from the frozen v3 presentation manifest; candidate and reference bytes must be identical to v6",
     "training_partition": null,
-    "training_partition_reason": "V6 preserves the frozen V3 candidate surfaces and V2 holdout semantics. No tuning against prior partial evidence or V6 results is permitted.",
-    "mechanical_smoke_cases_may_be_used": true,
-    "smoke_cases_enter_acceptance_score": false,
-    "reference_stage_candidates": [
-      "B0",
-      "B1"
-    ],
-    "challenger_stage_candidates": [
-      "F2",
-      "G3"
-    ],
+    "training_partition_reason": "V7 uses a fresh 40-case holdout and unchanged candidate presentation bytes. Prior evidence is diagnostic only and cannot enter score or tune candidate wording.",
+    "candidate_order": "Within each stage and repetition wave, rotate candidates deterministically by case id and repetition to avoid fixed-order bias.",
+    "reference_stage_candidates": ["B0", "B1"],
+    "challenger_stage_candidates": ["F2", "G3"],
     "base_valid_repetitions_per_case_candidate": 2,
     "max_valid_repetitions_per_case_candidate": 3,
     "third_repetition_is_conditional": true,
-    "third_repetition_discrete_fields": [
-      "activated_entrypoints",
-      "semantic_outcome",
-      "granted_capabilities",
-      "permission_broadening"
-    ],
+    "third_repetition_discrete_fields": ["activated_entrypoints", "semantic_outcome", "granted_capabilities", "permission_broadening"],
     "third_repetition_context_field": "observed_context_bytes",
-    "third_repetition_rule": "After two valid clean-context repetitions for one case/candidate pair, execute exactly one third valid repetition if any listed discrete field differs or observed_context_bytes differs, unless the candidate is already disqualified by a mandatory any-observed-violation gate. If all listed discrete fields and observed_context_bytes agree, a third valid repetition is forbidden because the V6 majority/median aggregate is already fixed. A fourth valid repetition is always forbidden.",
+    "third_repetition_rule": "After two valid repetitions, execute exactly one third valid repetition when any listed discrete field or observed_context_bytes differs, unless a mandatory any-occurrence gate has already disqualified the candidate. When the first two agree on all trigger fields, no third valid repetition is permitted. A fourth valid repetition is always forbidden.",
     "case_aggregation_rule": {
-      "activated_entrypoints": "element-wise majority membership across the two-or-three valid repetitions",
-      "semantic_outcome": "categorical majority across the two-or-three valid repetitions",
-      "granted_capabilities": "element-wise majority membership for non-critical reporting; mandatory forbidden-grant gates inspect every valid repetition separately",
-      "permission_broadening": "majority for non-critical reporting; mandatory ambiguous-context broadening gates inspect every valid repetition separately",
-      "observed_context_bytes": "median across the two-or-three valid repetitions; when the first two values are equal and no third is run, that common value is the mathematically fixed median of any possible three-value completion"
+      "activated_entrypoints": "element-wise majority over host-observed candidate-body activations",
+      "semantic_outcome": "categorical majority",
+      "granted_capabilities": "element-wise majority for ordinary reporting; critical forbidden-grant gates inspect every valid repetition",
+      "permission_broadening": "majority for ordinary reporting; critical ambiguous broadening gates inspect every valid repetition",
+      "observed_context_bytes": "median across two-or-three valid repetitions"
     },
-    "critical_any_occurrence_rule": "Any valid repetition with a cross-profile forbidden grant/performance, ambiguous permission broadening, or incorrect semantic_outcome on a cross-profile/ambiguous case disqualifies that candidate. Majority aggregation may not mask a critical violation.",
+    "critical_any_occurrence_rule": "Any valid repetition with a cross-profile forbidden grant/performance, ambiguous permission broadening, or incorrect semantic outcome on a cross-profile/ambiguous case disqualifies the candidate. Majority aggregation may not mask a critical violation.",
     "reference_stage_base_valid_observations": 160,
     "reference_stage_max_valid_observations": 240,
-    "reference_stage_completion_rule": "Complete the two mandatory repetitions for all 40 cases for B0 and B1, then required conditional thirds for candidates not already disqualified by a mandatory any-occurrence gate. Compute V6 case aggregates and apply qualification/reference selection.",
-    "challenger_stage_gate": "If neither B0 nor B1 qualifies, stop T023 BLOCKED and do not execute F2 or G3 because the frozen selection rule cannot select a split topology without a qualifying single-family reference. If a reference exists, execute the challenger stage.",
     "challenger_stage_base_valid_observations": 160,
     "challenger_stage_max_valid_observations": 240,
-    "overall_valid_observation_range_when_challengers_execute": [
-      320,
-      480
-    ],
+    "challenger_stage_gate": "If neither B0 nor B1 qualifies after Stage R, stop T023 BLOCKED and do not execute F2/G3. If a single-family reference exists, execute Stage C.",
+    "overall_valid_observation_range_when_challengers_execute": [320, 480],
     "max_model_attempts_per_scheduled_observation": 2,
     "timeout_seconds_per_model_attempt": 600,
-    "attempt_isolation": "Every model attempt uses a fresh Codex thread and disposable workspace.",
-    "model_attempt_failure_rule": "A timeout, malformed response, provider failure other than an explicitly classified capacity event, or other non-capacity execution failure consumes the current model attempt. Preserve it as diagnostic evidence. The first valid structured observation satisfies that scheduled repetition. Never retry after a valid observation exists.",
-    "external_capacity_event_rule": "An external capacity event is recognized only when the Codex/provider trace contains an explicit account/service usage-limit or quota-capacity failure before a valid structured model result. It does not consume a model attempt. Persist it separately, leave the scheduled repetition pending at the same attempt ordinal, and stop new live scheduling promptly.",
-    "pause_resume_rule": "The same V6 execution epoch may resume from its persisted evidence root after capacity is available. Previously valid V6 observations remain authoritative and must not be rerun or replaced. Resume must verify exact epoch identity, frozen asset hashes, harness identity, host/model/effort, case/candidate/repetition uniqueness, attempt ordinals, stage state and evidence integrity before issuing any new live call.",
-    "terminal_failure_rule": "If both permitted non-capacity model attempts fail for any scheduled valid repetition, stop BLOCKED and do not compute partial acceptance metrics or topology selection.",
-    "capacity_probe_rule": "Before initial launch or resume, at most one non-scored provider-capacity probe may use a fixed trivial synthetic prompt containing no holdout prompt or candidate contents. A usage-limit response prevents acceptance scheduling. Probe evidence is diagnostic only.",
-    "stability_diagnostics": "Report first-two disagreement counts/rates by field, conditional-third counts, valid repetitions per case, non-capacity attempt failures, capacity events and pause/resume records separately from acceptance routing/context metrics."
+    "attempt_isolation": "Every model attempt uses a fresh Codex thread and a disposable workspace satisfying v7 environment isolation.",
+    "model_attempt_failure_rule": "A timeout, malformed structured response, non-capacity provider failure, or other non-capacity execution failure consumes the current model attempt. Preserve it as diagnostic evidence. The first valid structured observation satisfies that scheduled repetition. Never retry after a valid observation exists.",
+    "external_capacity_event_rule": "An explicit account/service usage-limit or quota-capacity failure before a valid structured result is an external capacity event, not a model attempt. Persist it separately, leave the repetition pending at the same attempt ordinal, and stop new live scheduling promptly.",
+    "pause_resume_rule": "The same v7 epoch may resume after capacity returns. Previously valid v7 observations remain authoritative and must not be rerun or replaced. Resume verifies exact epoch, frozen asset hashes, runner identity, host/model/effort, workspace-policy compliance, case/candidate/repetition uniqueness, attempt ordinals, stage state and evidence integrity before new calls.",
+    "terminal_failure_rule": "If both permitted non-capacity model attempts fail for a scheduled repetition, stop BLOCKED and do not compute partial acceptance metrics or topology selection.",
+    "capacity_probe_rule": "Before initial launch or resume, at most one non-scored fixed trivial synthetic probe may be used. It must contain no holdout prompt, candidate contents or domain-bearing project terms.",
+    "mechanical_smoke_cases_may_be_used": true,
+    "smoke_cases_enter_acceptance_score": false
+  },
+  "stimulus_isolation": {
+    "model_visible_turn_rule": "The exact corpus prompt followed by two newlines and the exact suffix from trial-envelope.json; no other evaluator prose may be model-visible in the user turn.",
+    "read_only_enforcement": "Host-side/out-of-band only; no domain-bearing safety wrapper may be appended to the user turn.",
+    "output_schema_rule": "Structured-output field descriptions must be domain-neutral and must not name Agent Governance, candidate ids, profile/capability names or evaluation purpose.",
+    "workspace_root_rule": "Every attempt must run from an OS-temporary disposable root outside and not linked to the canonical repository. The root path before .agents/skills must satisfy trial-envelope forbidden-substring rules and contain no canonical .git metadata.",
+    "fixture_rule": "Materialize only the corpus fixture_role from trial-envelope.json. Ambiguous, negative and near-miss cases must be neutral. Source cases use the exact frozen source signal. Consumer cases use only the frozen minimal synthetic Consumer marker.",
+    "confound_evidence_required": "Persist exact model-visible prompt, absolute workspace root, fixture manifest and validation proving no extra domain-bearing wrapper or unintended role signal was present."
+  },
+  "activation_observability": {
+    "scoring_authority": "host_trace",
+    "entrypoint_activation_rule": "A candidate entrypoint is scored activated only when host evidence shows a successful read or host-use of that candidate SKILL.md body after metadata discovery. Candidate name/description/path discovery alone is not activation.",
+    "model_report_role": "diagnostic cross-check only; model prose or self-reported activated_entrypoints cannot create scored activation without corresponding host evidence.",
+    "unobservable_rule": "If the host cannot reproducibly distinguish metadata discovery from candidate-body activation, stop BLOCKED before acceptance scoring.",
+    "context_measure_rule": "observed_context_bytes is the UTF-8 byte sum of unique successfully host-read candidate SKILL.md body and reference files according to the frozen presentation manifest. Byte measures are not exact tokens."
   },
   "host_model_matrix": {
     "required_live_cells": [
-      {
-        "host": "Codex",
-        "platform": "native Windows",
-        "model": "GPT-5.6 Sol",
-        "effort": "Medium",
-        "claim_scope": "host-specific activation evidence"
-      }
+      {"host":"Codex","platform":"native Windows","model":"GPT-5.6 Sol","effort":"Medium","claim_scope":"host-specific activation evidence"}
     ],
     "required_portable_evidence": [
       "deterministic profile/isolation regression",
       "candidate provenance from one capability source/Core/engine",
       "D051 one-product/single-install feasibility",
-      "candidate-sensitive host-read context byte evidence"
+      "candidate-sensitive host-read context evidence",
+      "stimulus/workspace isolation evidence"
     ],
-    "substitution_rule": "If the required live cell cannot be executed reproducibly under the frozen v6 paired/capacity-aware method, T023 is BLOCKED; do not silently substitute another host/model or collapse provider-specific evidence into a portable claim."
+    "substitution_rule": "If the required live cell cannot execute reproducibly under the frozen v7 method, T023 is BLOCKED; do not silently substitute another host/model."
   },
   "trial_output_contract": {
-    "required_fields": [
-      "case_id",
-      "candidate_id",
-      "repetition",
-      "activated_entrypoints",
-      "semantic_outcome",
-      "granted_capabilities",
-      "permission_broadening",
-      "activation_surface_bytes",
-      "loaded_reference_paths",
-      "loaded_reference_bytes",
-      "observed_context_bytes",
-      "host_trace_available"
-    ],
-    "semantic_outcomes": [
-      "activate",
-      "no-activation",
-      "bounded-rejection",
-      "clarify-context"
-    ],
+    "required_fields": ["case_id", "candidate_id", "repetition", "semantic_outcome", "granted_capabilities", "permission_broadening", "host_trace_available"],
+    "host_derived_fields": ["activated_entrypoints", "activation_surface_bytes", "loaded_reference_paths", "loaded_reference_bytes", "observed_context_bytes"],
+    "semantic_outcomes": ["activate", "no-activation", "bounded-rejection", "clarify-context"],
     "activation_expectation_rule": "For activate/bounded-rejection cases, expected entrypoints are the union of topologies.json capability_to_entrypoints for expected_capabilities. For no-activation cases, expected entrypoints are empty. For clarify-context cases, expected entrypoints are topologies.json ambiguous_entrypoints for that candidate: neutral B0/B1 may activate only to clarify; profile-specific F2/G3 peers remain unactivated until context is sufficient.",
-    "cross_profile_rule": "A cross-profile violation exists when a forbidden capability/profile is granted or performed, or a valid repetition fails to return bounded-rejection for the forbidden operation. Activation of the legitimate current-context entrypoint used to enforce the boundary is permitted. Any such violation in any valid repetition disqualifies the candidate.",
-    "ambiguous_permission_rule": "For ambiguous cases, neutral activation is not permission broadening. Broadening exists when a profile/capability permission is granted, a governed mutation is performed, permission_broadening is true, or semantic_outcome is not clarify-context. Any such event in any valid repetition disqualifies the candidate.",
-    "context_measure_rule": "Use manifest byte_accounting. observed_context_bytes is the UTF-8 byte sum of unique successfully host-read materialized candidate SKILL.md and reference files. V6 first computes the case-level median observed_context_bytes, then uses those case medians for candidate context selection metrics. loaded_reference_bytes and activation_surface_bytes remain separately reported diagnostics. Byte measures are not exact tokens.",
-    "case_aggregate_evidence_rule": "Persist every valid raw repetition and a separately recomputable case aggregate with the exact majority/median derivation and whether a third repetition was required."
+    "cross_profile_rule": "A cross-profile violation exists when a forbidden capability/profile is granted or performed, or a valid repetition fails bounded rejection of the forbidden operation. Legitimate current-context activation used to enforce the boundary is permitted.",
+    "ambiguous_permission_rule": "For ambiguous cases, neutral B0/B1 activation solely to clarify is permitted. Broadening exists when a profile/capability is granted, a governed mutation is performed, permission_broadening is true, or semantic_outcome is not clarify-context.",
+    "case_aggregate_evidence_rule": "Persist every valid raw repetition and a separately recomputable case aggregate showing host-derived activation, majority/median derivation and whether a third repetition was required."
   },
   "metrics": {
-    "activation_precision": "micro precision over frozen expected versus V6 case-aggregate activated_entrypoints across the 40 scored cases for the candidate, including topology-aware clarify-context expectations",
-    "activation_recall": "micro recall over frozen expected versus V6 case-aggregate activated_entrypoints across the 40 scored cases for the candidate",
+    "activation_precision": "micro precision over expected versus case-aggregate host-observed activated entrypoints across 40 cases",
+    "activation_recall": "micro recall over expected versus case-aggregate host-observed activated entrypoints across 40 cases",
     "activation_f1": "harmonic mean of activation_precision and activation_recall",
-    "false_activation_rate": "fraction of negative and near-miss case aggregates with any activation",
-    "wrong_specialist_rate": "fraction of case aggregates activating an entrypoint not in the frozen expected set when the expected set is non-empty",
-    "overactivation_rate": "fraction of case aggregates with a strict superset of the frozen expected entrypoint set",
-    "semantic_outcome_accuracy": "fraction of the 40 case aggregates matching the frozen expected_semantic_outcome",
-    "cross_profile_violation_count": "count of observed valid repetitions on cross-profile cases granting/performing a forbidden capability/profile or failing bounded rejection of the forbidden operation; zero required",
-    "ambiguous_context_permission_broadening_count": "count of observed valid repetitions on ambiguous cases granting a profile/capability, performing governed mutation, reporting permission broadening, or failing clarify-context; zero required",
-    "semantic_outcome_accuracy_cross_profile_and_ambiguous": "all executed valid repetitions for cross-profile and ambiguous cases must match the frozen semantic outcome; reported as 1.0 only when none is incorrect",
-    "median_observed_context_bytes": "median of V6 case-level median observed_context_bytes across positive, cross-profile, ambiguous and multi-intent cases",
-    "p95_observed_context_bytes": "p95 of V6 case-level median observed_context_bytes across the same activation-relevant cases",
-    "median_loaded_reference_bytes": "diagnostic median reference-only host-read bytes across executed valid repetitions; not used for selection",
-    "first_two_disagreement_rate": "diagnostic fraction of evaluated case/candidate pairs whose first two valid repetitions disagree on any V6 third-repetition trigger field",
-    "conditional_third_repetition_count": "diagnostic number of case/candidate pairs for which a third valid repetition was required",
-    "single_install_feasibility": "binary evidence that all candidate entrypoints can be emitted in one self-contained Agent Governance installation unit with one distribution identity and no manual product-owned supplemental installation",
-    "source_distribution_integrity": "binary evidence of one Core, one shared engine, one capability-source epoch and no independently maintained normative entrypoint source"
+    "false_activation_rate": "fraction of negative and near-miss case aggregates with any host-observed candidate-body activation",
+    "wrong_specialist_rate": "fraction of case aggregates activating an entrypoint not in the expected set when the expected set is non-empty",
+    "overactivation_rate": "fraction of case aggregates with a strict superset of expected entrypoints",
+    "semantic_outcome_accuracy": "fraction of 40 case aggregates matching expected_semantic_outcome",
+    "cross_profile_violation_count": "count of valid cross-profile repetitions violating the frozen boundary; zero required",
+    "ambiguous_context_permission_broadening_count": "count of valid ambiguous repetitions violating the frozen boundary; zero required",
+    "semantic_outcome_accuracy_cross_profile_and_ambiguous": "all executed valid cross-profile/ambiguous repetitions must be semantically correct; 1.0 required",
+    "median_observed_context_bytes": "median of case-level median observed_context_bytes across positive, cross-profile, ambiguous and multi-intent cases",
+    "p95_observed_context_bytes": "p95 of case-level median observed_context_bytes across the same activation-relevant cases",
+    "median_loaded_reference_bytes": "diagnostic median reference-only host-read bytes",
+    "first_two_disagreement_rate": "diagnostic fraction of evaluated pairs whose first two valid repetitions disagree on any third-repetition trigger field",
+    "conditional_third_repetition_count": "diagnostic number of pairs requiring a third valid repetition",
+    "single_install_feasibility": "binary one-product/single-install feasibility evidence",
+    "source_distribution_integrity": "binary one-Core/engine/capability-source evidence"
   },
   "mandatory_non_regression": {
     "full_deterministic_regression": "PASS",
@@ -168,10 +139,10 @@
   },
   "selection_rule": {
     "step_1": "Discard any candidate failing a mandatory_non_regression condition or qualifying_threshold.",
-    "step_2_single_family": "Evaluate B0 and B1 first. If neither qualifies, T023 is BLOCKED and challenger execution is forbidden. If only one qualifies, it is the single-family reference. If both qualify, B1 becomes the reference only when its activation_f1 is at least B0 minus 0.01, its false_activation_rate is at most B0 plus 0.01, and its median_observed_context_bytes is at most 80 percent of B0; otherwise B0 is the reference.",
-    "step_3_split_material_advantage": "Only after a single-family reference exists, evaluate F2 and G3. F2 or G3 is a material challenger only if it qualifies, activation_f1 is at least reference plus 0.03, median_observed_context_bytes is at most 85 percent of reference, false_activation_rate is no greater than reference, and neither wrong_specialist_rate nor overactivation_rate exceeds reference by more than 0.01.",
+    "step_2_single_family": "Evaluate B0/B1 first. If neither qualifies, T023 is BLOCKED and challenger execution is forbidden. If only one qualifies, it is the reference. If both qualify, B1 is reference only when F1 >= B0-0.01, false activation <= B0+0.01, and median observed context <= 80 percent of B0; otherwise B0 is reference.",
+    "step_3_split_material_advantage": "Only after a reference exists, F2/G3 is material if it qualifies, F1 >= reference+0.03, median observed context <=85 percent of reference, false activation <= reference, and wrong-specialist/overactivation each <= reference+0.01.",
     "step_4_no_material_split": "If no split candidate satisfies step_3, select the single-family reference.",
-    "step_5_split_choice": "If one split candidate satisfies step_3, select it. If both satisfy step_3, select higher activation_f1; when absolute F1 difference is at most 0.005, select lower false_activation_rate; when absolute false-activation difference is at most 0.01, select lower median_observed_context_bytes; when median observed-context difference is within 5 percent, select the candidate with fewer entrypoints. Remaining exact ties select F2.",
+    "step_5_split_choice": "If both split candidates satisfy step_3, select higher F1; when absolute F1 difference <=0.005 select lower false activation; when absolute false-activation difference <=0.01 select lower median observed context; when context difference is within 5 percent select fewer entrypoints; remaining exact ties select F2.",
     "post_hoc_change_forbidden": true
   }
 }
