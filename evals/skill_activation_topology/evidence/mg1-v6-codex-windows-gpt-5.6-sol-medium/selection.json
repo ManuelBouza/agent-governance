@@ -1,0 +1,10 @@
+{
+  "qualifying": {
+    "B0": false,
+    "B1": false
+  },
+  "reason": "neither B0 nor B1 qualifies; challenger stage not executed",
+  "scored": true,
+  "selected_candidate": null,
+  "status": "BLOCKED"
+}

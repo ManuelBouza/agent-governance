@@ -1,0 +1,9 @@
+{
+  "acceptance_complete": true,
+  "capacity_event_count": 3,
+  "completed_valid_observations": 167,
+  "execution_epoch": "MG1-T023-EXECUTION-v6",
+  "exhausted_observations": [],
+  "partial_scoring_permitted": false,
+  "stage_state": "REFERENCE_COMPLETE_NO_QUALIFIER"
+}

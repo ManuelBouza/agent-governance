@@ -353,6 +353,12 @@ def test_closed_v4_evidence_cannot_enter_v6_scoring(harness, frozen) -> None:
         harness.validate_complete_evidence(frozen, evidence)
 
 
+def test_v6_live_runner_is_bound_to_immutable_git_provenance(harness) -> None:
+    evidence = harness.HERE / "evidence" / "mg1-v6-codex-windows-gpt-5.6-sol-medium"
+    metadata = harness._load_json(evidence / "run-metadata.json")
+    harness._validate_executed_runner_provenance(metadata)
+
+
 def test_v3_holdout_has_no_exact_prompt_from_closed_v2_evidence(harness, frozen) -> None:
     evidence = harness.HERE / "evidence" / "mg1-v2-codex-windows-gpt-5.6-sol-medium"
     previous = harness.load_trials(evidence / "raw-trials.jsonl")

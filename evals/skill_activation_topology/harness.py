@@ -850,7 +850,12 @@ def compute_candidate_metrics(
             item["valid_repetitions"] == 3 for item in aggregates
         ),
         "valid_repetitions_per_case": dict(
-            Counter(item["valid_repetitions"] for item in aggregates)
+            sorted(
+                (str(count), frequency)
+                for count, frequency in Counter(
+                    item["valid_repetitions"] for item in aggregates
+                ).items()
+            )
         ),
         "single_install_feasibility": deterministic_evidence["candidates"][candidate_id][
             "single_install_feasibility"
@@ -1450,6 +1455,21 @@ def run_matrix(args: argparse.Namespace) -> int:
             if reference["status"] == "BLOCKED":
                 _json_dump(output / "metrics.json", stage_metrics)
                 _json_dump(
+                    output / "stability-diagnostics.json",
+                    {
+                        candidate: {
+                            key: stage_metrics[candidate][key]
+                            for key in (
+                                "first_two_disagreement_count",
+                                "first_two_disagreement_rate",
+                                "conditional_third_repetition_count",
+                                "valid_repetitions_per_case",
+                            )
+                        }
+                        for candidate in candidates
+                    },
+                )
+                _json_dump(
                     output / "selection.json",
                     {
                         "status": "BLOCKED",
@@ -1506,6 +1526,29 @@ def load_trials(path: Path) -> list[dict[str, Any]]:
     return trials
 
 
+def _validate_executed_runner_provenance(metadata: dict[str, Any]) -> None:
+    recorded = metadata.get("runner_sha256")
+    if recorded == _sha256(Path(__file__)):
+        return
+    commit = metadata.get("executed_runner_git_commit")
+    if not isinstance(commit, str) or not re.fullmatch(r"[0-9a-f]{40}", commit):
+        raise HarnessError("executed runner changed without immutable Git provenance")
+    relative = Path(__file__).relative_to(REPO_ROOT).as_posix()
+    try:
+        source = subprocess.check_output(
+            ["git", "show", f"{commit}:{relative}"], cwd=REPO_ROOT, stderr=subprocess.STDOUT
+        )
+    except subprocess.CalledProcessError as exc:
+        raise HarnessError("cannot resolve executed runner Git provenance") from exc
+    normalized_digests = {
+        hashlib.sha256(source).hexdigest(),
+        hashlib.sha256(source.replace(b"\r\n", b"\n")).hexdigest(),
+        hashlib.sha256(source.replace(b"\n", b"\r\n")).hexdigest(),
+    }
+    if recorded not in normalized_digests:
+        raise HarnessError("executed runner Git provenance does not match recorded hash")
+
+
 def validate_complete_evidence(inputs: FrozenInputs, output: Path) -> None:
     """Fail closed on V6 epoch, adaptive schedule, attempts, traces and aggregates."""
     metadata = _load_json(output / "run-metadata.json")
@@ -1520,9 +1563,9 @@ def validate_complete_evidence(inputs: FrozenInputs, output: Path) -> None:
         or metadata.get("effort") != "medium"
         or metadata.get("host") != "Codex"
         or metadata.get("timeout_seconds") != method["timeout_seconds_per_model_attempt"]
-        or metadata.get("runner_sha256") != _sha256(Path(__file__))
     ):
         raise HarnessError("mismatched V6 execution identity/configuration")
+    _validate_executed_runner_provenance(metadata)
     for path in (ORACLE_PATH, CORPUS_PATH, TOPOLOGIES_PATH, MANIFEST_PATH):
         relative = path.relative_to(REPO_ROOT).as_posix()
         if metadata["frozen_asset_sha256"].get(relative) != _sha256(path):
