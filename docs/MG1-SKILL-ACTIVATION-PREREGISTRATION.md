@@ -1,7 +1,7 @@
 # MG1 — Skill Activation Topology and Eval Pre-registration Gate
 
-Status: `READY_FOR_INTEGRATION`  
-Date: 2026-08-28  
+Status: `CLOSED_BLOCKED / NO QUALIFYING SINGLE-FAMILY REFERENCE`  
+Date: 2026-08-29  
 Owner: ChatGPT Orchestrator  
 Applies to: `T023`  
 Test-Authorship-Mode: `mixed`  
@@ -13,9 +13,9 @@ Corpus: `MG1-T023-CORPUS-v2`
 
 ## Restart boundary
 
-MG1-v2 is closed `BLOCKED`; MG1-v3 is closed `EXECUTION-INCOMPLETE`; MG1-v4 is closed `EXTERNAL CAPACITY`. MG1-v5 is superseded **before live acceptance execution** by the prospective efficiency revision in `docs/tasks/T045-mg1-v6-efficient-paired-evaluation.md`.
+MG1-v2 is closed `BLOCKED`; MG1-v3 is closed `EXECUTION-INCOMPLETE`; MG1-v4 is closed `EXTERNAL CAPACITY`. MG1-v5 was superseded **before live acceptance execution** by the prospective efficiency revision in `docs/tasks/T045-mg1-v6-efficient-paired-evaluation.md`.
 
-No v2/v3/v4 observation may enter the v6 acceptance score. No v5 live acceptance observation exists or may be imported. Candidate semantics, holdout membership/expectations, numeric qualification thresholds and D050 topology-selection percentages remain unchanged.
+No v2/v3/v4 observation entered the v6 acceptance score. No v5 live acceptance observation existed or was imported. Candidate semantics, holdout membership/expectations, numeric qualification thresholds and D050 topology-selection percentages remained unchanged.
 
 Research/rationale: `docs/research/MG1-EVAL-EFFICIENCY-RESEARCH.md`.
 
@@ -28,11 +28,11 @@ Research/rationale: `docs/research/MG1-EVAL-EFFICIENCY-RESEARCH.md`.
 - Acceptance holdout: `evals/skill_activation_topology/corpus.json`
 - Selection/execution oracle: `evals/skill_activation_topology/oracle.json`
 
-Required candidates remain B0, B1, F2 and G3. All remain projections of one Agent Governance product, one Core, one shared engine and one capability-source epoch. Portable Skill-to-Skill invocation remains forbidden.
+Required candidates remained B0, B1, F2 and G3. All remained projections of one Agent Governance product, one Core, one shared engine and one capability-source epoch. Portable Skill-to-Skill invocation remained forbidden.
 
 ## V6 paired scoring unit
 
-The frozen **case/candidate pair** is the scoring unit. Repetitions measure stochastic stability and are not counted as independent semantic cases.
+The frozen **case/candidate pair** was the scoring unit. Repetitions measured stochastic stability and were not counted as independent semantic cases.
 
 For every evaluated case/candidate pair:
 
@@ -42,11 +42,11 @@ For every evaluated case/candidate pair:
 4. if any listed field disagrees, run exactly one third valid repetition unless the candidate is already disqualified by a mandatory any-observed-violation gate;
 5. never run a fourth valid repetition.
 
-Non-critical case aggregation uses majority for categorical/set routing fields and median for `observed_context_bytes`. If the first two context values are both `x`, `median(x,x,y)=x` for any possible third value, so omitting that third observation does not change the aggregate.
+Non-critical case aggregation used majority for categorical/set routing fields and median for `observed_context_bytes`. If the first two context values are both `x`, `median(x,x,y)=x` for any possible third value, so omitting that third observation does not change the aggregate.
 
 ## Critical zero-tolerance semantics
 
-Cross-profile forbidden grant/performance, ambiguous permission broadening and cross-profile/ambiguous semantic correctness remain stricter than majority voting. Any valid repetition violating one of these frozen mandatory boundaries disqualifies the candidate. A majority cannot hide a safety violation.
+Cross-profile forbidden grant/performance, ambiguous permission broadening and cross-profile/ambiguous semantic correctness remained stricter than majority voting. Any valid repetition violating one of these frozen mandatory boundaries disqualified the candidate. A majority could not hide a safety violation.
 
 ## Reference-first execution
 
@@ -68,19 +68,19 @@ This staging changes execution order/cost only; it does not change the D050 refe
 
 ## Capacity-aware execution retained
 
-Required live cell remains Codex / native Windows / GPT-5.6 Sol / Medium.
+Required live cell remained Codex / native Windows / GPT-5.6 Sol / Medium.
 
-Each scheduled valid repetition permits at most two **non-capacity model attempts**, each using a fresh Codex thread/disposable workspace, frozen inputs and a 600-second timeout. A timeout, malformed response or non-capacity provider failure consumes an attempt. The first valid structured response satisfies that scheduled repetition. Two failed non-capacity attempts block the epoch; partial selection is forbidden.
+Each scheduled valid repetition permitted at most two **non-capacity model attempts**, each using a fresh Codex thread/disposable workspace, frozen inputs and a 600-second timeout. A timeout, malformed response or non-capacity provider failure consumed an attempt. The first valid structured response satisfied that scheduled repetition. Two failed non-capacity attempts blocked the epoch; partial selection was forbidden.
 
-An explicit provider/account `usage-limit` or quota-capacity event before a valid model result is an **external capacity event**, not a model attempt. It is retained separately, leaves the scheduled repetition pending at the same attempt ordinal and stops new scheduling promptly.
+An explicit provider/account `usage-limit` or quota-capacity event before a valid model result was an **external capacity event**, not a model attempt. It was retained separately, left the scheduled repetition pending at the same attempt ordinal and stopped new scheduling promptly.
 
-The same v6 epoch may resume after capacity becomes available. Previously valid v6 observations remain authoritative and MUST NOT be rerun or replaced. Resume verifies epoch/frozen hashes/harness/runtime identity, case/candidate/repetition uniqueness, attempt ordinals, stage state and evidence integrity before new live calls.
+The same v6 epoch could resume after capacity became available. Previously valid v6 observations remained authoritative and MUST NOT be rerun or replaced. Resume verified epoch/frozen hashes/harness/runtime identity, case/candidate/repetition uniqueness, attempt ordinals, stage state and evidence integrity before new live calls.
 
-At most one non-scored fixed synthetic capacity probe containing no holdout/candidate contents is permitted before launch/resume.
+At most one non-scored fixed synthetic capacity probe containing no holdout/candidate contents was permitted before launch/resume.
 
 ## Metrics and thresholds
 
-Routing and overall semantic metrics are computed over the 40 case aggregates for each completely evaluated candidate. The existing numeric gates remain:
+Routing and overall semantic metrics were computed over the 40 case aggregates for each completely evaluated candidate. The existing numeric gates remained:
 
 - activation precision/recall/F1 >= 0.95;
 - false activation/wrong specialist/overactivation <= 0.05;
@@ -91,11 +91,11 @@ Routing and overall semantic metrics are computed over the 40 case aggregates fo
 - ambiguous permission broadening = 0;
 - every executed cross-profile/ambiguous valid repetition semantically correct.
 
-Selection still uses `median_observed_context_bytes`, now computed from per-case median context values. D050 B1-vs-B0 and split-challenger percentages/tie-breaks are unchanged.
+Selection used `median_observed_context_bytes`, computed from per-case median context values. D050 B1-vs-B0 and split-challenger percentages/tie-breaks were unchanged.
 
 ## Stability diagnostics
 
-Report per candidate, separately from acceptance metrics:
+Per-candidate diagnostics remained separate from acceptance metrics:
 
 - first-two disagreement count/rate overall and by field;
 - number of conditional third repetitions;
@@ -103,8 +103,20 @@ Report per candidate, separately from acceptance metrics:
 - model-attempt failures;
 - external capacity events and pause/resume records.
 
+## Terminal v6 result
+
+MG1-v6 executed from canonical `develop@f9c7c3f7e90a7996e56d1065401a2936f3c25d42`. Submitted Executor HEAD: `6fae8c8d7b15979895cf951b87e9145368e86daf`. Evidence integration PR: `#240`; merge: `15aa0831dd10faa8736ec219f1b847c600f71167`. Independent Orchestrator review: `docs/reviews/T023-R5.md`.
+
+Stage R completed with 167 valid observations: the 160 mandatory B0/B1 observations plus seven disagreement-triggered B0 third repetitions. Three explicit usage-limit events were handled as non-attempt capacity pauses; the same epoch resumed with no valid observation rerun or replaced. There were zero non-capacity model failures.
+
+B0 failed qualification with activation precision `0.8529411765`, F1 `0.9206349206`, false activation `0.4545454545`, and overactivation `0.125`. B1 failed with activation precision `0.8787878788`, F1 `0.9354838710`, false activation `0.3636363636`, overactivation `0.1`, and two zero-tolerance ambiguous-context permission broadenings.
+
+Neither B0 nor B1 qualified. Therefore no single-family reference existed and the frozen v6 gate correctly forbade Stage C; F2/G3 received zero live acceptance observations. No topology was selected.
+
+The result is a valid experimental failure, not an execution-incomplete, capacity, harness, or oracle-defect outcome. MG1-v6 is closed and immutable. Any continuation must re-enter D053 at Specify with a new prospective candidate/presentation and acceptance epoch; v6 observations remain diagnostic only for that future work and MUST NOT enter a future acceptance score.
+
 ## Ownership boundary
 
-The frozen semantic assets and v6 aggregation/staging meaning are Orchestrator-owned under D052. Executor owns harness/provider mechanics, stage scheduling, majority/median computation from the frozen oracle, capacity detection/pause/resume persistence, trial isolation, byte-copy materialization, trace extraction, evidence and ordinary technical tests.
+The frozen semantic assets and v6 aggregation/staging meaning were Orchestrator-owned under D052. Executor owned harness/provider mechanics, stage scheduling, majority/median computation from the frozen oracle, capacity detection/pause/resume persistence, trial isolation, byte-copy materialization, trace extraction, evidence and ordinary technical tests.
 
-No v6 live call may occur before this preregistration and oracle are integrated into canonical `develop`. No result may cause post-hoc changes to corpus, presentations, expectations, thresholds, aggregation, stage gates or selection meaning.
+No result may retroactively change the v6 corpus, presentations, expectations, thresholds, aggregation, stage gates or selection meaning.
