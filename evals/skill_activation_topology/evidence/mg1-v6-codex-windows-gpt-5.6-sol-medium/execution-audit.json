@@ -1,0 +1,52 @@
+{
+  "status": "BLOCKED_NO_REFERENCE",
+  "oracle_id": "MG1-T023-TOPOLOGY-ORACLE-v6",
+  "execution_epoch": "MG1-T023-EXECUTION-v6",
+  "executed_runner_git_commit": "b752940b8fa4b9cca87faa70d75b8f95201985a0",
+  "executed_runner_sha256": "a016e7ba303de84bdea8873aa69e68b7a200b2772a938da77b98f8f286e56a6d",
+  "reference_stage": {
+    "base_valid_observations": 160,
+    "conditional_third_observations": 7,
+    "total_valid_observations": 167,
+    "candidate_valid_observations": {
+      "B0": 87,
+      "B1": 80
+    }
+  },
+  "challenger_stage": {
+    "executed": false,
+    "reason": "Neither B0 nor B1 qualified; the frozen V6 challenger-stage gate forbids F2/G3 execution."
+  },
+  "attempt_isolation": {
+    "model_attempts": 167,
+    "non_capacity_failures": 0,
+    "external_capacity_events": 3,
+    "fresh_workspaces": 170,
+    "unique_workspaces": 170,
+    "fresh_threads": 170,
+    "unique_threads": 170
+  },
+  "pause_resume": {
+    "pause_count": 1,
+    "resume_count": 1,
+    "valid_observations_before_pause": 113,
+    "capacity_events_consumed_model_attempts": false,
+    "prior_valid_observations_rerun_or_replaced": false
+  },
+  "scoring": {
+    "unit": "case_candidate_aggregate",
+    "case_aggregates": 80,
+    "partial_scoring": false,
+    "selected_candidate": null,
+    "terminal_reason": "Neither single-family candidate met all frozen qualification and mandatory non-regression gates."
+  },
+  "integrity": {
+    "prior_v2_v3_v4_observations_in_v6_score": 0,
+    "prior_v5_observations_in_v6_score": 0,
+    "frozen_oracle_modified": false,
+    "frozen_corpus_modified": false,
+    "frozen_presentations_modified": false,
+    "supplementary_cases_added": 0,
+    "secret_pattern_scan": "PASS"
+  }
+}

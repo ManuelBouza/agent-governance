@@ -1,0 +1,38 @@
+{
+  "capability_source_epoch": "MG1-2026-08-25-v3",
+  "capacity_event_count": 3,
+  "clean_context": "one new codex exec thread and disposable workspace per attempt",
+  "codex_cli": "codex-cli 0.149.0",
+  "completed_valid_observations": 167,
+  "corpus_id": "MG1-T023-CORPUS-v2",
+  "effort": "medium",
+  "execution_epoch": "MG1-T023-EXECUTION-v6",
+  "frozen_asset_sha256": {
+    "evals/skill_activation_topology/corpus.json": "911ea6a3fbc7504a0e787bb534afe1812c4689e03b288bdc1482ec44093e5da7",
+    "evals/skill_activation_topology/oracle.json": "d58d4ed2fd59a6798296674be5d55d46a4b7f2d5c11670afef4963b9e73dde77",
+    "evals/skill_activation_topology/presentations/manifest.json": "1b5fd0bc52d23e20c25b52dcd681fd2025640811c60890e59275a281f88c1e90",
+    "evals/skill_activation_topology/topologies.json": "2d5726799b3ca33641ac10b0a06c01cec1f5bc65b18389ac94f97ea56697a60b"
+  },
+  "full_acceptance": true,
+  "host": "Codex",
+  "max_model_attempts_per_scheduled_observation": 2,
+  "model": "gpt-5.6-sol",
+  "oracle_id": "MG1-T023-TOPOLOGY-ORACLE-v6",
+  "platform": "native Windows (Windows-11-10.0.26200-SP0)",
+  "presentation_revision": "MG1-T023-PRESENTATIONS-v3",
+  "resume_records": [
+    {
+      "prior_status": "PAUSED_EXTERNAL_CAPACITY",
+      "resumed_at": "2026-08-29T06:42:54.898142+00:00"
+    }
+  ],
+  "runner_sha256": "a016e7ba303de84bdea8873aa69e68b7a200b2772a938da77b98f8f286e56a6d",
+  "executed_runner_git_commit": "b752940b8fa4b9cca87faa70d75b8f95201985a0",
+  "single_family_reference": null,
+  "stage_state": "REFERENCE_COMPLETE_NO_QUALIFIER",
+  "started_at": "2026-08-28T19:37:29.411012+00:00",
+  "status": "BLOCKED_NO_REFERENCE",
+  "timeout_seconds": 600,
+  "updated_at": "2026-08-29T06:52:10.659497+00:00",
+  "workers": 4
+}

@@ -1,0 +1,9 @@
+{
+  "qualifying": {
+    "B0": false,
+    "B1": false
+  },
+  "reason": "neither B0 nor B1 qualifies",
+  "single_family_reference": null,
+  "status": "BLOCKED"
+}

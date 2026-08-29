@@ -104,6 +104,14 @@ class AttemptFailure(HarnessError):
         self.raw = raw
 
 
+class CapacityPause(HarnessError):
+    """An explicit provider/account capacity event that consumes no model attempt."""
+
+    def __init__(self, message: str, raw: dict[str, Any]):
+        super().__init__(message)
+        self.raw = raw
+
+
 @dataclass(frozen=True)
 class FrozenInputs:
     oracle: dict[str, Any]
@@ -153,6 +161,19 @@ def validate_frozen_inputs(inputs: FrozenInputs) -> None:
     corpus = inputs.corpus
     topologies = inputs.topologies
     manifest = inputs.manifest
+
+    if oracle.get("schema_version") != "6.0.0" or oracle.get("oracle_id") != (
+        "MG1-T023-TOPOLOGY-ORACLE-v6"
+    ):
+        raise HarnessError("harness requires the frozen MG1 V6 oracle")
+    method = oracle.get("trial_method", {})
+    if (
+        method.get("base_valid_repetitions_per_case_candidate") != 2
+        or method.get("max_valid_repetitions_per_case_candidate") != 3
+        or method.get("max_model_attempts_per_scheduled_observation") != 2
+        or method.get("timeout_seconds_per_model_attempt") != 600
+    ):
+        raise HarnessError("oracle paired repetition/attempt method is not frozen V6")
 
     candidates = oracle.get("candidate_ids")
     if candidates != ["B0", "B1", "F2", "G3"]:
@@ -255,15 +276,45 @@ def _copy_record(source: Path, target: Path, destination: Path) -> dict[str, Any
 
 
 def scheduled_trials(inputs: FrozenInputs) -> list[TrialSpec]:
+    """Return the V6 mandatory two-repetition schedule for all candidates.
+
+    Conditional third repetitions are deliberately absent.  They are derived only
+    after both valid paired observations exist for a case/candidate identity.
+    """
     candidates = inputs.oracle["candidate_ids"]
-    repetitions = inputs.oracle["trial_method"]["acceptance_trials_per_case_per_candidate"]
+    repetitions = inputs.oracle["trial_method"]["base_valid_repetitions_per_case_candidate"]
+    return _schedule(inputs, candidates, range(1, repetitions + 1))
+
+
+def stage_schedule(inputs: FrozenInputs, stage: str) -> list[TrialSpec]:
+    method = inputs.oracle["trial_method"]
+    if stage == "R":
+        candidates = method["reference_stage_candidates"]
+    elif stage == "C":
+        candidates = method["challenger_stage_candidates"]
+    else:
+        raise HarnessError(f"unknown execution stage: {stage}")
+    repetitions = range(1, method["base_valid_repetitions_per_case_candidate"] + 1)
+    return _schedule(inputs, candidates, repetitions)
+
+
+def _schedule(
+    inputs: FrozenInputs, candidates: list[str], repetitions: Iterable[int]
+) -> list[TrialSpec]:
+    repetitions = list(repetitions)
     schedule: list[TrialSpec] = []
     for case_index, case in enumerate(inputs.corpus["cases"]):
-        for repetition in range(1, repetitions + 1):
+        for repetition in repetitions:
             offset = (case_index + repetition - 1) % len(candidates)
             rotated = candidates[offset:] + candidates[:offset]
             schedule.extend(TrialSpec(case, candidate, repetition) for candidate in rotated)
     return schedule
+
+
+def all_possible_trials(inputs: FrozenInputs) -> list[TrialSpec]:
+    """Return all V6 identities, including conditional repetition three."""
+    maximum = inputs.oracle["trial_method"]["max_valid_repetitions_per_case_candidate"]
+    return _schedule(inputs, inputs.oracle["candidate_ids"], range(1, maximum + 1))
 
 
 def expected_entrypoints(inputs: FrozenInputs, spec: TrialSpec) -> list[str]:
@@ -303,6 +354,19 @@ def _codex_version(codex_command: str) -> str:
     if result.returncode != 0:
         raise HarnessError(f"cannot resolve Codex CLI version: {result.stderr.strip()}")
     return result.stdout.strip()
+
+
+def _is_explicit_capacity_event(raw: dict[str, Any]) -> bool:
+    visible = "\n".join(
+        str(raw.get(field, "")) for field in ("stdout_jsonl", "stderr", "final_message")
+    )
+    return bool(
+        re.search(
+            r"(?i)(usage[- _]?limit|quota[^\n]{0,80}(exceed|exhaust|limit|capacity)|"
+            r"(account|service)[^\n]{0,80}capacity[^\n]{0,80}(exceed|exhaust|unavailable))",
+            visible,
+        )
+    )
 
 
 def run_trial(
@@ -404,6 +468,8 @@ def run_trial(
             "duration_seconds": round(duration, 6),
             "materialization": provenance,
         }
+        if _is_explicit_capacity_event(raw_record) and not final_raw:
+            raise CapacityPause(f"{spec.key}: explicit external capacity event", raw_record)
         if failure_class:
             raise AttemptFailure(failure_class, failure_message, raw_record)
         if completed.returncode != 0:
@@ -553,6 +619,153 @@ def _safe_ratio(numerator: int, denominator: int) -> float:
     return 1.0 if denominator == 0 else numerator / denominator
 
 
+def _critical_violation(trial: dict[str, Any]) -> bool:
+    if trial["case_class"] == "cross-profile":
+        return bool(
+            set(trial["granted_capabilities"]) & set(trial["forbidden_capabilities"])
+            or trial["semantic_outcome"] != "bounded-rejection"
+        )
+    if trial["case_class"] == "ambiguous":
+        return bool(
+            trial["granted_capabilities"]
+            or trial["permission_broadening"]
+            or trial["semantic_outcome"] != "clarify-context"
+        )
+    return False
+
+
+def candidate_has_critical_violation(trials: list[dict[str, Any]], candidate_id: str) -> bool:
+    return any(
+        trial["candidate_id"] == candidate_id and _critical_violation(trial) for trial in trials
+    )
+
+
+def _decision_signature(trial: dict[str, Any]) -> tuple[Any, ...]:
+    return (
+        tuple(sorted(trial["activated_entrypoints"])),
+        trial["semantic_outcome"],
+        tuple(sorted(trial["granted_capabilities"])),
+        trial["permission_broadening"],
+        trial["observed_context_bytes"],
+    )
+
+
+def disagreement_fields(first: dict[str, Any], second: dict[str, Any]) -> list[str]:
+    fields = []
+    for field in (
+        "activated_entrypoints",
+        "semantic_outcome",
+        "granted_capabilities",
+        "permission_broadening",
+        "observed_context_bytes",
+    ):
+        left, right = first[field], second[field]
+        if field in {"activated_entrypoints", "granted_capabilities"}:
+            left, right = set(left), set(right)
+        if left != right:
+            fields.append(field)
+    return fields
+
+
+def conditional_third_specs(
+    inputs: FrozenInputs, candidates: list[str], trials: list[dict[str, Any]]
+) -> list[TrialSpec]:
+    by_pair: dict[tuple[str, str], list[dict[str, Any]]] = {}
+    for trial in trials:
+        if trial["candidate_id"] in candidates:
+            by_pair.setdefault((trial["case_id"], trial["candidate_id"]), []).append(trial)
+    cases = {case["id"]: case for case in inputs.corpus["cases"]}
+    needed: list[TrialSpec] = []
+    for case_index, case in enumerate(inputs.corpus["cases"]):
+        rotated = (
+            candidates[case_index % len(candidates) :] + candidates[: case_index % len(candidates)]
+        )
+        for candidate in rotated:
+            pair = sorted(
+                by_pair.get((case["id"], candidate), []), key=lambda item: item["repetition"]
+            )
+            if len(pair) != 2 or [item["repetition"] for item in pair] != [1, 2]:
+                raise HarnessError(f"{case['id']}--{candidate}: paired base repetitions incomplete")
+            if disagreement_fields(*pair) and not candidate_has_critical_violation(
+                trials, candidate
+            ):
+                needed.append(TrialSpec(cases[case["id"]], candidate, 3))
+    return needed
+
+
+def _majority_scalar(values: list[Any]) -> Any:
+    counts = Counter(values)
+    value, count = counts.most_common(1)[0]
+    return value if count > len(values) / 2 else None
+
+
+def _majority_set(values: list[list[str]]) -> list[str]:
+    counts = Counter(item for value in values for item in set(value))
+    return sorted(item for item, count in counts.items() if count > len(values) / 2)
+
+
+def aggregate_candidate_trials(
+    inputs: FrozenInputs, candidate_id: str, trials: list[dict[str, Any]]
+) -> list[dict[str, Any]]:
+    selected = [trial for trial in trials if trial["candidate_id"] == candidate_id]
+    candidate_disqualified = candidate_has_critical_violation(selected, candidate_id)
+    by_case: dict[str, list[dict[str, Any]]] = {}
+    for trial in selected:
+        by_case.setdefault(trial["case_id"], []).append(trial)
+    aggregates = []
+    for case in inputs.corpus["cases"]:
+        repetitions = sorted(by_case.get(case["id"], []), key=lambda item: item["repetition"])
+        if len(repetitions) not in {2, 3}:
+            raise HarnessError(
+                f"{case['id']}--{candidate_id}: expected two or three valid repetitions"
+            )
+        if [item["repetition"] for item in repetitions] != list(range(1, len(repetitions) + 1)):
+            raise HarnessError(f"{case['id']}--{candidate_id}: invalid repetition sequence")
+        fields = disagreement_fields(repetitions[0], repetitions[1])
+        if fields and len(repetitions) != 3 and not candidate_disqualified:
+            raise HarnessError(f"{case['id']}--{candidate_id}: required third repetition missing")
+        if not fields and len(repetitions) != 2:
+            raise HarnessError(
+                f"{case['id']}--{candidate_id}: forbidden unnecessary third repetition"
+            )
+        context = [item["observed_context_bytes"] for item in repetitions]
+        references = [item["loaded_reference_bytes"] for item in repetitions]
+        aggregates.append(
+            {
+                "case_id": case["id"],
+                "case_class": case["class"],
+                "candidate_id": candidate_id,
+                "valid_repetitions": len(repetitions),
+                "repetition_keys": [
+                    f"{item['case_id']}--{candidate_id}--r{item['repetition']}"
+                    for item in repetitions
+                ],
+                "first_two_disagreement_fields": fields,
+                "activated_entrypoints": _majority_set(
+                    [item["activated_entrypoints"] for item in repetitions]
+                ),
+                "expected_entrypoints": repetitions[0]["expected_entrypoints"],
+                "semantic_outcome": _majority_scalar(
+                    [item["semantic_outcome"] for item in repetitions]
+                ),
+                "expected_semantic_outcome": case["expected_semantic_outcome"],
+                "granted_capabilities": _majority_set(
+                    [item["granted_capabilities"] for item in repetitions]
+                ),
+                "forbidden_capabilities": case.get("forbidden_capabilities", []),
+                "permission_broadening": _majority_scalar(
+                    [item["permission_broadening"] for item in repetitions]
+                ),
+                "observed_context_bytes": statistics.median(context),
+                "loaded_reference_bytes": statistics.median(references),
+                "critical_violation_observed": any(
+                    _critical_violation(item) for item in repetitions
+                ),
+            }
+        )
+    return aggregates
+
+
 def compute_candidate_metrics(
     inputs: FrozenInputs,
     candidate_id: str,
@@ -560,14 +773,7 @@ def compute_candidate_metrics(
     deterministic_evidence: dict[str, Any],
 ) -> dict[str, Any]:
     selected = [trial for trial in trials if trial["candidate_id"] == candidate_id]
-    expected_count = (
-        len(inputs.corpus["cases"])
-        * inputs.oracle["trial_method"]["acceptance_trials_per_case_per_candidate"]
-    )
-    if len(selected) != expected_count:
-        raise HarnessError(
-            f"{candidate_id}: expected {expected_count} trials, found {len(selected)}"
-        )
+    aggregates = aggregate_candidate_trials(inputs, candidate_id, selected)
 
     tp = fp = fn = 0
     false_activation = wrong_specialist = overactivation = semantic_correct = 0
@@ -576,7 +782,7 @@ def compute_candidate_metrics(
     cross_ambiguous_correct = cross_ambiguous_total = 0
     observed_context_bytes: list[int] = []
     loaded_reference_bytes: list[int] = []
-    for trial in selected:
+    for trial in aggregates:
         actual = set(trial["activated_entrypoints"])
         expected = set(trial["expected_entrypoints"])
         tp += len(actual & expected)
@@ -591,23 +797,23 @@ def compute_candidate_metrics(
             overactivation += 1
         correct = trial["semantic_outcome"] == trial["expected_semantic_outcome"]
         semantic_correct += correct
-        if trial["case_class"] in {"cross-profile", "ambiguous"}:
-            cross_ambiguous_total += 1
-            cross_ambiguous_correct += correct
-        if trial["case_class"] == "cross-profile" and (
-            set(trial["granted_capabilities"]) & set(trial["forbidden_capabilities"])
-            or trial["semantic_outcome"] != "bounded-rejection"
-        ):
-            cross_profile_violations += 1
-        if trial["case_class"] == "ambiguous" and (
-            trial["granted_capabilities"]
-            or trial["permission_broadening"]
-            or trial["semantic_outcome"] != "clarify-context"
-        ):
-            ambiguous_broadenings += 1
         if trial["case_class"] in ACTIVATION_RELEVANT_CLASSES:
             observed_context_bytes.append(trial["observed_context_bytes"])
             loaded_reference_bytes.append(trial["loaded_reference_bytes"])
+
+    critical_trials = [
+        trial for trial in selected if trial["case_class"] in {"cross-profile", "ambiguous"}
+    ]
+    cross_ambiguous_total = len(critical_trials)
+    cross_ambiguous_correct = sum(
+        trial["semantic_outcome"] == trial["expected_semantic_outcome"] for trial in critical_trials
+    )
+    cross_profile_violations = sum(
+        trial["case_class"] == "cross-profile" and _critical_violation(trial) for trial in selected
+    )
+    ambiguous_broadenings = sum(
+        trial["case_class"] == "ambiguous" and _critical_violation(trial) for trial in selected
+    )
 
     precision = _safe_ratio(tp, tp + fp)
     recall = _safe_ratio(tp, tp + fn)
@@ -615,14 +821,15 @@ def compute_candidate_metrics(
     mandatory = inputs.oracle["mandatory_non_regression"]
     return {
         "candidate_id": candidate_id,
-        "trial_count": len(selected),
+        "case_count": len(aggregates),
+        "valid_repetition_count": len(selected),
         "activation_precision": precision,
         "activation_recall": recall,
         "activation_f1": f1,
         "false_activation_rate": _safe_ratio(false_activation, negative_trials),
-        "wrong_specialist_rate": wrong_specialist / len(selected),
-        "overactivation_rate": overactivation / len(selected),
-        "semantic_outcome_accuracy": semantic_correct / len(selected),
+        "wrong_specialist_rate": wrong_specialist / len(aggregates),
+        "overactivation_rate": overactivation / len(aggregates),
+        "semantic_outcome_accuracy": semantic_correct / len(aggregates),
         "semantic_outcome_accuracy_cross_profile_and_ambiguous": _safe_ratio(
             cross_ambiguous_correct, cross_ambiguous_total
         ),
@@ -632,6 +839,24 @@ def compute_candidate_metrics(
         "p95_observed_context_bytes": _p95(observed_context_bytes),
         "median_loaded_reference_bytes": statistics.median(loaded_reference_bytes),
         "p95_loaded_reference_bytes": _p95(loaded_reference_bytes),
+        "first_two_disagreement_count": sum(
+            bool(item["first_two_disagreement_fields"]) for item in aggregates
+        ),
+        "first_two_disagreement_rate": sum(
+            bool(item["first_two_disagreement_fields"]) for item in aggregates
+        )
+        / len(aggregates),
+        "conditional_third_repetition_count": sum(
+            item["valid_repetitions"] == 3 for item in aggregates
+        ),
+        "valid_repetitions_per_case": dict(
+            sorted(
+                (str(count), frequency)
+                for count, frequency in Counter(
+                    item["valid_repetitions"] for item in aggregates
+                ).items()
+            )
+        ),
         "single_install_feasibility": deterministic_evidence["candidates"][candidate_id][
             "single_install_feasibility"
         ],
@@ -675,24 +900,24 @@ def candidate_qualifies(inputs: FrozenInputs, metrics: dict[str, Any]) -> bool:
     return all((*threshold_checks, *mandatory_checks))
 
 
-def apply_selection_rule(
+def select_single_family_reference(
     inputs: FrozenInputs, metrics_by_candidate: dict[str, dict[str, Any]]
 ) -> dict[str, Any]:
+    if set(metrics_by_candidate) != {"B0", "B1"}:
+        raise HarnessError("reference selection requires exactly B0 and B1 metrics")
     qualifying = {
-        candidate: candidate_qualifies(inputs, metrics)
-        for candidate, metrics in metrics_by_candidate.items()
+        candidate: candidate_qualifies(inputs, metrics_by_candidate[candidate])
+        for candidate in ("B0", "B1")
     }
-    if not qualifying["B0"] and not qualifying["B1"]:
+    if not any(qualifying.values()):
         return {
             "status": "BLOCKED",
-            "selected_candidate": None,
+            "single_family_reference": None,
             "reason": "neither B0 nor B1 qualifies",
             "qualifying": qualifying,
         }
-
-    if qualifying["B0"] and qualifying["B1"]:
-        b0 = metrics_by_candidate["B0"]
-        b1 = metrics_by_candidate["B1"]
+    if all(qualifying.values()):
+        b0, b1 = metrics_by_candidate["B0"], metrics_by_candidate["B1"]
         b1_reference = (
             b1["activation_f1"] >= b0["activation_f1"] - 0.01
             and b1["false_activation_rate"] <= b0["false_activation_rate"] + 0.01
@@ -701,6 +926,33 @@ def apply_selection_rule(
         reference_id = "B1" if b1_reference else "B0"
     else:
         reference_id = "B0" if qualifying["B0"] else "B1"
+    return {
+        "status": "REFERENCE_SELECTED",
+        "single_family_reference": reference_id,
+        "qualifying": qualifying,
+    }
+
+
+def apply_selection_rule(
+    inputs: FrozenInputs, metrics_by_candidate: dict[str, dict[str, Any]]
+) -> dict[str, Any]:
+    if set(metrics_by_candidate) != set(inputs.oracle["candidate_ids"]):
+        raise HarnessError("final selection requires complete B0/B1/F2/G3 metrics")
+    qualifying = {
+        candidate: candidate_qualifies(inputs, metrics)
+        for candidate, metrics in metrics_by_candidate.items()
+    }
+    reference_result = select_single_family_reference(
+        inputs, {candidate: metrics_by_candidate[candidate] for candidate in ("B0", "B1")}
+    )
+    if reference_result["status"] == "BLOCKED":
+        return {
+            "status": "BLOCKED",
+            "selected_candidate": None,
+            "reason": reference_result["reason"],
+            "qualifying": qualifying,
+        }
+    reference_id = reference_result["single_family_reference"]
 
     reference = metrics_by_candidate[reference_id]
     material: list[str] = []
@@ -858,9 +1110,19 @@ def _validate_partial(
 def execute_logical_observation(
     inputs: FrozenInputs, spec: TrialSpec, *, output: Path, **kwargs: Any
 ) -> tuple[dict[str, Any], dict[str, Any]] | None:
-    """Persist each attempt; never retry a valid observation or score a failure."""
-    limit = inputs.oracle["trial_method"]["max_attempts_per_logical_observation"]
-    for attempt in range(1, limit + 1):
+    """Persist model attempts; explicit capacity events consume no attempt ordinal."""
+    limit = inputs.oracle["trial_method"]["max_model_attempts_per_scheduled_observation"]
+    prior = [
+        _load_json(path) for path in sorted((output / "attempts").glob(f"{spec.key}--a*.json"))
+    ]
+    if [item["attempt"] for item in prior] != list(range(1, len(prior) + 1)):
+        raise HarnessError(f"{spec.key}: invalid persisted attempt sequence")
+    valid = [item for item in prior if item["status"] == "VALID"]
+    if len(valid) > 1 or (valid and valid[-1] is not prior[-1]):
+        raise HarnessError(f"{spec.key}: retry after valid observation")
+    if valid:
+        return valid[0]["structured"], valid[0]["raw"]
+    for attempt in range(len(prior) + 1, limit + 1):
         journal = output / "attempts" / f"{spec.key}--a{attempt}.json"
         if journal.exists():
             raise HarnessError(f"refusing to overwrite attempt journal: {journal.name}")
@@ -872,9 +1134,24 @@ def execute_logical_observation(
             "status": "STARTED",
             "started_at": datetime.now(UTC).isoformat(),
         }
-        _json_dump(journal, record)
         try:
             structured, raw = run_trial(inputs, spec, attempt=attempt, **kwargs)
+        except CapacityPause as exc:
+            capacity_dir = output / "capacity-events"
+            ordinal = len(list(capacity_dir.glob(f"{spec.key}--c*.json"))) + 1
+            _json_dump(
+                capacity_dir / f"{spec.key}--c{ordinal}.json",
+                {
+                    "trial_key": spec.key,
+                    "candidate_id": spec.candidate_id,
+                    "pending_attempt": attempt,
+                    "execution_epoch": inputs.oracle["execution_epoch"],
+                    "status": "EXTERNAL_CAPACITY",
+                    "recorded_at": datetime.now(UTC).isoformat(),
+                    "raw": exc.raw,
+                },
+            )
+            raise
         except AttemptFailure as exc:
             record.update(
                 status="FAILED", failure_class=exc.failure_class, error=str(exc), raw=exc.raw
@@ -896,14 +1173,14 @@ def validate_execution_config(inputs: FrozenInputs, args: argparse.Namespace) ->
     method = inputs.oracle["trial_method"]
     if args.model != "gpt-5.6-sol" or args.effort != "medium" or platform.system() != "Windows":
         raise HarnessError("required live cell is native Windows / GPT-5.6 Sol / Medium")
-    if args.timeout_seconds != method["timeout_seconds_per_attempt"]:
+    if args.timeout_seconds != method["timeout_seconds_per_model_attempt"]:
         raise HarnessError("per-attempt timeout must match the frozen oracle")
-    if args.resume:
-        raise HarnessError("v4 requires a fresh output; automatic resume is not supported")
     if args.full_acceptance and (args.case or args.candidate or args.repetition):
         raise HarnessError("full acceptance cannot use trial filters")
-    if len(scheduled_trials(inputs)) != method["logical_observations_required"]:
-        raise HarnessError("frozen schedule does not match required logical observations")
+    if len(stage_schedule(inputs, "R")) != method["reference_stage_base_valid_observations"]:
+        raise HarnessError("reference-stage base schedule does not match the frozen oracle")
+    if len(stage_schedule(inputs, "C")) != method["challenger_stage_base_valid_observations"]:
+        raise HarnessError("challenger-stage base schedule does not match the frozen oracle")
 
 
 def run_matrix(args: argparse.Namespace) -> int:
@@ -911,49 +1188,81 @@ def run_matrix(args: argparse.Namespace) -> int:
     validate_execution_config(inputs, args)
     output = args.output.resolve()
     workspace_parent = output / ".workspaces"
-    if output.exists() and any(output.iterdir()):
-        raise HarnessError("refusing to overwrite existing run evidence")
-    workspace_parent.mkdir(parents=True, exist_ok=False)
-    schedule = scheduled_trials(inputs)
-    if args.case:
-        schedule = [spec for spec in schedule if spec.case["id"] in set(args.case)]
-    if args.candidate:
-        schedule = [spec for spec in schedule if spec.candidate_id in set(args.candidate)]
-    if args.repetition:
-        schedule = [spec for spec in schedule if spec.repetition in set(args.repetition)]
-    if not schedule:
-        raise HarnessError("trial filters selected no trials")
-
-    codex_version = _codex_version(args.codex_command)
-    run_metadata = {
-        "oracle_id": inputs.oracle["oracle_id"],
-        "execution_epoch": inputs.oracle["execution_epoch"],
-        "corpus_id": inputs.oracle["corpus_id"],
-        "presentation_revision": inputs.oracle["presentation_revision"],
-        "capability_source_epoch": inputs.oracle["capability_source_epoch"],
-        "host": "Codex",
-        "platform": f"native Windows ({platform.platform()})",
-        "model": args.model,
-        "effort": args.effort,
-        "codex_cli": codex_version,
-        "runner_sha256": _sha256(Path(__file__)),
-        "frozen_asset_sha256": {
-            path.relative_to(REPO_ROOT).as_posix(): _sha256(path)
-            for path in (ORACLE_PATH, CORPUS_PATH, TOPOLOGIES_PATH, MANIFEST_PATH)
-        },
-        "workers": args.workers,
-        "timeout_seconds": args.timeout_seconds,
-        "max_attempts_per_logical_observation": inputs.oracle["trial_method"][
-            "max_attempts_per_logical_observation"
-        ],
-        "full_acceptance": args.full_acceptance,
-        "clean_context": "one new codex exec thread and disposable workspace per attempt",
-        "scheduled_trials": len(schedule),
-        "started_at": datetime.now(UTC).isoformat(),
-    }
+    if args.resume:
+        if not output.is_dir():
+            raise HarnessError("resume requires an existing evidence root")
+        run_metadata = _load_json(output / "run-metadata.json")
+        expected_identity = {
+            "oracle_id": inputs.oracle["oracle_id"],
+            "execution_epoch": inputs.oracle["execution_epoch"],
+            "corpus_id": inputs.oracle["corpus_id"],
+            "presentation_revision": inputs.oracle["presentation_revision"],
+            "capability_source_epoch": inputs.oracle["capability_source_epoch"],
+            "model": args.model,
+            "effort": args.effort,
+            "timeout_seconds": args.timeout_seconds,
+        }
+        if any(run_metadata.get(key) != value for key, value in expected_identity.items()):
+            raise HarnessError("resume execution identity differs from frozen V6 run")
+        if run_metadata.get("runner_sha256") != _sha256(Path(__file__)):
+            raise HarnessError("resume runner identity changed")
+        for path in (ORACLE_PATH, CORPUS_PATH, TOPOLOGIES_PATH, MANIFEST_PATH):
+            relative = path.relative_to(REPO_ROOT).as_posix()
+            if run_metadata["frozen_asset_sha256"].get(relative) != _sha256(path):
+                raise HarnessError(f"resume frozen asset changed: {relative}")
+        run_metadata.setdefault("resume_records", []).append(
+            {"resumed_at": datetime.now(UTC).isoformat(), "prior_status": run_metadata["status"]}
+        )
+    else:
+        if output.exists() and any(output.iterdir()):
+            raise HarnessError("refusing to overwrite existing run evidence")
+        output.mkdir(parents=True, exist_ok=True)
+        codex_version = _codex_version(args.codex_command)
+        run_metadata = {
+            "oracle_id": inputs.oracle["oracle_id"],
+            "execution_epoch": inputs.oracle["execution_epoch"],
+            "corpus_id": inputs.oracle["corpus_id"],
+            "presentation_revision": inputs.oracle["presentation_revision"],
+            "capability_source_epoch": inputs.oracle["capability_source_epoch"],
+            "host": "Codex",
+            "platform": f"native Windows ({platform.platform()})",
+            "model": args.model,
+            "effort": args.effort,
+            "codex_cli": codex_version,
+            "runner_sha256": _sha256(Path(__file__)),
+            "frozen_asset_sha256": {
+                path.relative_to(REPO_ROOT).as_posix(): _sha256(path)
+                for path in (ORACLE_PATH, CORPUS_PATH, TOPOLOGIES_PATH, MANIFEST_PATH)
+            },
+            "workers": args.workers,
+            "timeout_seconds": args.timeout_seconds,
+            "max_model_attempts_per_scheduled_observation": inputs.oracle["trial_method"][
+                "max_model_attempts_per_scheduled_observation"
+            ],
+            "full_acceptance": args.full_acceptance,
+            "clean_context": "one new codex exec thread and disposable workspace per attempt",
+            "stage_state": "REFERENCE_BASE_PENDING" if args.full_acceptance else "FILTERED_PENDING",
+            "status": "RUNNING",
+            "started_at": datetime.now(UTC).isoformat(),
+        }
+        _json_dump(output / "run-metadata.json", run_metadata)
+        if args.full_acceptance:
+            _json_dump(output / "deterministic-evidence.json", build_deterministic_evidence(inputs))
+            verify_args = argparse.Namespace(output=output, timeout_seconds=900)
+            if verify_deterministic(verify_args) != 0:
+                run_metadata.update(status="BLOCKED", stage_state="DETERMINISTIC_GATE_FAILED")
+                _json_dump(output / "run-metadata.json", run_metadata)
+                _json_dump(
+                    output / "selection.json",
+                    {
+                        "status": "BLOCKED",
+                        "selected_candidate": None,
+                        "reason": "mandatory deterministic verification failed before live execution",
+                    },
+                )
+                return 1
+    workspace_parent.mkdir(parents=True, exist_ok=True)
     _json_dump(output / "run-metadata.json", run_metadata)
-
-    results: dict[str, tuple[dict[str, Any], dict[str, Any]]] = {}
 
     def execute(spec: TrialSpec):
         return execute_logical_observation(
@@ -967,91 +1276,239 @@ def run_matrix(args: argparse.Namespace) -> int:
             workspace_parent=workspace_parent,
         )
 
-    blocked: list[str] = []
-    pending = iter(schedule)
-    # Keep only active work submitted, so terminal failure cannot drain a queued matrix.
-    with concurrent.futures.ThreadPoolExecutor(max_workers=args.workers) as executor:
-        futures = {}
-        for spec in list(schedule)[: args.workers]:
-            next(pending)
-            futures[executor.submit(execute, spec)] = spec
-        while futures:
-            done, _ = concurrent.futures.wait(
-                futures, return_when=concurrent.futures.FIRST_COMPLETED
-            )
-            for future in done:
-                spec = futures.pop(future)
-                result = future.result()
-                if result is None:
-                    blocked.append(spec.key)
-                else:
-                    results[spec.key] = result
-                    print(f"completed {len(results)}/{len(schedule)} {spec.key}", flush=True)
-            if not blocked:
-                for _ in range(args.workers - len(futures)):
-                    spec = next(pending, None)
-                    if spec is not None:
-                        futures[executor.submit(execute, spec)] = spec
+    def persisted_results() -> dict[str, tuple[dict[str, Any], dict[str, Any]]]:
+        values = {}
+        for path in sorted((output / "attempts").glob("*.json")):
+            item = _load_json(path)
+            if item["status"] == "VALID":
+                if item["trial_key"] in values:
+                    raise HarnessError(f"{item['trial_key']}: duplicate valid attempt")
+                values[item["trial_key"]] = (item["structured"], item["raw"])
+        return values
 
-    structured_trials = [results[spec.key][0] for spec in schedule if spec.key in results]
-    raw_trials = [results[spec.key][1] for spec in schedule if spec.key in results]
-    _jsonl_dump(output / "trials.jsonl", structured_trials)
-    _jsonl_dump(output / "raw-trials.jsonl", raw_trials)
-    run_metadata["completed_at"] = datetime.now(UTC).isoformat()
-    run_metadata["completed_trials"] = len(structured_trials)
-    run_metadata["status"] = "BLOCKED" if blocked else "COMPLETE"
-    _json_dump(output / "run-metadata.json", run_metadata)
-    attempts = [_load_json(path) for path in sorted((output / "attempts").glob("*.json"))]
-    _jsonl_dump(output / "attempts.jsonl", attempts)
-    _jsonl_dump(
-        output / "failed-attempts.jsonl", [item for item in attempts if item["status"] == "FAILED"]
-    )
+    def export_evidence(stage_state: str, status: str, blocked: list[str] | None = None) -> None:
+        results = persisted_results()
+        specs = {spec.key: spec for spec in all_possible_trials(inputs)}
+        ordered = [key for key in specs if key in results]
+        _jsonl_dump(output / "trials.jsonl", (results[key][0] for key in ordered))
+        _jsonl_dump(output / "raw-trials.jsonl", (results[key][1] for key in ordered))
+        attempts = [_load_json(path) for path in sorted((output / "attempts").glob("*.json"))]
+        capacity = [
+            _load_json(path) for path in sorted((output / "capacity-events").glob("*.json"))
+        ]
+        _jsonl_dump(output / "attempts.jsonl", attempts)
+        _jsonl_dump(
+            output / "failed-attempts.jsonl", [x for x in attempts if x["status"] == "FAILED"]
+        )
+        _jsonl_dump(output / "capacity-events.jsonl", capacity)
+        run_metadata.update(
+            status=status,
+            stage_state=stage_state,
+            completed_valid_observations=len(results),
+            capacity_event_count=len(capacity),
+            updated_at=datetime.now(UTC).isoformat(),
+        )
+        _json_dump(output / "run-metadata.json", run_metadata)
+        _json_dump(
+            output / "completeness.json",
+            {
+                "execution_epoch": inputs.oracle["execution_epoch"],
+                "stage_state": stage_state,
+                "completed_valid_observations": len(results),
+                "exhausted_observations": blocked or [],
+                "capacity_event_count": len(capacity),
+                "acceptance_complete": status in {"COMPLETE", "BLOCKED_NO_REFERENCE"},
+                "partial_scoring_permitted": False,
+            },
+        )
+        _json_dump(
+            output / "retry-diagnostics.json",
+            {
+                candidate: {
+                    "model_attempts": sum(x["candidate_id"] == candidate for x in attempts),
+                    "non_capacity_failures": sum(
+                        x["candidate_id"] == candidate and x["status"] == "FAILED" for x in attempts
+                    ),
+                    "capacity_events": sum(x["candidate_id"] == candidate for x in capacity),
+                    "failure_classes": dict(
+                        Counter(
+                            x["failure_class"]
+                            for x in attempts
+                            if x["candidate_id"] == candidate and x["status"] == "FAILED"
+                        )
+                    ),
+                }
+                for candidate in inputs.oracle["candidate_ids"]
+            },
+        )
+
+    def execute_schedule(schedule: list[TrialSpec]) -> tuple[list[str], bool]:
+        completed = set(persisted_results())
+        pending = iter([spec for spec in schedule if spec.key not in completed])
+        blocked: list[str] = []
+        capacity_pause = False
+        with concurrent.futures.ThreadPoolExecutor(max_workers=args.workers) as executor:
+            futures: dict[concurrent.futures.Future, TrialSpec] = {}
+            for _ in range(args.workers):
+                spec = next(pending, None)
+                if spec is not None:
+                    futures[executor.submit(execute, spec)] = spec
+            while futures:
+                done, _ = concurrent.futures.wait(
+                    futures, return_when=concurrent.futures.FIRST_COMPLETED
+                )
+                for future in done:
+                    spec = futures.pop(future)
+                    try:
+                        result = future.result()
+                    except CapacityPause:
+                        capacity_pause = True
+                    else:
+                        if result is None:
+                            blocked.append(spec.key)
+                        else:
+                            completed.add(spec.key)
+                            print(f"completed {len(completed)} {spec.key}", flush=True)
+                if not blocked and not capacity_pause:
+                    for _ in range(args.workers - len(futures)):
+                        spec = next(pending, None)
+                        if spec is not None:
+                            futures[executor.submit(execute, spec)] = spec
+        return blocked, capacity_pause
+
+    def stop_for_execution_state(blocked: list[str], capacity: bool, state: str) -> int | None:
+        if capacity:
+            export_evidence(state, "PAUSED_EXTERNAL_CAPACITY", blocked)
+            _json_dump(
+                output / "selection.json",
+                {"status": "PAUSED_EXTERNAL_CAPACITY", "selected_candidate": None, "scored": False},
+            )
+            return 2
+        if blocked:
+            export_evidence(state, "BLOCKED", blocked)
+            _json_dump(
+                output / "selection.json",
+                {
+                    "status": "BLOCKED",
+                    "selected_candidate": None,
+                    "reason": "scheduled observation exhausted two non-capacity model attempts",
+                    "scored": False,
+                },
+            )
+            return 1
+        return None
+
+    if not args.full_acceptance:
+        schedule = scheduled_trials(inputs)
+        if args.case:
+            schedule = [spec for spec in schedule if spec.case["id"] in set(args.case)]
+        if args.candidate:
+            schedule = [spec for spec in schedule if spec.candidate_id in set(args.candidate)]
+        if args.repetition:
+            schedule = [spec for spec in schedule if spec.repetition in set(args.repetition)]
+        if not schedule:
+            raise HarnessError("trial filters selected no trials")
+        blocked, capacity = execute_schedule(schedule)
+        terminal = stop_for_execution_state(blocked, capacity, "FILTERED")
+        if terminal is not None:
+            return terminal
+        export_evidence("FILTERED_COMPLETE", "COMPLETE")
+        return 0
+
+    for stage, candidates in (
+        ("R", inputs.oracle["trial_method"]["reference_stage_candidates"]),
+        ("C", inputs.oracle["trial_method"]["challenger_stage_candidates"]),
+    ):
+        if stage == "C" and run_metadata.get("single_family_reference") is None:
+            break
+        blocked, capacity = execute_schedule(stage_schedule(inputs, stage))
+        terminal = stop_for_execution_state(blocked, capacity, f"{stage}_BASE_INCOMPLETE")
+        if terminal is not None:
+            return terminal
+        trials = [value[0] for value in persisted_results().values()]
+        thirds = conditional_third_specs(inputs, candidates, trials)
+        blocked, capacity = execute_schedule(thirds)
+        terminal = stop_for_execution_state(blocked, capacity, f"{stage}_THIRDS_INCOMPLETE")
+        if terminal is not None:
+            return terminal
+        trials = [value[0] for value in persisted_results().values()]
+        deterministic = _load_json(output / "deterministic-evidence.json")
+        stage_metrics = {
+            candidate: compute_candidate_metrics(inputs, candidate, trials, deterministic)
+            for candidate in candidates
+        }
+        aggregates = [
+            item
+            for candidate in candidates
+            for item in aggregate_candidate_trials(inputs, candidate, trials)
+        ]
+        existing_aggregates = []
+        aggregates_path = output / "case-aggregates.jsonl"
+        if stage == "C" and aggregates_path.exists():
+            existing_aggregates = load_trials(aggregates_path)
+        _jsonl_dump(aggregates_path, [*existing_aggregates, *aggregates])
+        if stage == "R":
+            reference = select_single_family_reference(inputs, stage_metrics)
+            _json_dump(output / "reference-selection.json", reference)
+            _json_dump(output / "metrics-reference.json", stage_metrics)
+            run_metadata["single_family_reference"] = reference["single_family_reference"]
+            if reference["status"] == "BLOCKED":
+                _json_dump(output / "metrics.json", stage_metrics)
+                _json_dump(
+                    output / "stability-diagnostics.json",
+                    {
+                        candidate: {
+                            key: stage_metrics[candidate][key]
+                            for key in (
+                                "first_two_disagreement_count",
+                                "first_two_disagreement_rate",
+                                "conditional_third_repetition_count",
+                                "valid_repetitions_per_case",
+                            )
+                        }
+                        for candidate in candidates
+                    },
+                )
+                _json_dump(
+                    output / "selection.json",
+                    {
+                        "status": "BLOCKED",
+                        "selected_candidate": None,
+                        "reason": "neither B0 nor B1 qualifies; challenger stage not executed",
+                        "qualifying": reference["qualifying"],
+                        "scored": True,
+                    },
+                )
+                export_evidence("REFERENCE_COMPLETE_NO_QUALIFIER", "BLOCKED_NO_REFERENCE")
+                return 1
+
+    results = persisted_results()
+    trials = [value[0] for value in results.values()]
+    deterministic = _load_json(output / "deterministic-evidence.json")
+    metrics = {
+        candidate: compute_candidate_metrics(inputs, candidate, trials, deterministic)
+        for candidate in inputs.oracle["candidate_ids"]
+    }
+    selection = apply_selection_rule(inputs, metrics)
+    _json_dump(output / "metrics.json", metrics)
+    _json_dump(output / "selection.json", selection)
     _json_dump(
-        output / "retry-diagnostics.json",
+        output / "stability-diagnostics.json",
         {
             candidate: {
-                "attempts": sum(item["candidate_id"] == candidate for item in attempts),
-                "retries": sum(
-                    item["candidate_id"] == candidate and item["attempt"] > 1 for item in attempts
-                ),
-                "failure_classes": dict(
-                    Counter(
-                        item["failure_class"]
-                        for item in attempts
-                        if item["candidate_id"] == candidate and item["status"] == "FAILED"
-                    )
-                ),
+                key: metrics[candidate][key]
+                for key in (
+                    "first_two_disagreement_count",
+                    "first_two_disagreement_rate",
+                    "conditional_third_repetition_count",
+                    "valid_repetitions_per_case",
+                )
             }
             for candidate in inputs.oracle["candidate_ids"]
         },
     )
-    _json_dump(
-        output / "completeness.json",
-        {
-            "execution_epoch": inputs.oracle["execution_epoch"],
-            "required": inputs.oracle["trial_method"]["logical_observations_required"],
-            "completed": len(results),
-            "exhausted_observations": blocked,
-            "missing_observations": [spec.key for spec in schedule if spec.key not in results],
-            "partial_scoring_permitted": False,
-        },
-    )
-    if args.full_acceptance:
-        deterministic = build_deterministic_evidence(inputs)
-        _json_dump(output / "deterministic-evidence.json", deterministic)
-    if blocked:
-        _json_dump(
-            output / "selection.json",
-            {
-                "status": "BLOCKED",
-                "selected_candidate": None,
-                "reason": "incomplete v4 execution; no acceptance metrics computed",
-            },
-        )
-    # Each TemporaryDirectory owns its own verified disposable target. Never recursively
-    # delete a caller-supplied output directory or discard evidence from a previous run.
-    workspace_parent.rmdir()
-    return 1 if blocked else 0
+    export_evidence("CHALLENGER_COMPLETE", "COMPLETE")
+    return 0
 
 
 def load_trials(path: Path) -> list[dict[str, Any]]:
@@ -1069,168 +1526,208 @@ def load_trials(path: Path) -> list[dict[str, Any]]:
     return trials
 
 
+def _validate_executed_runner_provenance(metadata: dict[str, Any]) -> None:
+    recorded = metadata.get("runner_sha256")
+    if recorded == _sha256(Path(__file__)):
+        return
+    commit = metadata.get("executed_runner_git_commit")
+    if not isinstance(commit, str) or not re.fullmatch(r"[0-9a-f]{40}", commit):
+        raise HarnessError("executed runner changed without immutable Git provenance")
+    relative = Path(__file__).relative_to(REPO_ROOT).as_posix()
+    try:
+        source = subprocess.check_output(
+            ["git", "show", f"{commit}:{relative}"], cwd=REPO_ROOT, stderr=subprocess.STDOUT
+        )
+    except subprocess.CalledProcessError as exc:
+        raise HarnessError("cannot resolve executed runner Git provenance") from exc
+    normalized_digests = {
+        hashlib.sha256(source).hexdigest(),
+        hashlib.sha256(source.replace(b"\r\n", b"\n")).hexdigest(),
+        hashlib.sha256(source.replace(b"\n", b"\r\n")).hexdigest(),
+    }
+    if recorded not in normalized_digests:
+        raise HarnessError("executed runner Git provenance does not match recorded hash")
+
+
 def validate_complete_evidence(inputs: FrozenInputs, output: Path) -> None:
-    """Fail closed before scoring: exact matrix, epoch, attempts and raw trace binding."""
+    """Fail closed on V6 epoch, adaptive schedule, attempts, traces and aggregates."""
     metadata = _load_json(output / "run-metadata.json")
     method = inputs.oracle["trial_method"]
-    expected_count = method["logical_observations_required"]
+    if metadata.get("status") not in {"COMPLETE", "BLOCKED_NO_REFERENCE"}:
+        raise HarnessError("incomplete V6 execution cannot be scored")
     if (
         metadata.get("oracle_id") != inputs.oracle["oracle_id"]
         or metadata.get("execution_epoch") != inputs.oracle["execution_epoch"]
-        or metadata.get("scheduled_trials") != expected_count
-        or metadata.get("completed_trials") != expected_count
-        or metadata.get("status") != "COMPLETE"
         or metadata.get("full_acceptance") is not True
         or metadata.get("model") != "gpt-5.6-sol"
         or metadata.get("effort") != "medium"
         or metadata.get("host") != "Codex"
-        or metadata.get("timeout_seconds") != method["timeout_seconds_per_attempt"]
-        or metadata.get("runner_sha256") != _sha256(Path(__file__))
+        or metadata.get("timeout_seconds") != method["timeout_seconds_per_model_attempt"]
     ):
-        raise HarnessError("incomplete or mismatched execution epoch/configuration")
+        raise HarnessError("mismatched V6 execution identity/configuration")
+    _validate_executed_runner_provenance(metadata)
     for path in (ORACLE_PATH, CORPUS_PATH, TOPOLOGIES_PATH, MANIFEST_PATH):
-        if metadata["frozen_asset_sha256"].get(path.relative_to(REPO_ROOT).as_posix()) != _sha256(
-            path
-        ):
-            raise HarnessError("run frozen input hash mismatch")
+        relative = path.relative_to(REPO_ROOT).as_posix()
+        if metadata["frozen_asset_sha256"].get(relative) != _sha256(path):
+            raise HarnessError(f"run frozen input hash mismatch: {relative}")
+
+    deterministic = _load_json(output / "deterministic-evidence.json")
+    if any(
+        deterministic.get(field) != "PASS"
+        for field in (
+            "full_deterministic_regression",
+            "profile_isolation_regression",
+            "consumer_source_independence_regression",
+        )
+    ):
+        raise HarnessError("mandatory deterministic evidence is not PASS")
+
     trials = load_trials(output / "trials.jsonl")
     raw_trials = load_trials(output / "raw-trials.jsonl")
     attempts = load_trials(output / "attempts.jsonl")
-    expected = {spec.key: spec for spec in scheduled_trials(inputs)}
+    possible = {spec.key: spec for spec in all_possible_trials(inputs)}
     trial_keys = [
         f"{trial['case_id']}--{trial['candidate_id']}--r{trial['repetition']}" for trial in trials
     ]
     raw_keys = [raw["trial_key"] for raw in raw_trials]
-    if (
-        len(trials) != expected_count
-        or len(raw_trials) != expected_count
-        or set(trial_keys) != set(expected)
-        or set(raw_keys) != set(expected)
+    if len(set(trial_keys)) != len(trial_keys) or set(trial_keys) != set(raw_keys):
+        raise HarnessError("valid trial/raw identity mismatch or duplication")
+    if set(trial_keys) - set(possible):
+        raise HarnessError("trial outside frozen V6 identity set")
+    evaluated = (
+        ["B0", "B1"]
+        if metadata["status"] == "BLOCKED_NO_REFERENCE"
+        else inputs.oracle["candidate_ids"]
+    )
+    expected_base = {
+        spec.key
+        for stage in (("R",) if len(evaluated) == 2 else ("R", "C"))
+        for spec in stage_schedule(inputs, stage)
+    }
+    if not expected_base <= set(trial_keys):
+        raise HarnessError("mandatory paired base schedule is incomplete")
+    if metadata["status"] == "BLOCKED_NO_REFERENCE" and any(
+        trial["candidate_id"] in {"F2", "G3"} for trial in trials
     ):
-        raise HarnessError("exactly one scored observation per frozen logical identity is required")
-    if {item["trial_key"] for item in attempts} != set(expected):
-        raise HarnessError("attempt journal matrix mismatch")
+        raise HarnessError("challenger evidence exists despite no qualifying reference")
+    lower = method["reference_stage_base_valid_observations"]
+    upper = method["reference_stage_max_valid_observations"]
+    if len(evaluated) == 4:
+        lower, upper = method["overall_valid_observation_range_when_challengers_execute"]
+    if not lower <= len(trials) <= upper:
+        raise HarnessError("V6 valid observation count is outside the frozen stage range")
+
     raw_by_key = dict(zip(raw_keys, raw_trials, strict=True))
     trial_by_key = dict(zip(trial_keys, trials, strict=True))
     thread_ids: set[str] = set()
     workspaces: set[str] = set()
-    for key, spec in expected.items():
+    for key, trial in trial_by_key.items():
+        spec = possible[key]
         history = sorted(
             (item for item in attempts if item["trial_key"] == key),
             key=lambda item: item["attempt"],
         )
-        if not 1 <= len(history) <= method["max_attempts_per_logical_observation"] or [
-            item["attempt"] for item in history
-        ] != list(range(1, len(history) + 1)):
+        if (
+            not 1 <= len(history) <= method["max_model_attempts_per_scheduled_observation"]
+            or [item["attempt"] for item in history] != list(range(1, len(history) + 1))
+            or [item["status"] for item in history] != ["FAILED"] * (len(history) - 1) + ["VALID"]
+        ):
             raise HarnessError(f"{key}: invalid attempt count/order")
-        if [item["status"] for item in history] != ["FAILED"] * (len(history) - 1) + ["VALID"]:
-            raise HarnessError(f"{key}: retry after valid observation or incomplete attempts")
-        trial, raw = trial_by_key[key], raw_by_key[key]
+        raw = raw_by_key[key]
         if history[-1]["structured"] != trial or history[-1]["raw"] != raw:
             raise HarnessError(f"{key}: scored result differs from first valid attempt")
         for item in history:
             if item["execution_epoch"] != inputs.oracle["execution_epoch"]:
                 raise HarnessError(f"{key}: prior epoch attempt")
-            attempt_raw = item.get("raw")
-            if attempt_raw is None:
-                if item.get("failure_class") != "ATTEMPT_SETUP_ERROR":
-                    raise HarnessError(f"{key}: missing raw failure evidence")
+        _validate_partial(inputs, spec, trial, raw, model="gpt-5.6-sol", effort="medium")
+        if (
+            raw.get("prompt") != _trial_prompt(spec.case)
+            or raw.get("returncode") != 0
+            or raw.get("timeout_seconds") != method["timeout_seconds_per_model_attempt"]
+        ):
+            raise HarnessError(f"{key}: raw execution binding mismatch")
+        for record in raw["materialization"]["files"]:
+            if record["sha256"] != _sha256(REPO_ROOT / record["source"]):
+                raise HarnessError(f"{key}: candidate bytes changed")
+        command = raw["command"]
+        workspace = command[command.index("--cd") + 1]
+        if workspace in workspaces:
+            raise HarnessError(f"{key}: workspace reused")
+        workspaces.add(workspace)
+        threads = []
+        for line in raw["stdout_jsonl"].splitlines():
+            try:
+                event = json.loads(line)
+            except json.JSONDecodeError:
                 continue
-            if (
-                attempt_raw.get("execution_epoch") != inputs.oracle["execution_epoch"]
-                or attempt_raw.get("oracle_id") != inputs.oracle["oracle_id"]
-                or attempt_raw.get("attempt") != item["attempt"]
-                or attempt_raw.get("timeout_seconds") != method["timeout_seconds_per_attempt"]
-            ):
-                raise HarnessError(f"{key}: attempt epoch/timeout mismatch")
-            _validate_partial(
-                inputs, spec, trial, attempt_raw, model="gpt-5.6-sol", effort="medium"
-            )
-            if attempt_raw["prompt"] != _trial_prompt(spec.case):
-                raise HarnessError(f"{key}: attempt prompt changed")
-            for record in attempt_raw["materialization"]["files"]:
-                if record["sha256"] != _sha256(REPO_ROOT / record["source"]):
-                    raise HarnessError(f"{key}: candidate bytes changed")
-            command = attempt_raw["command"]
-            workspace = command[command.index("--cd") + 1]
-            if workspace in workspaces:
-                raise HarnessError(f"{key}: workspace reused")
-            workspaces.add(workspace)
-            threads = []
-            for line in attempt_raw["stdout_jsonl"].splitlines():
-                try:
-                    event = json.loads(line)
-                except json.JSONDecodeError:
-                    continue
-                if event.get("type") == "thread.started":
-                    threads.append(event["thread_id"])
-            if (
-                len(threads) > 1
-                or (item["status"] == "VALID" and len(threads) != 1)
-                or set(threads) & thread_ids
-            ):
-                raise HarnessError(f"{key}: missing or reused fresh thread")
-            thread_ids.update(threads)
+            if event.get("type") == "thread.started":
+                threads.append(event["thread_id"])
+        if len(threads) != 1 or set(threads) & thread_ids:
+            raise HarnessError(f"{key}: missing or reused fresh thread")
+        thread_ids.update(threads)
         model_result = json.loads(raw["final_message"])
         _validate_model_result(inputs, spec, model_result)
-        if (
-            raw["returncode"] != 0
-            or trial.get("attempt") != history[-1]["attempt"]
-            or trial.get("execution_epoch") != inputs.oracle["execution_epoch"]
-        ):
-            raise HarnessError(f"{key}: scored attempt identity/exit mismatch")
-        for field in (
-            "semantic_outcome",
-            "granted_capabilities",
-            "permission_broadening",
-            "response_summary",
-        ):
-            if trial[field] != model_result[field]:
-                raise HarnessError(f"{key}: structured result does not match raw response")
-        if (
-            trial["reported_activated_entrypoints"] != model_result["activated_entrypoints"]
-            or trial["expected_entrypoints"] != expected_entrypoints(inputs, spec)
-            or trial["expected_semantic_outcome"] != spec.case["expected_semantic_outcome"]
-            or trial["case_class"] != spec.case["class"]
-            or trial["forbidden_capabilities"] != spec.case.get("forbidden_capabilities", [])
-        ):
-            raise HarnessError(f"{key}: scored classification binding mismatch")
         entrypoints, references, trace = _observed_skill_reads(inputs, spec, raw["stdout_jsonl"])
-        surfaces = {
-            name: (
-                REPO_ROOT
-                / inputs.manifest["candidates"][spec.candidate_id]["entrypoints"][name][
-                    "skill_source"
-                ]
-            )
-            .stat()
-            .st_size
-            for name in entrypoints
-        }
         reference_bytes = sum((REPO_ROOT / path).stat().st_size for path in references)
         if (
             not trace
-            or trial["host_trace_available"] is not True
             or trial["activated_entrypoints"] != entrypoints
             or trial["loaded_reference_paths"] != references
-            or trial["activation_surface_bytes"] != surfaces
             or trial["loaded_reference_bytes"] != reference_bytes
-            or trial["observed_context_bytes"] != sum(surfaces.values()) + reference_bytes
+            or trial["observed_context_bytes"]
+            != sum(trial["activation_surface_bytes"].values()) + reference_bytes
         ):
             raise HarnessError(f"{key}: observed host-read evidence mismatch")
+
+    aggregates = [
+        item
+        for candidate in evaluated
+        for item in aggregate_candidate_trials(inputs, candidate, trials)
+    ]
+    if aggregates != load_trials(output / "case-aggregates.jsonl"):
+        raise HarnessError("persisted V6 case aggregates are not exactly recomputable")
+    recomputed_metrics = {
+        candidate: compute_candidate_metrics(inputs, candidate, trials, deterministic)
+        for candidate in evaluated
+    }
+    if recomputed_metrics != _load_json(output / "metrics.json"):
+        raise HarnessError("persisted V6 metrics are not exactly recomputable")
+    expected_selection = (
+        {
+            "status": "BLOCKED",
+            "selected_candidate": None,
+            "reason": "neither B0 nor B1 qualifies; challenger stage not executed",
+            "qualifying": select_single_family_reference(inputs, recomputed_metrics)["qualifying"],
+            "scored": True,
+        }
+        if len(evaluated) == 2
+        else apply_selection_rule(inputs, recomputed_metrics)
+    )
+    if expected_selection != _load_json(output / "selection.json"):
+        raise HarnessError("persisted V6 selection is not exactly recomputable")
 
 
 def score_matrix(args: argparse.Namespace) -> int:
     inputs = load_frozen_inputs()
     output = args.output.resolve()
-    trials = load_trials(output / "trials.jsonl")
     validate_complete_evidence(inputs, output)
+    metadata = _load_json(output / "run-metadata.json")
+    trials = load_trials(output / "trials.jsonl")
     deterministic = _load_json(output / "deterministic-evidence.json")
+    candidates = (
+        ["B0", "B1"]
+        if metadata["status"] == "BLOCKED_NO_REFERENCE"
+        else inputs.oracle["candidate_ids"]
+    )
     metrics = {
         candidate: compute_candidate_metrics(inputs, candidate, trials, deterministic)
-        for candidate in inputs.oracle["candidate_ids"]
+        for candidate in candidates
     }
-    selection = apply_selection_rule(inputs, metrics)
+    selection = (
+        _load_json(output / "selection.json")
+        if len(candidates) == 2
+        else apply_selection_rule(inputs, metrics)
+    )
     _json_dump(output / "metrics.json", metrics)
     _json_dump(output / "selection.json", selection)
     return 0

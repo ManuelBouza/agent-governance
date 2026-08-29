@@ -1,0 +1,83 @@
+{
+  "B0": {
+    "activation_f1": 0.9206349206349206,
+    "activation_precision": 0.8529411764705882,
+    "activation_recall": 1.0,
+    "ambiguous_context_permission_broadening_count": 0,
+    "candidate_id": "B0",
+    "case_count": 40,
+    "conditional_third_repetition_count": 7,
+    "consumer_source_independence_regression": "PASS",
+    "cross_profile_violation_count": 0,
+    "false_activation_rate": 0.45454545454545453,
+    "first_two_disagreement_count": 7,
+    "first_two_disagreement_rate": 0.175,
+    "full_deterministic_regression": "PASS",
+    "mandatory_expected": {
+      "ambiguous_context_permission_broadening_count": 0,
+      "consumer_source_independence_regression": "PASS",
+      "cross_profile_violation_count": 0,
+      "full_deterministic_regression": "PASS",
+      "profile_isolation_regression": "PASS",
+      "semantic_outcome_accuracy_cross_profile_and_ambiguous": 1.0,
+      "single_install_feasibility": true,
+      "source_distribution_integrity": true
+    },
+    "median_loaded_reference_bytes": 1901.0,
+    "median_observed_context_bytes": 3107.0,
+    "overactivation_rate": 0.125,
+    "p95_loaded_reference_bytes": 1901.0,
+    "p95_observed_context_bytes": 3107.0,
+    "profile_isolation_regression": "PASS",
+    "semantic_outcome_accuracy": 0.975,
+    "semantic_outcome_accuracy_cross_profile_and_ambiguous": 1.0,
+    "single_install_feasibility": true,
+    "source_distribution_integrity": true,
+    "valid_repetition_count": 87,
+    "valid_repetitions_per_case": {
+      "2": 33,
+      "3": 7
+    },
+    "wrong_specialist_rate": 0.0
+  },
+  "B1": {
+    "activation_f1": 0.9354838709677419,
+    "activation_precision": 0.8787878787878788,
+    "activation_recall": 1.0,
+    "ambiguous_context_permission_broadening_count": 2,
+    "candidate_id": "B1",
+    "case_count": 40,
+    "conditional_third_repetition_count": 0,
+    "consumer_source_independence_regression": "PASS",
+    "cross_profile_violation_count": 0,
+    "false_activation_rate": 0.36363636363636365,
+    "first_two_disagreement_count": 5,
+    "first_two_disagreement_rate": 0.125,
+    "full_deterministic_regression": "PASS",
+    "mandatory_expected": {
+      "ambiguous_context_permission_broadening_count": 0,
+      "consumer_source_independence_regression": "PASS",
+      "cross_profile_violation_count": 0,
+      "full_deterministic_regression": "PASS",
+      "profile_isolation_regression": "PASS",
+      "semantic_outcome_accuracy_cross_profile_and_ambiguous": 1.0,
+      "single_install_feasibility": true,
+      "source_distribution_integrity": true
+    },
+    "median_loaded_reference_bytes": 662.0,
+    "median_observed_context_bytes": 1956.0,
+    "overactivation_rate": 0.1,
+    "p95_loaded_reference_bytes": 1328.0,
+    "p95_observed_context_bytes": 2622.0,
+    "profile_isolation_regression": "PASS",
+    "semantic_outcome_accuracy": 0.975,
+    "semantic_outcome_accuracy_cross_profile_and_ambiguous": 0.875,
+    "single_install_feasibility": true,
+    "source_distribution_integrity": true,
+    "valid_repetition_count": 80,
+    "valid_repetitions_per_case": {
+      "2": 40
+    },
+    "wrong_specialist_rate": 0.0
+  }
+}
