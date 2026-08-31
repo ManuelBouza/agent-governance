@@ -70,13 +70,13 @@
   "structured_output_valid": true,
   "telemetry": {
     "cached_input_tokens": 61184,
-    "execution_policy_rejected_tool_call_count": 0,
+    "execution_policy_rejected_tool_call_count": 5,
     "input_tokens": 82593,
     "output_tokens": 1149,
     "reasoning_tokens": 577,
     "token_usage_available": true,
-    "tool_call_count": 0,
-    "total_tokens": 145503
+    "tool_call_count": 5,
+    "total_tokens": null
   },
   "unexpected_model_workspace_mutation": false,
   "workspace_isolation": {

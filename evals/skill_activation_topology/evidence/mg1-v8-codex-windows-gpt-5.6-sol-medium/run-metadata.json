@@ -5,6 +5,7 @@
   "completed_valid_observations": 0,
   "corpus_id": "MG1-T023-CORPUS-v4",
   "effort": "medium",
+  "executed_runner_git_commit": "2c03d0ec571cd222eff5e4e7b3ba851863f6084f",
   "execution_epoch": "MG1-T023-EXECUTION-v8",
   "frozen_asset_sha256": {
     "evals/skill_activation_topology/corpus.json": "be56966f790e1640c200bf92b3c7fdf9f9792c6ef2d17a91e7bc4ef3e5583e75",
@@ -19,6 +20,11 @@
   "model": "gpt-5.6-sol",
   "oracle_id": "MG1-T023-TOPOLOGY-ORACLE-v8",
   "platform": "native Windows (Windows-11-10.0.26200-SP0)",
+  "post_run_evidence_normalization": {
+    "host_surface_drift": "Recomputed from preserved stderr with Windows path normalization; both canaries show required Skill-body read policy rejection.",
+    "rejected_tool_calls": "Counted from preserved stderr rejection records because rejected calls were not emitted as JSONL tool items.",
+    "total_tokens": "Recorded as null because the provider event exposed component fields but no exact total_tokens field; no inferred total retained."
+  },
   "presentation_revision": "MG1-T023-PRESENTATIONS-v3",
   "runner_sha256": "e9a1e001b188e961dc9240a91e617ce0c37a78fe22a8ada0f355a44906831ec2",
   "sandbox_selection_order": [

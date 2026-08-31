@@ -703,12 +703,46 @@ def test_minimal_host_command_freezes_required_surface(harness, tmp_path) -> Non
     )
     assert "--ignore-user-config" in command
     assert "--ignore-rules" in command
+    assert 'web_search="disabled"' in command
     assert command[command.index("--sandbox") + 1] == "read-only"
     for feature in harness.MINIMAL_DISABLED_FEATURES:
         assert any(
             command[index : index + 2] == ["--disable", feature]
             for index in range(len(command) - 1)
         )
+
+
+def test_telemetry_does_not_invent_provider_total_and_counts_stderr_rejections(harness) -> None:
+    stdout = "\n".join(
+        [
+            json.dumps({"type": "thread.started", "thread_id": "synthetic"}),
+            json.dumps(
+                {
+                    "type": "turn.completed",
+                    "usage": {
+                        "input_tokens": 100,
+                        "cached_input_tokens": 80,
+                        "output_tokens": 10,
+                        "reasoning_output_tokens": 4,
+                    },
+                }
+            ),
+        ]
+    )
+    telemetry = harness._trace_telemetry(stdout, 'Rejected("one") Rejected("two")')
+    assert telemetry["token_usage_available"] is True
+    assert telemetry["total_tokens"] is None
+    assert telemetry["execution_policy_rejected_tool_call_count"] == 2
+
+
+def test_surface_drift_normalizes_windows_skill_path(harness) -> None:
+    stderr = (
+        'Get-Content C:\\tmp\\.agents\\skills\\mx-canary\\SKILL.md Rejected("blocked by policy")'
+    )
+    assert (
+        harness._surface_drift("", stderr, skill_path=".agents/skills/mx-canary/SKILL.md")
+        == "REQUIRED_SKILL_BODY_READ_REJECTED"
+    )
 
 
 def test_one_finalized_false_activation_is_exactly_futile(harness, frozen) -> None:

@@ -63,8 +63,6 @@ MINIMAL_DISABLED_FEATURES = (
     "skill_mcp_dependency_install",
     "shell_snapshot",
     "standalone_web_search",
-    "web_search_cached",
-    "web_search_request",
 )
 CANARY_NONCE = "The quartz heron carries seven indigo pebbles at noon."
 
@@ -556,6 +554,8 @@ def _host_command(
         model,
         "--config",
         f'model_reasoning_effort="{effort}"',
+        "--config",
+        'web_search="disabled"',
     ]
     for feature in MINIMAL_DISABLED_FEATURES:
         command.extend(("--disable", feature))
@@ -571,7 +571,7 @@ def _host_command(
     return command
 
 
-def _trace_telemetry(stdout_jsonl: str) -> dict[str, Any]:
+def _trace_telemetry(stdout_jsonl: str, stderr: str = "") -> dict[str, Any]:
     usage: dict[str, Any] = {}
     tool_calls = 0
     rejected = 0
@@ -596,12 +596,12 @@ def _trace_telemetry(stdout_jsonl: str) -> dict[str, Any]:
         "reasoning_tokens": usage.get("reasoning_output_tokens"),
         "output_tokens": usage.get("output_tokens"),
     }
-    available = all(isinstance(value, int) for value in token_fields.values())
-    total = sum(token_fields.values()) if available else None
+    rejected += stderr.count('Rejected("')
+    available = bool(usage)
     return {
         "token_usage_available": available,
         **token_fields,
-        "total_tokens": total,
+        "total_tokens": usage.get("total_tokens"),
         "tool_call_count": tool_calls,
         "execution_policy_rejected_tool_call_count": rejected,
     }
@@ -613,9 +613,10 @@ def _surface_drift(stdout_jsonl: str, stderr: str, *, skill_path: str | None = N
         r"(?i)(recommended_plugins|openai-curated-remote|apps \(connectors\)|app://)", visible
     ):
         return "UNRELATED_APP_PLUGIN_SURFACE"
+    normalized_visible = visible.replace("\\", "/").casefold()
     if (
         skill_path
-        and skill_path.casefold() in visible.casefold()
+        and skill_path.replace("\\", "/").casefold() in normalized_visible
         and re.search(r"(?i)(rejected|denied|not allowed|policy)", visible)
     ):
         return "REQUIRED_SKILL_BODY_READ_REJECTED"
@@ -758,7 +759,7 @@ def run_canary(
             },
             "workspace_isolation": isolation,
             "duration_seconds": round(time.monotonic() - started, 6),
-            "telemetry": _trace_telemetry(completed.stdout),
+            "telemetry": _trace_telemetry(completed.stdout, completed.stderr),
             "command": command,
             "stdout_jsonl": completed.stdout,
             "stderr": completed.stderr,
@@ -891,7 +892,7 @@ def run_trial(
                 "ignore_rules": True,
                 "disabled_features": list(MINIMAL_DISABLED_FEATURES),
             },
-            "telemetry": _trace_telemetry(completed.stdout),
+            "telemetry": _trace_telemetry(completed.stdout, completed.stderr),
             "materialization": provenance,
             "fixture_materialization": fixture,
             "workspace_isolation": isolation,

@@ -208,10 +208,10 @@
         "tests/test_source_consumer_separation.py",
         "tests/test_consumer_v1_characterization.py"
       ],
-      "duration_seconds": 1.918344,
+      "duration_seconds": 2.018405,
       "returncode": 0,
       "stderr": "",
-      "stdout": "============================= test session starts =============================\nplatform win32 -- Python 3.13.14, pytest-9.1.1, pluggy-1.6.0\nrootdir: C:\\Manuel\\Projects\\agent-governance\\.worktrees\\t023-v8-current\nconfigfile: pyproject.toml\ncollected 8 items\n\ntests\\test_source_consumer_separation.py ......                          [ 75%]\ntests\\test_consumer_v1_characterization.py ..                            [100%]\n\n============================== 8 passed in 1.13s ==============================\n"
+      "stdout": "============================= test session starts =============================\nplatform win32 -- Python 3.13.14, pytest-9.1.1, pluggy-1.6.0\nrootdir: C:\\Manuel\\Projects\\agent-governance\\.worktrees\\t023-v8-current\nconfigfile: pyproject.toml\ncollected 8 items\n\ntests\\test_source_consumer_separation.py ......                          [ 75%]\ntests\\test_consumer_v1_characterization.py ..                            [100%]\n\n============================== 8 passed in 1.22s ==============================\n"
     },
     "full_pytest": {
       "command": [
@@ -222,10 +222,10 @@
         "-m",
         "pytest"
       ],
-      "duration_seconds": 109.226318,
+      "duration_seconds": 110.804052,
       "returncode": 0,
       "stderr": "",
-      "stdout": "============================= test session starts =============================\nplatform win32 -- Python 3.13.14, pytest-9.1.1, pluggy-1.6.0\nrootdir: C:\\Manuel\\Projects\\agent-governance\\.worktrees\\t023-v8-current\nconfigfile: pyproject.toml\ntestpaths: tests\ncollected 454 items\n\ntests\\test_assurance_audit_contract.py ..........                        [  2%]\ntests\\test_canonical_layout.py ......................................    [ 10%]\ntests\\test_coexistence_classification.py .................               [ 14%]\ntests\\test_consumer_governance_cli.py .................................. [ 21%]\n........                                                                 [ 23%]\ntests\\test_consumer_governance_cli_v1.py ............................... [ 30%]\n....                                                                     [ 31%]\ntests\\test_consumer_governance_trigger_corpus.py ....................... [ 36%]\n.......                                                                  [ 37%]\ntests\\test_consumer_v1_characterization.py ..                            [ 38%]\ntests\\test_d032_policy_contract.py .............                         [ 41%]\ntests\\test_execution_control_contract.py ...........                     [ 43%]\ntests\\test_governance_artifact.py ....                                   [ 44%]\ntests\\test_governance_learning.py ........                               [ 46%]\ntests\\test_harness_foundation.py .......                                 [ 47%]\ntests\\test_profile_abstraction.py .......................                [ 52%]\ntests\\test_reference_integrity.py ...................................... [ 61%]\n.........                                                                [ 63%]\ntests\\test_repository_context.py ....................................... [ 71%]\n.................                                                        [ 75%]\ntests\\test_runbook_recipe_validation.py .........                        [ 77%]\ntests\\test_security_verification_contract.py .........                   [ 79%]\ntests\\test_shared_governance_engine.py ....                              [ 80%]\ntests\\test_skill_activation_topology_harness.py ........................ [ 85%]\n.........................                                                [ 91%]\ntests\\test_source_consumer_separation.py ......                          [ 92%]\ntests\\test_source_maintainer_profile.py .........................        [ 98%]\ntests\\test_t034_native_sdd_conformance.py ...                            [ 98%]\ntests\\test_t035_runbook_operation_resolution_conformance.py ......       [100%]\n\n======================= 454 passed in 108.18s (0:01:48) =======================\n"
+      "stdout": "============================= test session starts =============================\nplatform win32 -- Python 3.13.14, pytest-9.1.1, pluggy-1.6.0\nrootdir: C:\\Manuel\\Projects\\agent-governance\\.worktrees\\t023-v8-current\nconfigfile: pyproject.toml\ntestpaths: tests\ncollected 456 items\n\ntests\\test_assurance_audit_contract.py ..........                        [  2%]\ntests\\test_canonical_layout.py ......................................    [ 10%]\ntests\\test_coexistence_classification.py .................               [ 14%]\ntests\\test_consumer_governance_cli.py .................................. [ 21%]\n........                                                                 [ 23%]\ntests\\test_consumer_governance_cli_v1.py ............................... [ 30%]\n....                                                                     [ 31%]\ntests\\test_consumer_governance_trigger_corpus.py ....................... [ 36%]\n.......                                                                  [ 37%]\ntests\\test_consumer_v1_characterization.py ..                            [ 38%]\ntests\\test_d032_policy_contract.py .............                         [ 41%]\ntests\\test_execution_control_contract.py ...........                     [ 43%]\ntests\\test_governance_artifact.py ....                                   [ 44%]\ntests\\test_governance_learning.py ........                               [ 46%]\ntests\\test_harness_foundation.py .......                                 [ 47%]\ntests\\test_profile_abstraction.py .......................                [ 52%]\ntests\\test_reference_integrity.py ...................................... [ 60%]\n.........                                                                [ 62%]\ntests\\test_repository_context.py ....................................... [ 71%]\n.................                                                        [ 75%]\ntests\\test_runbook_recipe_validation.py .........                        [ 77%]\ntests\\test_security_verification_contract.py .........                   [ 79%]\ntests\\test_shared_governance_engine.py ....                              [ 80%]\ntests\\test_skill_activation_topology_harness.py ........................ [ 85%]\n...........................                                              [ 91%]\ntests\\test_source_consumer_separation.py ......                          [ 92%]\ntests\\test_source_maintainer_profile.py .........................        [ 98%]\ntests\\test_t034_native_sdd_conformance.py ...                            [ 98%]\ntests\\test_t035_runbook_operation_resolution_conformance.py ......       [100%]\n\n======================= 456 passed in 109.77s (0:01:49) =======================\n"
     },
     "profile_isolation": {
       "command": [
@@ -238,10 +238,10 @@
         "tests/test_profile_abstraction.py",
         "tests/test_source_maintainer_profile.py"
       ],
-      "duration_seconds": 11.871388,
+      "duration_seconds": 11.088736,
       "returncode": 0,
       "stderr": "",
-      "stdout": "============================= test session starts =============================\nplatform win32 -- Python 3.13.14, pytest-9.1.1, pluggy-1.6.0\nrootdir: C:\\Manuel\\Projects\\agent-governance\\.worktrees\\t023-v8-current\nconfigfile: pyproject.toml\ncollected 48 items\n\ntests\\test_profile_abstraction.py .......................                [ 47%]\ntests\\test_source_maintainer_profile.py .........................        [100%]\n\n============================= 48 passed in 11.15s =============================\n"
+      "stdout": "============================= test session starts =============================\nplatform win32 -- Python 3.13.14, pytest-9.1.1, pluggy-1.6.0\nrootdir: C:\\Manuel\\Projects\\agent-governance\\.worktrees\\t023-v8-current\nconfigfile: pyproject.toml\ncollected 48 items\n\ntests\\test_profile_abstraction.py .......................                [ 47%]\ntests\\test_source_maintainer_profile.py .........................        [100%]\n\n============================= 48 passed in 10.40s =============================\n"
     },
     "ruff_check": {
       "command": [
@@ -252,7 +252,7 @@
         "check",
         "."
       ],
-      "duration_seconds": 0.10041,
+      "duration_seconds": 0.090421,
       "returncode": 0,
       "stderr": "",
       "stdout": "All checks passed!\n"
@@ -267,7 +267,7 @@
         "--check",
         "."
       ],
-      "duration_seconds": 0.107801,
+      "duration_seconds": 0.073559,
       "returncode": 0,
       "stderr": "",
       "stdout": "36 files already formatted\n"
