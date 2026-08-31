@@ -1,0 +1,19 @@
+{
+  "B0": {
+    "conditional_third_repetition_count": 0,
+    "first_two_disagreement_count": 12,
+    "first_two_disagreement_rate": 0.3,
+    "valid_repetitions_per_case": {
+      "2": 40
+    }
+  },
+  "B1": {
+    "conditional_third_repetition_count": 11,
+    "first_two_disagreement_count": 11,
+    "first_two_disagreement_rate": 0.275,
+    "valid_repetitions_per_case": {
+      "2": 29,
+      "3": 11
+    }
+  }
+}

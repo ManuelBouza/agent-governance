@@ -1,0 +1,101 @@
+{
+  "candidate_id": "B1",
+  "execution_epoch": "MG1-T023-EXECUTION-v7",
+  "pending_attempt": 1,
+  "raw": {
+    "attempt": 1,
+    "command": [
+      "codex",
+      "exec",
+      "--json",
+      "--ignore-user-config",
+      "--color",
+      "never",
+      "--sandbox",
+      "read-only",
+      "--ephemeral",
+      "--skip-git-repo-check",
+      "--cd",
+      "C:\\Users\\Manuel\\AppData\\Local\\Temp\\mx-VS03--B1--r1-7fbdz9eg",
+      "--model",
+      "gpt-5.6-sol",
+      "--config",
+      "model_reasoning_effort=\"medium\"",
+      "--output-schema",
+      "C:\\Users\\Manuel\\AppData\\Local\\Temp\\mx-VS03--B1--r1-7fbdz9eg\\shape.json",
+      "--output-last-message",
+      "C:\\Users\\Manuel\\AppData\\Local\\Temp\\mx-VS03--B1--r1-7fbdz9eg\\result.json",
+      "-"
+    ],
+    "duration_seconds": 5.457324,
+    "execution_epoch": "MG1-T023-EXECUTION-v7",
+    "final_message": "",
+    "fixture_materialization": {
+      "fixture_role": "source",
+      "records": [
+        {
+          "bytes": 109,
+          "json": {
+            "product_id": "agent-governance",
+            "profile": "source-maintainer",
+            "signal_schema_version": "1.0.0"
+          },
+          "kind": "file",
+          "path": "agent-governance-source.json",
+          "sha256": "ad6a269ff84a109abc5dc4133b4c4ad45b3909cc13561da72fb327774d4ab22e"
+        }
+      ]
+    },
+    "materialization": {
+      "candidate_id": "B1",
+      "capability_source_epoch": "MG1-2026-08-25-v3",
+      "construction": "byte-copy",
+      "files": [
+        {
+          "bytes": 1294,
+          "sha256": "c2156eb5ec13586cdd91f47094859258b2351c9715d4e12043d9e318ca3e48b0",
+          "source": "evals/skill_activation_topology/presentations-v3/B1/agent-governance-router/SKILL.md",
+          "target": ".agents/skills/agent-governance-router/SKILL.md"
+        },
+        {
+          "bytes": 662,
+          "sha256": "bbd42745f1e47c41f4643cf3d456f2f0186bc96d1f2a385768d58b9f98375b10",
+          "source": "evals/skill_activation_topology/presentations-v3/shared/consumer-lifecycle.md",
+          "target": ".agents/skills/agent-governance-router/references/consumer-lifecycle.md"
+        },
+        {
+          "bytes": 666,
+          "sha256": "80a44c1c4cf5a2134d46be38c198d4b55d244f227e012765f5bcd15b627a657d",
+          "source": "evals/skill_activation_topology/presentations-v3/shared/source-maintainer.md",
+          "target": ".agents/skills/agent-governance-router/references/source-maintainer.md"
+        },
+        {
+          "bytes": 573,
+          "sha256": "a4bc7bd80a6ad7377d873f69a530b0fe4d4f481414c6a3a3eeb58a3be8d70e51",
+          "source": "evals/skill_activation_topology/presentations-v3/shared/external-skill-trust.md",
+          "target": ".agents/skills/agent-governance-router/references/external-skill-trust.md"
+        }
+      ],
+      "presentation_revision": "MG1-T023-PRESENTATIONS-v3"
+    },
+    "oracle_id": "MG1-T023-TOPOLOGY-ORACLE-v7",
+    "prompt": "For maintenance of the canonical Agent Governance repository, resolve the current branching and release-policy authority.\n\nReturn only the required structured record.",
+    "returncode": 1,
+    "stderr": "2026-08-29T16:14:12.158512Z  WARN codex_core::shell_snapshot: Failed to create shell snapshot for powershell: Shell snapshot not supported yet for PowerShell\n2026-08-29T16:14:14.441458Z  WARN codex_core::session_startup_prewarm: startup websocket prewarm setup failed: You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 10:36 PM.\n",
+    "stdout_jsonl": "{\"type\":\"thread.started\",\"thread_id\":\"01a04e4c-d0b9-7961-b318-a6ed19bb4764\"}\n{\"type\":\"turn.started\"}\n{\"type\":\"error\",\"message\":\"You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 10:36 PM.\"}\n{\"type\":\"turn.failed\",\"error\":{\"message\":\"You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at 10:36 PM.\"}}\n",
+    "timeout_seconds": 600,
+    "trial_key": "VS03--B1--r1",
+    "workspace_isolation": {
+      "absolute_root": "C:\\Users\\Manuel\\AppData\\Local\\Temp\\mx-VS03--B1--r1-7fbdz9eg",
+      "canonical_git_metadata_present": false,
+      "canonical_repository": "C:\\Manuel\\Projects\\agent-governance\\.worktrees\\t023-v7-current",
+      "forbidden_root_substring_matches": [],
+      "initially_empty": true,
+      "linked_components": [],
+      "outside_canonical_repository": true
+    }
+  },
+  "recorded_at": "2026-08-29T16:14:17.353321+00:00",
+  "status": "EXTERNAL_CAPACITY",
+  "trial_key": "VS03--B1--r1"
+}

@@ -34,6 +34,7 @@ ORACLE_PATH = HERE / "oracle.json"
 CORPUS_PATH = HERE / "corpus.json"
 TOPOLOGIES_PATH = HERE / "topologies.json"
 MANIFEST_PATH = HERE / "presentations" / "manifest.json"
+ENVELOPE_PATH = HERE / "trial-envelope.json"
 
 ALLOWED_OUTCOMES = {"activate", "no-activation", "bounded-rejection", "clarify-context"}
 ACTIVATION_RELEVANT_CLASSES = {
@@ -72,24 +73,6 @@ TRIAL_SCHEMA: dict[str, Any] = {
     ],
 }
 
-EVALUATION_SUFFIX = """
-
-This is an isolated, read-only activation evaluation. Do not mutate files or external
-state and do not request broader permissions. This trial evaluates only Skill activation,
-routing, and the semantic handling category; do not attempt the underlying repository or
-external operation. Determine how the request would be routed in a fresh Codex session
-with the project Agent Skills available in this workspace, then return the required
-structured result. The read-only evaluation boundary is not itself a bounded rejection.
-
-Report only project Agent Skill entrypoints that you actually activated. Report only
-capability scopes selected for the route; do not report a prohibited scope. Classify the
-observable handling as:
-- activate: applicable Agent Governance capability guidance is used;
-- no-activation: no Agent Governance capability is applicable or used;
-- bounded-rejection: Agent Governance applies but the prohibited cross-boundary effect is refused;
-- clarify-context: Consumer versus canonical source context is insufficient and no capability is granted.
-""".strip()
-
 
 class HarnessError(RuntimeError):
     """Fail-closed error for malformed frozen inputs or unusable live evidence."""
@@ -118,6 +101,7 @@ class FrozenInputs:
     corpus: dict[str, Any]
     topologies: dict[str, Any]
     manifest: dict[str, Any]
+    envelope: dict[str, Any]
 
 
 @dataclass(frozen=True)
@@ -151,6 +135,7 @@ def load_frozen_inputs() -> FrozenInputs:
         corpus=_load_json(CORPUS_PATH),
         topologies=_load_json(TOPOLOGIES_PATH),
         manifest=_load_json(MANIFEST_PATH),
+        envelope=_load_json(ENVELOPE_PATH),
     )
     validate_frozen_inputs(inputs)
     return inputs
@@ -161,11 +146,12 @@ def validate_frozen_inputs(inputs: FrozenInputs) -> None:
     corpus = inputs.corpus
     topologies = inputs.topologies
     manifest = inputs.manifest
+    envelope = inputs.envelope
 
-    if oracle.get("schema_version") != "6.0.0" or oracle.get("oracle_id") != (
-        "MG1-T023-TOPOLOGY-ORACLE-v6"
+    if oracle.get("schema_version") != "7.0.0" or oracle.get("oracle_id") != (
+        "MG1-T023-TOPOLOGY-ORACLE-v7"
     ):
-        raise HarnessError("harness requires the frozen MG1 V6 oracle")
+        raise HarnessError("harness requires the frozen MG1 V7 oracle")
     method = oracle.get("trial_method", {})
     if (
         method.get("base_valid_repetitions_per_case_candidate") != 2
@@ -173,7 +159,31 @@ def validate_frozen_inputs(inputs: FrozenInputs) -> None:
         or method.get("max_model_attempts_per_scheduled_observation") != 2
         or method.get("timeout_seconds_per_model_attempt") != 600
     ):
-        raise HarnessError("oracle paired repetition/attempt method is not frozen V6")
+        raise HarnessError("oracle paired repetition/attempt method is not frozen V7")
+
+    if (
+        envelope.get("schema_version") != "1.0.0"
+        or envelope.get("envelope_id") != oracle.get("trial_envelope_id")
+        or oracle.get("trial_envelope_path") != ENVELOPE_PATH.relative_to(REPO_ROOT).as_posix()
+        or envelope.get("user_suffix") != "Return only the required structured record."
+    ):
+        raise HarnessError("oracle/trial-envelope identity or neutral suffix mismatch")
+    if any(
+        term in envelope["user_suffix"].casefold()
+        for term in envelope.get("forbidden_added_terms_casefold", [])
+    ):
+        raise HarnessError("trial-envelope neutral suffix contains a forbidden added term")
+    boundary = envelope.get("execution_boundary", {})
+    if not all(
+        boundary.get(field) is True
+        for field in (
+            "read_only_enforced_out_of_band",
+            "no_domain_bearing_safety_wrapper",
+            "output_schema_must_be_domain_neutral",
+            "model_self_report_is_not_activation_authority",
+        )
+    ):
+        raise HarnessError("trial-envelope execution boundary is incomplete")
 
     candidates = oracle.get("candidate_ids")
     if candidates != ["B0", "B1", "F2", "G3"]:
@@ -191,12 +201,15 @@ def validate_frozen_inputs(inputs: FrozenInputs) -> None:
             raise HarnessError(f"oracle/{document_name} presentation revision mismatch")
 
     cases = corpus.get("cases")
-    if not isinstance(cases, list) or not cases:
-        raise HarnessError("corpus cases must be a non-empty list")
+    if corpus.get("schema_version") != "3.0.0" or not isinstance(cases, list) or len(cases) != 40:
+        raise HarnessError("harness requires the frozen 40-case MG1 V7 corpus")
     ids = [case.get("id") for case in cases if isinstance(case, dict)]
     if len(ids) != len(cases) or len(ids) != len(set(ids)):
         raise HarnessError("corpus case identities must be unique objects")
     known_capabilities = set(manifest.get("shared_references", {}))
+    fixtures = envelope.get("fixtures", {})
+    if set(fixtures) != {"neutral", "source", "consumer"}:
+        raise HarnessError("trial-envelope fixture roles are not the frozen V7 set")
     for case in cases:
         if set(case.get("expected_capabilities", [])) - known_capabilities:
             raise HarnessError(f"{case['id']}: unknown expected capability")
@@ -204,6 +217,13 @@ def validate_frozen_inputs(inputs: FrozenInputs) -> None:
             raise HarnessError(f"{case['id']}: unknown forbidden capability")
         if case.get("expected_semantic_outcome") not in ALLOWED_OUTCOMES:
             raise HarnessError(f"{case['id']}: invalid semantic outcome")
+        fixture_role = case.get("fixture_role")
+        if fixture_role not in fixtures:
+            raise HarnessError(f"{case['id']}: invalid fixture role")
+        if case.get("class") in {"ambiguous", "negative", "near-miss"} and fixture_role != (
+            "neutral"
+        ):
+            raise HarnessError(f"{case['id']}: class requires a neutral fixture")
 
     for candidate_id in candidates:
         topology = topologies["candidates"][candidate_id]
@@ -262,6 +282,67 @@ def materialize_candidate(
     }
 
 
+def materialize_fixture(
+    inputs: FrozenInputs, case: dict[str, Any], destination: Path
+) -> dict[str, Any]:
+    role = case["fixture_role"]
+    fixture = inputs.envelope["fixtures"][role]
+    records: list[dict[str, Any]] = []
+    for relative in fixture.get("directories", []):
+        target = destination / relative
+        target.mkdir(parents=True, exist_ok=False)
+        records.append({"path": Path(relative).as_posix(), "kind": "directory"})
+    for file_spec in fixture.get("files", []):
+        target = destination / file_spec["path"]
+        target.parent.mkdir(parents=True, exist_ok=True)
+        payload = json.dumps(file_spec["json"], indent=2, sort_keys=True) + "\n"
+        target.write_text(payload, encoding="utf-8", newline="\n")
+        records.append(
+            {
+                "path": Path(file_spec["path"]).as_posix(),
+                "kind": "file",
+                "bytes": len(payload.encode("utf-8")),
+                "sha256": hashlib.sha256(payload.encode("utf-8")).hexdigest(),
+                "json": file_spec["json"],
+            }
+        )
+    return {"fixture_role": role, "records": records}
+
+
+def _validate_fixture_evidence(
+    inputs: FrozenInputs, case: dict[str, Any], evidence: dict[str, Any]
+) -> None:
+    role = case["fixture_role"]
+    fixture = inputs.envelope["fixtures"][role]
+    expected_directories = {Path(value).as_posix() for value in fixture.get("directories", [])}
+    actual_directories = {
+        record.get("path")
+        for record in evidence.get("records", [])
+        if record.get("kind") == "directory"
+    }
+    expected_files = {item["path"]: item["json"] for item in fixture.get("files", [])}
+    actual_files = {
+        record.get("path"): record
+        for record in evidence.get("records", [])
+        if record.get("kind") == "file"
+    }
+    if (
+        evidence.get("fixture_role") != role
+        or actual_directories != expected_directories
+        or set(actual_files) != set(expected_files)
+    ):
+        raise HarnessError(f"{case['id']}: fixture evidence differs from the frozen role")
+    for path, value in expected_files.items():
+        payload = json.dumps(value, indent=2, sort_keys=True) + "\n"
+        record = actual_files[path]
+        if (
+            record.get("json") != value
+            or record.get("bytes") != len(payload.encode("utf-8"))
+            or record.get("sha256") != hashlib.sha256(payload.encode("utf-8")).hexdigest()
+        ):
+            raise HarnessError(f"{case['id']}: frozen fixture file evidence mismatch")
+
+
 def _copy_record(source: Path, target: Path, destination: Path) -> dict[str, Any]:
     source_bytes = source.read_bytes()
     target_bytes = target.read_bytes()
@@ -276,7 +357,7 @@ def _copy_record(source: Path, target: Path, destination: Path) -> dict[str, Any
 
 
 def scheduled_trials(inputs: FrozenInputs) -> list[TrialSpec]:
-    """Return the V6 mandatory two-repetition schedule for all candidates.
+    """Return the V7 mandatory two-repetition schedule for all candidates.
 
     Conditional third repetitions are deliberately absent.  They are derived only
     after both valid paired observations exist for a case/candidate identity.
@@ -312,7 +393,7 @@ def _schedule(
 
 
 def all_possible_trials(inputs: FrozenInputs) -> list[TrialSpec]:
-    """Return all V6 identities, including conditional repetition three."""
+    """Return all V7 identities, including conditional repetition three."""
     maximum = inputs.oracle["trial_method"]["max_valid_repetitions_per_case_candidate"]
     return _schedule(inputs, inputs.oracle["candidate_ids"], range(1, maximum + 1))
 
@@ -339,8 +420,52 @@ def expected_load_path(inputs: FrozenInputs, spec: TrialSpec) -> tuple[list[str]
     return paths, sum((REPO_ROOT / path).stat().st_size for path in paths)
 
 
-def _trial_prompt(case: dict[str, Any]) -> str:
-    return f"{case['prompt']}\n\n{EVALUATION_SUFFIX}"
+def _trial_prompt(inputs: FrozenInputs, case: dict[str, Any]) -> str:
+    return f"{case['prompt']}\n\n{inputs.envelope['user_suffix']}"
+
+
+def _is_relative_to(path: Path, parent: Path) -> bool:
+    try:
+        path.relative_to(parent)
+    except ValueError:
+        return False
+    return True
+
+
+def _validate_workspace_root(inputs: FrozenInputs, root: Path) -> dict[str, Any]:
+    resolved = root.resolve(strict=True)
+    canonical = REPO_ROOT.resolve(strict=True)
+    policy = inputs.envelope["workspace_root_policy"]
+    folded = str(resolved).casefold()
+    matches = [term for term in policy["forbidden_root_substrings_casefold"] if term in folded]
+    if matches:
+        raise HarnessError(f"workspace root contains forbidden substring: {matches[0]}")
+    if _is_relative_to(resolved, canonical) or _is_relative_to(canonical, resolved):
+        raise HarnessError("workspace root overlaps the canonical repository")
+    if any(
+        (root / marker).exists()
+        for marker in (".git", "agent-governance-source.json", ".agent-governance")
+    ):
+        raise HarnessError("fresh workspace unexpectedly contains role or Git state")
+    if any(resolved.iterdir()):
+        raise HarnessError("fresh workspace root is not empty")
+    components = [resolved, *resolved.parents]
+    linked_components = [
+        str(path)
+        for path in components
+        if path.is_symlink() or (hasattr(os.path, "isjunction") and os.path.isjunction(path))
+    ]
+    if linked_components:
+        raise HarnessError("workspace root traverses a symlink or junction")
+    return {
+        "absolute_root": str(resolved),
+        "canonical_repository": str(canonical),
+        "outside_canonical_repository": True,
+        "forbidden_root_substring_matches": [],
+        "linked_components": [],
+        "canonical_git_metadata_present": False,
+        "initially_empty": True,
+    }
 
 
 def _codex_version(codex_command: str) -> str:
@@ -381,21 +506,14 @@ def run_trial(
     attempt: int = 1,
 ) -> tuple[dict[str, Any], dict[str, Any]]:
     started = time.monotonic()
-    with tempfile.TemporaryDirectory(prefix=f"t023-{spec.key}-", dir=workspace_parent) as temporary:
+    with tempfile.TemporaryDirectory(prefix=f"mx-{spec.key}-", dir=workspace_parent) as temporary:
         root = Path(temporary)
-        git_init = subprocess.run(
-            ["git", "init", "--quiet", str(root)],
-            check=False,
-            capture_output=True,
-            text=True,
-            timeout=30,
-        )
-        if git_init.returncode != 0:
-            raise HarnessError(f"{spec.key}: cannot initialize isolated Git root")
+        isolation = _validate_workspace_root(inputs, root)
+        fixture = materialize_fixture(inputs, spec.case, root)
         provenance = materialize_candidate(inputs, spec.candidate_id, root)
-        schema_path = root / "trial-output-schema.json"
+        schema_path = root / "shape.json"
         schema_path.write_text(json.dumps(TRIAL_SCHEMA, indent=2) + "\n", encoding="utf-8")
-        final_path = root / "final.json"
+        final_path = root / "result.json"
         command = [
             codex_command,
             "exec",
@@ -403,7 +521,9 @@ def run_trial(
             "--ignore-user-config",
             "--color",
             "never",
-            "--approve-for-me",
+            "--sandbox",
+            "read-only",
+            "--ephemeral",
             "--skip-git-repo-check",
             "--cd",
             str(root),
@@ -424,7 +544,7 @@ def run_trial(
         try:
             completed = subprocess.run(
                 command,
-                input=_trial_prompt(spec.case),
+                input=_trial_prompt(inputs, spec.case),
                 check=False,
                 capture_output=True,
                 text=True,
@@ -460,13 +580,15 @@ def run_trial(
             "execution_epoch": inputs.oracle["execution_epoch"],
             "timeout_seconds": timeout_seconds,
             "command": command,
-            "prompt": _trial_prompt(spec.case),
+            "prompt": _trial_prompt(inputs, spec.case),
             "returncode": completed.returncode,
             "stdout_jsonl": completed.stdout,
             "stderr": completed.stderr,
             "final_message": final_raw,
             "duration_seconds": round(duration, 6),
             "materialization": provenance,
+            "fixture_materialization": fixture,
+            "workspace_isolation": isolation,
         }
         if _is_explicit_capacity_event(raw_record) and not final_raw:
             raise CapacityPause(f"{spec.key}: explicit external capacity event", raw_record)
@@ -1042,9 +1164,10 @@ def build_deterministic_evidence(inputs: FrozenInputs) -> dict[str, Any]:
         "capability_source_epoch": inputs.oracle["capability_source_epoch"],
         "presentation_revision": inputs.oracle["presentation_revision"],
         "corpus_id": inputs.oracle["corpus_id"],
+        "trial_envelope_id": inputs.oracle["trial_envelope_id"],
         "frozen_asset_sha256": {
             path.relative_to(REPO_ROOT).as_posix(): _sha256(path)
-            for path in (ORACLE_PATH, CORPUS_PATH, TOPOLOGIES_PATH, MANIFEST_PATH)
+            for path in (ORACLE_PATH, CORPUS_PATH, TOPOLOGIES_PATH, MANIFEST_PATH, ENVELOPE_PATH)
         },
         "full_deterministic_regression": "NOT_RUN",
         "profile_isolation_regression": "NOT_RUN",
@@ -1105,6 +1228,32 @@ def _validate_partial(
         raise HarnessError(f"{spec.key}: resumed model evidence is missing") from exc
     if recorded_model != model or f'model_reasoning_effort="{effort}"' not in command:
         raise HarnessError(f"{spec.key}: resumed model/effort differs from this run")
+    if "--sandbox" not in command or command[command.index("--sandbox") + 1] != "read-only":
+        raise HarnessError(f"{spec.key}: resumed execution was not host-enforced read-only")
+    if "--ephemeral" not in command:
+        raise HarnessError(f"{spec.key}: resumed execution was not ephemeral")
+    fixture = raw.get("fixture_materialization", {})
+    _validate_fixture_evidence(inputs, spec.case, fixture)
+    isolation = raw.get("workspace_isolation", {})
+    workspace = Path(command[command.index("--cd") + 1])
+    canonical = REPO_ROOT.resolve(strict=True)
+    root_folded = str(workspace).casefold()
+    if (
+        isolation.get("outside_canonical_repository") is not True
+        or isolation.get("forbidden_root_substring_matches") != []
+        or isolation.get("canonical_git_metadata_present") is not False
+        or isolation.get("linked_components") != []
+        or isolation.get("initially_empty") is not True
+        or isolation.get("absolute_root") != str(workspace)
+        or _is_relative_to(workspace, canonical)
+        or any(
+            term in root_folded
+            for term in inputs.envelope["workspace_root_policy"][
+                "forbidden_root_substrings_casefold"
+            ]
+        )
+    ):
+        raise HarnessError(f"{spec.key}: resumed workspace isolation evidence mismatch")
 
 
 def execute_logical_observation(
@@ -1187,7 +1336,7 @@ def run_matrix(args: argparse.Namespace) -> int:
     inputs = load_frozen_inputs()
     validate_execution_config(inputs, args)
     output = args.output.resolve()
-    workspace_parent = output / ".workspaces"
+    workspace_parent = Path(tempfile.gettempdir()).resolve()
     if args.resume:
         if not output.is_dir():
             raise HarnessError("resume requires an existing evidence root")
@@ -1196,6 +1345,7 @@ def run_matrix(args: argparse.Namespace) -> int:
             "oracle_id": inputs.oracle["oracle_id"],
             "execution_epoch": inputs.oracle["execution_epoch"],
             "corpus_id": inputs.oracle["corpus_id"],
+            "trial_envelope_id": inputs.oracle["trial_envelope_id"],
             "presentation_revision": inputs.oracle["presentation_revision"],
             "capability_source_epoch": inputs.oracle["capability_source_epoch"],
             "model": args.model,
@@ -1203,10 +1353,10 @@ def run_matrix(args: argparse.Namespace) -> int:
             "timeout_seconds": args.timeout_seconds,
         }
         if any(run_metadata.get(key) != value for key, value in expected_identity.items()):
-            raise HarnessError("resume execution identity differs from frozen V6 run")
+            raise HarnessError("resume execution identity differs from frozen V7 run")
         if run_metadata.get("runner_sha256") != _sha256(Path(__file__)):
             raise HarnessError("resume runner identity changed")
-        for path in (ORACLE_PATH, CORPUS_PATH, TOPOLOGIES_PATH, MANIFEST_PATH):
+        for path in (ORACLE_PATH, CORPUS_PATH, TOPOLOGIES_PATH, MANIFEST_PATH, ENVELOPE_PATH):
             relative = path.relative_to(REPO_ROOT).as_posix()
             if run_metadata["frozen_asset_sha256"].get(relative) != _sha256(path):
                 raise HarnessError(f"resume frozen asset changed: {relative}")
@@ -1222,6 +1372,7 @@ def run_matrix(args: argparse.Namespace) -> int:
             "oracle_id": inputs.oracle["oracle_id"],
             "execution_epoch": inputs.oracle["execution_epoch"],
             "corpus_id": inputs.oracle["corpus_id"],
+            "trial_envelope_id": inputs.oracle["trial_envelope_id"],
             "presentation_revision": inputs.oracle["presentation_revision"],
             "capability_source_epoch": inputs.oracle["capability_source_epoch"],
             "host": "Codex",
@@ -1232,7 +1383,13 @@ def run_matrix(args: argparse.Namespace) -> int:
             "runner_sha256": _sha256(Path(__file__)),
             "frozen_asset_sha256": {
                 path.relative_to(REPO_ROOT).as_posix(): _sha256(path)
-                for path in (ORACLE_PATH, CORPUS_PATH, TOPOLOGIES_PATH, MANIFEST_PATH)
+                for path in (
+                    ORACLE_PATH,
+                    CORPUS_PATH,
+                    TOPOLOGIES_PATH,
+                    MANIFEST_PATH,
+                    ENVELOPE_PATH,
+                )
             },
             "workers": args.workers,
             "timeout_seconds": args.timeout_seconds,
@@ -1241,6 +1398,9 @@ def run_matrix(args: argparse.Namespace) -> int:
             ],
             "full_acceptance": args.full_acceptance,
             "clean_context": "one new codex exec thread and disposable workspace per attempt",
+            "workspace_parent": str(workspace_parent),
+            "read_only_enforcement": "codex --sandbox read-only",
+            "stimulus_rule": "exact corpus prompt, two newlines, frozen neutral suffix",
             "stage_state": "REFERENCE_BASE_PENDING" if args.full_acceptance else "FILTERED_PENDING",
             "status": "RUNNING",
             "started_at": datetime.now(UTC).isoformat(),
@@ -1261,7 +1421,6 @@ def run_matrix(args: argparse.Namespace) -> int:
                     },
                 )
                 return 1
-    workspace_parent.mkdir(parents=True, exist_ok=True)
     _json_dump(output / "run-metadata.json", run_metadata)
 
     def execute(spec: TrialSpec):
@@ -1550,23 +1709,24 @@ def _validate_executed_runner_provenance(metadata: dict[str, Any]) -> None:
 
 
 def validate_complete_evidence(inputs: FrozenInputs, output: Path) -> None:
-    """Fail closed on V6 epoch, adaptive schedule, attempts, traces and aggregates."""
+    """Fail closed on V7 epoch, adaptive schedule, attempts, traces and aggregates."""
     metadata = _load_json(output / "run-metadata.json")
     method = inputs.oracle["trial_method"]
     if metadata.get("status") not in {"COMPLETE", "BLOCKED_NO_REFERENCE"}:
-        raise HarnessError("incomplete V6 execution cannot be scored")
+        raise HarnessError("incomplete V7 execution cannot be scored")
     if (
         metadata.get("oracle_id") != inputs.oracle["oracle_id"]
         or metadata.get("execution_epoch") != inputs.oracle["execution_epoch"]
+        or metadata.get("trial_envelope_id") != inputs.oracle["trial_envelope_id"]
         or metadata.get("full_acceptance") is not True
         or metadata.get("model") != "gpt-5.6-sol"
         or metadata.get("effort") != "medium"
         or metadata.get("host") != "Codex"
         or metadata.get("timeout_seconds") != method["timeout_seconds_per_model_attempt"]
     ):
-        raise HarnessError("mismatched V6 execution identity/configuration")
+        raise HarnessError("mismatched V7 execution identity/configuration")
     _validate_executed_runner_provenance(metadata)
-    for path in (ORACLE_PATH, CORPUS_PATH, TOPOLOGIES_PATH, MANIFEST_PATH):
+    for path in (ORACLE_PATH, CORPUS_PATH, TOPOLOGIES_PATH, MANIFEST_PATH, ENVELOPE_PATH):
         relative = path.relative_to(REPO_ROOT).as_posix()
         if metadata["frozen_asset_sha256"].get(relative) != _sha256(path):
             raise HarnessError(f"run frozen input hash mismatch: {relative}")
@@ -1593,7 +1753,7 @@ def validate_complete_evidence(inputs: FrozenInputs, output: Path) -> None:
     if len(set(trial_keys)) != len(trial_keys) or set(trial_keys) != set(raw_keys):
         raise HarnessError("valid trial/raw identity mismatch or duplication")
     if set(trial_keys) - set(possible):
-        raise HarnessError("trial outside frozen V6 identity set")
+        raise HarnessError("trial outside frozen V7 identity set")
     evaluated = (
         ["B0", "B1"]
         if metadata["status"] == "BLOCKED_NO_REFERENCE"
@@ -1615,7 +1775,7 @@ def validate_complete_evidence(inputs: FrozenInputs, output: Path) -> None:
     if len(evaluated) == 4:
         lower, upper = method["overall_valid_observation_range_when_challengers_execute"]
     if not lower <= len(trials) <= upper:
-        raise HarnessError("V6 valid observation count is outside the frozen stage range")
+        raise HarnessError("V7 valid observation count is outside the frozen stage range")
 
     raw_by_key = dict(zip(raw_keys, raw_trials, strict=True))
     trial_by_key = dict(zip(trial_keys, trials, strict=True))
@@ -1641,7 +1801,7 @@ def validate_complete_evidence(inputs: FrozenInputs, output: Path) -> None:
                 raise HarnessError(f"{key}: prior epoch attempt")
         _validate_partial(inputs, spec, trial, raw, model="gpt-5.6-sol", effort="medium")
         if (
-            raw.get("prompt") != _trial_prompt(spec.case)
+            raw.get("prompt") != _trial_prompt(inputs, spec.case)
             or raw.get("returncode") != 0
             or raw.get("timeout_seconds") != method["timeout_seconds_per_model_attempt"]
         ):
@@ -1671,6 +1831,7 @@ def validate_complete_evidence(inputs: FrozenInputs, output: Path) -> None:
         reference_bytes = sum((REPO_ROOT / path).stat().st_size for path in references)
         if (
             not trace
+            or trial.get("host_trace_available") is not True
             or trial["activated_entrypoints"] != entrypoints
             or trial["loaded_reference_paths"] != references
             or trial["loaded_reference_bytes"] != reference_bytes
@@ -1685,13 +1846,13 @@ def validate_complete_evidence(inputs: FrozenInputs, output: Path) -> None:
         for item in aggregate_candidate_trials(inputs, candidate, trials)
     ]
     if aggregates != load_trials(output / "case-aggregates.jsonl"):
-        raise HarnessError("persisted V6 case aggregates are not exactly recomputable")
+        raise HarnessError("persisted V7 case aggregates are not exactly recomputable")
     recomputed_metrics = {
         candidate: compute_candidate_metrics(inputs, candidate, trials, deterministic)
         for candidate in evaluated
     }
     if recomputed_metrics != _load_json(output / "metrics.json"):
-        raise HarnessError("persisted V6 metrics are not exactly recomputable")
+        raise HarnessError("persisted V7 metrics are not exactly recomputable")
     expected_selection = (
         {
             "status": "BLOCKED",
@@ -1704,7 +1865,7 @@ def validate_complete_evidence(inputs: FrozenInputs, output: Path) -> None:
         else apply_selection_rule(inputs, recomputed_metrics)
     )
     if expected_selection != _load_json(output / "selection.json"):
-        raise HarnessError("persisted V6 selection is not exactly recomputable")
+        raise HarnessError("persisted V7 selection is not exactly recomputable")
 
 
 def score_matrix(args: argparse.Namespace) -> int:
