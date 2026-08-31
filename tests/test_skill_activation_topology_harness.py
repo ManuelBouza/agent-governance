@@ -1,4 +1,4 @@
-"""Deterministic technical coverage for the T023 MG1-v7 harness."""
+"""Deterministic technical coverage for the T023 MG1-v8 harness."""
 
 from __future__ import annotations
 
@@ -32,8 +32,8 @@ def frozen(harness):
     return harness.load_frozen_inputs()
 
 
-def test_frozen_mg1_v7_inputs_validate_and_schedule_paired_stages(harness, frozen) -> None:
-    assert frozen.oracle["oracle_id"] == "MG1-T023-TOPOLOGY-ORACLE-v7"
+def test_frozen_mg1_v8_inputs_validate_and_schedule_paired_stage_ceilings(harness, frozen) -> None:
+    assert frozen.oracle["oracle_id"] == "MG1-T023-TOPOLOGY-ORACLE-v8"
     assert frozen.oracle["capability_source_epoch"] == "MG1-2026-08-25-v3"
     assert frozen.oracle["presentation_revision"] == "MG1-T023-PRESENTATIONS-v3"
     assert len(harness.scheduled_trials(frozen)) == 320
@@ -59,7 +59,7 @@ def test_candidate_materialization_is_exact_byte_copy(
 
 
 def test_expected_entrypoint_union_and_unique_reference_load(harness, frozen) -> None:
-    case = next(case for case in frozen.corpus["cases"] if case["id"] == "VI02")
+    case = next(case for case in frozen.corpus["cases"] if case["id"] == "WI02")
     b0 = harness.TrialSpec(case, "B0", 1)
     g3 = harness.TrialSpec(case, "G3", 1)
 
@@ -156,7 +156,7 @@ def test_trial_output_schema_is_closed(harness) -> None:
     json.dumps(harness.TRIAL_SCHEMA)
 
 
-def test_v7_model_visible_turn_is_exactly_prompt_and_neutral_suffix(harness, frozen) -> None:
+def test_v8_model_visible_turn_is_exactly_prompt_and_neutral_suffix(harness, frozen) -> None:
     suffix = frozen.envelope["user_suffix"]
     forbidden = frozen.envelope["forbidden_added_terms_casefold"]
     for case in frozen.corpus["cases"]:
@@ -167,7 +167,7 @@ def test_v7_model_visible_turn_is_exactly_prompt_and_neutral_suffix(harness, fro
 
 
 @pytest.mark.parametrize("role", ["neutral", "source", "consumer"])
-def test_v7_fixture_materialization_is_exact_and_role_bounded(
+def test_v8_fixture_materialization_is_exact_and_role_bounded(
     tmp_path: Path, harness, frozen, role: str
 ) -> None:
     case = next(case for case in frozen.corpus["cases"] if case["fixture_role"] == role)
@@ -185,7 +185,7 @@ def test_v7_fixture_materialization_is_exact_and_role_bounded(
         assert not any(tmp_path.iterdir())
 
 
-def test_v7_workspace_root_validation_rejects_canonical_path_leak(
+def test_v8_workspace_root_validation_rejects_canonical_path_leak(
     tmp_path: Path, harness, frozen
 ) -> None:
     accepted = harness._validate_workspace_root(frozen, tmp_path)
@@ -196,7 +196,7 @@ def test_v7_workspace_root_validation_rejects_canonical_path_leak(
 
 @pytest.mark.parametrize("candidate_id", ["B0", "B1", "F2", "G3"])
 def test_clarification_expectations_follow_frozen_topology(harness, frozen, candidate_id) -> None:
-    case = next(case for case in frozen.corpus["cases"] if case["id"] == "VA01")
+    case = next(case for case in frozen.corpus["cases"] if case["id"] == "WA01")
     spec = harness.TrialSpec(case, candidate_id, 1)
     assert (
         harness.expected_entrypoints(frozen, spec)
@@ -277,7 +277,7 @@ def test_boundary_failures_are_counted(harness, frozen, case_class, field, value
 
 
 def test_observed_activation_uses_successful_host_reads(harness, frozen) -> None:
-    case = next(case for case in frozen.corpus["cases"] if case["id"] == "VC01")
+    case = next(case for case in frozen.corpus["cases"] if case["id"] == "WC01")
     trial = harness.TrialSpec(case, "B0", 1)
     events = [
         {"type": "thread.started", "thread_id": "synthetic"},
@@ -348,9 +348,9 @@ def test_trace_excludes_failed_reads_and_path_mentions_and_deduplicates(harness,
 def test_resume_rejects_changed_model_effort_or_frozen_identity(
     tmp_path: Path, harness, frozen
 ) -> None:
-    case = next(case for case in frozen.corpus["cases"] if case["id"] == "VC01")
+    case = next(case for case in frozen.corpus["cases"] if case["id"] == "WC01")
     trial = harness.TrialSpec(case, "B0", 1)
-    structured = {"case_id": "VC01", "candidate_id": "B0", "repetition": 1}
+    structured = {"case_id": "WC01", "candidate_id": "B0", "repetition": 1}
     isolation = harness._validate_workspace_root(frozen, tmp_path)
     fixture = harness.materialize_fixture(frozen, case, tmp_path)
     raw = {
@@ -375,6 +375,9 @@ def test_resume_rejects_changed_model_effort_or_frozen_identity(
         "fixture_materialization": fixture,
         "workspace_isolation": isolation,
     }
+    raw["command"].extend(["--ignore-user-config", "--ignore-rules"])
+    for feature in harness.MINIMAL_DISABLED_FEATURES:
+        raw["command"].extend(["--disable", feature])
     harness._validate_partial(
         frozen,
         trial,
@@ -394,7 +397,7 @@ def test_resume_rejects_changed_model_effort_or_frozen_identity(
         )
 
 
-def test_closed_v4_evidence_cannot_enter_v7_scoring(harness, frozen) -> None:
+def test_closed_v4_evidence_cannot_enter_v8_scoring(harness, frozen) -> None:
     evidence = harness.HERE / "evidence" / "mg1-v4-codex-windows-gpt-5.6-sol-medium"
     metadata = harness._load_json(evidence / "run-metadata.json")
     assert metadata["oracle_id"] != frozen.oracle["oracle_id"]
@@ -408,7 +411,7 @@ def test_closed_v6_live_runner_is_bound_to_immutable_git_provenance(harness) -> 
     harness._validate_executed_runner_provenance(metadata)
 
 
-def test_v7_holdout_has_no_exact_prompt_from_closed_v2_evidence(harness, frozen) -> None:
+def test_v8_holdout_has_no_exact_prompt_from_closed_v2_evidence(harness, frozen) -> None:
     evidence = harness.HERE / "evidence" / "mg1-v2-codex-windows-gpt-5.6-sol-medium"
     previous = harness.load_trials(evidence / "raw-trials.jsonl")
     prior_prompts = {
@@ -494,10 +497,10 @@ def test_timeout_retains_visible_streams_and_retry_has_fresh_workspace(
 
     def run(command, **kwargs):
         workspaces.append(command[command.index("--cd") + 1])
-        assert kwargs["timeout"] == 600
+        assert kwargs["timeout"] == 180
         assert kwargs["input"] == harness._trial_prompt(frozen, spec.case)
         raise subprocess.TimeoutExpired(
-            command, 600, output=b'{"type":"thread.started"}\n', stderr=b"partial error"
+            command, 180, output=b'{"type":"thread.started"}\n', stderr=b"partial error"
         )
 
     monkeypatch.setattr(harness.subprocess, "run", run)
@@ -510,7 +513,7 @@ def test_timeout_retains_visible_streams_and_retry_has_fresh_workspace(
         codex_command="codex",
         model="gpt-5.6-sol",
         effort="medium",
-        timeout_seconds=600,
+        timeout_seconds=180,
         workspace_parent=workspace_parent,
     )
     assert result is None
@@ -528,7 +531,7 @@ def test_timeout_retains_visible_streams_and_retry_has_fresh_workspace(
         {"model": "other"},
         {"effort": "high"},
         {"timeout_seconds": 300},
-        {"case": ["VC01"]},
+        {"case": ["WC01"]},
     ],
 )
 def test_execution_rejects_nonuniform_configuration(harness, frozen, monkeypatch, change):
@@ -566,6 +569,25 @@ def test_terminal_exhaustion_stops_new_work_and_exports_without_scoring(
         deterministic[field] = "PASS"
     monkeypatch.setattr(harness, "build_deterministic_evidence", lambda _: deterministic)
     monkeypatch.setattr(harness, "verify_deterministic", lambda _: 0)
+
+    def passing_preflight(inputs, args, output, workspace_parent):
+        profile = {
+            "sandbox": "read-only",
+            "ignore_user_config": True,
+            "ignore_rules": True,
+            "disabled_features": list(harness.MINIMAL_DISABLED_FEATURES),
+        }
+        harness._json_dump(
+            output / "host-preflight.json",
+            {
+                "status": "PASS",
+                "selected_sandbox": "read-only",
+                "records": [{"effective_host_profile": profile}],
+            },
+        )
+        return "read-only"
+
+    monkeypatch.setattr(harness, "run_host_preflight", passing_preflight)
     assert harness.run_matrix(args) == 1
     assert calls == [(harness.scheduled_trials(frozen)[0].key, attempt) for attempt in (1, 2)]
     assert len(harness.load_trials(args.output / "failed-attempts.jsonl")) == 2
@@ -582,23 +604,23 @@ def test_terminal_exhaustion_stops_new_work_and_exports_without_scoring(
 def test_conditional_third_runs_only_on_frozen_field_disagreement(harness, frozen) -> None:
     trials = _perfect_trials(harness, frozen, "B0") + _perfect_trials(harness, frozen, "B1")
     assert harness.conditional_third_specs(frozen, ["B0", "B1"], trials) == []
-    target = next(item for item in trials if item["case_id"] == "VC01" and item["repetition"] == 2)
+    target = next(item for item in trials if item["case_id"] == "WC01" and item["repetition"] == 2)
     target["observed_context_bytes"] += 1
     thirds = harness.conditional_third_specs(frozen, ["B0", "B1"], trials)
-    assert [item.key for item in thirds] == [f"VC01--{target['candidate_id']}--r3"]
+    assert [item.key for item in thirds] == [f"WC01--{target['candidate_id']}--r3"]
 
 
 def test_case_aggregation_uses_majority_median_and_forbids_unneeded_third(harness, frozen) -> None:
     trials = _perfect_trials(harness, frozen, "B0")
-    first = next(item for item in trials if item["case_id"] == "VC01" and item["repetition"] == 1)
-    second = next(item for item in trials if item["case_id"] == "VC01" and item["repetition"] == 2)
+    first = next(item for item in trials if item["case_id"] == "WC01" and item["repetition"] == 1)
+    second = next(item for item in trials if item["case_id"] == "WC01" and item["repetition"] == 2)
     second["semantic_outcome"] = "no-activation"
     third = {**first, "repetition": 3, "observed_context_bytes": 1200}
     trials.append(third)
     aggregate = next(
         item
         for item in harness.aggregate_candidate_trials(frozen, "B0", trials)
-        if item["case_id"] == "VC01"
+        if item["case_id"] == "WC01"
     )
     assert aggregate["semantic_outcome"] == "activate"
     assert aggregate["observed_context_bytes"] == 1000
@@ -624,7 +646,7 @@ def test_critical_violation_is_any_occurrence_and_suppresses_candidate_thirds(
     disagreement = next(
         item
         for item in trials
-        if item["candidate_id"] == "B0" and item["case_id"] == "VC01" and item["repetition"] == 2
+        if item["candidate_id"] == "B0" and item["case_id"] == "WC01" and item["repetition"] == 2
     )
     disagreement["observed_context_bytes"] += 1
     thirds = harness.conditional_third_specs(frozen, ["B0", "B1"], trials)
@@ -648,3 +670,92 @@ def test_capacity_event_does_not_consume_model_attempt(
     assert not list((tmp_path / "attempts").glob("*.json"))
     event = harness._load_json(next((tmp_path / "capacity-events").glob("*.json")))
     assert event["pending_attempt"] == 1
+
+
+def test_v8_schedule_uses_frozen_semantic_consequence_order(harness, frozen) -> None:
+    schedule = harness.stage_schedule(frozen, "R")
+    first_case_ids = []
+    for spec in schedule:
+        if spec.case["id"] not in first_case_ids:
+            first_case_ids.append(spec.case["id"])
+    assert first_case_ids[:8] == [
+        "WX01",
+        "WX02",
+        "WX03",
+        "WX04",
+        "WA01",
+        "WA02",
+        "WA03",
+        "WA04",
+    ]
+    assert first_case_ids[8:14] == ["WN01", "WN02", "WN03", "WN04", "WN05", "WN06"]
+
+
+def test_minimal_host_command_freezes_required_surface(harness, tmp_path) -> None:
+    command = harness._host_command(
+        "codex",
+        root=tmp_path,
+        model="gpt-5.6-sol",
+        effort="medium",
+        sandbox="read-only",
+        schema_path=tmp_path / "shape.json",
+        final_path=tmp_path / "result.json",
+    )
+    assert "--ignore-user-config" in command
+    assert "--ignore-rules" in command
+    assert command[command.index("--sandbox") + 1] == "read-only"
+    for feature in harness.MINIMAL_DISABLED_FEATURES:
+        assert any(
+            command[index : index + 2] == ["--disable", feature]
+            for index in range(len(command) - 1)
+        )
+
+
+def test_one_finalized_false_activation_is_exactly_futile(harness, frozen) -> None:
+    trials = [
+        trial for trial in _perfect_trials(harness, frozen, "B0") if trial["case_id"] == "WN01"
+    ]
+    for trial in trials:
+        trial["activated_entrypoints"] = ["agent-governance"]
+    certificate = harness.qualification_futility_certificate(frozen, "B0", trials)
+    assert certificate["terminal"] is True
+    assert certificate["optimistic_final_bounds"]["false_activation_rate"] == pytest.approx(1 / 11)
+    assert "false_activation_rate" in certificate["failed_bounds"]
+
+
+def test_three_semantic_errors_are_futile_but_two_are_not(harness, frozen) -> None:
+    perfect = _perfect_trials(harness, frozen, "B0")
+    case_ids = ["WC01", "WC02", "WC03"]
+    pairs = [trial for trial in perfect if trial["case_id"] in case_ids]
+    for trial in pairs:
+        trial["semantic_outcome"] = "no-activation"
+    three = harness.qualification_futility_certificate(frozen, "B0", pairs)
+    assert three["terminal"] is True
+    assert three["optimistic_final_bounds"]["semantic_outcome_accuracy"] == 0.925
+    two = harness.qualification_futility_certificate(
+        frozen, "B0", [trial for trial in pairs if trial["case_id"] != "WC03"]
+    )
+    assert "semantic_outcome_accuracy" not in two["failed_bounds"]
+
+
+def test_context_materiality_uses_optimistic_zero_for_unfinished_cases(harness, frozen) -> None:
+    relevant = [
+        case["id"]
+        for case in frozen.corpus["cases"]
+        if case["class"] in harness.ACTIVATION_RELEVANT_CLASSES
+    ]
+    trials = [
+        trial
+        for trial in _perfect_trials(harness, frozen, "F2")
+        if trial["case_id"] in set(relevant[:15])
+    ]
+    reference = {
+        "activation_f1": 0.95,
+        "false_activation_rate": 0.0,
+        "wrong_specialist_rate": 0.0,
+        "overactivation_rate": 0.0,
+        "median_observed_context_bytes": 1000,
+    }
+    certificate = harness.materiality_futility_certificate(frozen, "F2", trials, reference)
+    assert certificate["optimistic_median_observed_context_bytes"] == 1000
+    assert "material_context" in certificate["failed_bounds"]

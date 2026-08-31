@@ -1,0 +1,8 @@
+{
+  "acceptance_complete": false,
+  "acceptance_prompts_issued": 0,
+  "completed_valid_observations": 0,
+  "execution_epoch": "MG1-T023-EXECUTION-v8",
+  "partial_scoring_permitted": false,
+  "stage_state": "HOST_CAPABILITY_PREFLIGHT_FAILED"
+}
