@@ -1,15 +1,15 @@
 {
-  "schema_version": "8.0.0",
-  "oracle_id": "MG1-T023-TOPOLOGY-ORACLE-v8",
-  "execution_epoch": "MG1-T023-EXECUTION-v8",
+  "schema_version": "9.0.0",
+  "oracle_id": "MG1-T023-TOPOLOGY-ORACLE-v9",
+  "execution_epoch": "MG1-T023-EXECUTION-v9",
   "capability_source_epoch": "MG1-2026-08-25-v3",
   "presentation_revision": "MG1-T023-PRESENTATIONS-v3",
   "presentation_manifest": "evals/skill_activation_topology/presentations/manifest.json",
   "corpus_id": "MG1-T023-CORPUS-v4",
   "trial_envelope_id": "MG1-T023-TRIAL-ENVELOPE-v2",
   "trial_envelope_path": "evals/skill_activation_topology/trial-envelope.json",
-  "supersedes_oracle_id": "MG1-T023-TOPOLOGY-ORACLE-v7",
-  "supersession_reason": "Prospective host-execution and cost-efficiency revision after v7 closed BLOCKED with a host execution-envelope defect. V8 preserves candidate presentation bytes, semantic expectations, qualification thresholds, zero-tolerance safety gates, paired 2+1 aggregation, context meaning and D050 selection percentages while adding a mandatory synthetic host-capability preflight, a minimal Codex feature surface, fresh holdout strings, a 180-second attempt timeout, exact optimistic-completion futility stopping and cost/tool telemetry.",
+  "supersedes_oracle_id": "MG1-T023-TOPOLOGY-ORACLE-v8",
+  "supersession_reason": "Prospective execution-adapter correction after v8 closed BLOCKED / HOST_CAPABILITY_PREFLIGHT with zero acceptance prompts. V9 preserves the v8 corpus, candidate/reference bytes, semantic expectations, thresholds, paired 2+1 aggregation, cost-bounded scheduling, context meaning and D050 selection rules while explicitly binding a non-disabled native Windows sandbox backend despite ignored user configuration.",
   "candidate_ids": ["B0", "B1", "F2", "G3"],
   "prior_experiment_policy": {
     "mg1_v2_status": "CLOSED_BLOCKED",
@@ -18,17 +18,20 @@
     "mg1_v5_status": "SUPERSEDED_PRE_EXECUTION",
     "mg1_v6_status": "CLOSED_BLOCKED_NO_QUALIFYING_REFERENCE",
     "mg1_v7_status": "CLOSED_BLOCKED_HOST_EXECUTION_ENVELOPE_DEFECT",
-    "prior_v2_v3_v4_v6_v7_observations_may_enter_v8_score": false,
+    "mg1_v8_status": "CLOSED_BLOCKED_HOST_CAPABILITY_PREFLIGHT",
+    "mg1_v8_acceptance_prompts_issued": 0,
+    "mg1_v8_scored_observations": 0,
+    "prior_v2_v3_v4_v6_v7_v8_observations_may_enter_v9_score": false,
     "mg1_v5_completed_observations": 0,
     "prior_results_may_be_used_only_for_method_confounds_cost_diagnostics_and_non_scored_regression": true,
-    "prior_results_may_not_tune_v8_candidate_presentations_thresholds_selection_or_expected_semantics": true
+    "prior_results_may_not_tune_v9_candidate_presentations_thresholds_selection_expected_semantics_or_case_order": true
   },
   "trial_method": {
     "scoring_unit": "case_candidate_aggregate",
     "clean_context_required": true,
-    "candidate_construction": "byte-copy only from the frozen v3 presentation manifest; candidate and reference bytes must be identical to v7",
+    "candidate_construction": "byte-copy only from the frozen v3 presentation manifest; candidate and reference bytes must be identical to v8",
     "training_partition": null,
-    "training_partition_reason": "V8 uses fresh exact holdout strings and unchanged candidate presentation bytes. Prior evidence is diagnostic only and cannot enter score or tune candidate wording/thresholds.",
+    "training_partition_reason": "V9 reuses MG1-T023-CORPUS-v4 byte-identically because v8 issued zero acceptance prompts. Prior evidence is diagnostic only and cannot enter score or tune candidate wording, thresholds, ordering or selection.",
     "reference_stage_candidates": ["B0", "B1"],
     "challenger_stage_candidates": ["F2", "G3"],
     "base_valid_repetitions_per_case_candidate": 2,
@@ -53,41 +56,81 @@
     "early_stop_policy": "The full-completion ranges are ceilings rather than mandatory minima. Stop future candidate observations whenever the frozen optimistic-completion futility rules prove qualification or material challenger status impossible.",
     "max_model_attempts_per_scheduled_observation": 2,
     "timeout_seconds_per_model_attempt": 180,
-    "attempt_isolation": "Every model attempt uses a fresh Codex thread and a disposable workspace satisfying v8 environment isolation and the frozen selected host profile.",
+    "attempt_isolation": "Every model attempt uses a fresh Codex thread and a disposable workspace satisfying v9 environment isolation and the frozen selected complete host profile.",
     "model_attempt_failure_rule": "A timeout, malformed structured response, non-capacity provider failure, or other non-capacity execution failure consumes the current model attempt. Preserve it as diagnostic evidence. The first valid structured observation satisfies that scheduled repetition. Never retry after a valid observation exists.",
     "external_capacity_event_rule": "An explicit account/service usage-limit or quota-capacity failure before a valid structured result is an external capacity event, not a model attempt. Persist it separately, leave the repetition pending at the same attempt ordinal, and stop new live scheduling promptly.",
-    "pause_resume_rule": "The same v8 epoch may resume after capacity returns or after an environmental host-surface drift is restored to the exact already-selected profile. Previously valid v8 observations remain authoritative and must not be rerun or replaced. Resume verifies exact epoch, frozen asset hashes, runner identity, selected host profile, host/model/effort, workspace-policy compliance, case/candidate/repetition uniqueness, attempt ordinals, stage state, futility state and evidence integrity before new calls.",
+    "pause_resume_rule": "The same v9 epoch may resume after capacity returns or after host-surface drift is restored to the exact already-selected complete host profile. Previously valid v9 observations remain authoritative and must not be rerun or replaced. Resume verifies exact epoch, frozen asset hashes, runner identity, Codex version, native Windows backend, logical sandbox, minimal feature surface, host/model/effort, workspace-policy compliance, observation uniqueness, attempt ordinals, stage state, futility state and evidence integrity before new calls.",
     "terminal_failure_rule": "If both permitted non-capacity model attempts fail for a scheduled repetition, stop BLOCKED and do not claim a topology selection from partial evidence.",
     "mechanical_smoke_cases_may_be_used": true,
     "smoke_cases_enter_acceptance_score": false
+  },
+  "windows_backend_resolution": {
+    "required_before_model_calls": true,
+    "codex_cli_baseline": "0.149.0",
+    "user_config_must_remain_ignored": true,
+    "native_backend_must_be_explicitly_bound": true,
+    "disabled_backend_forbidden": true,
+    "backend_selection_order": ["elevated", "unelevated"],
+    "backend_semantic_mapping": {
+      "elevated": "Codex native Windows elevated sandbox backend",
+      "unelevated": "Codex native Windows restricted-token/unelevated sandbox backend"
+    },
+    "elevated_rule": "Attempt the supported elevated native Windows backend first. If it initializes and a logical sandbox profile passes the unchanged synthetic canary twice, select it and do not test a broader or alternate backend.",
+    "unelevated_fallback_rule": "Attempt the supported unelevated/restricted-token backend only when elevated cannot initialize, is unavailable under the host's supported requirements, or fails the unchanged canary for a backend-specific execution-envelope reason. It must independently pass the same canary twice before acceptance.",
+    "no_model_call_failure_rule": "If Codex CLI 0.149.0 cannot explicitly realize a non-disabled native Windows backend while user config remains ignored, stop BLOCKED / WINDOWS_SANDBOX_BACKEND_UNAVAILABLE before any synthetic or acceptance model call. Do not silently upgrade Codex.",
+    "dangerous_bypass_forbidden": true,
+    "interactive_approval_forbidden": true,
+    "evidence_required": [
+      "Codex CLI version",
+      "requested and resolved native Windows backend identity",
+      "logical sandbox mode",
+      "ignored user-config/rules state",
+      "minimal feature-surface state",
+      "absence of dangerous bypass mode"
+    ],
+    "adapter_rule": "Executor resolves version-specific CLI/config syntax under D054 using installed help and official/version-specific sources; the effective backend state above is immutable experiment identity."
   },
   "host_capability_preflight": {
     "required_before_acceptance": true,
     "scored": false,
     "acceptance_holdout_or_candidate_content_allowed": false,
     "synthetic_skill_path": ".agents/skills/mx-canary/SKILL.md",
-    "synthetic_skill_rule": "Use a deterministic neutral local Skill whose body contains a unique fixed nonce sentence not inferable from metadata and unrelated to Agent Governance/candidate/profile/holdout semantics.",
-    "prompt_rule": "Use a neutral synthetic prompt that explicitly asks to apply the mx-canary local instruction and return the body nonce in a minimal structured record.",
-    "required_valid_repetitions_per_profile": 2,
-    "sandbox_selection_order": ["read-only", "workspace-write"],
-    "read_only_rule": "Test read-only first under the exact minimal effective host surface. Select it only if both fresh canary repetitions pass all preflight requirements.",
-    "workspace_write_fallback_rule": "Test workspace-write only if read-only fails specifically because the required body-read/use path is denied by the execution envelope. Select workspace-write only if both fresh canary repetitions pass and post-run comparison proves no unexpected model-caused file mutation.",
+    "synthetic_skill_rule": "Use the v8 deterministic neutral local Skill whose body contains a unique fixed nonce sentence not inferable from metadata and unrelated to Agent Governance/candidate/profile/holdout semantics.",
+    "prompt_rule": "Use the v8 neutral synthetic prompt that explicitly asks to apply the mx-canary local instruction and return the body nonce in a minimal structured record.",
+    "required_valid_repetitions_per_selected_profile": 2,
+    "complete_profile_identity_fields": [
+      "codex_cli_version",
+      "native_windows_backend",
+      "logical_sandbox",
+      "model",
+      "effort",
+      "ignored_user_config",
+      "ignored_execpolicy_rules",
+      "minimal_feature_surface_identity"
+    ],
+    "logical_sandbox_selection_order": ["read-only", "workspace-write"],
+    "read_only_rule": "Within each permitted native Windows backend, test logical read-only first under the exact minimal effective host surface. Select it only if two fresh canary repetitions pass all preflight requirements.",
+    "workspace_write_fallback_rule": "Within the same backend, test logical workspace-write only if read-only fails specifically because the required body-read/use path cannot operate under read-only. Select workspace-write only if two fresh canary repetitions pass and post-run comparison proves no unexpected model-caused file mutation.",
+    "terminal_profile_failure_repetition_rule": "Do not spend a second repetition after the first repetition establishes a terminal profile failure that repetition cannot repair. Two repetitions are required to establish PASS, not to reconfirm terminal failure.",
     "pass_requirements": [
       "local Skill metadata discovery is observable",
-      "synthetic SKILL.md body is successfully read or used",
+      "synthetic SKILL.md body is successfully read or host-used",
       "host trace distinguishes body read/use from metadata discovery",
-      "returned body nonce is exact",
+      "returned full body nonce is exact",
       "structured output validates",
       "no execution-policy rejection affects the required body-read/use path",
       "no unrelated app/plugin catalog payload is materialized",
-      "workspace mutation postcondition is satisfied"
+      "workspace mutation postcondition is satisfied",
+      "native Windows backend identity is non-disabled and identical across both passing repetitions"
     ],
-    "failure_rule": "If neither permitted sandbox profile passes reproducibly, stop T023 BLOCKED / HOST_CAPABILITY_PREFLIGHT before issuing any acceptance prompt.",
+    "failure_rule": "If no permitted native-backend/logical-sandbox complete profile passes reproducibly, stop T023 BLOCKED / HOST_CAPABILITY_PREFLIGHT before issuing any acceptance prompt.",
     "capacity_rule": "Explicit capacity events during preflight pause readiness and are retained as diagnostics; they are not acceptance observations or model-attempt failures."
   },
   "effective_host_surface": {
     "user_config_ignored": true,
     "execpolicy_rules_ignored": true,
+    "native_windows_backend_explicitly_bound": true,
+    "native_windows_backend_disabled_allowed": false,
     "local_shell_skill_mechanism_enabled": true,
     "apps_connectors_enabled": false,
     "remote_plugin_catalog_enabled": false,
@@ -97,7 +140,9 @@
     "web_search": "disabled",
     "ephemeral_sessions": true,
     "additional_mcp_plugin_app_injection_allowed": false,
-    "adapter_rule": "Executor resolves version-specific CLI/config syntax under D054, but the resulting effective states above are immutable experiment identity. If the installed Codex version cannot realize an equivalent surface, stop before acceptance."
+    "dangerous_approval_sandbox_bypass_allowed": false,
+    "explicit_skill_substitution_for_acceptance_allowed": false,
+    "adapter_rule": "Executor resolves version-specific CLI/config syntax under D054, but the resulting effective states above are immutable experiment identity. If Codex 0.149.0 cannot realize an equivalent surface, stop before live canary/acceptance rather than broadening or upgrading."
   },
   "scheduling": {
     "case_group_order": [
@@ -160,9 +205,10 @@
   "activation_observability": {
     "scoring_authority": "host_trace",
     "entrypoint_activation_rule": "A candidate entrypoint is scored activated only when host evidence shows a successful read or host-use of that candidate SKILL.md body after metadata discovery. Candidate name/description/path discovery alone is not activation.",
+    "equivalent_host_event_rule": "The harness may recognize any first-party Codex host event that deterministically and unambiguously proves actual candidate-body read/use; it must not require a particular shell command spelling when an equivalent host event exists. New event classes are technical extraction only and cannot weaken the body-read/use semantic criterion.",
     "model_report_role": "diagnostic cross-check only; model prose or self-reported activated_entrypoints cannot create scored activation without corresponding host evidence.",
-    "preflight_binding_rule": "Acceptance uses only the host profile that passed two synthetic body-read/use preflight repetitions. The effective profile identity is persisted and compared on every attempt/resume.",
-    "host_surface_drift_rule": "After preflight, an explicit policy rejection affecting required candidate-body read/use or reappearance of unrelated app/plugin catalog payload is HOST_SURFACE_DRIFT. The affected observation is not scored as candidate behavior and new scheduling stops immediately.",
+    "preflight_binding_rule": "Acceptance uses only the complete host profile that passed two synthetic body-read/use preflight repetitions. Codex version, native Windows backend, logical sandbox and minimal feature identity are persisted and compared on every attempt/resume.",
+    "host_surface_drift_rule": "After preflight, a disabled/different native backend, different logical sandbox, explicit policy rejection affecting required candidate-body read/use, or reappearance of unrelated app/plugin catalog payload is HOST_SURFACE_DRIFT. The affected observation is not scored as candidate behavior and new scheduling stops immediately.",
     "unobservable_rule": "If the selected host profile cannot continue to distinguish metadata discovery from candidate-body activation, stop/pause before scoring affected observations rather than infer non-activation from model prose or failed tools.",
     "context_measure_rule": "observed_context_bytes is the UTF-8 byte sum of unique successfully host-read candidate SKILL.md body and reference files according to the frozen presentation manifest. Byte measures are not exact tokens."
   },
@@ -179,15 +225,18 @@
       "unrelated_app_plugin_resource_bytes",
       "duration_seconds",
       "capacity_status",
+      "codex_cli_version",
+      "native_windows_backend",
+      "logical_sandbox",
       "effective_host_profile_identity"
     ],
     "missing_token_usage_rule": "If the installed Codex event stream does not expose exact token fields, record token_usage_available=false and retain available tool/duration/context proxies. Do not invent estimates or substitute a different host/model solely for telemetry.",
-    "rollout_budget_policy": "Do not require the experimental Codex rollout-budget feature for v8 acceptance because budget reminders/tracking behavior could alter the evaluated execution path.",
+    "rollout_budget_policy": "Do not require the experimental Codex rollout-budget feature for v9 acceptance because budget reminders/tracking behavior could alter the evaluated execution path.",
     "prompt_cache_policy": "Record cached-input tokens when available. Caching is diagnostic/cost information and does not enter candidate scoring."
   },
   "host_model_matrix": {
     "required_live_cells": [
-      {"host":"Codex","platform":"native Windows","model":"GPT-5.6 Sol","effort":"Medium","claim_scope":"host-specific activation evidence"}
+      {"host":"Codex","platform":"native Windows","model":"GPT-5.6 Sol","effort":"Medium","claim_scope":"host-specific activation evidence","codex_cli_baseline":"0.149.0","native_windows_backend":"explicit non-disabled backend selected by frozen preflight"}
     ],
     "required_portable_evidence": [
       "deterministic profile/isolation regression",
@@ -195,10 +244,11 @@
       "D051 one-product/single-install feasibility",
       "candidate-sensitive host-read context evidence",
       "stimulus/workspace isolation evidence",
-      "v8 host-capability preflight evidence",
+      "v9 Windows-backend resolution evidence",
+      "v9 host-capability preflight evidence",
       "futility/materiality certificates for every early-stopped candidate"
     ],
-    "substitution_rule": "If the required live cell cannot execute reproducibly under the frozen v8 method, T023 is BLOCKED; do not silently substitute another host/model/effort."
+    "substitution_rule": "If the required live cell cannot execute reproducibly under the frozen v9 method, T023 is BLOCKED; do not silently substitute another host/model/effort/OS/CLI version."
   },
   "trial_output_contract": {
     "required_fields": ["case_id", "candidate_id", "repetition", "semantic_outcome", "granted_capabilities", "permission_broadening", "host_trace_available"],
