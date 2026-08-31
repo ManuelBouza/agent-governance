@@ -2,184 +2,92 @@
   "task_id": "T023",
   "status": "BLOCKED",
   "task_contract_path": "docs/tasks/T023-unified-skill-profile-activation-evals.md",
-  "branch": "test/t023-skill-activation-topology-evals-v7",
-  "implementation_head_sha": "b8636af9e6a1e33945ccfb6d58befe086babc291",
+  "branch": "test/t023-skill-activation-topology-evals-v8",
+  "implementation_head_sha": "76a591c2d7a3f48d5e4b780712a78bef4c8e212f",
   "base_branch": "develop",
-  "base_sha": "1715b4f7fe4af20ccea4a5464bcd0f156d0c6f64",
+  "base_sha": "23475b7fbcf427c4dac8dcb06796409660434aa2",
   "sdd_profile": "ASSURED",
   "test_authorship_mode": "mixed",
-  "controlling_revision": "docs/tasks/T046-mg1-v7-stimulus-isolated-evaluation.md",
+  "controlling_revision": "docs/tasks/T047-mg1-v8-cost-bounded-host-evaluation.md",
   "files_changed": [
     "evals/skill_activation_topology/harness.py",
     "tests/test_skill_activation_topology_harness.py",
-    "evals/skill_activation_topology/evidence/mg1-v7-codex-windows-gpt-5.6-sol-medium/",
+    "evals/skill_activation_topology/evidence/mg1-v8-codex-windows-gpt-5.6-sol-medium/canary/read-only-r1.json",
+    "evals/skill_activation_topology/evidence/mg1-v8-codex-windows-gpt-5.6-sol-medium/canary/workspace-write-r1.json",
+    "evals/skill_activation_topology/evidence/mg1-v8-codex-windows-gpt-5.6-sol-medium/completeness.json",
+    "evals/skill_activation_topology/evidence/mg1-v8-codex-windows-gpt-5.6-sol-medium/deterministic-evidence.json",
+    "evals/skill_activation_topology/evidence/mg1-v8-codex-windows-gpt-5.6-sol-medium/host-preflight.json",
+    "evals/skill_activation_topology/evidence/mg1-v8-codex-windows-gpt-5.6-sol-medium/run-metadata.json",
+    "evals/skill_activation_topology/evidence/mg1-v8-codex-windows-gpt-5.6-sol-medium/selection.json",
     "handoffs/T023-executor-handoff.json"
   ],
-  "implementation_summary": "Established a fresh isolated worktree exactly at canonical origin/develop 1715b4f7fe4af20ccea4a5464bcd0f156d0c6f64 while preserving all existing local worktrees. Mechanically implemented the frozen MG1-v7 exact neutral stimulus, OS-temporary neutral workspace policy, role-fixture materialization, ephemeral read-only Codex execution, host-trace activation authority, V7 identity/integrity checks and resume validation without changing Orchestrator-owned assets or candidate bytes. Executed the required Codex/native-Windows/GPT-5.6-Sol/Medium live cell. Stage R completed 160 mandatory B0/B1 observations plus 11 required B1 thirds. Neither candidate qualified, so the frozen gate stopped BLOCKED and correctly prohibited F2/G3. No prior-epoch observation entered scoring, no candidate was selected, and no committed Markdown or frozen semantic asset changed.",
+  "implementation_summary": "Established a fresh isolated worktree exactly at canonical origin/develop 23475b7fbcf427c4dac8dcb06796409660434aa2 while preserving all existing local branches/worktrees. Implemented the frozen MG1-v8 synthetic Skill canary, minimal Codex host surface, read-only then workspace-write sandbox selection, host-surface drift detection, exact 180-second attempts, provider/tool telemetry, semantic-consequence scheduling, qualification futility and challenger materiality certificates without changing Orchestrator-owned corpus/oracle/presentation bytes. All deterministic gates passed. The mandatory host-capability preflight then failed under both permitted sandboxes because every attempted mx-canary SKILL.md body read was rejected by host policy. The run stopped BLOCKED / HOST_CAPABILITY_PREFLIGHT with zero acceptance prompts and zero scored observations, as required.",
   "oracle": {
-    "oracle_id": "MG1-T023-TOPOLOGY-ORACLE-v7",
-    "execution_epoch": "MG1-T023-EXECUTION-v7",
+    "oracle_id": "MG1-T023-TOPOLOGY-ORACLE-v8",
+    "execution_epoch": "MG1-T023-EXECUTION-v8",
     "capability_source_epoch": "MG1-2026-08-25-v3",
     "presentation_revision": "MG1-T023-PRESENTATIONS-v3",
-    "corpus_id": "MG1-T023-CORPUS-v3",
+    "corpus_id": "MG1-T023-CORPUS-v4",
     "trial_envelope_id": "MG1-T023-TRIAL-ENVELOPE-v2",
-    "executed_runner_git_commit": "32d91d16c3ce246b32ef3ab92d73b40387cb7cab",
-    "executed_runner_sha256": "13a818ab54202eed4bfd0d7147e41717ca27a98081421ea6ad947938920e3a07",
-    "frozen_asset_sha256": {
-      "evals/skill_activation_topology/oracle.json": "e003cf9b6cf8e59479adad9cd23ff93e73afa423d124a5bef9778ec71ebcddc0",
-      "evals/skill_activation_topology/corpus.json": "abae80ff9270cb9c4c45ea2aeb3fb52e3866b9648187db3a2dad84aab673c368",
-      "evals/skill_activation_topology/trial-envelope.json": "2d483784a8cfd1143c52e976218f2d96e2ccfa324516764ff35f939a6d777b7d",
-      "evals/skill_activation_topology/topologies.json": "2d5726799b3ca33641ac10b0a06c01cec1f5bc65b18389ac94f97ea56697a60b",
-      "evals/skill_activation_topology/presentations/manifest.json": "1b5fd0bc52d23e20c25b52dcd681fd2025640811c60890e59275a281f88c1e90"
-    },
-    "semantic_drift": false,
-    "prior_v2_v3_v4_v6_observations_in_v7_score": 0
+    "frozen_assets_modified": false,
+    "prior_epoch_observations_imported": 0,
+    "acceptance_prompts_issued": 0,
+    "scored_observations": 0
   },
   "verification": {
     "commands": [
-      "git fetch origin --prune",
-      "uv sync --locked",
       "uv run --locked python evals/skill_activation_topology/harness.py validate",
-      "uv run --locked python evals/skill_activation_topology/harness.py run --output evals/skill_activation_topology/evidence/mg1-v7-codex-windows-gpt-5.6-sol-medium --full-acceptance --workers 4",
-      "uv run --locked python evals/skill_activation_topology/harness.py run --output evals/skill_activation_topology/evidence/mg1-v7-codex-windows-gpt-5.6-sol-medium --full-acceptance --workers 4 --resume",
-      "uv run --locked python evals/skill_activation_topology/harness.py score --output evals/skill_activation_topology/evidence/mg1-v7-codex-windows-gpt-5.6-sol-medium",
-      "uv run --locked ruff check .",
-      "uv run --locked ruff format --check .",
-      "uv run --locked python -m pytest",
-      "git diff --check",
-      "protected frozen-asset diff check",
-      "local evidence secret-pattern scan"
+      "uv run --locked pytest -q tests/test_skill_activation_topology_harness.py",
+      "uv run --locked ruff check evals/skill_activation_topology/harness.py tests/test_skill_activation_topology_harness.py",
+      "uv run --locked ruff format --check evals/skill_activation_topology/harness.py tests/test_skill_activation_topology_harness.py",
+      "uv run --locked python evals/skill_activation_topology/harness.py verify --output evals/skill_activation_topology/evidence/mg1-v8-codex-windows-gpt-5.6-sol-medium"
     ],
     "results": {
-      "baseline": "PASS: isolated topic worktree started exactly at fetched origin/develop 1715b4f7fe4af20ccea4a5464bcd0f156d0c6f64; existing worktrees and unrepresented local state were preserved.",
-      "frozen_input_validation": "PASS: V7 oracle, 40-case corpus, neutral envelope, B0/B1/F2/G3 identities, paired 2+1 ranges, exact fixture roles and frozen candidate provenance validated.",
-      "live_reference_stage": "COMPLETE TERMINAL: 160 mandatory B0/B1 observations plus 11 required B1 thirds; 171 valid repetitions over 80 case/candidate aggregates.",
-      "stimulus_isolation": "PASS: 0 prompt mismatches; every model-visible turn was exact corpus prompt plus two newlines plus the frozen neutral suffix.",
-      "workspace_and_fixture_isolation": "PASS: 182 invocations used 182 unique OS-temporary roots outside the canonical checkout; no forbidden root substring, link/junction, canonical Git metadata or unintended fixture signal was recorded; each valid trial retained its exact role-fixture manifest.",
-      "activation_observability": "PASS: host trace was available for all 171 valid observations. Host-observed candidate-body activation was zero while model self-report named activation in 124 observations, demonstrating that self-report did not create scored activation. Every scored activation/context field recomputed from successful host reads.",
-      "capacity_pause_resume": "PASS: 11 explicit capacity events were retained as non-attempt records across three same-epoch resumes; 57, then 149, then 171 valid observations were preserved without replacement.",
-      "model_attempts": "PASS: 171 valid first model attempts, zero non-capacity failures, zero retries after valid results, 182 unique threads and 182 unique workspaces including capacity events.",
-      "case_aggregation": "PASS: 80 aggregates recompute exactly. B1 used 11 disagreement-triggered thirds; B0 used no thirds because its any-occurrence critical violation had already disqualified it; no unnecessary third or fourth repetition exists.",
-      "reference_selection": "BLOCKED by frozen rule: B0 and B1 both fail qualification. B0 activation recall/F1 0.0, semantic accuracy 0.625 and one cross-profile violation. B1 activation recall/F1 0.0 and semantic accuracy 0.825.",
-      "challenger_stage": "NOT EXECUTED as required: neither B0 nor B1 qualified, so the V7 gate forbids F2/G3 calls.",
-      "scoring_gate": "PASS: complete evidence, raw/structured binding, exact prompts, workspace/fixture evidence, adaptive schedule, immutable runner provenance, aggregates, metrics and BLOCKED selection recompute exactly.",
-      "full_deterministic_suite": "PASS: 449 passed in the embedded deterministic gate.",
-      "profile_isolation_regression": "PASS: 48 passed in the embedded deterministic gate.",
-      "consumer_source_independence_regression": "PASS: 8 passed in the embedded deterministic gate.",
-      "quality_gate": "PASS: Ruff check and Ruff format check.",
-      "source_distribution_and_install_feasibility": "PASS within T023 scope for all four frozen projections; one capability source/Core/engine and single distribution root preserved. Final wrapper/install proof remains T024/T029.",
-      "ownership_and_history": "PASS: no committed Markdown, oracle, corpus, envelope, presentation, Core/runtime/profile source, prior evidence, dependency or configuration change from canonical base.",
-      "privacy": "PASS: no private-key, GitHub-token, OpenAI-key, bearer-token or named API-key patterns found in V7 evidence or handoff."
+      "frozen_input_validation": "PASS: oracle v8, corpus v4, four candidates, 40 cases, 320 full-completion ceiling",
+      "focused_harness_tests": "PASS: 51 tests",
+      "ruff_check": "PASS",
+      "ruff_format_check": "PASS",
+      "full_pytest": "PASS: 456 tests",
+      "profile_isolation": "PASS: 48 tests",
+      "consumer_source_independence": "PASS: 8 tests",
+      "host_preflight_read_only": "FAIL: 1/2 repetitions executed; five required Skill-body read commands rejected by host policy; nonce not proven",
+      "host_preflight_workspace_write": "FAIL: 1/2 repetitions executed; two required Skill-body read commands rejected by host policy; nonce not proven; no unexpected workspace mutation",
+      "acceptance_execution": "NOT RUN by frozen gate"
     },
-    "runtime": {
-      "platform": "Native Windows 11 10.0.26200 / NTFS",
-      "shell": "PowerShell 7",
-      "git": "2.53.0.windows.2",
-      "uv": "0.11.32",
-      "python": "3.13.14",
-      "pytest": "9.1.1",
-      "ruff": "0.16.2",
-      "codex_cli": "0.149.0",
-      "model": "gpt-5.6-sol",
-      "effort": "medium",
-      "workers": 4,
-      "timeout_seconds_per_model_attempt": 600
-    },
+    "runtime": "Windows 11 / Python 3.13.14 / uv locked environment / codex-cli 0.149.0 / gpt-5.6-sol medium",
     "network_required": true,
-    "network_detail": "Canonical Git fetch/push and the explicitly authorized live Codex cell required network. Deterministic verification and evidence recomputation were local.",
-    "evidence_root": "evals/skill_activation_topology/evidence/mg1-v7-codex-windows-gpt-5.6-sol-medium"
+    "network_detail": "Only the two synthetic Codex canary invocations used provider access. No MG1 acceptance prompt was sent.",
+    "evidence_root": "evals/skill_activation_topology/evidence/mg1-v8-codex-windows-gpt-5.6-sol-medium"
   },
   "code_review": {
-    "reviewed_head_sha": "b8636af9e6a1e33945ccfb6d58befe086babc291",
-    "summary": "Reviewed implementation and terminal evidence against T023, T046, the frozen V7 oracle/envelope and D052 ownership boundary. Stimulus and workspace isolation are fail-closed; fixtures are exact and role-bounded; activation scoring derives only from successful candidate-body reads; metadata/self-report alone cannot score activation; paired scheduling, capacity semantics, critical gates, aggregation and reference-first stopping are exactly recomputable. The runner is preserved in immutable commit 32d91d16c3ce246b32ef3ab92d73b40387cb7cab. No unauthorized semantic or Markdown change exists. Technical Code Review & Verify is complete for the terminal BLOCKED state; this is not ChatGPT acceptance.",
-    "findings": [],
-    "resolved_findings": [],
-    "upstream_reentry_required": true,
-    "upstream_reentry_stage": "Specify"
+    "status": "COMPLETE_FOR_BLOCKED_OUTCOME",
+    "summary": "Reviewed the v8 implementation against T023, T047, the frozen oracle/envelope and D052 ownership boundary. The canary contains no acceptance prompt or candidate bytes; profile selection is fail-closed; successful activation requires a host-observed body read; Windows-path rejection evidence is normalized from preserved raw stderr; deprecated web-search feature toggles were replaced prospectively with the installed CLI's top-level web_search=disabled control; token totals remain null when not provider-exposed; scheduling and optimistic certificates are deterministic and covered by exact edge tests. No committed Markdown or Orchestrator-owned conformance asset changed.",
+    "residual_risk": "The installed Codex 0.149.0 execution policy rejects local Skill body reads under both permitted sandboxes. No portable topology claim can be made until a future controlling revision supplies a host envelope that passes the frozen canary twice."
   },
   "requirement_trace": {
-    "AC-T023-1": {
-      "status": "PASS",
-      "evidence": [
-        "evals/skill_activation_topology/evidence/mg1-v7-codex-windows-gpt-5.6-sol-medium/deterministic-evidence.json"
-      ],
-      "detail": "Full deterministic, profile-isolation and source-independence regressions pass; protected behavior and frozen source paths are unchanged."
-    },
-    "AC-T023-2": {
-      "status": "PASS_STAGE_R_TERMINAL",
-      "evidence": [
-        "evals/skill_activation_topology/evidence/mg1-v7-codex-windows-gpt-5.6-sol-medium/trials.jsonl",
-        "evals/skill_activation_topology/evidence/mg1-v7-codex-windows-gpt-5.6-sol-medium/raw-trials.jsonl",
-        "evals/skill_activation_topology/evidence/mg1-v7-codex-windows-gpt-5.6-sol-medium/case-aggregates.jsonl"
-      ],
-      "detail": "All 40 cases executed twice for B0/B1 plus exactly 11 required B1 thirds. F2/G3 are forbidden after the no-reference gate."
-    },
-    "AC-T023-3": {
-      "status": "PASS_STAGE_R_TERMINAL",
-      "evidence": [
-        "evals/skill_activation_topology/evidence/mg1-v7-codex-windows-gpt-5.6-sol-medium/metrics.json",
-        "evals/skill_activation_topology/evidence/mg1-v7-codex-windows-gpt-5.6-sol-medium/stability-diagnostics.json",
-        "evals/skill_activation_topology/evidence/mg1-v7-codex-windows-gpt-5.6-sol-medium/deterministic-evidence.json"
-      ],
-      "detail": "Frozen activation, routing, overactivation, isolation, context/load-path and installability dimensions are reported for the terminal reference stage."
-    },
-    "AC-T023-4": {
-      "status": "PASS",
-      "evidence": [
-        "evals/skill_activation_topology/evidence/mg1-v7-codex-windows-gpt-5.6-sol-medium/run-metadata.json",
-        "evals/skill_activation_topology/evidence/mg1-v7-codex-windows-gpt-5.6-sol-medium/selection.json"
-      ],
-      "detail": "Frozen identities/hashes, expectations, thresholds, paired aggregation and stage gate are unchanged and exactly recomputable."
-    },
-    "AC-T023-5": {
-      "status": "PASS_WITH_SCOPE_LIMIT",
-      "evidence": [
-        "evals/skill_activation_topology/evidence/mg1-v7-codex-windows-gpt-5.6-sol-medium/deterministic-evidence.json"
-      ],
-      "detail": "All projections preserve one product/source/Core/engine and single-install feasibility; final platform packaging remains out of scope."
-    },
-    "AC-T023-6": {
-      "status": "BLOCKED",
-      "evidence": [
-        "evals/skill_activation_topology/evidence/mg1-v7-codex-windows-gpt-5.6-sol-medium/reference-selection.json",
-        "evals/skill_activation_topology/evidence/mg1-v7-codex-windows-gpt-5.6-sol-medium/selection.json"
-      ],
-      "detail": "Neither B0 nor B1 qualifies, so no topology is selected and challenger execution is forbidden."
-    },
-    "AC-T023-7": {
-      "status": "PASS",
-      "evidence": [
-        "evals/skill_activation_topology/evidence/mg1-v7-codex-windows-gpt-5.6-sol-medium/run-metadata.json",
-        "evals/skill_activation_topology/evidence/mg1-v7-codex-windows-gpt-5.6-sol-medium/raw-trials.jsonl"
-      ],
-      "detail": "Frozen Orchestrator assets are unchanged; no supplementary case or prior epoch entered scoring; exact runner/oracle/raw/aggregate provenance is retained."
-    },
-    "AC-T046-1": "PASS: raw-trials.jsonl records exact neutral prompt construction and neutral OS-temporary roots for every valid observation.",
-    "AC-T046-3": "PASS: every raw observation retains its exact frozen fixture_role manifest; ambiguous, negative and near-miss cases are neutral.",
-    "AC-T046-4": "PASS: trials.jsonl activation fields derive from successful host reads; 124 self-reported activation rows produced zero scored activation rows without host evidence.",
-    "PRESERVED-D052-ORACLE": "Frozen hashes in run-metadata.json plus zero protected-path Git delta.",
-    "PRESERVED-D051-DISTRIBUTION": "deterministic-evidence.json candidate provenance and single-install feasibility.",
-    "PRESERVED-PRIOR-EPOCHS": "Run identity and validator reject every earlier execution epoch; zero prior observations entered V7 score."
+    "AC-T023-1": {"status": "PASS_DETERMINISTIC_ONLY", "evidence": "deterministic-evidence.json proves unchanged candidate construction, source/distribution integrity and full regressions; live functional equivalence was not entered"},
+    "AC-T023-2": {"status": "NOT_RUN", "evidence": "host preflight blocked before the 40-case acceptance corpus"},
+    "AC-T023-3": {"status": "NOT_RUN", "evidence": "no acceptance observations exist to compare"},
+    "AC-T023-4": {"status": "PASS", "evidence": "oracle/corpus/presentation hashes are frozen; zero acceptance observations and no post-result semantic mutation"},
+    "AC-T023-5": {"status": "PASS_DETERMINISTIC", "evidence": "deterministic-evidence.json records one capability source, one distribution root and single-install feasibility for B0/B1/F2/G3"},
+    "AC-T023-6": {"status": "BLOCKED", "evidence": "selection.json records BLOCKED / HOST_CAPABILITY_PREFLIGHT; no candidate selected"},
+    "AC-T023-7": {"status": "PASS", "evidence": "frozen D052 assets unchanged; required preflight executed from v8 authority; no supplementary cases entered acceptance scoring"},
+    "AC-T047-1": {"status": "BLOCKED_AS_DESIGNED", "evidence": "host-preflight.json shows neither sandbox passed twice and completeness.json proves zero acceptance prompts"},
+    "AC-T047-2": {"status": "NOT_ESTABLISHED", "evidence": "canary commands ignored user config/rules and disabled the named feature flags, but Codex emitted deprecated web-search toggle errors and local plugin-manifest warnings; the harness now uses web_search=disabled prospectively, but the terminal failed preflight was not rerun"},
+    "AC-T047-3": {"status": "PASS", "evidence": "policy-rejected body reads caused terminal preflight failure and were not scored as candidate non-activation"},
+    "AC-T047-4": {"status": "PASS", "evidence": "corpus v4 frozen input validation passed; no prior observations imported"},
+    "AC-T047-5": {"status": "PASS_IMPLEMENTATION_NOT_LIVE", "evidence": "51 focused tests cover semantic order, one false activation futility, three semantic-error futility and optimistic-zero context materiality"},
+    "AC-T047-6": {"status": "PASS", "evidence": "candidate/oracle/presentation hashes unchanged"},
+    "AC-T047-7": {"status": "PASS", "evidence": "raw canary outputs preserve component token usage, rejected/tool counts, durations, profile identity and explicit absence of exact provider total"}
   },
   "dependencies_or_config_changes": [],
-  "git_status": "Clean at implementation_head_sha; only this handoff finalization commit is expected afterward.",
+  "git_status": "Expected clean after final handoff commit",
   "unresolved_issues": [
     {
-      "type": "NO_QUALIFYING_SINGLE_FAMILY_REFERENCE",
-      "evidence": "evals/skill_activation_topology/evidence/mg1-v7-codex-windows-gpt-5.6-sol-medium/metrics.json",
-      "detail": "B0 and B1 both have host-observed activation recall/F1 of 0.0 and fail frozen qualification; B0 additionally has one cross-profile violation."
-    },
-    {
-      "type": "NO_TOPOLOGY_SELECTION",
-      "evidence": "evals/skill_activation_topology/evidence/mg1-v7-codex-windows-gpt-5.6-sol-medium/selection.json",
-      "detail": "The frozen V7 terminal outcome is BLOCKED; no candidate is selected."
-    },
-    {
-      "type": "CHALLENGER_STAGE_NOT_EXECUTED_BY_FROZEN_GATE",
-      "evidence": "evals/skill_activation_topology/evidence/mg1-v7-codex-windows-gpt-5.6-sol-medium/completeness.json",
-      "detail": "F2/G3 received zero live observations because no qualifying B0/B1 reference exists."
+      "classification": "HOST_CAPABILITY_PREFLIGHT",
+      "detail": "Codex 0.149.0 rejected every required local mx-canary SKILL.md body-read command under both read-only and workspace-write despite --ignore-rules; no permitted profile produced host-observed read/use evidence."
     }
   ],
-  "recommended_next_task": "ChatGPT Orchestrator performs D053 Converge/Accept review of the pushed V7 evidence. T046 requires re-entry at Specify for candidate presentation/topology redesign after this second no-reference result; do not tune the closed V7 epoch or reuse its observations in a new acceptance score.",
+  "recommended_next_task": "Orchestrator review of the remote BLOCKED evidence and SDD re-entry for the host execution envelope; do not rerun v8 acceptance without a new controlling revision or a host state that can pass the unchanged canary twice.",
   "chatgpt_read_path": "handoffs/T023-executor-handoff.json"
 }

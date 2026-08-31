@@ -46,6 +46,25 @@ ACTIVATION_RELEVANT_CLASSES = {
     "multi-intent",
 }
 NEGATIVE_CLASSES = {"negative", "near-miss"}
+V8_CLASS_ORDER = (
+    "cross-profile",
+    "ambiguous",
+    "negative",
+    "near-miss",
+    "positive-consumer",
+    "positive-source-maintainer",
+    "positive-external-skill-trust",
+    "multi-intent",
+)
+MINIMAL_DISABLED_FEATURES = (
+    "apps",
+    "remote_plugin",
+    "multi_agent",
+    "skill_mcp_dependency_install",
+    "shell_snapshot",
+    "standalone_web_search",
+)
+CANARY_NONCE = "The quartz heron carries seven indigo pebbles at noon."
 
 TRIAL_SCHEMA: dict[str, Any] = {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
@@ -71,6 +90,14 @@ TRIAL_SCHEMA: dict[str, Any] = {
         "permission_broadening",
         "response_summary",
     ],
+}
+
+CANARY_SCHEMA: dict[str, Any] = {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "additionalProperties": False,
+    "properties": {"body_nonce": {"type": "string"}},
+    "required": ["body_nonce"],
 }
 
 
@@ -148,18 +175,18 @@ def validate_frozen_inputs(inputs: FrozenInputs) -> None:
     manifest = inputs.manifest
     envelope = inputs.envelope
 
-    if oracle.get("schema_version") != "7.0.0" or oracle.get("oracle_id") != (
-        "MG1-T023-TOPOLOGY-ORACLE-v7"
+    if oracle.get("schema_version") != "8.0.0" or oracle.get("oracle_id") != (
+        "MG1-T023-TOPOLOGY-ORACLE-v8"
     ):
-        raise HarnessError("harness requires the frozen MG1 V7 oracle")
+        raise HarnessError("harness requires the frozen MG1 V8 oracle")
     method = oracle.get("trial_method", {})
     if (
         method.get("base_valid_repetitions_per_case_candidate") != 2
         or method.get("max_valid_repetitions_per_case_candidate") != 3
         or method.get("max_model_attempts_per_scheduled_observation") != 2
-        or method.get("timeout_seconds_per_model_attempt") != 600
+        or method.get("timeout_seconds_per_model_attempt") != 180
     ):
-        raise HarnessError("oracle paired repetition/attempt method is not frozen V7")
+        raise HarnessError("oracle paired repetition/attempt method is not frozen V8")
 
     if (
         envelope.get("schema_version") != "1.0.0"
@@ -201,15 +228,15 @@ def validate_frozen_inputs(inputs: FrozenInputs) -> None:
             raise HarnessError(f"oracle/{document_name} presentation revision mismatch")
 
     cases = corpus.get("cases")
-    if corpus.get("schema_version") != "3.0.0" or not isinstance(cases, list) or len(cases) != 40:
-        raise HarnessError("harness requires the frozen 40-case MG1 V7 corpus")
+    if corpus.get("schema_version") != "4.0.0" or not isinstance(cases, list) or len(cases) != 40:
+        raise HarnessError("harness requires the frozen 40-case MG1 V8 corpus")
     ids = [case.get("id") for case in cases if isinstance(case, dict)]
     if len(ids) != len(cases) or len(ids) != len(set(ids)):
         raise HarnessError("corpus case identities must be unique objects")
     known_capabilities = set(manifest.get("shared_references", {}))
     fixtures = envelope.get("fixtures", {})
     if set(fixtures) != {"neutral", "source", "consumer"}:
-        raise HarnessError("trial-envelope fixture roles are not the frozen V7 set")
+        raise HarnessError("trial-envelope fixture roles are not the frozen V8 set")
     for case in cases:
         if set(case.get("expected_capabilities", [])) - known_capabilities:
             raise HarnessError(f"{case['id']}: unknown expected capability")
@@ -357,7 +384,7 @@ def _copy_record(source: Path, target: Path, destination: Path) -> dict[str, Any
 
 
 def scheduled_trials(inputs: FrozenInputs) -> list[TrialSpec]:
-    """Return the V7 mandatory two-repetition schedule for all candidates.
+    """Return the V8 full-completion two-repetition ceiling for all candidates.
 
     Conditional third repetitions are deliberately absent.  They are derived only
     after both valid paired observations exist for a case/candidate identity.
@@ -384,7 +411,11 @@ def _schedule(
 ) -> list[TrialSpec]:
     repetitions = list(repetitions)
     schedule: list[TrialSpec] = []
-    for case_index, case in enumerate(inputs.corpus["cases"]):
+    ordered_cases = sorted(
+        inputs.corpus["cases"],
+        key=lambda case: (V8_CLASS_ORDER.index(case["class"]), case["id"]),
+    )
+    for case_index, case in enumerate(ordered_cases):
         for repetition in repetitions:
             offset = (case_index + repetition - 1) % len(candidates)
             rotated = candidates[offset:] + candidates[:offset]
@@ -393,7 +424,7 @@ def _schedule(
 
 
 def all_possible_trials(inputs: FrozenInputs) -> list[TrialSpec]:
-    """Return all V7 identities, including conditional repetition three."""
+    """Return all V8 identities, including conditional repetition three."""
     maximum = inputs.oracle["trial_method"]["max_valid_repetitions_per_case_candidate"]
     return _schedule(inputs, inputs.oracle["candidate_ids"], range(1, maximum + 1))
 
@@ -494,6 +525,288 @@ def _is_explicit_capacity_event(raw: dict[str, Any]) -> bool:
     )
 
 
+def _host_command(
+    codex_command: str,
+    *,
+    root: Path,
+    model: str,
+    effort: str,
+    sandbox: str,
+    schema_path: Path,
+    final_path: Path,
+) -> list[str]:
+    command = [
+        codex_command,
+        "exec",
+        "--json",
+        "--ignore-user-config",
+        "--ignore-rules",
+        "--strict-config",
+        "--color",
+        "never",
+        "--sandbox",
+        sandbox,
+        "--ephemeral",
+        "--skip-git-repo-check",
+        "--cd",
+        str(root),
+        "--model",
+        model,
+        "--config",
+        f'model_reasoning_effort="{effort}"',
+        "--config",
+        'web_search="disabled"',
+    ]
+    for feature in MINIMAL_DISABLED_FEATURES:
+        command.extend(("--disable", feature))
+    command.extend(
+        (
+            "--output-schema",
+            str(schema_path),
+            "--output-last-message",
+            str(final_path),
+            "-",
+        )
+    )
+    return command
+
+
+def _trace_telemetry(stdout_jsonl: str, stderr: str = "") -> dict[str, Any]:
+    usage: dict[str, Any] = {}
+    tool_calls = 0
+    rejected = 0
+    for line in stdout_jsonl.splitlines():
+        try:
+            event = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        item = event.get("item", {})
+        if item.get("type") in {"command_execution", "mcp_tool_call", "tool_call"}:
+            tool_calls += 1
+            if item.get("status") in {"rejected", "denied"} or item.get("exit_code") not in {
+                None,
+                0,
+            }:
+                rejected += 1
+        if event.get("type") == "turn.completed" and isinstance(event.get("usage"), dict):
+            usage = event["usage"]
+    token_fields = {
+        "input_tokens": usage.get("input_tokens"),
+        "cached_input_tokens": usage.get("cached_input_tokens"),
+        "reasoning_tokens": usage.get("reasoning_output_tokens"),
+        "output_tokens": usage.get("output_tokens"),
+    }
+    rejected += stderr.count('Rejected("')
+    available = bool(usage)
+    return {
+        "token_usage_available": available,
+        **token_fields,
+        "total_tokens": usage.get("total_tokens"),
+        "tool_call_count": tool_calls,
+        "execution_policy_rejected_tool_call_count": rejected,
+    }
+
+
+def _surface_drift(stdout_jsonl: str, stderr: str, *, skill_path: str | None = None) -> str | None:
+    visible = f"{stdout_jsonl}\n{stderr}"
+    if re.search(
+        r"(?i)(recommended_plugins|openai-curated-remote|apps \(connectors\)|app://)", visible
+    ):
+        return "UNRELATED_APP_PLUGIN_SURFACE"
+    normalized_visible = visible.replace("\\", "/").casefold()
+    if (
+        skill_path
+        and skill_path.replace("\\", "/").casefold() in normalized_visible
+        and re.search(r"(?i)(rejected|denied|not allowed|policy)", visible)
+    ):
+        return "REQUIRED_SKILL_BODY_READ_REJECTED"
+    return None
+
+
+def _successful_body_read(stdout_jsonl: str, relative_path: str) -> bool:
+    needle = relative_path.replace("\\", "/").casefold()
+    for line in stdout_jsonl.splitlines():
+        try:
+            event = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        item = event.get("item", {})
+        command = str(item.get("command", "")).replace("\\", "/").casefold()
+        if (
+            event.get("type") == "item.completed"
+            and item.get("type") == "command_execution"
+            and item.get("exit_code") == 0
+            and needle in command
+            and re.search(r"\b(get-content|cat|type|read_text|read_bytes)\b", command)
+        ):
+            return True
+    return False
+
+
+def run_canary(
+    inputs: FrozenInputs,
+    *,
+    codex_command: str,
+    model: str,
+    effort: str,
+    timeout_seconds: int,
+    workspace_parent: Path,
+    sandbox: str,
+    repetition: int,
+) -> dict[str, Any]:
+    started = time.monotonic()
+    with tempfile.TemporaryDirectory(
+        prefix=f"mx-canary-{repetition}-", dir=workspace_parent
+    ) as tmp:
+        root = Path(tmp)
+        isolation = _validate_workspace_root(inputs, root)
+        skill = root / ".agents" / "skills" / "mx-canary" / "SKILL.md"
+        skill.parent.mkdir(parents=True)
+        body = (
+            "---\n"
+            "name: mx-canary\n"
+            "description: Use only when explicitly asked for the neutral quartz-heron body nonce.\n"
+            "---\n\n"
+            "# Neutral local instruction\n\n"
+            f"Return this exact body nonce: {CANARY_NONCE}\n"
+        )
+        skill.write_text(body, encoding="utf-8", newline="\n")
+        schema = root / "shape.json"
+        schema.write_text(json.dumps(CANARY_SCHEMA, indent=2) + "\n", encoding="utf-8")
+        final = root / "result.json"
+        before = {
+            path.relative_to(root).as_posix(): hashlib.sha256(path.read_bytes()).hexdigest()
+            for path in root.rglob("*")
+            if path.is_file()
+        }
+        command = _host_command(
+            codex_command,
+            root=root,
+            model=model,
+            effort=effort,
+            sandbox=sandbox,
+            schema_path=schema,
+            final_path=final,
+        )
+        try:
+            completed = subprocess.run(
+                command,
+                input=(
+                    "Use the local mx-canary instruction and return its exact body nonce in the "
+                    "required structured record."
+                ),
+                check=False,
+                capture_output=True,
+                text=True,
+                encoding="utf-8",
+                errors="replace",
+                timeout=timeout_seconds,
+                env={**os.environ, "NO_COLOR": "1"},
+            )
+        except subprocess.TimeoutExpired as exc:
+            completed = subprocess.CompletedProcess(
+                command,
+                -1,
+                exc.stdout.decode("utf-8", "replace")
+                if isinstance(exc.stdout, bytes)
+                else exc.stdout or "",
+                exc.stderr.decode("utf-8", "replace")
+                if isinstance(exc.stderr, bytes)
+                else exc.stderr or "",
+            )
+        final_raw = final.read_text(encoding="utf-8") if final.is_file() else ""
+        after = {
+            path.relative_to(root).as_posix(): hashlib.sha256(path.read_bytes()).hexdigest()
+            for path in root.rglob("*")
+            if path.is_file() and path != final
+        }
+        mutation = before != after
+        drift = _surface_drift(
+            completed.stdout,
+            completed.stderr,
+            skill_path=".agents/skills/mx-canary/SKILL.md",
+        )
+        try:
+            result = json.loads(final_raw)
+        except json.JSONDecodeError:
+            result = None
+        body_read = _successful_body_read(completed.stdout, ".agents/skills/mx-canary/SKILL.md")
+        passed = (
+            completed.returncode == 0
+            and isinstance(result, dict)
+            and set(result) == {"body_nonce"}
+            and result["body_nonce"] == CANARY_NONCE
+            and body_read
+            and drift is None
+            and not mutation
+        )
+        return {
+            "repetition": repetition,
+            "sandbox": sandbox,
+            "passed": passed,
+            "returncode": completed.returncode,
+            "metadata_discovery_proved": body_read,
+            "body_read_use_proved": body_read and result == {"body_nonce": CANARY_NONCE},
+            "body_nonce_correct": result == {"body_nonce": CANARY_NONCE},
+            "structured_output_valid": isinstance(result, dict) and set(result) == {"body_nonce"},
+            "host_surface_drift": drift,
+            "unexpected_model_workspace_mutation": mutation,
+            "effective_host_profile": {
+                "sandbox": sandbox,
+                "ignore_user_config": True,
+                "ignore_rules": True,
+                "disabled_features": list(MINIMAL_DISABLED_FEATURES),
+            },
+            "workspace_isolation": isolation,
+            "duration_seconds": round(time.monotonic() - started, 6),
+            "telemetry": _trace_telemetry(completed.stdout, completed.stderr),
+            "command": command,
+            "stdout_jsonl": completed.stdout,
+            "stderr": completed.stderr,
+            "final_message": final_raw,
+        }
+
+
+def run_host_preflight(
+    inputs: FrozenInputs, args: argparse.Namespace, output: Path, workspace_parent: Path
+) -> str | None:
+    records: list[dict[str, Any]] = []
+    for sandbox in ("read-only", "workspace-write"):
+        sandbox_records = []
+        for repetition in (1, 2):
+            record = run_canary(
+                inputs,
+                codex_command=args.codex_command,
+                model=args.model,
+                effort=args.effort,
+                timeout_seconds=args.timeout_seconds,
+                workspace_parent=workspace_parent,
+                sandbox=sandbox,
+                repetition=repetition,
+            )
+            records.append(record)
+            sandbox_records.append(record)
+            _json_dump(output / "canary" / f"{sandbox}-r{repetition}.json", record)
+            if not record["passed"]:
+                break
+        if len(sandbox_records) == 2 and all(record["passed"] for record in sandbox_records):
+            _json_dump(
+                output / "host-preflight.json",
+                {"status": "PASS", "selected_sandbox": sandbox, "records": records},
+            )
+            return sandbox
+        if sandbox == "read-only" and not any(
+            record.get("host_surface_drift") == "REQUIRED_SKILL_BODY_READ_REJECTED"
+            for record in sandbox_records
+        ):
+            break
+    _json_dump(
+        output / "host-preflight.json",
+        {"status": "BLOCKED", "selected_sandbox": None, "records": records},
+    )
+    return None
+
+
 def run_trial(
     inputs: FrozenInputs,
     spec: TrialSpec,
@@ -503,6 +816,7 @@ def run_trial(
     effort: str,
     timeout_seconds: int,
     workspace_parent: Path,
+    sandbox: str = "read-only",
     attempt: int = 1,
 ) -> tuple[dict[str, Any], dict[str, Any]]:
     started = time.monotonic()
@@ -514,29 +828,15 @@ def run_trial(
         schema_path = root / "shape.json"
         schema_path.write_text(json.dumps(TRIAL_SCHEMA, indent=2) + "\n", encoding="utf-8")
         final_path = root / "result.json"
-        command = [
+        command = _host_command(
             codex_command,
-            "exec",
-            "--json",
-            "--ignore-user-config",
-            "--color",
-            "never",
-            "--sandbox",
-            "read-only",
-            "--ephemeral",
-            "--skip-git-repo-check",
-            "--cd",
-            str(root),
-            "--model",
-            model,
-            "--config",
-            f'model_reasoning_effort="{effort}"',
-            "--output-schema",
-            str(schema_path),
-            "--output-last-message",
-            str(final_path),
-            "-",
-        ]
+            root=root,
+            model=model,
+            effort=effort,
+            sandbox=sandbox,
+            schema_path=schema_path,
+            final_path=final_path,
+        )
         environment = os.environ.copy()
         environment["NO_COLOR"] = "1"
         failure_class = None
@@ -586,6 +886,13 @@ def run_trial(
             "stderr": completed.stderr,
             "final_message": final_raw,
             "duration_seconds": round(duration, 6),
+            "effective_host_profile": {
+                "sandbox": sandbox,
+                "ignore_user_config": True,
+                "ignore_rules": True,
+                "disabled_features": list(MINIMAL_DISABLED_FEATURES),
+            },
+            "telemetry": _trace_telemetry(completed.stdout, completed.stderr),
             "materialization": provenance,
             "fixture_materialization": fixture,
             "workspace_isolation": isolation,
@@ -598,6 +905,21 @@ def run_trial(
             raise AttemptFailure(
                 "HOST_NONZERO_EXIT", f"{spec.key}: Codex exited {completed.returncode}", raw_record
             )
+        entrypoints = inputs.manifest["candidates"][spec.candidate_id]["entrypoints"]
+        candidate_skill_paths = [
+            f".agents/skills/{entrypoint}/SKILL.md" for entrypoint in entrypoints
+        ]
+        drift = next(
+            (
+                value
+                for path in candidate_skill_paths
+                if (value := _surface_drift(completed.stdout, completed.stderr, skill_path=path))
+            ),
+            _surface_drift(completed.stdout, completed.stderr),
+        )
+        if drift:
+            raw_record["host_surface_drift"] = drift
+            raise AttemptFailure("HOST_SURFACE_DRIFT", f"{spec.key}: {drift}", raw_record)
         try:
             model_result = json.loads(final_raw)
             _validate_model_result(inputs, spec, model_result)
@@ -888,6 +1210,157 @@ def aggregate_candidate_trials(
     return aggregates
 
 
+def finalized_candidate_aggregates(
+    inputs: FrozenInputs, candidate_id: str, trials: list[dict[str, Any]]
+) -> list[dict[str, Any]]:
+    """Aggregate only completed pairs/conditional thirds for v8 futility checks."""
+    selected = [trial for trial in trials if trial["candidate_id"] == candidate_id]
+    by_case: dict[str, list[dict[str, Any]]] = {}
+    for trial in selected:
+        by_case.setdefault(trial["case_id"], []).append(trial)
+    aggregates = []
+    for case in inputs.corpus["cases"]:
+        repetitions = sorted(by_case.get(case["id"], []), key=lambda item: item["repetition"])
+        if len(repetitions) < 2:
+            continue
+        fields = disagreement_fields(repetitions[0], repetitions[1])
+        required = 3 if fields else 2
+        if len(repetitions) != required:
+            continue
+        partial = FrozenInputs(
+            inputs.oracle,
+            {**inputs.corpus, "cases": [case]},
+            inputs.topologies,
+            inputs.manifest,
+            inputs.envelope,
+        )
+        aggregates.extend(aggregate_candidate_trials(partial, candidate_id, repetitions))
+    return aggregates
+
+
+def qualification_futility_certificate(
+    inputs: FrozenInputs, candidate_id: str, trials: list[dict[str, Any]]
+) -> dict[str, Any]:
+    aggregates = finalized_candidate_aggregates(inputs, candidate_id, trials)
+    completed = {aggregate["case_id"] for aggregate in aggregates}
+    remaining_cases = [case for case in inputs.corpus["cases"] if case["id"] not in completed]
+    total_cases = len(inputs.corpus["cases"])
+    total_negative = sum(case["class"] in NEGATIVE_CLASSES for case in inputs.corpus["cases"])
+    tp = fp = false_activation = wrong = over = semantic_errors = 0
+    for aggregate in aggregates:
+        actual = set(aggregate["activated_entrypoints"])
+        expected = set(aggregate["expected_entrypoints"])
+        tp += len(actual & expected)
+        fp += len(actual - expected)
+        false_activation += aggregate["case_class"] in NEGATIVE_CLASSES and bool(actual)
+        wrong += bool(expected and actual - expected)
+        over += actual > expected
+        semantic_errors += aggregate["semantic_outcome"] != aggregate["expected_semantic_outcome"]
+    remaining_expected = sum(
+        len(expected_entrypoints(inputs, TrialSpec(case, candidate_id, 1)))
+        for case in remaining_cases
+    )
+    total_expected = sum(
+        len(expected_entrypoints(inputs, TrialSpec(case, candidate_id, 1)))
+        for case in inputs.corpus["cases"]
+    )
+    optimistic_tp = tp + remaining_expected
+    precision = _safe_ratio(optimistic_tp, optimistic_tp + fp)
+    recall = _safe_ratio(optimistic_tp, total_expected)
+    f1 = 0.0 if precision + recall == 0 else 2 * precision * recall / (precision + recall)
+    bounds = {
+        "activation_precision": precision,
+        "activation_recall": recall,
+        "activation_f1": f1,
+        "false_activation_rate": false_activation / total_negative,
+        "wrong_specialist_rate": wrong / total_cases,
+        "overactivation_rate": over / total_cases,
+        "semantic_outcome_accuracy": (total_cases - semantic_errors) / total_cases,
+    }
+    thresholds = inputs.oracle["qualifying_thresholds"]
+    critical = candidate_has_critical_violation(trials, candidate_id)
+    failures = []
+    if critical:
+        failures.append("mandatory_zero_tolerance")
+    for metric, comparator, threshold_key in (
+        ("activation_precision", "min", "activation_precision_min"),
+        ("activation_recall", "min", "activation_recall_min"),
+        ("activation_f1", "min", "activation_f1_min"),
+        ("false_activation_rate", "max", "false_activation_rate_max"),
+        ("wrong_specialist_rate", "max", "wrong_specialist_rate_max"),
+        ("overactivation_rate", "max", "overactivation_rate_max"),
+        ("semantic_outcome_accuracy", "min", "semantic_outcome_accuracy_overall_min"),
+    ):
+        threshold = thresholds[threshold_key]
+        if (comparator == "min" and bounds[metric] < threshold) or (
+            comparator == "max" and bounds[metric] > threshold
+        ):
+            failures.append(metric)
+    return {
+        "certificate_type": "FUTILE_QUALIFICATION" if failures else "QUALIFICATION_STILL_POSSIBLE",
+        "candidate_id": candidate_id,
+        "terminal": bool(failures),
+        "completed_case_ids": sorted(completed),
+        "remaining_case_ids": sorted(case["id"] for case in remaining_cases),
+        "observed": {
+            "true_positives": tp,
+            "false_positives": fp,
+            "false_activations": false_activation,
+            "wrong_specialists": wrong,
+            "overactivations": over,
+            "semantic_errors": semantic_errors,
+        },
+        "remaining_optimistic_expected_entrypoints": remaining_expected,
+        "fixed_denominators": {
+            "cases": total_cases,
+            "negative_near_miss_cases": total_negative,
+            "expected_entrypoints": total_expected,
+        },
+        "optimistic_final_bounds": bounds,
+        "failed_bounds": failures,
+    }
+
+
+def materiality_futility_certificate(
+    inputs: FrozenInputs,
+    candidate_id: str,
+    trials: list[dict[str, Any]],
+    reference: dict[str, Any],
+) -> dict[str, Any]:
+    qualification = qualification_futility_certificate(inputs, candidate_id, trials)
+    aggregates = finalized_candidate_aggregates(inputs, candidate_id, trials)
+    contexts = [
+        aggregate["observed_context_bytes"]
+        for aggregate in aggregates
+        if aggregate["case_class"] in ACTIVATION_RELEVANT_CLASSES
+    ]
+    total_relevant = sum(
+        case["class"] in ACTIVATION_RELEVANT_CLASSES for case in inputs.corpus["cases"]
+    )
+    optimistic_context = statistics.median([*contexts, *([0] * (total_relevant - len(contexts)))])
+    bounds = qualification["optimistic_final_bounds"]
+    failures = list(qualification["failed_bounds"])
+    if bounds["activation_f1"] < reference["activation_f1"] + 0.03:
+        failures.append("material_activation_f1")
+    if bounds["false_activation_rate"] > reference["false_activation_rate"]:
+        failures.append("material_false_activation")
+    if bounds["wrong_specialist_rate"] > reference["wrong_specialist_rate"] + 0.01:
+        failures.append("material_wrong_specialist")
+    if bounds["overactivation_rate"] > reference["overactivation_rate"] + 0.01:
+        failures.append("material_overactivation")
+    if optimistic_context > 0.85 * reference["median_observed_context_bytes"]:
+        failures.append("material_context")
+    return {
+        "certificate_type": "FUTILE_MATERIALITY" if failures else "MATERIALITY_STILL_POSSIBLE",
+        "candidate_id": candidate_id,
+        "terminal": bool(failures),
+        "qualification": qualification,
+        "optimistic_median_observed_context_bytes": optimistic_context,
+        "reference_metrics": reference,
+        "failed_bounds": failures,
+    }
+
+
 def compute_candidate_metrics(
     inputs: FrozenInputs,
     candidate_id: str,
@@ -1132,6 +1605,68 @@ def apply_selection_rule(
     }
 
 
+def select_from_cost_bounded_metrics(
+    inputs: FrozenInputs,
+    reference_id: str,
+    metrics_by_candidate: dict[str, dict[str, Any]],
+) -> dict[str, Any]:
+    """Apply unchanged challenger materiality/tie-breaks to completed survivors."""
+    reference = metrics_by_candidate[reference_id]
+    material = []
+    for candidate in ("F2", "G3"):
+        metrics = metrics_by_candidate.get(candidate)
+        if metrics and (
+            candidate_qualifies(inputs, metrics)
+            and metrics["activation_f1"] >= reference["activation_f1"] + 0.03
+            and metrics["median_observed_context_bytes"]
+            <= 0.85 * reference["median_observed_context_bytes"]
+            and metrics["false_activation_rate"] <= reference["false_activation_rate"]
+            and metrics["wrong_specialist_rate"] <= reference["wrong_specialist_rate"] + 0.01
+            and metrics["overactivation_rate"] <= reference["overactivation_rate"] + 0.01
+        ):
+            material.append(candidate)
+    if not material:
+        selected = reference_id
+    elif len(material) == 1:
+        selected = material[0]
+    else:
+        f2, g3 = metrics_by_candidate["F2"], metrics_by_candidate["G3"]
+        if abs(f2["activation_f1"] - g3["activation_f1"]) > 0.005:
+            selected = max(material, key=lambda name: metrics_by_candidate[name]["activation_f1"])
+        elif abs(f2["false_activation_rate"] - g3["false_activation_rate"]) > 0.01:
+            selected = min(
+                material, key=lambda name: metrics_by_candidate[name]["false_activation_rate"]
+            )
+        else:
+            f2_load, g3_load = (
+                f2["median_observed_context_bytes"],
+                g3["median_observed_context_bytes"],
+            )
+            if abs(f2_load - g3_load) / max(f2_load, g3_load, 1) > 0.05:
+                selected = min(
+                    material,
+                    key=lambda name: metrics_by_candidate[name]["median_observed_context_bytes"],
+                )
+            else:
+                selected = min(
+                    material,
+                    key=lambda name: (
+                        len(inputs.topologies["candidates"][name]["entrypoints"]),
+                        name != "F2",
+                    ),
+                )
+    return {
+        "status": "SELECTED",
+        "selected_candidate": selected,
+        "single_family_reference": reference_id,
+        "material_split_candidates": material,
+        "qualifying": {
+            candidate: candidate_qualifies(inputs, metrics)
+            for candidate, metrics in metrics_by_candidate.items()
+        },
+    }
+
+
 def build_deterministic_evidence(inputs: FrozenInputs) -> dict[str, Any]:
     candidates: dict[str, Any] = {}
     with tempfile.TemporaryDirectory(prefix="t023-provenance-") as temporary:
@@ -1228,8 +1763,19 @@ def _validate_partial(
         raise HarnessError(f"{spec.key}: resumed model evidence is missing") from exc
     if recorded_model != model or f'model_reasoning_effort="{effort}"' not in command:
         raise HarnessError(f"{spec.key}: resumed model/effort differs from this run")
-    if "--sandbox" not in command or command[command.index("--sandbox") + 1] != "read-only":
-        raise HarnessError(f"{spec.key}: resumed execution was not host-enforced read-only")
+    if "--sandbox" not in command or command[command.index("--sandbox") + 1] not in {
+        "read-only",
+        "workspace-write",
+    }:
+        raise HarnessError(f"{spec.key}: resumed execution used an invalid frozen sandbox")
+    if "--ignore-user-config" not in command or "--ignore-rules" not in command:
+        raise HarnessError(f"{spec.key}: resumed execution did not isolate host configuration")
+    for feature in MINIMAL_DISABLED_FEATURES:
+        if not any(
+            command[index : index + 2] == ["--disable", feature]
+            for index in range(len(command) - 1)
+        ):
+            raise HarnessError(f"{spec.key}: resumed execution enabled forbidden host surface")
     if "--ephemeral" not in command:
         raise HarnessError(f"{spec.key}: resumed execution was not ephemeral")
     fixture = raw.get("fixture_materialization", {})
@@ -1326,9 +1872,15 @@ def validate_execution_config(inputs: FrozenInputs, args: argparse.Namespace) ->
         raise HarnessError("per-attempt timeout must match the frozen oracle")
     if args.full_acceptance and (args.case or args.candidate or args.repetition):
         raise HarnessError("full acceptance cannot use trial filters")
-    if len(stage_schedule(inputs, "R")) != method["reference_stage_base_valid_observations"]:
+    if (
+        len(stage_schedule(inputs, "R"))
+        != method["reference_stage_full_completion_base_valid_observations"]
+    ):
         raise HarnessError("reference-stage base schedule does not match the frozen oracle")
-    if len(stage_schedule(inputs, "C")) != method["challenger_stage_base_valid_observations"]:
+    if (
+        len(stage_schedule(inputs, "C"))
+        != method["challenger_stage_full_completion_base_valid_observations"]
+    ):
         raise HarnessError("challenger-stage base schedule does not match the frozen oracle")
 
 
@@ -1353,7 +1905,7 @@ def run_matrix(args: argparse.Namespace) -> int:
             "timeout_seconds": args.timeout_seconds,
         }
         if any(run_metadata.get(key) != value for key, value in expected_identity.items()):
-            raise HarnessError("resume execution identity differs from frozen V7 run")
+            raise HarnessError("resume execution identity differs from frozen V8 run")
         if run_metadata.get("runner_sha256") != _sha256(Path(__file__)):
             raise HarnessError("resume runner identity changed")
         for path in (ORACLE_PATH, CORPUS_PATH, TOPOLOGIES_PATH, MANIFEST_PATH, ENVELOPE_PATH):
@@ -1363,6 +1915,11 @@ def run_matrix(args: argparse.Namespace) -> int:
         run_metadata.setdefault("resume_records", []).append(
             {"resumed_at": datetime.now(UTC).isoformat(), "prior_status": run_metadata["status"]}
         )
+        host_preflight = _load_json(output / "host-preflight.json")
+        if host_preflight.get("status") != "PASS" or run_metadata.get(
+            "selected_sandbox"
+        ) != host_preflight.get("selected_sandbox"):
+            raise HarnessError("resume host preflight/profile identity mismatch")
     else:
         if output.exists() and any(output.iterdir()):
             raise HarnessError("refusing to overwrite existing run evidence")
@@ -1399,7 +1956,7 @@ def run_matrix(args: argparse.Namespace) -> int:
             "full_acceptance": args.full_acceptance,
             "clean_context": "one new codex exec thread and disposable workspace per attempt",
             "workspace_parent": str(workspace_parent),
-            "read_only_enforcement": "codex --sandbox read-only",
+            "sandbox_selection_order": ["read-only", "workspace-write"],
             "stimulus_rule": "exact corpus prompt, two newlines, frozen neutral suffix",
             "stage_state": "REFERENCE_BASE_PENDING" if args.full_acceptance else "FILTERED_PENDING",
             "status": "RUNNING",
@@ -1421,6 +1978,40 @@ def run_matrix(args: argparse.Namespace) -> int:
                     },
                 )
                 return 1
+            selected_sandbox = run_host_preflight(inputs, args, output, workspace_parent)
+            if selected_sandbox is None:
+                run_metadata.update(
+                    status="BLOCKED",
+                    stage_state="HOST_CAPABILITY_PREFLIGHT_FAILED",
+                    selected_sandbox=None,
+                    completed_valid_observations=0,
+                )
+                _json_dump(output / "run-metadata.json", run_metadata)
+                _json_dump(
+                    output / "selection.json",
+                    {
+                        "status": "BLOCKED",
+                        "selected_candidate": None,
+                        "reason": "HOST_CAPABILITY_PREFLIGHT",
+                        "scored": False,
+                    },
+                )
+                _json_dump(
+                    output / "completeness.json",
+                    {
+                        "execution_epoch": inputs.oracle["execution_epoch"],
+                        "stage_state": "HOST_CAPABILITY_PREFLIGHT_FAILED",
+                        "completed_valid_observations": 0,
+                        "acceptance_prompts_issued": 0,
+                        "acceptance_complete": False,
+                        "partial_scoring_permitted": False,
+                    },
+                )
+                return 1
+            run_metadata["selected_sandbox"] = selected_sandbox
+            run_metadata["effective_host_profile"] = _load_json(output / "host-preflight.json")[
+                "records"
+            ][-1]["effective_host_profile"]
     _json_dump(output / "run-metadata.json", run_metadata)
 
     def execute(spec: TrialSpec):
@@ -1433,6 +2024,7 @@ def run_matrix(args: argparse.Namespace) -> int:
             effort=args.effort,
             timeout_seconds=args.timeout_seconds,
             workspace_parent=workspace_parent,
+            sandbox=run_metadata.get("selected_sandbox", "read-only"),
         )
 
     def persisted_results() -> dict[str, tuple[dict[str, Any], dict[str, Any]]]:
@@ -1574,99 +2166,153 @@ def run_matrix(args: argparse.Namespace) -> int:
         export_evidence("FILTERED_COMPLETE", "COMPLETE")
         return 0
 
-    for stage, candidates in (
-        ("R", inputs.oracle["trial_method"]["reference_stage_candidates"]),
-        ("C", inputs.oracle["trial_method"]["challenger_stage_candidates"]),
-    ):
-        if stage == "C" and run_metadata.get("single_family_reference") is None:
-            break
-        blocked, capacity = execute_schedule(stage_schedule(inputs, stage))
-        terminal = stop_for_execution_state(blocked, capacity, f"{stage}_BASE_INCOMPLETE")
-        if terminal is not None:
-            return terminal
-        trials = [value[0] for value in persisted_results().values()]
-        thirds = conditional_third_specs(inputs, candidates, trials)
-        blocked, capacity = execute_schedule(thirds)
-        terminal = stop_for_execution_state(blocked, capacity, f"{stage}_THIRDS_INCOMPLETE")
-        if terminal is not None:
-            return terminal
-        trials = [value[0] for value in persisted_results().values()]
-        deterministic = _load_json(output / "deterministic-evidence.json")
-        stage_metrics = {
-            candidate: compute_candidate_metrics(inputs, candidate, trials, deterministic)
-            for candidate in candidates
-        }
-        aggregates = [
-            item
-            for candidate in candidates
-            for item in aggregate_candidate_trials(inputs, candidate, trials)
-        ]
-        existing_aggregates = []
-        aggregates_path = output / "case-aggregates.jsonl"
-        if stage == "C" and aggregates_path.exists():
-            existing_aggregates = load_trials(aggregates_path)
-        _jsonl_dump(aggregates_path, [*existing_aggregates, *aggregates])
-        if stage == "R":
-            reference = select_single_family_reference(inputs, stage_metrics)
-            _json_dump(output / "reference-selection.json", reference)
-            _json_dump(output / "metrics-reference.json", stage_metrics)
-            run_metadata["single_family_reference"] = reference["single_family_reference"]
-            if reference["status"] == "BLOCKED":
-                _json_dump(output / "metrics.json", stage_metrics)
-                _json_dump(
-                    output / "stability-diagnostics.json",
-                    {
-                        candidate: {
-                            key: stage_metrics[candidate][key]
-                            for key in (
-                                "first_two_disagreement_count",
-                                "first_two_disagreement_rate",
-                                "conditional_third_repetition_count",
-                                "valid_repetitions_per_case",
-                            )
-                        }
-                        for candidate in candidates
-                    },
-                )
-                _json_dump(
-                    output / "selection.json",
-                    {
-                        "status": "BLOCKED",
-                        "selected_candidate": None,
-                        "reason": "neither B0 nor B1 qualifies; challenger stage not executed",
-                        "qualifying": reference["qualifying"],
-                        "scored": True,
-                    },
-                )
-                export_evidence("REFERENCE_COMPLETE_NO_QUALIFIER", "BLOCKED_NO_REFERENCE")
-                return 1
+    terminal_candidates: dict[str, dict[str, Any]] = {}
 
-    results = persisted_results()
-    trials = [value[0] for value in results.values()]
+    def adaptive_stage(
+        stage: str,
+        candidates: list[str],
+        reference_metrics: dict[str, Any] | None = None,
+    ) -> int | None:
+        ordered_cases = sorted(
+            inputs.corpus["cases"],
+            key=lambda case: (V8_CLASS_ORDER.index(case["class"]), case["id"]),
+        )
+        for case_index, case in enumerate(ordered_cases):
+            rotated = (
+                candidates[case_index % len(candidates) :]
+                + candidates[: case_index % len(candidates)]
+            )
+            for candidate in rotated:
+                if candidate in terminal_candidates:
+                    continue
+                for repetition in (1, 2):
+                    spec = TrialSpec(case, candidate, repetition)
+                    blocked, capacity = execute_schedule([spec])
+                    stopped = stop_for_execution_state(
+                        blocked, capacity, f"{stage}_{case['id']}_{candidate}_INCOMPLETE"
+                    )
+                    if stopped is not None:
+                        return stopped
+                    trials = [value[0] for value in persisted_results().values()]
+                    certificate = qualification_futility_certificate(inputs, candidate, trials)
+                    if certificate["terminal"]:
+                        terminal_candidates[candidate] = certificate
+                        _json_dump(
+                            output / "futility-certificates" / f"{candidate}.json", certificate
+                        )
+                        break
+                if candidate in terminal_candidates:
+                    continue
+                trials = [value[0] for value in persisted_results().values()]
+                third = [
+                    spec
+                    for spec in conditional_third_specs(inputs, [candidate], trials)
+                    if spec.case["id"] == case["id"]
+                ]
+                if third:
+                    blocked, capacity = execute_schedule(third)
+                    stopped = stop_for_execution_state(
+                        blocked, capacity, f"{stage}_{case['id']}_{candidate}_THIRD_INCOMPLETE"
+                    )
+                    if stopped is not None:
+                        return stopped
+                trials = [value[0] for value in persisted_results().values()]
+                certificate = qualification_futility_certificate(inputs, candidate, trials)
+                if not certificate["terminal"] and reference_metrics is not None:
+                    certificate = materiality_futility_certificate(
+                        inputs, candidate, trials, reference_metrics
+                    )
+                if certificate["terminal"]:
+                    terminal_candidates[candidate] = certificate
+                    _json_dump(output / "futility-certificates" / f"{candidate}.json", certificate)
+        return None
+
     deterministic = _load_json(output / "deterministic-evidence.json")
-    metrics = {
+    reference_candidates = inputs.oracle["trial_method"]["reference_stage_candidates"]
+    stopped = adaptive_stage("R", reference_candidates)
+    if stopped is not None:
+        return stopped
+    trials = [value[0] for value in persisted_results().values()]
+    reference_survivors = [c for c in reference_candidates if c not in terminal_candidates]
+    reference_metrics = {
         candidate: compute_candidate_metrics(inputs, candidate, trials, deterministic)
-        for candidate in inputs.oracle["candidate_ids"]
+        for candidate in reference_survivors
     }
-    selection = apply_selection_rule(inputs, metrics)
+    if not reference_survivors:
+        _json_dump(output / "metrics-reference.json", {})
+        _json_dump(
+            output / "reference-selection.json",
+            {
+                "status": "BLOCKED",
+                "single_family_reference": None,
+                "reason": "both single-family candidates are FUTILE_QUALIFICATION",
+                "futility": terminal_candidates,
+            },
+        )
+        _json_dump(
+            output / "selection.json",
+            {
+                "status": "BLOCKED",
+                "selected_candidate": None,
+                "reason": "NO QUALIFYING SINGLE-FAMILY REFERENCE",
+                "scored": True,
+            },
+        )
+        _jsonl_dump(
+            output / "case-aggregates.jsonl",
+            [
+                item
+                for candidate in reference_candidates
+                for item in finalized_candidate_aggregates(inputs, candidate, trials)
+            ],
+        )
+        export_evidence("REFERENCE_FUTILE_NO_QUALIFIER", "BLOCKED_NO_REFERENCE")
+        return 1
+    if len(reference_survivors) == 1:
+        reference_id = reference_survivors[0]
+        reference = {
+            "status": "REFERENCE_SELECTED",
+            "single_family_reference": reference_id,
+            "qualifying": {
+                reference_id: candidate_qualifies(inputs, reference_metrics[reference_id])
+            },
+            "futility": terminal_candidates,
+        }
+    else:
+        reference = select_single_family_reference(inputs, reference_metrics)
+        reference_id = reference["single_family_reference"]
+    if reference_id is None:
+        raise HarnessError("completed reference stage produced no valid reference")
+    run_metadata["single_family_reference"] = reference_id
+    _json_dump(output / "reference-selection.json", reference)
+    _json_dump(output / "metrics-reference.json", reference_metrics)
+
+    challenger_candidates = inputs.oracle["trial_method"]["challenger_stage_candidates"]
+    stopped = adaptive_stage("C", challenger_candidates, reference_metrics[reference_id])
+    if stopped is not None:
+        return stopped
+    trials = [value[0] for value in persisted_results().values()]
+    challenger_survivors = [c for c in challenger_candidates if c not in terminal_candidates]
+    metrics = dict(reference_metrics)
+    metrics.update(
+        {
+            candidate: compute_candidate_metrics(inputs, candidate, trials, deterministic)
+            for candidate in challenger_survivors
+        }
+    )
+    selection = select_from_cost_bounded_metrics(inputs, reference_id, metrics)
+    selection["futility"] = terminal_candidates
     _json_dump(output / "metrics.json", metrics)
     _json_dump(output / "selection.json", selection)
-    _json_dump(
-        output / "stability-diagnostics.json",
-        {
-            candidate: {
-                key: metrics[candidate][key]
-                for key in (
-                    "first_two_disagreement_count",
-                    "first_two_disagreement_rate",
-                    "conditional_third_repetition_count",
-                    "valid_repetitions_per_case",
-                )
-            }
+    _jsonl_dump(
+        output / "case-aggregates.jsonl",
+        [
+            item
             for candidate in inputs.oracle["candidate_ids"]
-        },
+            for item in finalized_candidate_aggregates(inputs, candidate, trials)
+        ],
     )
-    export_evidence("CHALLENGER_COMPLETE", "COMPLETE")
+    export_evidence("COST_BOUNDED_DECISION_COMPLETE", "COMPLETE")
     return 0
 
 
@@ -2016,7 +2662,7 @@ def build_parser() -> argparse.ArgumentParser:
     run.add_argument("--model", default="gpt-5.6-sol")
     run.add_argument("--effort", default="medium")
     run.add_argument("--workers", type=int, default=4)
-    run.add_argument("--timeout-seconds", type=int, default=600)
+    run.add_argument("--timeout-seconds", type=int, default=180)
     run.add_argument("--case", action="append")
     run.add_argument("--candidate", action="append", choices=("B0", "B1", "F2", "G3"))
     run.add_argument("--repetition", action="append", type=int, choices=(1, 2, 3))
