@@ -1,31 +1,38 @@
 # MG1 — Skill Activation Topology and Eval Pre-registration Gate
 
-Status: `READY_FOR_INTEGRATION / V7 STIMULUS-ISOLATED RESTART`  
-Date: 2026-08-29  
+Status: `READY_FOR_INTEGRATION / V8 COST-BOUNDED HOST RESTART`  
+Date: 2026-08-31  
 Owner: ChatGPT Orchestrator  
 Applies to: `T023`  
 Test-Authorship-Mode: `mixed`  
-Oracle revision: `MG1-T023-TOPOLOGY-ORACLE-v7`  
-Execution epoch: `MG1-T023-EXECUTION-v7`  
+Oracle revision: `MG1-T023-TOPOLOGY-ORACLE-v8`  
+Execution epoch: `MG1-T023-EXECUTION-v8`  
 Capability-Source-Epoch: `MG1-2026-08-25-v3`  
 Presentation revision: `MG1-T023-PRESENTATIONS-v3`  
-Corpus: `MG1-T023-CORPUS-v3`  
+Corpus: `MG1-T023-CORPUS-v4`  
 Trial envelope: `MG1-T023-TRIAL-ENVELOPE-v2`
 
 ## Restart boundary
 
-MG1-v6 remains closed `BLOCKED / NO QUALIFYING SINGLE-FAMILY REFERENCE`; review: `docs/reviews/T023-R5.md`. V6 is not rescored or mutated.
+MG1-v7 is closed `BLOCKED / HOST EXECUTION ENVELOPE DEFECT`; review: `docs/reviews/T023-R6.md`. V7 is not rescored or mutated and none of its observations may enter v8 score.
 
-Post-close trace analysis in `docs/research/MG1-V6-CONFOUND-ANALYSIS.md` identified two method confounds that must be controlled before attributing the no-reference result to candidate presentation/topology alone:
+V7 diagnostic evidence showed that the live Codex cell could spend substantial context/tool effort on unrelated app/plugin discovery and repeatedly attempted candidate `SKILL.md` reads that were rejected by host execution policy. Because v7 required successful host-observable body read/use before scoring activation, the candidate-level zero-activation result is not carried forward as a product conclusion.
 
-1. the model-visible evaluation wrapper repeatedly named Agent Governance, Agent Skills, activation and routing, and some negative trials explicitly consulted the candidate because the turn was an activation evaluation;
-2. disposable workspaces were nested beneath the canonical Agent Governance source checkout, allowing ambiguous trials to infer source-product identity from host/environment context that the corpus prompt intentionally withheld.
+T047 prospectively restarts the experiment under v8 with:
 
-T046 prospectively restarts the experiment under v7 with unchanged candidate presentations and unchanged thresholds/selection meaning.
+- unchanged candidate presentation bytes and unchanged product-selection semantics;
+- a fresh 40-string holdout;
+- mandatory host-capability preflight before acceptance;
+- minimal unrelated Codex feature surface;
+- exact qualification/materiality futility stopping;
+- explicit cost/tool telemetry;
+- a 180-second attempt timeout.
+
+Research: `docs/research/MG1-V7-COST-AND-HOST-EXECUTION-ANALYSIS.md`.
 
 ## Frozen authority
 
-- Task revision: `docs/tasks/T046-mg1-v7-stimulus-isolated-evaluation.md`
+- Task revision: `docs/tasks/T047-mg1-v8-cost-bounded-host-evaluation.md`
 - Capability source: `docs/AGENT-GOVERNANCE-CAPABILITY-SOURCE.md`
 - Candidate mapping: `evals/skill_activation_topology/topologies.json`
 - Exact presentation manifest: `evals/skill_activation_topology/presentations/manifest.json`
@@ -34,11 +41,11 @@ T046 prospectively restarts the experiment under v7 with unchanged candidate pre
 - Trial envelope: `evals/skill_activation_topology/trial-envelope.json`
 - Selection/execution oracle: `evals/skill_activation_topology/oracle.json`
 
-B0, B1, F2 and G3 remain byte-identical to v6. V7 is a method/holdout restart, not a candidate rewrite.
+B0, B1, F2 and G3 remain byte-identical to v7. V8 is a host/evaluation-efficiency restart, not a candidate rewrite.
 
-## Fresh v7 holdout
+## Fresh v8 holdout
 
-V7 uses 40 fresh exact prompt strings with the same semantic class counts and boundaries as v6:
+V8 uses 40 new exact prompt strings while preserving the same semantic class counts and fixture-role pattern:
 
 - 6 positive Consumer lifecycle;
 - 5 positive source-maintainer;
@@ -49,13 +56,57 @@ V7 uses 40 fresh exact prompt strings with the same semantic class counts and bo
 - 4 ambiguous source-versus-Consumer;
 - 5 multi-intent.
 
-Every case carries `fixture_role` = `neutral`, `source` or `consumer`. Ambiguous, generic negative and near-miss cases are always neutral.
+Every case carries `fixture_role` = `neutral`, `source` or `consumer`. Ambiguous, generic-negative and near-miss cases are always neutral.
 
-No observation from v2/v3/v4/v6 may enter v7 score. V5 had no live acceptance observations.
+No observation from v2/v3/v4/v6/v7 may enter v8 score. V5 had no live acceptance observations.
 
-## Stimulus isolation
+## Host-capability gate before acceptance
 
-The model-visible natural-language turn is exactly:
+V8 MUST spend at most the small non-scored preflight needed to prove that the host can perform the exact mechanism acceptance plans to score before sending any holdout prompt.
+
+A neutral synthetic local Skill `.agents/skills/mx-canary/SKILL.md` contains a fixed unique body nonce unrelated to Agent Governance semantics. The canary prompt explicitly requests that local instruction and returns the body nonce in structured output.
+
+A host profile passes only when **two fresh canary repetitions** prove:
+
+- metadata discovery;
+- successful Skill-body read/use;
+- host trace distinction between discovery and body use;
+- correct body nonce;
+- valid structured output;
+- no execution-policy rejection on the required read path;
+- no unrelated app/plugin catalog payload;
+- valid workspace mutation postcondition.
+
+Sandbox selection is fixed:
+
+1. test `read-only` first;
+2. only when read-only fails specifically because the body-read/use path is denied, test `workspace-write` inside the disposable workspace;
+3. workspace-write additionally requires zero unexpected model-caused file mutations;
+4. if neither profile passes twice, stop `BLOCKED / HOST_CAPABILITY_PREFLIGHT` with **zero acceptance observations**.
+
+Once selected, the profile is immutable for the v8 epoch.
+
+## Minimal effective Codex surface
+
+The selected canary/acceptance profile must effectively:
+
+- ignore user config;
+- ignore user/project execpolicy `.rules` in the isolated eval workspace;
+- retain the local shell/Skill mechanism;
+- disable Apps/connectors;
+- disable the remote plugin catalog;
+- disable multi-agent collaboration;
+- disable automatic Skill MCP dependency installation;
+- disable unsupported PowerShell shell snapshot behavior;
+- disable web search;
+- remain ephemeral;
+- add no unrelated MCP/plugin/app surfaces.
+
+The Executor owns version-specific command/config syntax under D054. The effective states above are frozen method identity.
+
+## Stimulus/environment isolation retained
+
+The model-visible acceptance turn remains exactly:
 
 ```text
 <exact corpus prompt>
@@ -63,61 +114,97 @@ The model-visible natural-language turn is exactly:
 Return only the required structured record.
 ```
 
-No other evaluator prose may be appended/prepended. In particular, added in-band text may not name Agent Governance, candidate ids, capability/profile names, Agent Skills, activation/routing evaluation, Consumer or source-maintainer semantics.
+The v7 neutral workspace and role-fixture rules remain unchanged. Every attempt runs in a fresh OS-temporary disposable root outside/not linked to the canonical source checkout and materializes only its frozen `fixture_role` plus the exact frozen candidate projection.
 
-Structured output may still use machine-facing fields/enums, but descriptions must be domain-neutral. Read-only/safety enforcement is host-side/out-of-band.
+## Activation observability hardened
 
-## Environment isolation
+Scored activation remains successful host-observable candidate-body read/use. Metadata discovery and model self-report alone do not score activation.
 
-Each attempt runs in a fresh OS-temporary disposable root that:
+The difference from v7 is fail-closed readiness and drift handling:
 
-- is outside and not linked/junctioned to the canonical source checkout;
-- is not a Git checkout of the canonical repository;
-- has no source-product files except the exact fixture authorized for the case;
-- has a root path, before `.agents/skills/...`, free of the forbidden domain substrings frozen in `trial-envelope.json`.
+- acceptance cannot start until two canaries prove the read/use path;
+- after acceptance starts, an explicit policy rejection affecting required candidate-body read/use is `HOST_SURFACE_DRIFT`, not candidate non-activation;
+- reappearance of unrelated app/plugin catalog material is also host-surface drift;
+- the affected observation is not scored and new scheduling stops until the exact selected profile is restored.
 
-Role fixtures:
+## Paired 2+1 retained
 
-- `neutral`: no role signal;
-- `source`: exact `agent-governance-source.json` signal;
-- `consumer`: only the minimal synthetic `.agent-governance/fixture.json` marker frozen in the envelope.
+For case/candidate pairs still needed while a candidate remains viable:
 
-This prevents the host path itself from resolving an intentionally ambiguous case.
+1. two valid repetitions;
+2. one conditional third only when first two disagree on a frozen field or `observed_context_bytes`;
+3. no fourth repetition;
+4. majority ordinary discrete fields, median context;
+5. zero-tolerance cross-profile/ambiguous gates inspect every valid repetition.
 
-## Activation observability
+A mandatory any-occurrence violation may terminate the candidate immediately; no second/third repetition is required merely for ceremony after qualification is impossible.
 
-Scored activation is host-observable candidate-body activation. An entrypoint counts as activated only when the trace shows successful read/use of that candidate `SKILL.md` body after discovery.
+## Deterministic case order
 
-Candidate `name`/`description`/`path` metadata discovery alone is not activation. Model self-report is diagnostic only and cannot create scored activation without host evidence. If the required host cell cannot distinguish metadata discovery from body activation reproducibly, v7 stops `BLOCKED` before scoring.
+Each stage uses this fixed consequence-first order:
 
-This distinction is consistent with the current OpenAI skill surface exposing local skill metadata separately from the skill content path; v7 still relies on actual Codex host traces for acceptance evidence.
+1. cross-profile;
+2. ambiguous;
+3. generic negative;
+4. near-miss;
+5. positive Consumer;
+6. positive source-maintainer;
+7. positive external Skill trust;
+8. multi-intent.
 
-## Paired 2+1 scoring retained
+Within each class use ascending case id; candidate order rotates deterministically within a wave.
 
-V6's efficiency method is preserved:
+This order is preregistered and does not depend on v7 candidate results.
 
-1. two valid repetitions for each evaluated case/candidate pair;
-2. a third valid repetition only when the first two disagree on a frozen decision field or `observed_context_bytes`;
-3. no fourth valid repetition;
-4. case-level majority for ordinary discrete fields and median for context;
-5. cross-profile and ambiguous safety boundaries inspect every valid repetition and remain zero-tolerance.
+## Exact futility stopping
 
-### Stage R — B0/B1
+After every finalized aggregate and any repetition that can trigger a mandatory zero-tolerance gate, compute an **optimistic final completion** for the candidate:
 
-- 160 base valid observations;
-- at most 80 conditional thirds;
-- range 160–240.
+- all remaining expected entrypoints are assumed correct true positives;
+- no future false positive, wrong specialist, overactivation or semantic error occurs;
+- no future safety violation occurs;
+- all frozen final metric denominators remain unchanged.
 
-If neither B0 nor B1 qualifies, T023 is `BLOCKED` and F2/G3 MUST NOT execute.
+If the candidate would still fail any qualifying threshold/mandatory condition, it is `FUTILE_QUALIFICATION` and no remaining calls for that candidate are permitted.
 
-### Stage C — F2/G3, only if reference exists
+The certificate must persist exact observed numerators/denominators, remaining optimistic contribution, best possible final metric values and the terminal failed condition.
 
-- additional 160–240 valid observations;
-- full two-stage range 320–480.
+This must reproduce at least:
 
-## Thresholds and selection preserved
+- 1 finalized false activation among 11 negative/near-miss cases => best final false-activation rate `1/11 = 0.0909 > 0.05` => stop;
+- 3 finalized semantic errors among 40 cases => best final accuracy `37/40 = 0.925 < 0.95` => stop;
+- any cross-profile/ambiguous mandatory violation => stop immediately.
 
-V7 retains the existing gates:
+Unexecuted cases are `NOT_SCHEDULED_FUTILITY`, never fabricated metric rows.
+
+## Stage R
+
+Evaluate B0/B1 first.
+
+- If both become non-qualifying/futile, stop T023 immediately and never call F2/G3.
+- If one becomes futile, stop that candidate and continue only the survivor until full qualification or futility.
+- If both survive full evaluation, apply the unchanged B0/B1 reference rule.
+
+The prior 160–240 observations are now only the Stage-R **full-completion ceiling/range**, not a required minimum spend.
+
+## Stage C
+
+Only after a fully established single-family reference exists, evaluate F2/G3.
+
+A challenger stops when:
+
+- qualification is impossible; or
+- even optimistic completion cannot satisfy the unchanged material-advantage requirements relative to the reference.
+
+For context materiality, unfinished activation-relevant cases receive an optimistic zero-byte value when calculating the best possible final median. If even that median cannot reach `<= 85%` of the reference, the challenger is non-material.
+
+If both challengers are non-material/futile, select the reference immediately. If only one remains viable, continue only it.
+
+The overall 480 valid-observation figure is therefore a **worst-case ceiling**, not the normal target.
+
+## Thresholds and selection unchanged
+
+V8 retains:
 
 - activation precision/recall/F1 >= 0.95;
 - false activation/wrong specialist/overactivation <= 0.05;
@@ -126,24 +213,42 @@ V7 retains the existing gates:
 - source/distribution integrity and single-install feasibility true;
 - cross-profile violations = 0;
 - ambiguous permission broadening = 0;
-- cross-profile+ambiguous semantic accuracy = 1.0.
+- cross-profile+ambiguous semantic accuracy = 1.0;
+- unchanged D050 B0/B1 reference and F2/G3 material-advantage/tie-break percentages;
+- unchanged `observed_context_bytes` selection meaning.
 
-D050 B1-vs-B0 reference and F2/G3 material-advantage/tie-break percentages remain unchanged. `observed_context_bytes` remains the selection context measure.
+Early stop changes only whether observations incapable of affecting these frozen decisions are sent.
 
-## Capacity execution retained
+## Capacity and timeout
 
-Required live cell remains Codex / native Windows / GPT-5.6 Sol / Medium.
+Required live acceptance model remains Codex / native Windows / GPT-5.6 Sol / Medium.
 
 - fresh thread and disposable workspace per attempt;
-- 600-second timeout;
-- at most two non-capacity attempts per scheduled repetition;
-- explicit usage-limit/quota events are non-attempt capacity pauses;
-- same-epoch resume preserves already valid v7 observations after identity/integrity verification.
+- timeout = 180 seconds rather than 600;
+- at most two non-capacity model attempts per scheduled repetition;
+- explicit usage-limit/quota events remain non-attempt capacity pauses;
+- same-epoch resume preserves already valid observations and terminal futility states after identity/integrity verification.
+
+V8 intentionally does **not** change reasoning effort to Low; host-method correction and call-count reduction are isolated first.
+
+## Cost telemetry
+
+Persist exact provider fields when Codex exposes them:
+
+- input/cached-input/reasoning/output/total tokens;
+- tool calls;
+- policy-rejected tool calls;
+- unrelated app/plugin resource counts/bytes;
+- duration;
+- capacity state;
+- effective host profile identity.
+
+If exact token usage is unavailable, state that explicitly and retain available proxies. Do not invent token estimates.
+
+The experimental Codex rollout-budget feature is not an acceptance dependency because its tracking/reminder behavior may alter the evaluated run. Prompt caching is diagnostic only and may reduce cost naturally after removing unrelated context.
 
 ## Ownership boundary
 
-The v7 corpus, envelope and oracle are Orchestrator-owned D052 conformance assets. The Executor may not semantically change them or candidate presentation/reference bytes.
+The v8 corpus and oracle are Orchestrator-owned D052 assets. The Executor owns only mechanical canary/provider/harness implementation, version-specific adapter syntax, futility scheduling, evidence, metric computation, implementation tests and Code Review & Verify.
 
-The Executor owns only mechanical harness/provider implementation, neutral workspace creation, exact fixture materialization, host-observable activation extraction, stage scheduling, capacity handling, evidence persistence, metric computation and technical verification.
-
-No v7 live acceptance call may occur before T046 and these assets are integrated into canonical `develop`.
+No v8 live acceptance prompt may be sent before T047 and these assets are integrated into canonical `develop`.
