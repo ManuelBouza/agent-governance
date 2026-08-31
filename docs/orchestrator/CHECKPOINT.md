@@ -1,9 +1,9 @@
 # Current ChatGPT Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O184  
+Checkpoint-Sequence: O185  
 Canonical-Branch: `develop`  
-Current-Work-Unit: T023 MG1-v8 is closed `BLOCKED / HOST_CAPABILITY_PREFLIGHT`; re-entry is Specify before any further acceptance run  
+Current-Work-Unit: T048/MG1-v9 native-Windows sandbox-bound restart is ready for integration; T023 must not relaunch until v9 is canonical  
 Chat-Closure: CONTINUE_CURRENT_CHAT  
 Active-Executor: none  
 Active-Executor-Surface: ChatGPT Orchestrator
@@ -19,66 +19,138 @@ Active-Executor-Surface: ChatGPT Orchestrator
 - T023 v6: closed `BLOCKED / NO QUALIFYING SINGLE-FAMILY REFERENCE`; review `docs/reviews/T023-R5.md`.
 - T023 v7: closed `BLOCKED / HOST EXECUTION ENVELOPE DEFECT`; review `docs/reviews/T023-R6.md`.
 - T023 v8: closed `BLOCKED / HOST_CAPABILITY_PREFLIGHT`; review `docs/reviews/T023-R7.md`.
-- V8 submitted Executor branch `test/t023-skill-activation-topology-evals-v8`, submitted HEAD `a00ce1d87de6a2c955f4080a6c539bf781369f0a`, implementation HEAD `76a591c2d7a3f48d5e4b780712a78bef4c8e212f`, base `develop@23475b7fbcf427c4dac8dcb06796409660434aa2`.
-- V8 evidence/review integration PR `#247`, merge `1168a55496fd53327d82cdff8080b52770fc0943`.
-- T047/MG1-v8 remains the latest frozen experiment method: oracle `MG1-T023-TOPOLOGY-ORACLE-v8`, epoch `MG1-T023-EXECUTION-v8`, corpus `MG1-T023-CORPUS-v4`, presentations `MG1-T023-PRESENTATIONS-v3`, trial envelope `MG1-T023-TRIAL-ENVELOPE-v2`.
-- Candidate presentation/reference bytes, semantic expectations, thresholds, zero-tolerance gates, paired 2+1 aggregation, context meaning and D050 selection percentages were not changed by the V8 Executor branch.
+- V8 submitted Executor HEAD `a00ce1d87de6a2c955f4080a6c539bf781369f0a`; evidence integration PR `#247`; merge `1168a55496fd53327d82cdff8080b52770fc0943`.
+- V8 issued zero acceptance prompts and zero scored observations. `MG1-T023-CORPUS-v4` therefore remains unexposed to the v8 acceptance cell.
+- Root-cause research: `docs/research/MG1-V8-WINDOWS-SANDBOX-ROOT-CAUSE.md`.
+- T048 is the prospective v9 authority: `docs/tasks/T048-mg1-v9-native-windows-sandbox-bound-restart.md`.
+- Proposed oracle: `MG1-T023-TOPOLOGY-ORACLE-v9`; execution epoch: `MG1-T023-EXECUTION-v9`.
+- Capability source remains `MG1-2026-08-25-v3`; presentations remain `MG1-T023-PRESENTATIONS-v3`; corpus remains `MG1-T023-CORPUS-v4`; trial envelope remains `MG1-T023-TRIAL-ENVELOPE-v2`.
+- Candidate bytes, holdout bytes, semantic expectations, thresholds, zero-tolerance gates, paired 2+1, consequence-first ordering, futility/materiality rules, context meaning and D050 selection percentages are unchanged from v8.
 
-## V8 terminal evidence
+## Root cause established
 
-The mandatory synthetic host-capability preflight failed before any acceptance prompt:
+The v8 blocker is classified as an Execution Adapter configuration defect.
 
-- `read-only` canary repetition 1 failed: required local `mx-canary/SKILL.md` body-read attempts were rejected by Codex execution policy.
-- `workspace-write` fallback repetition 1 failed for the same required body-read path; no unexpected workspace mutation was observed.
-- Each sandbox requires two passing repetitions. After a first failure, a second repetition cannot make that sandbox satisfy the frozen 2/2 preflight requirement, so no further canary call was necessary.
-- The returned abbreviated value `quartz-heron` is not the full canary body nonce. The full nonce is `The quartz heron carries seven indigo pebbles at noon.`; `body_nonce_correct=false` is therefore correct and does not prove an unobserved body load.
-- Selected sandbox: none.
-- V8 acceptance prompts issued: `0`.
-- V8 scored observations: `0`.
-- No candidate/topology selection was computed.
-- Prior-epoch observations imported: `0`.
+For the exact Codex CLI 0.149.0 baseline:
 
-## V8 cost-control evidence
+- headless `codex exec` defaults approval policy to `Never`;
+- the native Windows sandbox backend is a separate configuration axis from logical `read-only` / `workspace-write` permission mode;
+- `--ignore-user-config` intentionally removed personal host configuration;
+- v8 did not explicitly restore a native Windows backend through its hermetic overrides;
+- Codex 0.149.0 tests establish that unmatched PowerShell/file-read commands are forbidden under a logical read/workspace profile when the Windows backend is disabled and approval cannot be surfaced;
+- the same class of unmatched commands can execute under the RestrictedToken/Elevated native sandbox backends.
 
-V8's preflight prevented a large invalid acceptance run after only two synthetic provider calls.
+The `.agents` protected-metadata carveout is not by itself sufficient to explain the pre-execution read rejection; it is primarily a write-protection concern inside writable roots.
 
-Provider telemetry:
+## T048 / MG1-v9 method
 
-- read-only canary: `82,593` input tokens, `61,184` cached input tokens, `1,149` output tokens, `577` reasoning-output tokens, five policy-rejected tool calls;
-- workspace-write canary: `49,502` input tokens, `45,056` cached input tokens, `1,474` output tokens, `1,120` reasoning-output tokens, two policy-rejected body-read calls plus one unsuccessful patch attempt.
+### CLI-version isolation
 
-The fixed host/session context cost remains material even with Apps/remote-plugin/multi-agent/web-search features intended disabled. Do not launch another acceptance corpus until the host-loading/observability problem is resolved.
+- First corrected epoch remains Codex CLI `0.149.0`.
+- Do not upgrade Codex in the same v9 epoch.
+- If 0.149.0 cannot explicitly realize a permitted non-disabled native Windows backend, stop before model calls with `BLOCKED / WINDOWS_SANDBOX_BACKEND_UNAVAILABLE` and re-enter Specify for a separate host-version revision.
 
-## Technical verification
+### Explicit Windows backend binding
 
-- Frozen input validation: PASS.
-- Focused V8 harness tests: 51 PASS.
-- Full deterministic suite: 456 PASS.
-- Profile isolation: 48 PASS.
-- Consumer/source independence: 8 PASS.
-- Ruff check/format: PASS.
-- Frozen D052 assets modified by Executor: false.
-- No committed Markdown, candidate presentation, Core/runtime/profile semantic asset or prior evidence was modified by the Executor branch.
+Every canary/acceptance invocation must explicitly bind a native Windows backend while user config remains ignored.
 
-The integrated harness contains the V8 synthetic preflight, minimal-surface controls, host-surface drift detection, 180-second attempts, token/tool telemetry and deterministic futility/materiality scheduling. Those mechanics are integrated technical infrastructure only; live host compatibility and topology acceptance remain unestablished.
+Selection order:
 
-## Re-entry boundary
+1. `elevated` first;
+2. `unelevated` / restricted-token only as preregistered fallback when elevated cannot initialize/is unavailable or fails the unchanged canary for a backend-specific envelope reason;
+3. disabled backend forbidden;
+4. no implicit reliance on `$CODEX_HOME/config.toml`.
 
-Classification is `HOST_CAPABILITY_PREFLIGHT`, not candidate semantic failure, not external capacity, and not an acceptance-score result.
+Exact installed-version CLI/config syntax is Executor-owned under D054.
 
-Re-entry stage: `Specify`.
+### Pre-model backend-resolution gate
 
-Do not weaken host-observable candidate-body activation merely because Codex shell reads are rejected. Do not broaden sandbox/tool privilege merely to make the canary pass without an explicit safety/reproducibility design.
+Before any provider/model call, verify and persist:
 
-A future V8 preflight may be rerun only after a materially relevant host/runtime change that can plausibly satisfy the unchanged canary while preserving its frozen semantics. If the required observation mechanism itself must change, create a prospective controlling revision before any new acceptance prompt. No V8 or earlier acceptance observation may enter a successor score.
+- Codex version;
+- native Windows platform;
+- requested non-disabled backend;
+- logical sandbox to be tested;
+- ignored user config and execpolicy rules;
+- unchanged minimal feature surface;
+- dangerous bypass absent.
+
+If the backend cannot be established, spend zero canary/acceptance calls.
+
+### Synthetic canary
+
+The v8 canary semantics are unchanged and the holdout/candidate content remains absent.
+
+A complete profile is the tuple:
+
+```text
+Codex version
++ native Windows backend
++ logical sandbox
++ model/effort
++ ignored config/rules
++ minimal feature surface
+```
+
+Within each permitted backend:
+
+1. logical `read-only` first;
+2. logical `workspace-write` only if read-only cannot support the body-read/use path;
+3. two fresh PASS repetitions are required for selection;
+4. do not waste a second repetition merely to reconfirm a terminal first-repetition failure.
+
+PASS still requires actual Skill-body read/use, exact full nonce, host observability, no required-read policy rejection, no unrelated app/plugin material and correct workspace mutation postcondition.
+
+### Acceptance binding
+
+Acceptance uses exactly the complete profile that passed 2/2. Backend/logical-sandbox/profile drift or required Skill-body rejection is `HOST_SURFACE_DRIFT` and stops scheduling before scoring the affected observation.
+
+### Explicit Skill substitution forbidden
+
+Do not replace implicit activation with `$skill`, `/skills`, preselected Skill injection or pre-reading candidate bodies. Codex supports an explicit host-read path, but T023 evaluates implicit routing from ordinary turns.
+
+### Cost-bounded method preserved
+
+V8 scheduling remains intact:
+
+- paired 2+1;
+- cross-profile/ambiguous/negative/near-miss first;
+- exact qualification futility;
+- challenger materiality futility;
+- 180-second attempts;
+- capacity pauses;
+- token/tool telemetry;
+- 480 full-matrix ceiling only.
+
+## T048 / MG1-v9 identity
+
+```text
+Task: T048
+Status: ORCHESTRATOR-CONFORMANCE / READY_FOR_INTEGRATION
+Task Contract: docs/tasks/T048-mg1-v9-native-windows-sandbox-bound-restart.md
+Research: docs/research/MG1-V8-WINDOWS-SANDBOX-ROOT-CAUSE.md
+Prior Review: docs/reviews/T023-R7.md
+Oracle: MG1-T023-TOPOLOGY-ORACLE-v9
+Execution epoch: MG1-T023-EXECUTION-v9
+Capability source epoch: MG1-2026-08-25-v3
+Presentation revision: MG1-T023-PRESENTATIONS-v3
+Corpus: MG1-T023-CORPUS-v4 (byte-identical reuse; zero v8 acceptance exposure)
+Trial envelope: MG1-T023-TRIAL-ENVELOPE-v2
+Codex CLI baseline: 0.149.0
+Native Windows backend: explicit non-disabled, elevated-first
+Full-completion ceiling: 480 valid acceptance repetitions
+Normal behavior: preflight + exact early termination when decision becomes irreversible
+```
 
 ## Next action
 
-1. Orchestrator researches the current Codex local-Skill loading path and execution-policy behavior on native Windows, prioritizing official/current Codex documentation and source/issue evidence relevant to CLI `exec`, local `.agents/skills`, sandbox read behavior, and host trace observability.
-2. Determine whether the unchanged V8 canary can be satisfied by a supported, bounded host/runtime/configuration change without broadening the experiment semantics or safety envelope.
-3. If yes, persist the exact supported host-state requirement and decide prospectively whether V8 preflight may be rerun under that changed host state.
-4. If no, create a new Orchestrator Specify revision for a different reproducible activation-observability mechanism before any acceptance execution.
-5. Do not launch an Executor or any T023 acceptance prompt until that Specify decision is persisted.
+1. Validate the complete T048 branch diff against canonical `develop@e836ed5e9ba0376eeb8282880a8e467a0f5c8b20`.
+2. Confirm changes are limited to Orchestrator-owned Markdown plus the authorized D052 `oracle.json`; corpus/envelope/topologies/presentation bytes must remain untouched.
+3. Integrate T048/MG1-v9 through PR only if that boundary is clean.
+4. Refresh canonical `develop` and checkpoint v9 as `INTEGRATED / CONTROLLING`.
+5. Only then show D055 and relaunch T023 from fresh canonical `develop`.
+6. Executor mechanically binds the native Windows backend, adapts host-profile evidence/extraction and runs deterministic verification + canary before any acceptance prompt.
+7. Orchestrator independently converges successor evidence and applies the unchanged selection rule.
 
 ## Next chat minimum load
 
@@ -86,4 +158,4 @@ Load only current `develop` identity, `AGENTS.md`, and this checkpoint; then fol
 
 ## Do not
 
-Do not rerun V7; do not relaunch V8 immediately under the same failed host state; do not import any prior observation into a future score; do not treat the preflight failure as evidence against B0/B1/F2/G3; do not weaken activation observability; do not enable broader privileges without a persisted design; do not write directly to `main`/`develop`.
+Do not rerun v8; do not import prior observations; do not change corpus v4; do not upgrade Codex inside v9; do not use disabled Windows backend; do not use dangerous bypass/full access; do not use interactive approval; do not substitute explicit Skill activation; do not weaken host-observed body-use semantics; do not alter candidate bytes/thresholds/D050 rules; do not write directly to `main`/`develop`.
