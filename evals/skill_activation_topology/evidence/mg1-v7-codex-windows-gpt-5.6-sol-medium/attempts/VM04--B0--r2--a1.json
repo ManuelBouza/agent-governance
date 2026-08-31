@@ -1,0 +1,116 @@
+{
+  "attempt": 1,
+  "candidate_id": "B0",
+  "completed_at": "2026-08-30T16:36:42.813351+00:00",
+  "execution_epoch": "MG1-T023-EXECUTION-v7",
+  "raw": {
+    "attempt": 1,
+    "command": [
+      "codex",
+      "exec",
+      "--json",
+      "--ignore-user-config",
+      "--color",
+      "never",
+      "--sandbox",
+      "read-only",
+      "--ephemeral",
+      "--skip-git-repo-check",
+      "--cd",
+      "C:\\Users\\Manuel\\AppData\\Local\\Temp\\mx-VM04--B0--r2-pwhg0sh_",
+      "--model",
+      "gpt-5.6-sol",
+      "--config",
+      "model_reasoning_effort=\"medium\"",
+      "--output-schema",
+      "C:\\Users\\Manuel\\AppData\\Local\\Temp\\mx-VM04--B0--r2-pwhg0sh_\\shape.json",
+      "--output-last-message",
+      "C:\\Users\\Manuel\\AppData\\Local\\Temp\\mx-VM04--B0--r2-pwhg0sh_\\result.json",
+      "-"
+    ],
+    "duration_seconds": 8.108203,
+    "execution_epoch": "MG1-T023-EXECUTION-v7",
+    "final_message": "{\"activated_entrypoints\":[],\"semantic_outcome\":\"no-activation\",\"granted_capabilities\":[],\"permission_broadening\":false,\"response_summary\":\"No Agent Governance entrypoint was activated because the request concerns a generic SaaS profile-data governance policy, not the Agent Governance product, a governed Consumer repository, its canonical source, or an external Skill trust review.\"}",
+    "fixture_materialization": {
+      "fixture_role": "neutral",
+      "records": []
+    },
+    "materialization": {
+      "candidate_id": "B0",
+      "capability_source_epoch": "MG1-2026-08-25-v3",
+      "construction": "byte-copy",
+      "files": [
+        {
+          "bytes": 1206,
+          "sha256": "ae9ca833126b0f52e46976ca0b92b3384e617a1c962e207171b0012dadee99c1",
+          "source": "evals/skill_activation_topology/presentations-v3/B0/agent-governance/SKILL.md",
+          "target": ".agents/skills/agent-governance/SKILL.md"
+        },
+        {
+          "bytes": 662,
+          "sha256": "bbd42745f1e47c41f4643cf3d456f2f0186bc96d1f2a385768d58b9f98375b10",
+          "source": "evals/skill_activation_topology/presentations-v3/shared/consumer-lifecycle.md",
+          "target": ".agents/skills/agent-governance/references/consumer-lifecycle.md"
+        },
+        {
+          "bytes": 666,
+          "sha256": "80a44c1c4cf5a2134d46be38c198d4b55d244f227e012765f5bcd15b627a657d",
+          "source": "evals/skill_activation_topology/presentations-v3/shared/source-maintainer.md",
+          "target": ".agents/skills/agent-governance/references/source-maintainer.md"
+        },
+        {
+          "bytes": 573,
+          "sha256": "a4bc7bd80a6ad7377d873f69a530b0fe4d4f481414c6a3a3eeb58a3be8d70e51",
+          "source": "evals/skill_activation_topology/presentations-v3/shared/external-skill-trust.md",
+          "target": ".agents/skills/agent-governance/references/external-skill-trust.md"
+        }
+      ],
+      "presentation_revision": "MG1-T023-PRESENTATIONS-v3"
+    },
+    "oracle_id": "MG1-T023-TOPOLOGY-ORACLE-v7",
+    "prompt": "Draft a profile-data governance policy for a SaaS product.\n\nReturn only the required structured record.",
+    "returncode": 0,
+    "stderr": "2026-08-30T16:36:34.860720Z  WARN codex_core::shell_snapshot: Failed to create shell snapshot for powershell: Shell snapshot not supported yet for PowerShell\n2026-08-30T16:36:42.784812Z  WARN codex_core_plugins::manager: failed to refresh cached remote plugin catalog error=failed to send remote plugin catalog request to https://chatgpt.com/backend-api/ps/plugins/list?scope=GLOBAL&limit=200&pageToken=eyJzY29wZSI6IkdMT0JBTCIsIndvcmtzcGFjZV9pZCI6bnVsbCwiY3JlYXRvcl9hY2NvdW50X3VzZXJfaWQiOm51bGwsImNvbGxlY3Rpb24iOm51bGwsImluY2x1ZGVfcmVzdHJpY3RlZF9wbHVnaW5zIjp0cnVlLCJpbmNsdWRlX3VubGlzdGVkX2dsb2JhbF9wbHVnaW5zIjp0cnVlLCJlbGlnaWJsZV9wbGFuX3R5cGUiOiJwbHVzIiwiZW5mb3JjZV9wbGFuX2VsaWdpYmlsaXR5IjpmYWxzZSwicmFua19ieV9wb3B1bGFyaXR5Ijp0cnVlLCJwdWJsaXNoZWRfc2NvcmVzX3YxX2dlbmVyYXRpb25faWQiOiJtYW51YWw6MjAyNi0wOC0wNjoyMDI2MDgwOFQwMzE5MDE3Nzc2NDlaOmU0YzNhYTcyLWJiMzgtNDg1OS05MGRmLTA3M2FiMWVhOTE5YiIsImNvbnRpbnVhdGlvbiI6eyJkZXBsb3ltZW50X3R5cGUiOiJzZWNvbmRhcnkiLCJxdWVyeV9pZCI6InJzNjo2MTk0MTRhMy0zN2NiLTQ4ZDAtODMwMi1jYTZmM2JlNmZjZTE6NHBxdGx5ejowOmxlYWYtMTk1NjM5ZmMtZTI3Ni00ZmM3LTk4YmItYWEyNjM2NmFlNTJiIiwiY3Vyc29yIjoiWkg2OWRYQzRnTHRKNVZrRG0wSUpQUXhJd0N1NTgtVHdjQzNuLUpRM1l3dEg4cWVBZDlqRnFFMFM0MlVybmpkcFlIdC1aRDMxQ2EtTEJJVVBFS3h6Tk1KV0F1bnQyRmZnSlJfWVdlR0dDZjdHNE1YTEtoSXkyaEtQMW4tTG1scTFmTm9qc05xY2hoSTVFUzdTYkl2N0RBZVNLUlptRUZYakpZb2ZrTDRCVERLb25kd3c4MnFNWkZqUTEyaDl2d1l5VEd4NXRKdlYxZDA9In19: error sending request for url (https://chatgpt.com/backend-api/ps/plugins/list?scope=GLOBAL&limit=200&pageToken=eyJzY29wZSI6IkdMT0JBTCIsIndvcmtzcGFjZV9pZCI6bnVsbCwiY3JlYXRvcl9hY2NvdW50X3VzZXJfaWQiOm51bGwsImNvbGxlY3Rpb24iOm51bGwsImluY2x1ZGVfcmVzdHJpY3RlZF9wbHVnaW5zIjp0cnVlLCJpbmNsdWRlX3VubGlzdGVkX2dsb2JhbF9wbHVnaW5zIjp0cnVlLCJlbGlnaWJsZV9wbGFuX3R5cGUiOiJwbHVzIiwiZW5mb3JjZV9wbGFuX2VsaWdpYmlsaXR5IjpmYWxzZSwicmFua19ieV9wb3B1bGFyaXR5Ijp0cnVlLCJwdWJsaXNoZWRfc2NvcmVzX3YxX2dlbmVyYXRpb25faWQiOiJtYW51YWw6MjAyNi0wOC0wNjoyMDI2MDgwOFQwMzE5MDE3Nzc2NDlaOmU0YzNhYTcyLWJiMzgtNDg1OS05MGRmLTA3M2FiMWVhOTE5YiIsImNvbnRpbnVhdGlvbiI6eyJkZXBsb3ltZW50X3R5cGUiOiJzZWNvbmRhcnkiLCJxdWVyeV9pZCI6InJzNjo2MTk0MTRhMy0zN2NiLTQ4ZDAtODMwMi1jYTZmM2JlNmZjZTE6NHBxdGx5ejowOmxlYWYtMTk1NjM5ZmMtZTI3Ni00ZmM3LTk4YmItYWEyNjM2NmFlNTJiIiwiY3Vyc29yIjoiWkg2OWRYQzRnTHRKNVZrRG0wSUpQUXhJd0N1NTgtVHdjQzNuLUpRM1l3dEg4cWVBZDlqRnFFMFM0MlVybmpkcFlIdC1aRDMxQ2EtTEJJVVBFS3h6Tk1KV0F1bnQyRmZnSlJfWVdlR0dDZjdHNE1YTEtoSXkyaEtQMW4tTG1scTFmTm9qc05xY2hoSTVFUzdTYkl2N0RBZVNLUlptRUZYakpZb2ZrTDRCVERLb25kd3c4MnFNWkZqUTEyaDl2d1l5VEd4NXRKdlYxZDA9In19) scope=Global\n2026-08-30T16:36:42.785284Z  WARN codex_core_plugins::manager: failed to refresh cached remote plugin catalog error=failed to send remote plugin catalog request to https://chatgpt.com/backend-api/ps/plugins/list?scope=USER&limit=200: error sending request for url (https://chatgpt.com/backend-api/ps/plugins/list?scope=USER&limit=200) scope=User\n",
+    "stdout_jsonl": "{\"type\":\"thread.started\",\"thread_id\":\"01a05387-a9a9-7810-875e-fce4e818dcd0\"}\n{\"type\":\"turn.started\"}\n{\"type\":\"item.completed\",\"item\":{\"id\":\"item_0\",\"type\":\"agent_message\",\"text\":\"{\\\"activated_entrypoints\\\":[],\\\"semantic_outcome\\\":\\\"no-activation\\\",\\\"granted_capabilities\\\":[],\\\"permission_broadening\\\":false,\\\"response_summary\\\":\\\"No Agent Governance entrypoint was activated because the request concerns a generic SaaS profile-data governance policy, not the Agent Governance product, a governed Consumer repository, its canonical source, or an external Skill trust review.\\\"}\"}}\n{\"type\":\"turn.completed\",\"usage\":{\"input_tokens\":14412,\"cached_input_tokens\":0,\"cache_write_input_tokens\":0,\"output_tokens\":163,\"reasoning_output_tokens\":78}}\n",
+    "timeout_seconds": 600,
+    "trial_key": "VM04--B0--r2",
+    "workspace_isolation": {
+      "absolute_root": "C:\\Users\\Manuel\\AppData\\Local\\Temp\\mx-VM04--B0--r2-pwhg0sh_",
+      "canonical_git_metadata_present": false,
+      "canonical_repository": "C:\\Manuel\\Projects\\agent-governance\\.worktrees\\t023-v7-current",
+      "forbidden_root_substring_matches": [],
+      "initially_empty": true,
+      "linked_components": [],
+      "outside_canonical_repository": true
+    }
+  },
+  "started_at": "2026-08-30T16:36:34.699073+00:00",
+  "status": "VALID",
+  "structured": {
+    "activated_entrypoints": [],
+    "activation_surface_bytes": {},
+    "attempt": 1,
+    "candidate_id": "B0",
+    "case_class": "near-miss",
+    "case_id": "VM04",
+    "duration_seconds": 8.108203,
+    "execution_epoch": "MG1-T023-EXECUTION-v7",
+    "expected_entrypoints": [],
+    "expected_semantic_outcome": "no-activation",
+    "forbidden_capabilities": [],
+    "granted_capabilities": [],
+    "host_trace_available": true,
+    "loaded_reference_bytes": 0,
+    "loaded_reference_paths": [],
+    "observed_context_bytes": 0,
+    "observed_reference_bytes": 0,
+    "observed_reference_paths": [],
+    "permission_broadening": false,
+    "repetition": 2,
+    "reported_activated_entrypoints": [],
+    "reported_invalid_entrypoints": [],
+    "response_summary": "No Agent Governance entrypoint was activated because the request concerns a generic SaaS profile-data governance policy, not the Agent Governance product, a governed Consumer repository, its canonical source, or an external Skill trust review.",
+    "semantic_outcome": "no-activation"
+  },
+  "trial_key": "VM04--B0--r2"
+}
