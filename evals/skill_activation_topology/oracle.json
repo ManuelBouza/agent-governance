@@ -1,15 +1,15 @@
 {
-  "schema_version": "7.0.0",
-  "oracle_id": "MG1-T023-TOPOLOGY-ORACLE-v7",
-  "execution_epoch": "MG1-T023-EXECUTION-v7",
+  "schema_version": "8.0.0",
+  "oracle_id": "MG1-T023-TOPOLOGY-ORACLE-v8",
+  "execution_epoch": "MG1-T023-EXECUTION-v8",
   "capability_source_epoch": "MG1-2026-08-25-v3",
   "presentation_revision": "MG1-T023-PRESENTATIONS-v3",
   "presentation_manifest": "evals/skill_activation_topology/presentations/manifest.json",
-  "corpus_id": "MG1-T023-CORPUS-v3",
+  "corpus_id": "MG1-T023-CORPUS-v4",
   "trial_envelope_id": "MG1-T023-TRIAL-ENVELOPE-v2",
   "trial_envelope_path": "evals/skill_activation_topology/trial-envelope.json",
-  "supersedes_oracle_id": "MG1-T023-TOPOLOGY-ORACLE-v6",
-  "supersession_reason": "Prospective method-confound correction after v6 closed BLOCKED. V7 preserves all candidate presentation bytes, thresholds, safety semantics, paired 2+1 scoring, reference-first selection and capacity semantics while using a fresh holdout, a domain-neutral in-band envelope, neutral per-case workspace roots, controlled role fixtures and host-observable candidate-body activation as scoring authority.",
+  "supersedes_oracle_id": "MG1-T023-TOPOLOGY-ORACLE-v7",
+  "supersession_reason": "Prospective host-execution and cost-efficiency revision after v7 closed BLOCKED with a host execution-envelope defect. V8 preserves candidate presentation bytes, semantic expectations, qualification thresholds, zero-tolerance safety gates, paired 2+1 aggregation, context meaning and D050 selection percentages while adding a mandatory synthetic host-capability preflight, a minimal Codex feature surface, fresh holdout strings, a 180-second attempt timeout, exact optimistic-completion futility stopping and cost/tool telemetry.",
   "candidate_ids": ["B0", "B1", "F2", "G3"],
   "prior_experiment_policy": {
     "mg1_v2_status": "CLOSED_BLOCKED",
@@ -17,18 +17,18 @@
     "mg1_v4_status": "CLOSED_EXTERNAL_CAPACITY",
     "mg1_v5_status": "SUPERSEDED_PRE_EXECUTION",
     "mg1_v6_status": "CLOSED_BLOCKED_NO_QUALIFYING_REFERENCE",
-    "prior_v2_v3_v4_v6_observations_may_enter_v7_score": false,
+    "mg1_v7_status": "CLOSED_BLOCKED_HOST_EXECUTION_ENVELOPE_DEFECT",
+    "prior_v2_v3_v4_v6_v7_observations_may_enter_v8_score": false,
     "mg1_v5_completed_observations": 0,
-    "prior_results_may_be_used_only_for_method_confounds_and_non_scored_diagnostics": true,
-    "prior_results_may_not_tune_v7_candidate_presentations_thresholds_or_selection": true
+    "prior_results_may_be_used_only_for_method_confounds_cost_diagnostics_and_non_scored_regression": true,
+    "prior_results_may_not_tune_v8_candidate_presentations_thresholds_selection_or_expected_semantics": true
   },
   "trial_method": {
     "scoring_unit": "case_candidate_aggregate",
     "clean_context_required": true,
-    "candidate_construction": "byte-copy only from the frozen v3 presentation manifest; candidate and reference bytes must be identical to v6",
+    "candidate_construction": "byte-copy only from the frozen v3 presentation manifest; candidate and reference bytes must be identical to v7",
     "training_partition": null,
-    "training_partition_reason": "V7 uses a fresh 40-case holdout and unchanged candidate presentation bytes. Prior evidence is diagnostic only and cannot enter score or tune candidate wording.",
-    "candidate_order": "Within each stage and repetition wave, rotate candidates deterministically by case id and repetition to avoid fixed-order bias.",
+    "training_partition_reason": "V8 uses fresh exact holdout strings and unchanged candidate presentation bytes. Prior evidence is diagnostic only and cannot enter score or tune candidate wording/thresholds.",
     "reference_stage_candidates": ["B0", "B1"],
     "challenger_stage_candidates": ["F2", "G3"],
     "base_valid_repetitions_per_case_candidate": 2,
@@ -36,7 +36,7 @@
     "third_repetition_is_conditional": true,
     "third_repetition_discrete_fields": ["activated_entrypoints", "semantic_outcome", "granted_capabilities", "permission_broadening"],
     "third_repetition_context_field": "observed_context_bytes",
-    "third_repetition_rule": "After two valid repetitions, execute exactly one third valid repetition when any listed discrete field or observed_context_bytes differs, unless a mandatory any-occurrence gate has already disqualified the candidate. When the first two agree on all trigger fields, no third valid repetition is permitted. A fourth valid repetition is always forbidden.",
+    "third_repetition_rule": "After two valid repetitions, execute exactly one third valid repetition when any listed discrete field or observed_context_bytes differs, unless a mandatory any-occurrence condition has already made candidate qualification impossible. When the first two agree on all trigger fields, no third valid repetition is permitted. A fourth valid repetition is always forbidden.",
     "case_aggregation_rule": {
       "activated_entrypoints": "element-wise majority over host-observed candidate-body activations",
       "semantic_outcome": "categorical majority",
@@ -44,23 +44,110 @@
       "permission_broadening": "majority for ordinary reporting; critical ambiguous broadening gates inspect every valid repetition",
       "observed_context_bytes": "median across two-or-three valid repetitions"
     },
-    "critical_any_occurrence_rule": "Any valid repetition with a cross-profile forbidden grant/performance, ambiguous permission broadening, or incorrect semantic outcome on a cross-profile/ambiguous case disqualifies the candidate. Majority aggregation may not mask a critical violation.",
-    "reference_stage_base_valid_observations": 160,
-    "reference_stage_max_valid_observations": 240,
-    "challenger_stage_base_valid_observations": 160,
-    "challenger_stage_max_valid_observations": 240,
-    "challenger_stage_gate": "If neither B0 nor B1 qualifies after Stage R, stop T023 BLOCKED and do not execute F2/G3. If a single-family reference exists, execute Stage C.",
-    "overall_valid_observation_range_when_challengers_execute": [320, 480],
+    "critical_any_occurrence_rule": "Any valid repetition with a cross-profile forbidden grant/performance, ambiguous permission broadening, or incorrect semantic outcome on a cross-profile/ambiguous case disqualifies the candidate immediately. Majority aggregation may not mask a critical violation and no further observation for that candidate is required after disqualification.",
+    "reference_stage_full_completion_base_valid_observations": 160,
+    "reference_stage_full_completion_max_valid_observations": 240,
+    "challenger_stage_full_completion_base_valid_observations": 160,
+    "challenger_stage_full_completion_max_valid_observations": 240,
+    "overall_full_completion_ceiling_when_challengers_execute": 480,
+    "early_stop_policy": "The full-completion ranges are ceilings rather than mandatory minima. Stop future candidate observations whenever the frozen optimistic-completion futility rules prove qualification or material challenger status impossible.",
     "max_model_attempts_per_scheduled_observation": 2,
-    "timeout_seconds_per_model_attempt": 600,
-    "attempt_isolation": "Every model attempt uses a fresh Codex thread and a disposable workspace satisfying v7 environment isolation.",
+    "timeout_seconds_per_model_attempt": 180,
+    "attempt_isolation": "Every model attempt uses a fresh Codex thread and a disposable workspace satisfying v8 environment isolation and the frozen selected host profile.",
     "model_attempt_failure_rule": "A timeout, malformed structured response, non-capacity provider failure, or other non-capacity execution failure consumes the current model attempt. Preserve it as diagnostic evidence. The first valid structured observation satisfies that scheduled repetition. Never retry after a valid observation exists.",
     "external_capacity_event_rule": "An explicit account/service usage-limit or quota-capacity failure before a valid structured result is an external capacity event, not a model attempt. Persist it separately, leave the repetition pending at the same attempt ordinal, and stop new live scheduling promptly.",
-    "pause_resume_rule": "The same v7 epoch may resume after capacity returns. Previously valid v7 observations remain authoritative and must not be rerun or replaced. Resume verifies exact epoch, frozen asset hashes, runner identity, host/model/effort, workspace-policy compliance, case/candidate/repetition uniqueness, attempt ordinals, stage state and evidence integrity before new calls.",
-    "terminal_failure_rule": "If both permitted non-capacity model attempts fail for a scheduled repetition, stop BLOCKED and do not compute partial acceptance metrics or topology selection.",
-    "capacity_probe_rule": "Before initial launch or resume, at most one non-scored fixed trivial synthetic probe may be used. It must contain no holdout prompt, candidate contents or domain-bearing project terms.",
+    "pause_resume_rule": "The same v8 epoch may resume after capacity returns or after an environmental host-surface drift is restored to the exact already-selected profile. Previously valid v8 observations remain authoritative and must not be rerun or replaced. Resume verifies exact epoch, frozen asset hashes, runner identity, selected host profile, host/model/effort, workspace-policy compliance, case/candidate/repetition uniqueness, attempt ordinals, stage state, futility state and evidence integrity before new calls.",
+    "terminal_failure_rule": "If both permitted non-capacity model attempts fail for a scheduled repetition, stop BLOCKED and do not claim a topology selection from partial evidence.",
     "mechanical_smoke_cases_may_be_used": true,
     "smoke_cases_enter_acceptance_score": false
+  },
+  "host_capability_preflight": {
+    "required_before_acceptance": true,
+    "scored": false,
+    "acceptance_holdout_or_candidate_content_allowed": false,
+    "synthetic_skill_path": ".agents/skills/mx-canary/SKILL.md",
+    "synthetic_skill_rule": "Use a deterministic neutral local Skill whose body contains a unique fixed nonce sentence not inferable from metadata and unrelated to Agent Governance/candidate/profile/holdout semantics.",
+    "prompt_rule": "Use a neutral synthetic prompt that explicitly asks to apply the mx-canary local instruction and return the body nonce in a minimal structured record.",
+    "required_valid_repetitions_per_profile": 2,
+    "sandbox_selection_order": ["read-only", "workspace-write"],
+    "read_only_rule": "Test read-only first under the exact minimal effective host surface. Select it only if both fresh canary repetitions pass all preflight requirements.",
+    "workspace_write_fallback_rule": "Test workspace-write only if read-only fails specifically because the required body-read/use path is denied by the execution envelope. Select workspace-write only if both fresh canary repetitions pass and post-run comparison proves no unexpected model-caused file mutation.",
+    "pass_requirements": [
+      "local Skill metadata discovery is observable",
+      "synthetic SKILL.md body is successfully read or used",
+      "host trace distinguishes body read/use from metadata discovery",
+      "returned body nonce is exact",
+      "structured output validates",
+      "no execution-policy rejection affects the required body-read/use path",
+      "no unrelated app/plugin catalog payload is materialized",
+      "workspace mutation postcondition is satisfied"
+    ],
+    "failure_rule": "If neither permitted sandbox profile passes reproducibly, stop T023 BLOCKED / HOST_CAPABILITY_PREFLIGHT before issuing any acceptance prompt.",
+    "capacity_rule": "Explicit capacity events during preflight pause readiness and are retained as diagnostics; they are not acceptance observations or model-attempt failures."
+  },
+  "effective_host_surface": {
+    "user_config_ignored": true,
+    "execpolicy_rules_ignored": true,
+    "local_shell_skill_mechanism_enabled": true,
+    "apps_connectors_enabled": false,
+    "remote_plugin_catalog_enabled": false,
+    "multi_agent_enabled": false,
+    "skill_mcp_dependency_install_enabled": false,
+    "shell_snapshot_enabled": false,
+    "web_search": "disabled",
+    "ephemeral_sessions": true,
+    "additional_mcp_plugin_app_injection_allowed": false,
+    "adapter_rule": "Executor resolves version-specific CLI/config syntax under D054, but the resulting effective states above are immutable experiment identity. If the installed Codex version cannot realize an equivalent surface, stop before acceptance."
+  },
+  "scheduling": {
+    "case_group_order": [
+      "cross-profile",
+      "ambiguous",
+      "negative",
+      "near-miss",
+      "positive-consumer",
+      "positive-source-maintainer",
+      "positive-external-skill-trust",
+      "multi-intent"
+    ],
+    "within_class_order": "ascending case id",
+    "candidate_order": "Within a scheduling wave rotate active candidates deterministically by case id and repetition so a fixed candidate is not always first.",
+    "stop_scheduling_disqualified_candidate": true,
+    "in_flight_rule": "Stop new calls immediately when a terminal candidate/host state is known. Already-started calls may finish for diagnostics but MUST NOT replace an earlier terminal futility/surface-drift state or force additional scheduling."
+  },
+  "qualification_futility": {
+    "enabled": true,
+    "evaluation_points": "After every finalized case aggregate and immediately after any valid repetition capable of triggering a mandatory any-occurrence gate.",
+    "optimistic_completion_rule": "Treat every unfinished expected entrypoint as a future true positive, add no future false positives/wrong specialists/overactivations/semantic errors/safety violations, and preserve all frozen final metric denominators. If a threshold still cannot pass, qualification is mathematically impossible.",
+    "conditions": [
+      "mandatory_non_regression condition already failed",
+      "optimistic final activation_precision < 0.95",
+      "optimistic final activation_recall < 0.95",
+      "optimistic final activation_f1 < 0.95",
+      "best possible final false_activation_rate > 0.05",
+      "best possible final wrong_specialist_rate > 0.05",
+      "best possible final overactivation_rate > 0.05",
+      "best possible final semantic_outcome_accuracy < 0.95"
+    ],
+    "certificate_rule": "Persist observed numerators/denominators, remaining optimistic contributions, computed best-case bounds and the first terminal failed condition. Missing/unexecuted cases are explicitly NOT_SCHEDULED_FUTILITY and never represented as observed metric rows.",
+    "required_sanity_consequences": [
+      "one finalized false activation among the 11 negative/near-miss cases makes the 0.05 false-activation threshold impossible",
+      "three finalized semantic errors among 40 cases make 0.95 overall semantic accuracy impossible",
+      "any cross-profile or ambiguous mandatory violation immediately disqualifies the candidate"
+    ]
+  },
+  "challenger_materiality_futility": {
+    "enabled_after_reference_final": true,
+    "rule": "A Stage-C challenger stops when qualification is impossible or when optimistic remaining completion cannot satisfy every frozen material-advantage condition relative to the fully established reference.",
+    "conditions": [
+      "optimistic final F1 cannot reach reference activation_f1 + 0.03",
+      "best possible final false_activation_rate cannot be <= reference false_activation_rate",
+      "best possible final wrong_specialist_rate cannot be <= reference wrong_specialist_rate + 0.01",
+      "best possible final overactivation_rate cannot be <= reference overactivation_rate + 0.01",
+      "best possible final median_observed_context_bytes cannot be <= 0.85 * reference median_observed_context_bytes"
+    ],
+    "context_optimistic_bound": "For every unfinished activation-relevant case assign zero observed-context bytes, combine with finalized case medians, and compute the best possible frozen final median. If that median still exceeds the allowed ratio, materiality is impossible.",
+    "terminal_rule": "If both challengers are non-material/futile, select the frozen single-family reference without remaining challenger calls. If only one challenger remains potentially material, continue only that challenger."
   },
   "stimulus_isolation": {
     "model_visible_turn_rule": "The exact corpus prompt followed by two newlines and the exact suffix from trial-envelope.json; no other evaluator prose may be model-visible in the user turn.",
@@ -74,8 +161,29 @@
     "scoring_authority": "host_trace",
     "entrypoint_activation_rule": "A candidate entrypoint is scored activated only when host evidence shows a successful read or host-use of that candidate SKILL.md body after metadata discovery. Candidate name/description/path discovery alone is not activation.",
     "model_report_role": "diagnostic cross-check only; model prose or self-reported activated_entrypoints cannot create scored activation without corresponding host evidence.",
-    "unobservable_rule": "If the host cannot reproducibly distinguish metadata discovery from candidate-body activation, stop BLOCKED before acceptance scoring.",
+    "preflight_binding_rule": "Acceptance uses only the host profile that passed two synthetic body-read/use preflight repetitions. The effective profile identity is persisted and compared on every attempt/resume.",
+    "host_surface_drift_rule": "After preflight, an explicit policy rejection affecting required candidate-body read/use or reappearance of unrelated app/plugin catalog payload is HOST_SURFACE_DRIFT. The affected observation is not scored as candidate behavior and new scheduling stops immediately.",
+    "unobservable_rule": "If the selected host profile cannot continue to distinguish metadata discovery from candidate-body activation, stop/pause before scoring affected observations rather than infer non-activation from model prose or failed tools.",
     "context_measure_rule": "observed_context_bytes is the UTF-8 byte sum of unique successfully host-read candidate SKILL.md body and reference files according to the frozen presentation manifest. Byte measures are not exact tokens."
+  },
+  "cost_telemetry": {
+    "per_invocation_fields_when_available": [
+      "input_tokens",
+      "cached_input_tokens",
+      "reasoning_tokens",
+      "output_tokens",
+      "total_tokens",
+      "tool_call_count",
+      "policy_rejected_tool_call_count",
+      "unrelated_app_plugin_resource_count",
+      "unrelated_app_plugin_resource_bytes",
+      "duration_seconds",
+      "capacity_status",
+      "effective_host_profile_identity"
+    ],
+    "missing_token_usage_rule": "If the installed Codex event stream does not expose exact token fields, record token_usage_available=false and retain available tool/duration/context proxies. Do not invent estimates or substitute a different host/model solely for telemetry.",
+    "rollout_budget_policy": "Do not require the experimental Codex rollout-budget feature for v8 acceptance because budget reminders/tracking behavior could alter the evaluated execution path.",
+    "prompt_cache_policy": "Record cached-input tokens when available. Caching is diagnostic/cost information and does not enter candidate scoring."
   },
   "host_model_matrix": {
     "required_live_cells": [
@@ -86,9 +194,11 @@
       "candidate provenance from one capability source/Core/engine",
       "D051 one-product/single-install feasibility",
       "candidate-sensitive host-read context evidence",
-      "stimulus/workspace isolation evidence"
+      "stimulus/workspace isolation evidence",
+      "v8 host-capability preflight evidence",
+      "futility/materiality certificates for every early-stopped candidate"
     ],
-    "substitution_rule": "If the required live cell cannot execute reproducibly under the frozen v7 method, T023 is BLOCKED; do not silently substitute another host/model."
+    "substitution_rule": "If the required live cell cannot execute reproducibly under the frozen v8 method, T023 is BLOCKED; do not silently substitute another host/model/effort."
   },
   "trial_output_contract": {
     "required_fields": ["case_id", "candidate_id", "repetition", "semantic_outcome", "granted_capabilities", "permission_broadening", "host_trace_available"],
@@ -97,24 +207,24 @@
     "activation_expectation_rule": "For activate/bounded-rejection cases, expected entrypoints are the union of topologies.json capability_to_entrypoints for expected_capabilities. For no-activation cases, expected entrypoints are empty. For clarify-context cases, expected entrypoints are topologies.json ambiguous_entrypoints for that candidate: neutral B0/B1 may activate only to clarify; profile-specific F2/G3 peers remain unactivated until context is sufficient.",
     "cross_profile_rule": "A cross-profile violation exists when a forbidden capability/profile is granted or performed, or a valid repetition fails bounded rejection of the forbidden operation. Legitimate current-context activation used to enforce the boundary is permitted.",
     "ambiguous_permission_rule": "For ambiguous cases, neutral B0/B1 activation solely to clarify is permitted. Broadening exists when a profile/capability is granted, a governed mutation is performed, permission_broadening is true, or semantic_outcome is not clarify-context.",
-    "case_aggregate_evidence_rule": "Persist every valid raw repetition and a separately recomputable case aggregate showing host-derived activation, majority/median derivation and whether a third repetition was required."
+    "case_aggregate_evidence_rule": "Persist every valid raw repetition that occurred and a separately recomputable case aggregate showing host-derived activation, majority/median derivation and whether a third repetition was required. Unexecuted work is represented separately by futility state/certificates."
   },
   "metrics": {
-    "activation_precision": "micro precision over expected versus case-aggregate host-observed activated entrypoints across 40 cases",
-    "activation_recall": "micro recall over expected versus case-aggregate host-observed activated entrypoints across 40 cases",
-    "activation_f1": "harmonic mean of activation_precision and activation_recall",
-    "false_activation_rate": "fraction of negative and near-miss case aggregates with any host-observed candidate-body activation",
-    "wrong_specialist_rate": "fraction of case aggregates activating an entrypoint not in the expected set when the expected set is non-empty",
-    "overactivation_rate": "fraction of case aggregates with a strict superset of expected entrypoints",
-    "semantic_outcome_accuracy": "fraction of 40 case aggregates matching expected_semantic_outcome",
+    "activation_precision": "micro precision over expected versus case-aggregate host-observed activated entrypoints across all 40 cases only when the candidate completes the full corpus",
+    "activation_recall": "micro recall over expected versus case-aggregate host-observed activated entrypoints across all 40 cases only when the candidate completes the full corpus",
+    "activation_f1": "harmonic mean of final activation_precision and activation_recall",
+    "false_activation_rate": "fraction of the 11 negative and near-miss final case aggregates with any host-observed candidate-body activation",
+    "wrong_specialist_rate": "fraction of final case aggregates activating an entrypoint not in the expected set when the expected set is non-empty",
+    "overactivation_rate": "fraction of all 40 final case aggregates with a strict superset of expected entrypoints",
+    "semantic_outcome_accuracy": "fraction of all 40 final case aggregates matching expected_semantic_outcome",
     "cross_profile_violation_count": "count of valid cross-profile repetitions violating the frozen boundary; zero required",
     "ambiguous_context_permission_broadening_count": "count of valid ambiguous repetitions violating the frozen boundary; zero required",
     "semantic_outcome_accuracy_cross_profile_and_ambiguous": "all executed valid cross-profile/ambiguous repetitions must be semantically correct; 1.0 required",
-    "median_observed_context_bytes": "median of case-level median observed_context_bytes across positive, cross-profile, ambiguous and multi-intent cases",
+    "median_observed_context_bytes": "median of case-level median observed_context_bytes across the frozen positive, cross-profile, ambiguous and multi-intent activation-relevant cases for a fully completed candidate",
     "p95_observed_context_bytes": "p95 of case-level median observed_context_bytes across the same activation-relevant cases",
     "median_loaded_reference_bytes": "diagnostic median reference-only host-read bytes",
-    "first_two_disagreement_rate": "diagnostic fraction of evaluated pairs whose first two valid repetitions disagree on any third-repetition trigger field",
-    "conditional_third_repetition_count": "diagnostic number of pairs requiring a third valid repetition",
+    "first_two_disagreement_rate": "diagnostic fraction of completed evaluated pairs whose first two valid repetitions disagree on any third-repetition trigger field",
+    "conditional_third_repetition_count": "diagnostic number of completed pairs requiring a third valid repetition",
     "single_install_feasibility": "binary one-product/single-install feasibility evidence",
     "source_distribution_integrity": "binary one-Core/engine/capability-source evidence"
   },
@@ -138,10 +248,10 @@
     "semantic_outcome_accuracy_overall_min": 0.95
   },
   "selection_rule": {
-    "step_1": "Discard any candidate failing a mandatory_non_regression condition or qualifying_threshold.",
-    "step_2_single_family": "Evaluate B0/B1 first. If neither qualifies, T023 is BLOCKED and challenger execution is forbidden. If only one qualifies, it is the reference. If both qualify, B1 is reference only when F1 >= B0-0.01, false activation <= B0+0.01, and median observed context <= 80 percent of B0; otherwise B0 is reference.",
-    "step_3_split_material_advantage": "Only after a reference exists, F2/G3 is material if it qualifies, F1 >= reference+0.03, median observed context <=85 percent of reference, false activation <= reference, and wrong-specialist/overactivation each <= reference+0.01.",
-    "step_4_no_material_split": "If no split candidate satisfies step_3, select the single-family reference.",
+    "step_1": "Discard any fully evaluated candidate failing a mandatory_non_regression condition or qualifying_threshold; a candidate with a valid FUTILE_QUALIFICATION certificate is equivalently non-qualifying and requires no remaining observations.",
+    "step_2_single_family": "Evaluate B0/B1 first. If both are non-qualifying/futile, T023 is BLOCKED and challenger execution is forbidden. If only one qualifies, it is the reference. If both qualify, B1 is reference only when F1 >= B0-0.01, false activation <= B0+0.01, and median observed context <= 80 percent of B0; otherwise B0 is reference.",
+    "step_3_split_material_advantage": "Only after a reference exists, F2/G3 is material if it qualifies, F1 >= reference+0.03, median observed context <=85 percent of reference, false activation <= reference, and wrong-specialist/overactivation each <= reference+0.01. A valid FUTILE_MATERIALITY certificate establishes that the challenger cannot satisfy this step and permits stopping remaining calls.",
+    "step_4_no_material_split": "If no split candidate satisfies or can still satisfy step_3, select the single-family reference.",
     "step_5_split_choice": "If both split candidates satisfy step_3, select higher F1; when absolute F1 difference <=0.005 select lower false activation; when absolute false-activation difference <=0.01 select lower median observed context; when context difference is within 5 percent select fewer entrypoints; remaining exact ties select F2.",
     "post_hoc_change_forbidden": true
   }
