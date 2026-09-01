@@ -1,0 +1,43 @@
+{
+  "acceptance_prompts_issued": 0,
+  "capability_source_epoch": "MG1-2026-08-25-v3",
+  "clean_context": "one new codex exec thread and disposable workspace per attempt",
+  "codex_cli": "codex-cli 0.149.0",
+  "completed_valid_observations": 0,
+  "corpus_id": "MG1-T023-CORPUS-v4",
+  "effort": "medium",
+  "execution_epoch": "MG1-T023-EXECUTION-v9",
+  "frozen_asset_sha256": {
+    "evals/skill_activation_topology/corpus.json": "be56966f790e1640c200bf92b3c7fdf9f9792c6ef2d17a91e7bc4ef3e5583e75",
+    "evals/skill_activation_topology/oracle.json": "7656c3761ef9d8525626f0b1e97bb62b4781953d38f1cfb4a540ead0b18f36d1",
+    "evals/skill_activation_topology/presentations/manifest.json": "1b5fd0bc52d23e20c25b52dcd681fd2025640811c60890e59275a281f88c1e90",
+    "evals/skill_activation_topology/topologies.json": "2d5726799b3ca33641ac10b0a06c01cec1f5bc65b18389ac94f97ea56697a60b",
+    "evals/skill_activation_topology/trial-envelope.json": "2d483784a8cfd1143c52e976218f2d96e2ccfa324516764ff35f939a6d777b7d"
+  },
+  "full_acceptance": true,
+  "host": "Codex",
+  "max_model_attempts_per_scheduled_observation": 2,
+  "model": "gpt-5.6-sol",
+  "oracle_id": "MG1-T023-TOPOLOGY-ORACLE-v9",
+  "platform": "native Windows (Windows-11-10.0.26200-SP0)",
+  "presentation_revision": "MG1-T023-PRESENTATIONS-v3",
+  "runner_sha256": "842f8cdfd2df9ab644f28b29a71817d0d339237cf6ceab849f1637b85a6ae40f",
+  "sandbox_selection_order": [
+    "read-only",
+    "workspace-write"
+  ],
+  "selected_backend": null,
+  "selected_sandbox": null,
+  "stage_state": "HOST_CAPABILITY_PREFLIGHT_FAILED",
+  "started_at": "2026-09-01T06:34:21.038532+00:00",
+  "status": "BLOCKED",
+  "stimulus_rule": "exact corpus prompt, two newlines, frozen neutral suffix",
+  "timeout_seconds": 180,
+  "trial_envelope_id": "MG1-T023-TRIAL-ENVELOPE-v2",
+  "windows_backend_selection_order": [
+    "elevated",
+    "unelevated"
+  ],
+  "workers": 4,
+  "workspace_parent": "C:\\Users\\Manuel\\AppData\\Local\\Temp"
+}

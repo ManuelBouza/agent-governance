@@ -1,0 +1,68 @@
+{
+  "backend_selection_order": [
+    "elevated",
+    "unelevated"
+  ],
+  "codex_cli_version": "codex-cli 0.149.0",
+  "dangerous_bypass_used": false,
+  "platform": "Windows-11-10.0.26200-SP0",
+  "provider_model_calls_issued": 0,
+  "reason": null,
+  "records": [
+    {
+      "backend": "elevated",
+      "command": [
+        "codex",
+        "--config",
+        "windows.sandbox=\"elevated\"",
+        "sandbox",
+        "cmd.exe",
+        "/d",
+        "/c",
+        "echo T023_WINDOWS_SANDBOX_BACKEND_READY"
+      ],
+      "config_override": "windows.sandbox=\"elevated\"",
+      "duration_seconds": 20.034739,
+      "official_allowed_values": [
+        "unelevated",
+        "elevated"
+      ],
+      "official_config_key": "windows.sandbox",
+      "passed": false,
+      "provider_model_call_issued": false,
+      "returncode": -1,
+      "stderr": "WARNING: proceeding, even though we could not create PATH aliases: Refusing to create helper binaries under temporary dir \"C:\\\\Users\\\\Manuel\\\\AppData\\\\Local\\\\Temp\\\\\" (codex_home: AbsolutePathBuf(\"C:\\\\Users\\\\Manuel\\\\AppData\\\\Local\\\\Temp\\\\mx-backend-elevated-_krb7280\\\\codex-home\"))\n",
+      "stdout": "",
+      "timed_out": true,
+      "user_config_isolation": "temporary empty CODEX_HOME"
+    },
+    {
+      "backend": "unelevated",
+      "command": [
+        "codex",
+        "--config",
+        "windows.sandbox=\"unelevated\"",
+        "sandbox",
+        "cmd.exe",
+        "/d",
+        "/c",
+        "echo T023_WINDOWS_SANDBOX_BACKEND_READY"
+      ],
+      "config_override": "windows.sandbox=\"unelevated\"",
+      "duration_seconds": 0.089642,
+      "official_allowed_values": [
+        "unelevated",
+        "elevated"
+      ],
+      "official_config_key": "windows.sandbox",
+      "passed": true,
+      "provider_model_call_issued": false,
+      "returncode": 0,
+      "stderr": "WARNING: proceeding, even though we could not create PATH aliases: Refusing to create helper binaries under temporary dir \"C:\\\\Users\\\\Manuel\\\\AppData\\\\Local\\\\Temp\\\\\" (codex_home: AbsolutePathBuf(\"C:\\\\Users\\\\Manuel\\\\AppData\\\\Local\\\\Temp\\\\mx-backend-unelevated-3caz8t7c\\\\codex-home\"))\n",
+      "stdout": "T023_WINDOWS_SANDBOX_BACKEND_READY\n",
+      "timed_out": false,
+      "user_config_isolation": "temporary empty CODEX_HOME"
+    }
+  ],
+  "status": "AVAILABLE"
+}
