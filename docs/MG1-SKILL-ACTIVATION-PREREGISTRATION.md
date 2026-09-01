@@ -1,12 +1,12 @@
 # MG1 — Skill Activation Topology and Eval Pre-registration Gate
 
-Status: `READY_FOR_INTEGRATION / V9 WINDOWS-SANDBOX-BOUND RESTART`  
-Date: 2026-08-31  
+Status: `READY_FOR_INTEGRATION / V10 WINDOWS-WORKSPACE-ACL RESTART`  
+Date: 2026-09-01  
 Owner: ChatGPT Orchestrator  
 Applies to: `T023`  
 Test-Authorship-Mode: `mixed`  
-Oracle revision: `MG1-T023-TOPOLOGY-ORACLE-v9`  
-Execution epoch: `MG1-T023-EXECUTION-v9`  
+Oracle revision: `MG1-T023-TOPOLOGY-ORACLE-v10`  
+Execution epoch: `MG1-T023-EXECUTION-v10`  
 Capability-Source-Epoch: `MG1-2026-08-25-v3`  
 Presentation revision: `MG1-T023-PRESENTATIONS-v3`  
 Corpus: `MG1-T023-CORPUS-v4`  
@@ -14,24 +14,26 @@ Trial envelope: `MG1-T023-TRIAL-ENVELOPE-v2`
 
 ## Restart boundary
 
-MG1-v8 is closed `BLOCKED / HOST_CAPABILITY_PREFLIGHT`; review: `docs/reviews/T023-R7.md`. V8 is not rescored or mutated.
+MG1-v9 is closed:
 
-V8 issued **zero acceptance prompts and zero scored observations**. Its two synthetic canaries are diagnostic only and cannot enter v9 score.
+`BLOCKED / HOST_CAPABILITY_PREFLIGHT — EXECUTION ADAPTER WORKSPACE ACL CONFOUND`.
 
-Research in `docs/research/MG1-V8-WINDOWS-SANDBOX-ROOT-CAUSE.md` identifies the blocker as an Execution Adapter configuration defect:
+Review: `docs/reviews/T023-R8.md`  
+Research: `docs/research/MG1-V9-WINDOWS-TEMP-ACL-ANALYSIS.md`
 
-- `codex exec` headless defaults approvals to Never;
-- V8 correctly used `--ignore-user-config` for isolation;
-- V8 did not explicitly restore a native Windows sandbox backend after ignoring that configuration;
-- exact Codex 0.149.0 source/tests show that unmatched PowerShell/file reads are forbidden when the Windows backend is disabled and approvals cannot be surfaced;
-- those same tests permit unmatched commands to execute under the native RestrictedToken/Elevated sandbox backends.
+V9 issued two synthetic canary prompts but **zero acceptance prompts and zero scored observations**. No v9 observation may enter v10 score.
 
-T048 prospectively restarts the experiment under v9 with the same product/eval semantics but an explicitly bound native Windows sandbox backend.
+The deeper v9 convergence finding is that both canary runs failed to enumerate/read the disposable workspace root itself. The harness created those roots with Python 3.13.14 `tempfile.TemporaryDirectory()`. Python 3.13 Windows private `0o700` temp-directory ACL semantics can exclude Codex's restricted token from traversing the root. This matches independent Codex Windows sandbox issue evidence.
+
+Therefore V9 did not establish that local Skills are unreadable under the supported `unelevated` backend. It established that the evaluation workspace creation method was incompatible with the sandbox token.
+
+T049 prospectively restarts under v10 and changes only that Execution Adapter layer.
 
 ## Frozen authority
 
-- Task revision: `docs/tasks/T048-mg1-v9-native-windows-sandbox-bound-restart.md`
-- Root-cause research: `docs/research/MG1-V8-WINDOWS-SANDBOX-ROOT-CAUSE.md`
+- Task revision: `docs/tasks/T049-mg1-v10-windows-workspace-acl-compatible-restart.md`
+- V9 review: `docs/reviews/T023-R8.md`
+- Root-cause research: `docs/research/MG1-V9-WINDOWS-TEMP-ACL-ANALYSIS.md`
 - Capability source: `docs/AGENT-GOVERNANCE-CAPABILITY-SOURCE.md`
 - Candidate mapping: `evals/skill_activation_topology/topologies.json`
 - Exact presentation manifest: `evals/skill_activation_topology/presentations/manifest.json`
@@ -40,114 +42,166 @@ T048 prospectively restarts the experiment under v9 with the same product/eval s
 - Trial envelope: `evals/skill_activation_topology/trial-envelope.json`
 - Selection/execution oracle: `evals/skill_activation_topology/oracle.json`
 
-B0, B1, F2 and G3 remain byte-identical to v8. The holdout and trial envelope remain byte-identical to v8.
+B0, B1, F2 and G3 remain byte-identical to v9. Corpus v4 and trial envelope v2 remain byte-identical.
 
-## Holdout reuse is allowed
+## Holdout reuse remains allowed
 
-V9 reuses `MG1-T023-CORPUS-v4` unchanged because v8 stopped before any acceptance prompt was sent. The v8 canaries contained neither holdout prompt text nor candidate/reference bodies.
+V8 and V9 both issued zero acceptance prompts. Their synthetic canaries contained no holdout prompt or candidate/reference content.
 
-No observation from v2/v3/v4/v6/v7/v8 may enter v9 score. V5 had no live acceptance observations.
+V10 therefore reuses `MG1-T023-CORPUS-v4` byte-identically.
 
-## Execution identity correction
+No observation from v2/v3/v4/v6/v7/v8/v9 may enter v10 score. V5 had no acceptance observations.
 
-The v9 complete host profile consists of:
+## V10 changes one variable
+
+V10 preserves:
+
+- Codex CLI `0.149.0`;
+- native Windows;
+- GPT-5.6 Sol / Medium acceptance cell;
+- elevated-first / unelevated fallback backend policy;
+- logical read-only then workspace-write order;
+- ignored user config and `.rules`;
+- minimal host feature surface;
+- candidate and reference bytes;
+- corpus and fixture semantics;
+- activation observability;
+- thresholds and D050 selection;
+- paired 2+1;
+- consequence-first scheduling;
+- qualification/materiality futility;
+- 180-second attempts;
+- capacity pause/resume and telemetry.
+
+The only new execution identity is the Windows workspace-creation/ACL profile plus a provider-free readability gate.
+
+## Windows outer-workspace creation
+
+Every backend probe, canary and acceptance attempt uses a fresh unique disposable Windows root.
+
+The root must:
+
+- remain under the authorized neutral OS temporary parent or another exact neutral disposable Windows parent;
+- remain outside/not linked to the canonical repository;
+- contain no canonical `.git` metadata;
+- satisfy the frozen forbidden-path/substr rules;
+- use ordinary inherited Windows ACL semantics compatible with the Codex sandbox token;
+- avoid Python `tempfile.TemporaryDirectory`, `tempfile.mkdtemp`, or another outer-root creator with equivalent private `0o700` ACL semantics;
+- avoid broad `Everyone`/world grants;
+- avoid changing the ACL of `%TEMP%` or another shared parent;
+- avoid manual candidate/Skill-specific read grants.
+
+The exact atomic creation/cleanup API or command is Executor-owned under D054.
+
+Persist the workspace path, creation-method identity, Python runtime, relevant ACL diagnostic when available, and cleanup result.
+
+## Provider-free workspace-access gate
+
+This gate runs before a synthetic Skill model call.
+
+For every candidate complete profile path being considered, the harness creates only neutral probe material in a v10 workspace and invokes Codex's native Windows sandbox/command surface without provider/model access.
+
+The probe must establish:
+
+1. exact workspace root is the command CWD;
+2. the root can be enumerated/read;
+3. a neutral fixed probe file can be read;
+4. the exact neutral nonce is returned;
+5. provider/model calls issued = `0`;
+6. dangerous bypass and interactive approval are absent.
+
+If a profile fails this gate, no synthetic model canary is permitted for that profile.
+
+If no permitted profile has a readable workspace, stop:
+
+`BLOCKED / WINDOWS_WORKSPACE_ACL_UNAVAILABLE`
+
+with zero synthetic model canaries, zero acceptance prompts and zero scored observations.
+
+This is an Execution Adapter/host-workspace result, not Skill behavior.
+
+## Native Windows backend order retained
+
+Backend initialization remains provider-free.
+
+1. `elevated` first;
+2. `unelevated` / restricted-token only when elevated cannot initialize/is unavailable or reaches a preregistered profile-level failure;
+3. disabled backend forbidden;
+4. no implicit reliance on user config;
+5. no silent Codex upgrade.
+
+Per profile, the v10 sequence is:
+
+```text
+backend resolution
+-> ACL-compatible disposable workspace
+-> provider-free workspace-access gate
+-> unchanged mx-canary
+-> acceptance only after canary 2/2 PASS
+```
+
+## Synthetic Skill canary unchanged
+
+Use the same neutral synthetic Skill and full nonce used in v8/v9:
+
+- `.agents/skills/mx-canary/SKILL.md`;
+- body nonce not inferable from metadata;
+- neutral prompt explicitly requesting use of the local instruction;
+- no candidate/reference or holdout bytes;
+- structured nonce result.
+
+The canary is issued only after the provider-free workspace gate passes for the same workspace method/backend/logical sandbox.
+
+A complete profile passes only when two fresh canary repetitions prove:
+
+- workspace-access gate PASS;
+- Skill metadata discovery;
+- actual Skill-body read/use;
+- host trace distinction between discovery and body use;
+- exact full nonce;
+- valid structured output;
+- no required body-read/access rejection;
+- no prohibited unrelated app/plugin material;
+- correct workspace mutation postcondition;
+- identical backend/logical-sandbox/workspace-ACL/minimal-feature identity.
+
+Two repetitions establish PASS. A terminal first-repetition failure need not be rerun merely to reconfirm failure.
+
+If workspace access is proven but the unchanged Skill canary still fails for all permitted profiles, stop:
+
+`BLOCKED / HOST_CAPABILITY_PREFLIGHT`.
+
+That classification is now distinct from a workspace ACL failure.
+
+## Complete v10 host identity
+
+Acceptance binds:
 
 ```text
 Codex CLI version
-+ native Windows sandbox backend
-+ logical sandbox mode
-+ model
-+ effort
-+ ignored user-config/rules state
-+ minimal feature-surface identity
++ native Windows backend
++ logical sandbox
++ workspace creation/ACL profile
++ model/effort
++ ignored user config/rules
++ minimal feature surface
 ```
 
-V9 requires the native Windows backend to be selected explicitly through the hermetic invocation/configuration surface even while user config remains ignored.
+Every acceptance/resume attempt must reproduce this identity.
 
-### Backend order
+## Acceptance workspace binding
 
-1. prefer native Windows `elevated`;
-2. use `unelevated` / restricted-token only as the preregistered fallback when elevated cannot initialize, is unavailable under supported host requirements, or fails the unchanged canary for a backend-specific envelope reason;
-3. a disabled backend is never permitted;
-4. acceptance never relies implicitly on `$CODEX_HOME/config.toml`.
+Every acceptance attempt uses the exact v10 workspace factory semantics that passed preflight.
 
-Exact version-specific syntax remains Executor-owned under D054.
+Candidate and fixture bytes are still materialized host-side exactly as frozen. Host-side verification may check expected bytes/files but must not inject candidate contents into model context.
 
-## CLI-version isolation
-
-The first v9 epoch targets the same Codex CLI baseline as v8: `0.149.0`.
-
-If 0.149.0 cannot explicitly realize a permitted non-disabled backend, stop before any live canary or acceptance call with `BLOCKED / WINDOWS_SANDBOX_BACKEND_UNAVAILABLE`.
-
-Do not upgrade Codex inside v9. A host-version change requires a separate prospective revision so backend binding and CLI-version effects are not confounded.
-
-## Pre-model backend resolution gate
-
-Before spending a model call, persist enough resolved host evidence to establish:
-
-- Codex CLI version;
-- native Windows platform;
-- requested non-disabled backend;
-- user config ignored;
-- user/project execpolicy rules ignored;
-- requested logical sandbox;
-- v8 minimal unrelated feature surface;
-- dangerous approval/sandbox bypass absent.
-
-If the requested backend cannot be established, stop before canary.
-
-## Synthetic host-capability canary retained
-
-Use the same v8 neutral synthetic Skill semantics:
-
-- `.agents/skills/mx-canary/SKILL.md`;
-- unique full body nonce not inferable from metadata;
-- neutral prompt explicitly requesting use of the local instruction;
-- no holdout or candidate content;
-- structured nonce result.
-
-A complete profile passes only when **two fresh repetitions** both prove:
-
-- local Skill metadata discovery;
-- successful Skill-body read/use;
-- host trace distinction between metadata discovery and body use;
-- exact full nonce;
-- valid structured output;
-- no execution-policy rejection affecting the required body path;
-- no unrelated app/plugin catalog material;
-- correct workspace mutation postcondition;
-- identical non-disabled native Windows backend identity.
-
-Do not spend a second repetition after the first repetition proves a profile has a terminal, repetition-independent failure. Two repetitions are required to establish PASS, not to reconfirm failure.
-
-## Logical sandbox order retained inside each backend
-
-1. logical `read-only` first;
-2. logical `workspace-write` only when read-only cannot support the body-read/use path;
-3. workspace-write requires zero unexpected model-caused file mutation.
-
-If no backend/logical-sandbox profile passes, stop `BLOCKED / HOST_CAPABILITY_PREFLIGHT` with zero acceptance prompts.
-
-## Acceptance binding
-
-Once a complete profile passes 2/2, freeze it for the entire v9 epoch.
-
-Every acceptance attempt/resume must preserve:
-
-- exact Codex version;
-- exact native Windows backend;
-- exact logical sandbox;
-- GPT-5.6 Sol / Medium;
-- ignored config/rules state;
-- minimal feature-surface identity.
-
-A disabled/different backend, logical-sandbox drift, required Skill-body policy rejection, or reappearance of unrelated app/plugin material is `HOST_SURFACE_DRIFT`. The affected observation is not scored and new scheduling stops immediately.
+If workspace readability unexpectedly disappears, the backend/logical sandbox/ACL profile changes, required candidate-body access is rejected, or a prohibited unrelated host surface reappears, classify `HOST_SURFACE_DRIFT`; do not score the affected observation.
 
 ## Explicit Skill is not a substitute
 
-Codex supports explicit Skill selection and can host-read explicitly selected Skill contents into prompt fragments. T023, however, evaluates **implicit** activation from ordinary user turns.
+T023 evaluates implicit activation from ordinary user turns.
 
-Therefore v9 MUST NOT replace acceptance routing with `$skill`, `/skills`, or any preselected Skill invocation. That would change the claim under test.
+V10 therefore does not permit `$skill`, `/skills`, preselected Skill invocation, or pre-injected candidate bodies as an acceptance substitute.
 
 ## Activation observability retained
 
@@ -155,7 +209,7 @@ Scored activation remains actual candidate-body read/use proved by host evidence
 
 Model self-report and metadata alone do not score activation.
 
-The harness may recognize a first-party Codex event that unambiguously proves equivalent body load/use; the acceptance semantic is the event's meaning, not a hard-coded `Get-Content` spelling. Any added event extractor remains Executor-owned technical implementation and must be deterministic/tested.
+A deterministic first-party Codex host event may prove equivalent body load/use; the semantic criterion remains body read/use rather than a particular shell spelling.
 
 ## Minimal effective Codex surface retained
 
@@ -173,23 +227,24 @@ Canary/acceptance continue to require:
 - ephemeral sessions;
 - no unrelated MCP/plugin/app injection.
 
-V9 adds only the explicit Windows backend identity.
-
 ## Dangerous shortcuts forbidden
 
-V9 does not permit:
+V10 forbids:
 
 - `--dangerously-bypass-approvals-and-sandbox` / `--yolo`;
-- interactive approvals inside the acceptance cell;
-- explicit `$skill` substitution;
-- candidate-body injection into the user prompt;
-- evaluator-specific manual read grants used only to bypass the normal supported Skill path;
+- full-access mode;
+- interactive approval to repair filesystem access;
+- broad `Everyone`/world ACL grants;
+- mutation of shared parent ACLs;
+- manual candidate/Skill-specific read grants;
+- explicit Skill acceptance substitution;
+- candidate-body injection into model context;
 - OS/model/effort substitution;
 - silent Codex upgrade.
 
 ## Stimulus/environment isolation retained
 
-The model-visible acceptance turn remains exactly:
+The acceptance user turn remains exactly:
 
 ```text
 <exact corpus prompt>
@@ -197,11 +252,11 @@ The model-visible acceptance turn remains exactly:
 Return only the required structured record.
 ```
 
-Every attempt uses a fresh OS-temporary disposable root outside/not linked to the canonical checkout and materializes only the frozen role fixture plus exact candidate projection.
+Only the outer workspace creation mechanics change. Fixture/candidate materialization and neutral role isolation remain frozen.
 
 ## Cost-bounded scheduling retained
 
-V9 preserves the v8 consequence-first order:
+Class order remains:
 
 1. cross-profile;
 2. ambiguous;
@@ -212,15 +267,15 @@ V9 preserves the v8 consequence-first order:
 7. positive external Skill trust;
 8. multi-intent.
 
-Paired 2+1 remains unchanged for work still required.
+Paired 2+1 remains unchanged for still-required work.
 
-Immediate zero-tolerance failures and optimistic-completion futility stop a candidate exactly as in v8. Stage C begins only after a qualifying B0/B1 reference exists and challengers stop when qualification/material advantage becomes impossible.
+Immediate zero-tolerance failures and optimistic qualification futility stop a candidate. Stage C begins only after a qualifying single-family reference exists; challenger materiality futility remains unchanged.
 
-The 480-observation matrix remains a **worst-case ceiling**, not a target.
+The 480-observation matrix remains a worst-case ceiling, not a spend target.
 
 ## Thresholds and selection unchanged
 
-V9 retains:
+V10 retains:
 
 - activation precision/recall/F1 >= 0.95;
 - false activation/wrong specialist/overactivation <= 0.05;
@@ -241,14 +296,14 @@ Required acceptance cell remains Codex / native Windows / GPT-5.6 Sol / Medium.
 - 180-second timeout;
 - at most two non-capacity attempts per scheduled repetition;
 - explicit quota/usage-limit events remain non-attempt capacity pauses;
-- same-epoch resume preserves valid observations and futility states after exact host-profile verification.
+- same-epoch resume preserves valid observations/futility states after exact complete-profile verification.
 
-Persist available input/cached/reasoning/output/total tokens, tool calls, rejected calls, unrelated-resource counts/bytes, duration, capacity state, Codex version, native backend, logical sandbox and full profile identity.
+Persist available token/tool/duration/capacity information plus Codex version, backend, logical sandbox, workspace ACL profile and complete host identity.
 
 ## Ownership boundary
 
-The v9 oracle and this preregistration are Orchestrator-owned D052/Markdown assets.
+The v10 oracle and this preregistration are Orchestrator-owned D052/Markdown assets.
 
-The Executor owns mechanical provider/harness implementation, installed-version adapter syntax, backend identity extraction, host-event extraction, scheduling, evidence, metric computation, implementation tests and Code Review & Verify.
+Executor owns technical implementation of the Windows workspace factory, ACL diagnostics, provider-free readability probe, harness/tests, scheduling, evidence, metric computation and Code Review & Verify.
 
-No v9 canary/acceptance call may occur before T048 and the v9 oracle are integrated into canonical `develop`.
+No v10 live canary/acceptance call may occur before T049 and the v10 oracle are integrated into canonical `develop`.

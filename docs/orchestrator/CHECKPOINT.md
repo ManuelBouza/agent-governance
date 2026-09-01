@@ -1,9 +1,9 @@
 # Current ChatGPT Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O186  
+Checkpoint-Sequence: O187  
 Canonical-Branch: `develop`  
-Current-Work-Unit: T048/MG1-v9 native-Windows sandbox-bound restart is integrated and controlling; T023 is ready for a fresh v9 epoch gated by backend resolution and synthetic canary  
+Current-Work-Unit: T049/MG1-v10 Windows workspace-ACL-compatible restart is specified and ready for integration; T023 must not relaunch until v10 is canonical  
 Chat-Closure: CONTINUE_CURRENT_CHAT  
 Active-Executor: none  
 Active-Executor-Surface: ChatGPT Orchestrator
@@ -19,148 +19,149 @@ Active-Executor-Surface: ChatGPT Orchestrator
 - T023 v6: closed `BLOCKED / NO QUALIFYING SINGLE-FAMILY REFERENCE`; review `docs/reviews/T023-R5.md`.
 - T023 v7: closed `BLOCKED / HOST EXECUTION ENVELOPE DEFECT`; review `docs/reviews/T023-R6.md`.
 - T023 v8: closed `BLOCKED / HOST_CAPABILITY_PREFLIGHT`; review `docs/reviews/T023-R7.md`.
-- V8 evidence integration PR `#247`, merge `1168a55496fd53327d82cdff8080b52770fc0943`.
-- V8 issued zero acceptance prompts and zero scored observations. Its two synthetic canaries are diagnostic only.
-- T048/MG1-v9 integrated by PR `#249`, merge `ee2b7d53848d33ed73a00735622c21108a92a73d`.
-- Root-cause research: `docs/research/MG1-V8-WINDOWS-SANDBOX-ROOT-CAUSE.md`.
-- Current oracle: `MG1-T023-TOPOLOGY-ORACLE-v9`; execution epoch: `MG1-T023-EXECUTION-v9`.
-- Capability source: `MG1-2026-08-25-v3`; presentations: `MG1-T023-PRESENTATIONS-v3`; corpus: `MG1-T023-CORPUS-v4`; trial envelope: `MG1-T023-TRIAL-ENVELOPE-v2`.
-- Corpus v4 is reused byte-identically because v8 issued zero acceptance prompts.
-- Candidate/reference bytes, semantic expectations, thresholds, zero-tolerance gates, paired 2+1, consequence-first ordering, futility/materiality rules, context meaning and D050 selection percentages are unchanged from v8.
+- T023 v9: closed `BLOCKED / HOST_CAPABILITY_PREFLIGHT — EXECUTION ADAPTER WORKSPACE ACL CONFOUND`; review `docs/reviews/T023-R8.md`.
+- V9 submitted Executor branch `test/t023-skill-activation-topology-evals-v9`, submitted HEAD `9a2d216a66e8ec786e6f41fccd9d0abe4d269519`, implementation HEAD `b7b665d5d495be2dd2bf2cbb8f4849fa65ad99c4`, base `develop@f44227768a911207ac84dcbe20cf88f5d479f74d`.
+- V9 evidence/infrastructure integration PR `#251`, merge `1076a8eccc5003d92e677e83c8ddab3bd165fa90`.
+- V9 issued two synthetic canaries, zero acceptance prompts, zero scored observations and no topology selection.
+- V9 changed no committed Markdown, oracle, corpus, trial envelope, topology, presentation, Core/runtime or profile semantics on the Executor branch.
+- V9 deterministic verification: focused harness 55 PASS; full pytest 460 PASS; profile isolation 48 PASS; Consumer/source independence 8 PASS; Ruff PASS.
+- Capability source remains `MG1-2026-08-25-v3`; presentations remain `MG1-T023-PRESENTATIONS-v3`; corpus remains `MG1-T023-CORPUS-v4`; trial envelope remains `MG1-T023-TRIAL-ENVELOPE-v2`.
 
-## Root cause and v9 correction
+## V9 terminal evidence
 
-V8's blocker was an Execution Adapter configuration defect, not candidate evidence.
+The v9 backend gate worked as designed:
 
-For the exact Codex CLI 0.149.0 baseline:
+- Codex CLI `0.149.0`;
+- native Windows 11;
+- `elevated` backend attempted first and timed out before provider/model use;
+- `unelevated` backend initialized successfully before provider/model use;
+- logical `read-only` canary repetition 1 failed;
+- logical `workspace-write` canary repetition 1 failed;
+- no second canary repetition was required after terminal first-repetition failure;
+- no acceptance prompt was issued.
 
-- headless `codex exec` defaults approvals to `Never`;
-- native Windows sandbox backend selection is distinct from logical `read-only` / `workspace-write` permission mode;
-- v8 ignored user config for isolation but did not explicitly restore a native Windows backend;
-- Codex's exact 0.149.0 tests show unmatched PowerShell/file reads are forbidden when the backend is disabled and approval cannot be surfaced;
-- those tests permit unmatched commands to run inside the native RestrictedToken/Elevated Windows sandbox backends.
+Both canary traces show that the sandboxed process could not enumerate/read the **workspace root itself**, not merely `.agents/skills/mx-canary/SKILL.md`.
 
-V9 therefore preserves the complete v8 experiment while explicitly binding a non-disabled native Windows backend in the hermetic invocation.
+## Deeper root cause
 
-## T048 / MG1-v9 controlling identity
+Research: `docs/research/MG1-V9-WINDOWS-TEMP-ACL-ANALYSIS.md`.
+
+The v9 harness created outer canary/acceptance roots with Python `tempfile.TemporaryDirectory()` under `%TEMP%`. The exact runtime was Python `3.13.14`.
+
+Python 3.13 Windows private `0o700` directory semantics can apply an ACL restricting the new directory to the interactive user/Administrators. Codex's restricted token can then receive `Access denied` while traversing/reading that root even though the Codex logical policy otherwise allows the workspace.
+
+Independent Codex issue `openai/codex#19791` documents the same restricted-token incompatibility with Python/pytest/tempfile-style private `0o700` temporary directories.
+
+Exact Codex 0.149.0 source also shows:
+
+- its Windows sandbox smoke workspace is a normal user-profile directory rather than a Python private temp root;
+- `.agents` workspace protection is deny-write, not blanket deny-read;
+- restricted-token workspace permissions rely on Windows ACL/capability access to the underlying root.
+
+Therefore v9 is an Execution Adapter workspace-creation confound. It is not candidate evidence and does not prove that local Skills are unreadable under `unelevated`.
+
+## T049 / MG1-v10 proposed identity
 
 ```text
-Task: T048
-Status: INTEGRATED / CONTROLLING
-Task Contract: docs/tasks/T048-mg1-v9-native-windows-sandbox-bound-restart.md
-Research: docs/research/MG1-V8-WINDOWS-SANDBOX-ROOT-CAUSE.md
-Prior Review: docs/reviews/T023-R7.md
-Integration PR: #249
-Integration merge: ee2b7d53848d33ed73a00735622c21108a92a73d
-Oracle: MG1-T023-TOPOLOGY-ORACLE-v9
-Execution epoch: MG1-T023-EXECUTION-v9
+Task: T049
+Status: ORCHESTRATOR-CONFORMANCE / READY_FOR_INTEGRATION
+Task Contract: docs/tasks/T049-mg1-v10-windows-workspace-acl-compatible-restart.md
+Prior Review: docs/reviews/T023-R8.md
+Research: docs/research/MG1-V9-WINDOWS-TEMP-ACL-ANALYSIS.md
+Oracle: MG1-T023-TOPOLOGY-ORACLE-v10
+Execution epoch: MG1-T023-EXECUTION-v10
 Capability source epoch: MG1-2026-08-25-v3
 Presentation revision: MG1-T023-PRESENTATIONS-v3
 Corpus: MG1-T023-CORPUS-v4 (byte-identical reuse)
 Trial envelope: MG1-T023-TRIAL-ENVELOPE-v2
 Codex CLI baseline: 0.149.0
-Native Windows backend: explicitly bound, elevated-first
+Native Windows backend: explicit, elevated-first / unelevated fallback
+Workspace profile: fresh disposable root with inherited Windows ACL semantics; Python private 0o700 outer root forbidden
 Required live cell: Codex / native Windows / GPT-5.6 Sol / Medium
 Full-completion ceiling: 480 valid acceptance repetitions
-Normal behavior: pre-model backend gate + synthetic canary + exact futility/materiality stopping
 ```
 
-## V9 pre-model backend gate
+## V10 provider-free sequencing
 
-Before any provider/model call, the Executor must resolve/persist:
+Before any synthetic model canary:
 
-- Codex CLI version = `0.149.0`;
-- native Windows platform;
-- requested non-disabled native Windows sandbox backend;
-- logical sandbox to be tested;
-- user config ignored;
-- user/project execpolicy `.rules` ignored;
-- minimal v8 feature surface preserved;
-- dangerous approvals/sandbox bypass absent.
+1. resolve the native Windows backend without provider/model use;
+2. create a fresh v10 workspace with sandbox-compatible inherited ACL semantics;
+3. run a provider-free workspace-access probe under the exact backend/logical sandbox;
+4. prove the workspace root can be enumerated/read and a neutral probe nonce can be read exactly;
+5. persist provider/model-call count = zero.
 
-Backend selection order is frozen:
+A profile failing the workspace-access gate MUST NOT reach the synthetic model canary.
 
-1. `elevated` first;
-2. `unelevated` / restricted-token only when elevated cannot initialize/is unavailable or fails the unchanged canary for a backend-specific reason;
-3. disabled backend forbidden.
+If no permitted profile has a readable workspace, stop:
 
-If Codex 0.149.0 cannot explicitly realize a permitted backend while user config remains ignored, stop **before any model call** as `BLOCKED / WINDOWS_SANDBOX_BACKEND_UNAVAILABLE`. Do not upgrade Codex inside v9.
+`BLOCKED / WINDOWS_WORKSPACE_ACL_UNAVAILABLE`
 
-## V9 synthetic canary
+with zero canaries, zero acceptance prompts and zero scored observations.
 
-The v8 canary semantics are unchanged; it contains no holdout/candidate content.
+## V10 synthetic canary
 
-The complete selected profile is:
+Only after workspace access passes, run the unchanged mx-canary.
+
+A complete profile is:
 
 ```text
 Codex version
 + native Windows backend
 + logical sandbox
++ workspace creation/ACL profile
 + model/effort
 + ignored config/rules
 + minimal feature surface
 ```
 
-Within a backend:
+Two fresh canary PASS repetitions are required before acceptance. If workspace access is proven but the unchanged Skill-body canary fails, classify `HOST_CAPABILITY_PREFLIGHT` rather than workspace ACL failure.
 
-1. logical `read-only` first;
-2. logical `workspace-write` only when read-only cannot operate the body-read/use path;
-3. two fresh passing repetitions are required to select a profile;
-4. do not waste a second repetition merely to reconfirm a terminal first-repetition failure.
+## Preserved semantics
 
-A PASS requires actual `SKILL.md` body read/use, exact full nonce, host trace distinction from metadata discovery, valid structured output, no required-read policy rejection, no unrelated app/plugin material, correct workspace mutation postcondition and identical non-disabled backend identity.
+V10 changes no candidate or product/eval semantic variable:
 
-No acceptance prompt may run before one complete profile passes 2/2.
+- candidate/reference bytes unchanged;
+- corpus v4 unchanged;
+- trial envelope v2 unchanged;
+- semantic expectations unchanged;
+- thresholds unchanged;
+- zero-tolerance gates unchanged;
+- D050 reference/materiality/tie-break rules unchanged;
+- paired 2+1 unchanged;
+- consequence-first ordering unchanged;
+- qualification/materiality futility unchanged;
+- observed-context meaning unchanged;
+- Sol/Medium acceptance cell unchanged;
+- Codex CLI 0.149.0 unchanged.
 
-## V9 activation/host binding
+No v9 or earlier observation may enter v10 score.
 
-Acceptance and resume use exactly the profile that passed the canary.
+## Forbidden shortcuts
 
-A disabled/different backend, logical-sandbox drift, required candidate-body policy rejection, or unrelated app/plugin reappearance is `HOST_SURFACE_DRIFT`; the affected observation is not scored and new scheduling stops immediately.
+Do not use:
 
-Host-observed body read/use remains the activation authority. The harness may recognize any deterministic first-party Codex event that unambiguously proves actual body load/use; model self-report or metadata discovery alone cannot score activation.
-
-Explicit `$skill`/`/skills` selection, pre-reading/injecting candidate bodies, interactive approvals, manual evaluator-only read grants, `--yolo`/dangerous bypass, OS/model/effort substitution and silent Codex upgrade are forbidden.
-
-## Cost-bounded method preserved
-
-- paired 2+1 only for still-required pairs;
-- consequence-first class order: cross-profile, ambiguous, negative, near-miss, positive Consumer, positive source-maintainer, positive external-Skill trust, multi-intent;
-- immediate zero-tolerance candidate stop;
-- optimistic-completion qualification futility;
-- challenger materiality futility after a reference exists;
-- 180-second non-capacity attempts;
-- capacity events are non-attempt pauses;
-- token/tool/backend telemetry retained;
-- 480 is a worst-case ceiling, not a required spend.
-
-## T023 next executable identity
-
-```text
-Task: T023
-Status: READY / FRESH V9 EPOCH
-Task Contract: docs/tasks/T023-unified-skill-profile-activation-evals.md
-Controlling revision: docs/tasks/T048-mg1-v9-native-windows-sandbox-bound-restart.md
-Expected handoff: handoffs/T023-executor-handoff.json
-Implementation Executor launch: Codex NEW / GPT-5.6 Sol / High
-Live acceptance cell: Codex / native Windows / GPT-5.6 Sol / Medium
-Codex CLI baseline: 0.149.0
-Prior observations allowed in v9 score: 0
-Pre-provider requirement: explicit non-disabled native Windows backend resolution
-Pre-acceptance requirement: two passing unchanged synthetic canary repetitions under one complete profile
-```
+- Python private `tempfile.TemporaryDirectory` / `mkdtemp` for the outer live workspace;
+- dangerous/full-access bypass;
+- interactive approval;
+- broad `Everyone` ACL grants;
+- shared parent temporary-directory ACL mutation;
+- manual candidate/Skill read grants;
+- explicit `$skill`/`/skills` acceptance substitution;
+- candidate-body injection into model context;
+- silent Codex upgrade;
+- candidate/corpus/threshold/D050 changes.
 
 ## Next action
 
-1. Refresh current canonical `develop` before Executor launch.
-2. Show D055: Codex `NEW`, GPT-5.6 Sol, High for technical v9 backend-binding/harness adaptation; live acceptance observations remain Sol / Medium.
-3. Relaunch T023 from fresh canonical `develop` using only `docs/tasks/T023-unified-skill-profile-activation-evals.md` plus D042 freshness.
-4. Executor first resolves the exact Codex 0.149.0 native-Windows backend adapter from installed help/official version-specific authority and updates technical harness/tests/evidence mechanics only.
-5. Executor runs deterministic verification and the pre-model backend gate. If backend unavailable, stop without a provider/model call.
-6. If backend is available, run the unchanged synthetic canary. No acceptance prompt until one complete profile passes 2/2.
-7. If canary passes, start fresh v9 acceptance and send only observations still required by frozen futility/materiality logic.
-8. Executor MUST NOT alter corpus/oracle/presentation semantics, candidate bytes, thresholds or D050 rules.
-9. Orchestrator independently reviews successor handoff/evidence before any topology acceptance.
+1. Validate the complete T049 branch against canonical `develop@1076a8eccc5003d92e677e83c8ddab3bd165fa90`.
+2. Confirm changes are limited to Orchestrator-owned Markdown plus authorized D052 `oracle.json`.
+3. Confirm `corpus.json`, `trial-envelope.json`, `topologies.json`, all presentation/reference bytes and product/runtime assets are untouched.
+4. Integrate T049/MG1-v10 through PR only if that boundary is clean.
+5. Refresh canonical `develop` and checkpoint v10 as `INTEGRATED / CONTROLLING`.
+6. Only then show D055 and relaunch T023 from fresh canonical `develop`.
+7. Executor adapts only technical workspace factory/ACL evidence/provider-free readability mechanics plus tests, then executes the frozen v10 gates.
+8. Orchestrator independently converges any successor handoff/evidence before topology acceptance.
 
 ## Next chat minimum load
 
@@ -168,4 +169,4 @@ Load only current `develop` identity, `AGENTS.md`, and this checkpoint; then fol
 
 ## Do not
 
-Do not rerun v8; do not import prior observations; do not modify corpus v4; do not upgrade Codex inside v9; do not permit a disabled Windows backend; do not use dangerous bypass/full access or interactive approvals; do not substitute explicit Skill activation; do not weaken host-observed body-use semantics; do not alter candidate bytes/thresholds/D050 rules; do not write directly to `main`/`develop`.
+Do not rerun v9; do not import prior observations; do not change corpus v4; do not upgrade Codex inside v10; do not weaken host-observed activation; do not broaden privileges to make the probe/canary pass; do not alter candidate bytes/thresholds/D050 rules; do not write directly to `main`/`develop`.
