@@ -1,15 +1,15 @@
 {
-  "schema_version": "9.0.0",
-  "oracle_id": "MG1-T023-TOPOLOGY-ORACLE-v9",
-  "execution_epoch": "MG1-T023-EXECUTION-v9",
+  "schema_version": "10.0.0",
+  "oracle_id": "MG1-T023-TOPOLOGY-ORACLE-v10",
+  "execution_epoch": "MG1-T023-EXECUTION-v10",
   "capability_source_epoch": "MG1-2026-08-25-v3",
   "presentation_revision": "MG1-T023-PRESENTATIONS-v3",
   "presentation_manifest": "evals/skill_activation_topology/presentations/manifest.json",
   "corpus_id": "MG1-T023-CORPUS-v4",
   "trial_envelope_id": "MG1-T023-TRIAL-ENVELOPE-v2",
   "trial_envelope_path": "evals/skill_activation_topology/trial-envelope.json",
-  "supersedes_oracle_id": "MG1-T023-TOPOLOGY-ORACLE-v8",
-  "supersession_reason": "Prospective execution-adapter correction after v8 closed BLOCKED / HOST_CAPABILITY_PREFLIGHT with zero acceptance prompts. V9 preserves the v8 corpus, candidate/reference bytes, semantic expectations, thresholds, paired 2+1 aggregation, cost-bounded scheduling, context meaning and D050 selection rules while explicitly binding a non-disabled native Windows sandbox backend despite ignored user configuration.",
+  "supersedes_oracle_id": "MG1-T023-TOPOLOGY-ORACLE-v9",
+  "supersession_reason": "Prospective execution-adapter correction after v9 closed BLOCKED before acceptance because Python 3.13 private tempfile ACL semantics made the disposable workspace root inaccessible to the Codex restricted token. V10 preserves v9 candidate/reference bytes, corpus, semantic expectations, thresholds, paired 2+1 aggregation, cost-bounded scheduling, context meaning, D050 selection, Codex version and backend order while replacing only outer-workspace creation semantics and adding a provider-free workspace-readability gate before the unchanged Skill canary.",
   "candidate_ids": ["B0", "B1", "F2", "G3"],
   "prior_experiment_policy": {
     "mg1_v2_status": "CLOSED_BLOCKED",
@@ -19,19 +19,21 @@
     "mg1_v6_status": "CLOSED_BLOCKED_NO_QUALIFYING_REFERENCE",
     "mg1_v7_status": "CLOSED_BLOCKED_HOST_EXECUTION_ENVELOPE_DEFECT",
     "mg1_v8_status": "CLOSED_BLOCKED_HOST_CAPABILITY_PREFLIGHT",
+    "mg1_v9_status": "CLOSED_BLOCKED_WORKSPACE_ACL_CONFOUND",
     "mg1_v8_acceptance_prompts_issued": 0,
-    "mg1_v8_scored_observations": 0,
-    "prior_v2_v3_v4_v6_v7_v8_observations_may_enter_v9_score": false,
+    "mg1_v9_acceptance_prompts_issued": 0,
+    "mg1_v9_scored_observations": 0,
+    "prior_v2_v3_v4_v6_v7_v8_v9_observations_may_enter_v10_score": false,
     "mg1_v5_completed_observations": 0,
     "prior_results_may_be_used_only_for_method_confounds_cost_diagnostics_and_non_scored_regression": true,
-    "prior_results_may_not_tune_v9_candidate_presentations_thresholds_selection_expected_semantics_or_case_order": true
+    "prior_results_may_not_tune_v10_candidate_presentations_thresholds_selection_expected_semantics_or_case_order": true
   },
   "trial_method": {
     "scoring_unit": "case_candidate_aggregate",
     "clean_context_required": true,
-    "candidate_construction": "byte-copy only from the frozen v3 presentation manifest; candidate and reference bytes must be identical to v8",
+    "candidate_construction": "byte-copy only from the frozen v3 presentation manifest; candidate and reference bytes must be identical to v9",
     "training_partition": null,
-    "training_partition_reason": "V9 reuses MG1-T023-CORPUS-v4 byte-identically because v8 issued zero acceptance prompts. Prior evidence is diagnostic only and cannot enter score or tune candidate wording, thresholds, ordering or selection.",
+    "training_partition_reason": "V10 reuses MG1-T023-CORPUS-v4 byte-identically because v8 and v9 issued zero acceptance prompts. Prior evidence is diagnostic only and cannot enter score or tune candidate wording, thresholds, ordering or selection.",
     "reference_stage_candidates": ["B0", "B1"],
     "challenger_stage_candidates": ["F2", "G3"],
     "base_valid_repetitions_per_case_candidate": 2,
@@ -56,10 +58,10 @@
     "early_stop_policy": "The full-completion ranges are ceilings rather than mandatory minima. Stop future candidate observations whenever the frozen optimistic-completion futility rules prove qualification or material challenger status impossible.",
     "max_model_attempts_per_scheduled_observation": 2,
     "timeout_seconds_per_model_attempt": 180,
-    "attempt_isolation": "Every model attempt uses a fresh Codex thread and a disposable workspace satisfying v9 environment isolation and the frozen selected complete host profile.",
+    "attempt_isolation": "Every model attempt uses a fresh Codex thread and a disposable workspace satisfying v10 environment isolation, the frozen workspace-ACL profile and the selected complete host profile.",
     "model_attempt_failure_rule": "A timeout, malformed structured response, non-capacity provider failure, or other non-capacity execution failure consumes the current model attempt. Preserve it as diagnostic evidence. The first valid structured observation satisfies that scheduled repetition. Never retry after a valid observation exists.",
     "external_capacity_event_rule": "An explicit account/service usage-limit or quota-capacity failure before a valid structured result is an external capacity event, not a model attempt. Persist it separately, leave the repetition pending at the same attempt ordinal, and stop new live scheduling promptly.",
-    "pause_resume_rule": "The same v9 epoch may resume after capacity returns or after host-surface drift is restored to the exact already-selected complete host profile. Previously valid v9 observations remain authoritative and must not be rerun or replaced. Resume verifies exact epoch, frozen asset hashes, runner identity, Codex version, native Windows backend, logical sandbox, minimal feature surface, host/model/effort, workspace-policy compliance, observation uniqueness, attempt ordinals, stage state, futility state and evidence integrity before new calls.",
+    "pause_resume_rule": "The same v10 epoch may resume after capacity returns or after host-surface drift is restored to the exact already-selected complete host profile. Previously valid v10 observations remain authoritative and must not be rerun or replaced. Resume verifies exact epoch, frozen asset hashes, runner identity, Codex version, native Windows backend, logical sandbox, workspace creation/ACL profile, minimal feature surface, host/model/effort, observation uniqueness, attempt ordinals, stage state, futility state and evidence integrity before new calls.",
     "terminal_failure_rule": "If both permitted non-capacity model attempts fail for a scheduled repetition, stop BLOCKED and do not claim a topology selection from partial evidence.",
     "mechanical_smoke_cases_may_be_used": true,
     "smoke_cases_enter_acceptance_score": false
@@ -75,9 +77,9 @@
       "elevated": "Codex native Windows elevated sandbox backend",
       "unelevated": "Codex native Windows restricted-token/unelevated sandbox backend"
     },
-    "elevated_rule": "Attempt the supported elevated native Windows backend first. If it initializes and a logical sandbox profile passes the unchanged synthetic canary twice, select it and do not test a broader or alternate backend.",
-    "unelevated_fallback_rule": "Attempt the supported unelevated/restricted-token backend only when elevated cannot initialize, is unavailable under the host's supported requirements, or fails the unchanged canary for a backend-specific execution-envelope reason. It must independently pass the same canary twice before acceptance.",
-    "no_model_call_failure_rule": "If Codex CLI 0.149.0 cannot explicitly realize a non-disabled native Windows backend while user config remains ignored, stop BLOCKED / WINDOWS_SANDBOX_BACKEND_UNAVAILABLE before any synthetic or acceptance model call. Do not silently upgrade Codex.",
+    "elevated_rule": "Attempt the supported elevated native Windows backend first. If it initializes and a logical sandbox profile passes the workspace-access gate plus unchanged synthetic canary twice, select it and do not test a broader or alternate backend.",
+    "unelevated_fallback_rule": "Attempt the supported unelevated/restricted-token backend only when elevated cannot initialize, is unavailable under supported host requirements, or fails a preregistered workspace/canary envelope condition. It must independently pass the workspace-access gate and unchanged canary before acceptance.",
+    "no_model_call_failure_rule": "If Codex CLI 0.149.0 cannot explicitly realize a permitted non-disabled native Windows backend while user config remains ignored, stop BLOCKED / WINDOWS_SANDBOX_BACKEND_UNAVAILABLE before any synthetic or acceptance model call. Do not silently upgrade Codex.",
     "dangerous_bypass_forbidden": true,
     "interactive_approval_forbidden": true,
     "evidence_required": [
@@ -90,18 +92,47 @@
     ],
     "adapter_rule": "Executor resolves version-specific CLI/config syntax under D054 using installed help and official/version-specific sources; the effective backend state above is immutable experiment identity."
   },
+  "windows_workspace_acl": {
+    "required_before_synthetic_model_calls": true,
+    "outer_parent": "OS temporary parent or another exact neutral disposable Windows parent already permitted by the frozen isolation rules",
+    "fresh_unique_root_required": true,
+    "python_private_temp_root_forbidden": true,
+    "forbidden_creation_mechanisms": ["tempfile.TemporaryDirectory", "tempfile.mkdtemp", "effective Windows private 0o700-equivalent root creation"],
+    "required_acl_semantics": "ordinary inherited Windows ACL semantics compatible with the selected Codex sandbox token",
+    "broad_everyone_grant_forbidden": true,
+    "parent_acl_mutation_forbidden": true,
+    "manual_candidate_read_grant_forbidden": true,
+    "workspace_probe_scored": false,
+    "workspace_probe_provider_model_call_allowed": false,
+    "workspace_probe_material": "neutral fixed probe file and nonce unrelated to candidates, profiles, holdout or Agent Governance semantics",
+    "workspace_probe_requirements": [
+      "sandboxed command starts with exact workspace root as cwd",
+      "workspace root can be enumerated/read",
+      "neutral probe file can be read exactly",
+      "probe nonce is exact",
+      "provider/model calls issued equals zero",
+      "dangerous bypass and interactive approval are absent"
+    ],
+    "profile_failure_rule": "A profile whose workspace probe fails must not issue a synthetic model canary.",
+    "terminal_failure_rule": "If no permitted native-backend/logical-sandbox profile has a readable workspace, stop BLOCKED / WINDOWS_WORKSPACE_ACL_UNAVAILABLE with zero synthetic model canary prompts, zero acceptance prompts and zero scored observations.",
+    "diagnostic_fields": ["absolute_workspace_root", "workspace_creation_method", "python_runtime", "private_temp_creation_avoided", "acl_diagnostic_when_available", "cleanup_result"],
+    "cleanup_rule": "Cleanup is host-side after evidence preservation; cleanup failure is diagnostic unless it compromises evidence integrity or attempt isolation.",
+    "adapter_rule": "Exact atomic unique-directory creation, ACL inspection and cleanup syntax/API are Executor-owned D054 mechanics; they must realize the frozen semantics without broad privilege grants."
+  },
   "host_capability_preflight": {
     "required_before_acceptance": true,
     "scored": false,
     "acceptance_holdout_or_candidate_content_allowed": false,
+    "workspace_access_gate_must_pass_first": true,
     "synthetic_skill_path": ".agents/skills/mx-canary/SKILL.md",
-    "synthetic_skill_rule": "Use the v8 deterministic neutral local Skill whose body contains a unique fixed nonce sentence not inferable from metadata and unrelated to Agent Governance/candidate/profile/holdout semantics.",
-    "prompt_rule": "Use the v8 neutral synthetic prompt that explicitly asks to apply the mx-canary local instruction and return the body nonce in a minimal structured record.",
+    "synthetic_skill_rule": "Use the v8/v9 deterministic neutral local Skill whose body contains a unique fixed nonce sentence not inferable from metadata and unrelated to Agent Governance/candidate/profile/holdout semantics.",
+    "prompt_rule": "Use the v8/v9 neutral synthetic prompt that explicitly asks to apply the mx-canary local instruction and return the body nonce in a minimal structured record.",
     "required_valid_repetitions_per_selected_profile": 2,
     "complete_profile_identity_fields": [
       "codex_cli_version",
       "native_windows_backend",
       "logical_sandbox",
+      "workspace_acl_profile_identity",
       "model",
       "effort",
       "ignored_user_config",
@@ -109,28 +140,30 @@
       "minimal_feature_surface_identity"
     ],
     "logical_sandbox_selection_order": ["read-only", "workspace-write"],
-    "read_only_rule": "Within each permitted native Windows backend, test logical read-only first under the exact minimal effective host surface. Select it only if two fresh canary repetitions pass all preflight requirements.",
-    "workspace_write_fallback_rule": "Within the same backend, test logical workspace-write only if read-only fails specifically because the required body-read/use path cannot operate under read-only. Select workspace-write only if two fresh canary repetitions pass and post-run comparison proves no unexpected model-caused file mutation.",
-    "terminal_profile_failure_repetition_rule": "Do not spend a second repetition after the first repetition establishes a terminal profile failure that repetition cannot repair. Two repetitions are required to establish PASS, not to reconfirm terminal failure.",
+    "read_only_rule": "Within each permitted native Windows backend, test logical read-only first. The provider-free workspace gate must pass before a canary is permitted. Select read-only only if two fresh canary repetitions then pass all preflight requirements.",
+    "workspace_write_fallback_rule": "Within the same backend, test logical workspace-write only when read-only cannot support the required path under the frozen method. Its provider-free workspace gate must pass before canary; select it only if two fresh canary repetitions pass and post-run comparison proves no unexpected model-caused file mutation.",
+    "terminal_profile_failure_repetition_rule": "Do not spend a second repetition after the first synthetic canary establishes a terminal profile failure that repetition cannot repair. Two repetitions are required to establish PASS, not to reconfirm terminal failure.",
     "pass_requirements": [
+      "provider-free workspace-access gate passed for the same workspace method/profile",
       "local Skill metadata discovery is observable",
       "synthetic SKILL.md body is successfully read or host-used",
       "host trace distinguishes body read/use from metadata discovery",
       "returned full body nonce is exact",
       "structured output validates",
-      "no execution-policy rejection affects the required body-read/use path",
-      "no unrelated app/plugin catalog payload is materialized",
+      "no execution-policy/access rejection affects the required body-read/use path",
+      "no unrelated app/plugin catalog payload is materialized into the prohibited surface",
       "workspace mutation postcondition is satisfied",
-      "native Windows backend identity is non-disabled and identical across both passing repetitions"
+      "native Windows backend and workspace ACL profile identities are identical across both passing repetitions"
     ],
-    "failure_rule": "If no permitted native-backend/logical-sandbox complete profile passes reproducibly, stop T023 BLOCKED / HOST_CAPABILITY_PREFLIGHT before issuing any acceptance prompt.",
-    "capacity_rule": "Explicit capacity events during preflight pause readiness and are retained as diagnostics; they are not acceptance observations or model-attempt failures."
+    "failure_rule": "If workspace access passes but no permitted complete profile passes the unchanged Skill canary reproducibly, stop T023 BLOCKED / HOST_CAPABILITY_PREFLIGHT before issuing any acceptance prompt.",
+    "capacity_rule": "Explicit capacity events during synthetic preflight pause readiness and are retained as diagnostics; they are not acceptance observations or model-attempt failures."
   },
   "effective_host_surface": {
     "user_config_ignored": true,
     "execpolicy_rules_ignored": true,
     "native_windows_backend_explicitly_bound": true,
     "native_windows_backend_disabled_allowed": false,
+    "workspace_acl_profile_bound": true,
     "local_shell_skill_mechanism_enabled": true,
     "apps_connectors_enabled": false,
     "remote_plugin_catalog_enabled": false,
@@ -142,19 +175,10 @@
     "additional_mcp_plugin_app_injection_allowed": false,
     "dangerous_approval_sandbox_bypass_allowed": false,
     "explicit_skill_substitution_for_acceptance_allowed": false,
-    "adapter_rule": "Executor resolves version-specific CLI/config syntax under D054, but the resulting effective states above are immutable experiment identity. If Codex 0.149.0 cannot realize an equivalent surface, stop before live canary/acceptance rather than broadening or upgrading."
+    "adapter_rule": "Executor resolves version-specific CLI/config/workspace syntax under D054, but the resulting effective states above are immutable experiment identity. If Codex 0.149.0 cannot realize an equivalent surface, stop before live acceptance rather than broadening or upgrading."
   },
   "scheduling": {
-    "case_group_order": [
-      "cross-profile",
-      "ambiguous",
-      "negative",
-      "near-miss",
-      "positive-consumer",
-      "positive-source-maintainer",
-      "positive-external-skill-trust",
-      "multi-intent"
-    ],
+    "case_group_order": ["cross-profile", "ambiguous", "negative", "near-miss", "positive-consumer", "positive-source-maintainer", "positive-external-skill-trust", "multi-intent"],
     "within_class_order": "ascending case id",
     "candidate_order": "Within a scheduling wave rotate active candidates deterministically by case id and repetition so a fixed candidate is not always first.",
     "stop_scheduling_disqualified_candidate": true,
@@ -198,45 +222,29 @@
     "model_visible_turn_rule": "The exact corpus prompt followed by two newlines and the exact suffix from trial-envelope.json; no other evaluator prose may be model-visible in the user turn.",
     "read_only_enforcement": "Host-side/out-of-band only; no domain-bearing safety wrapper may be appended to the user turn.",
     "output_schema_rule": "Structured-output field descriptions must be domain-neutral and must not name Agent Governance, candidate ids, profile/capability names or evaluation purpose.",
-    "workspace_root_rule": "Every attempt must run from an OS-temporary disposable root outside and not linked to the canonical repository. The root path before .agents/skills must satisfy trial-envelope forbidden-substring rules and contain no canonical .git metadata.",
+    "workspace_root_rule": "Every attempt must run from a fresh disposable Windows root under the authorized neutral temporary parent, outside and not linked to the canonical repository. The root path before .agents/skills must satisfy trial-envelope forbidden-substring rules, contain no canonical .git metadata, and use the frozen v10 ACL-compatible workspace creation semantics.",
     "fixture_rule": "Materialize only the corpus fixture_role from trial-envelope.json. Ambiguous, negative and near-miss cases must be neutral. Source cases use the exact frozen source signal. Consumer cases use only the frozen minimal synthetic Consumer marker.",
-    "confound_evidence_required": "Persist exact model-visible prompt, absolute workspace root, fixture manifest and validation proving no extra domain-bearing wrapper or unintended role signal was present."
+    "confound_evidence_required": "Persist exact model-visible prompt, absolute workspace root, workspace ACL profile, fixture manifest and validation proving no extra domain-bearing wrapper or unintended role signal was present."
   },
   "activation_observability": {
     "scoring_authority": "host_trace",
     "entrypoint_activation_rule": "A candidate entrypoint is scored activated only when host evidence shows a successful read or host-use of that candidate SKILL.md body after metadata discovery. Candidate name/description/path discovery alone is not activation.",
     "equivalent_host_event_rule": "The harness may recognize any first-party Codex host event that deterministically and unambiguously proves actual candidate-body read/use; it must not require a particular shell command spelling when an equivalent host event exists. New event classes are technical extraction only and cannot weaken the body-read/use semantic criterion.",
     "model_report_role": "diagnostic cross-check only; model prose or self-reported activated_entrypoints cannot create scored activation without corresponding host evidence.",
-    "preflight_binding_rule": "Acceptance uses only the complete host profile that passed two synthetic body-read/use preflight repetitions. Codex version, native Windows backend, logical sandbox and minimal feature identity are persisted and compared on every attempt/resume.",
-    "host_surface_drift_rule": "After preflight, a disabled/different native backend, different logical sandbox, explicit policy rejection affecting required candidate-body read/use, or reappearance of unrelated app/plugin catalog payload is HOST_SURFACE_DRIFT. The affected observation is not scored as candidate behavior and new scheduling stops immediately.",
+    "preflight_binding_rule": "Acceptance uses only the complete host profile that passed the provider-free workspace gate and two synthetic body-read/use canary repetitions. Codex version, native Windows backend, logical sandbox, workspace ACL profile and minimal feature identity are persisted and compared on every attempt/resume.",
+    "host_surface_drift_rule": "After preflight, a disabled/different native backend, different logical sandbox/workspace ACL profile, unexpected loss of workspace readability, explicit rejection affecting required candidate-body read/use, or reappearance of unrelated app/plugin catalog payload is HOST_SURFACE_DRIFT. The affected observation is not scored as candidate behavior and new scheduling stops immediately.",
     "unobservable_rule": "If the selected host profile cannot continue to distinguish metadata discovery from candidate-body activation, stop/pause before scoring affected observations rather than infer non-activation from model prose or failed tools.",
     "context_measure_rule": "observed_context_bytes is the UTF-8 byte sum of unique successfully host-read candidate SKILL.md body and reference files according to the frozen presentation manifest. Byte measures are not exact tokens."
   },
   "cost_telemetry": {
-    "per_invocation_fields_when_available": [
-      "input_tokens",
-      "cached_input_tokens",
-      "reasoning_tokens",
-      "output_tokens",
-      "total_tokens",
-      "tool_call_count",
-      "policy_rejected_tool_call_count",
-      "unrelated_app_plugin_resource_count",
-      "unrelated_app_plugin_resource_bytes",
-      "duration_seconds",
-      "capacity_status",
-      "codex_cli_version",
-      "native_windows_backend",
-      "logical_sandbox",
-      "effective_host_profile_identity"
-    ],
+    "per_invocation_fields_when_available": ["input_tokens", "cached_input_tokens", "reasoning_tokens", "output_tokens", "total_tokens", "tool_call_count", "policy_rejected_tool_call_count", "unrelated_app_plugin_resource_count", "unrelated_app_plugin_resource_bytes", "duration_seconds", "capacity_status", "codex_cli_version", "native_windows_backend", "logical_sandbox", "workspace_acl_profile_identity", "effective_host_profile_identity"],
     "missing_token_usage_rule": "If the installed Codex event stream does not expose exact token fields, record token_usage_available=false and retain available tool/duration/context proxies. Do not invent estimates or substitute a different host/model solely for telemetry.",
-    "rollout_budget_policy": "Do not require the experimental Codex rollout-budget feature for v9 acceptance because budget reminders/tracking behavior could alter the evaluated execution path.",
+    "rollout_budget_policy": "Do not require the experimental Codex rollout-budget feature for v10 acceptance because budget reminders/tracking behavior could alter the evaluated execution path.",
     "prompt_cache_policy": "Record cached-input tokens when available. Caching is diagnostic/cost information and does not enter candidate scoring."
   },
   "host_model_matrix": {
     "required_live_cells": [
-      {"host":"Codex","platform":"native Windows","model":"GPT-5.6 Sol","effort":"Medium","claim_scope":"host-specific activation evidence","codex_cli_baseline":"0.149.0","native_windows_backend":"explicit non-disabled backend selected by frozen preflight"}
+      {"host":"Codex","platform":"native Windows","model":"GPT-5.6 Sol","effort":"Medium","claim_scope":"host-specific activation evidence","codex_cli_baseline":"0.149.0","native_windows_backend":"explicit non-disabled backend selected by frozen preflight","workspace_acl_profile":"v10 inherited-ACL-compatible disposable root"}
     ],
     "required_portable_evidence": [
       "deterministic profile/isolation regression",
@@ -244,11 +252,12 @@
       "D051 one-product/single-install feasibility",
       "candidate-sensitive host-read context evidence",
       "stimulus/workspace isolation evidence",
-      "v9 Windows-backend resolution evidence",
-      "v9 host-capability preflight evidence",
+      "v10 Windows-backend resolution evidence",
+      "v10 provider-free workspace-access evidence",
+      "v10 host-capability preflight evidence",
       "futility/materiality certificates for every early-stopped candidate"
     ],
-    "substitution_rule": "If the required live cell cannot execute reproducibly under the frozen v9 method, T023 is BLOCKED; do not silently substitute another host/model/effort/OS/CLI version."
+    "substitution_rule": "If the required live cell cannot execute reproducibly under the frozen v10 method, T023 is BLOCKED; do not silently substitute another host/model/effort/OS/CLI version."
   },
   "trial_output_contract": {
     "required_fields": ["case_id", "candidate_id", "repetition", "semantic_outcome", "granted_capabilities", "permission_broadening", "host_trace_available"],
