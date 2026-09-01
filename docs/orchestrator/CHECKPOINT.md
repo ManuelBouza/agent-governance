@@ -1,9 +1,9 @@
 # Current ChatGPT Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O187  
+Checkpoint-Sequence: O188  
 Canonical-Branch: `develop`  
-Current-Work-Unit: T049/MG1-v10 Windows workspace-ACL-compatible restart is specified and ready for integration; T023 must not relaunch until v10 is canonical  
+Current-Work-Unit: T049/MG1-v10 Windows workspace-ACL-compatible restart is integrated and controlling; T023 is ready for a fresh v10 epoch gated by backend, provider-free workspace-readability and synthetic canary  
 Chat-Closure: CONTINUE_CURRENT_CHAT  
 Active-Executor: none  
 Active-Executor-Surface: ChatGPT Orchestrator
@@ -20,54 +20,35 @@ Active-Executor-Surface: ChatGPT Orchestrator
 - T023 v7: closed `BLOCKED / HOST EXECUTION ENVELOPE DEFECT`; review `docs/reviews/T023-R6.md`.
 - T023 v8: closed `BLOCKED / HOST_CAPABILITY_PREFLIGHT`; review `docs/reviews/T023-R7.md`.
 - T023 v9: closed `BLOCKED / HOST_CAPABILITY_PREFLIGHT — EXECUTION ADAPTER WORKSPACE ACL CONFOUND`; review `docs/reviews/T023-R8.md`.
-- V9 submitted Executor branch `test/t023-skill-activation-topology-evals-v9`, submitted HEAD `9a2d216a66e8ec786e6f41fccd9d0abe4d269519`, implementation HEAD `b7b665d5d495be2dd2bf2cbb8f4849fa65ad99c4`, base `develop@f44227768a911207ac84dcbe20cf88f5d479f74d`.
-- V9 evidence/infrastructure integration PR `#251`, merge `1076a8eccc5003d92e677e83c8ddab3bd165fa90`.
+- V9 submitted Executor HEAD `9a2d216a66e8ec786e6f41fccd9d0abe4d269519`; evidence/infrastructure integration PR `#251`, merge `1076a8eccc5003d92e677e83c8ddab3bd165fa90`.
 - V9 issued two synthetic canaries, zero acceptance prompts, zero scored observations and no topology selection.
-- V9 changed no committed Markdown, oracle, corpus, trial envelope, topology, presentation, Core/runtime or profile semantics on the Executor branch.
-- V9 deterministic verification: focused harness 55 PASS; full pytest 460 PASS; profile isolation 48 PASS; Consumer/source independence 8 PASS; Ruff PASS.
-- Capability source remains `MG1-2026-08-25-v3`; presentations remain `MG1-T023-PRESENTATIONS-v3`; corpus remains `MG1-T023-CORPUS-v4`; trial envelope remains `MG1-T023-TRIAL-ENVELOPE-v2`.
+- T049/MG1-v10 integrated by PR `#252`, merge `904162ea708b44b4d754bc2f98ccf9dc35890583`.
+- V9 root-cause research: `docs/research/MG1-V9-WINDOWS-TEMP-ACL-ANALYSIS.md`.
+- Current oracle: `MG1-T023-TOPOLOGY-ORACLE-v10`; execution epoch: `MG1-T023-EXECUTION-v10`.
+- Capability source: `MG1-2026-08-25-v3`; presentations: `MG1-T023-PRESENTATIONS-v3`; corpus: `MG1-T023-CORPUS-v4`; trial envelope: `MG1-T023-TRIAL-ENVELOPE-v2`.
+- Corpus v4 is reused byte-identically because both v8 and v9 issued zero acceptance prompts.
+- Candidate/reference bytes, semantic expectations, thresholds, zero-tolerance gates, paired 2+1, consequence-first ordering, futility/materiality, context meaning, D050 selection and live Sol/Medium cell are unchanged.
 
-## V9 terminal evidence
+## V9 terminal finding
 
-The v9 backend gate worked as designed:
+V9 correctly proved `unelevated` could initialize under Codex 0.149.0, but both synthetic canaries failed before testing Skill semantics because the sandboxed process could not enumerate/read the disposable workspace root itself.
 
-- Codex CLI `0.149.0`;
-- native Windows 11;
-- `elevated` backend attempted first and timed out before provider/model use;
-- `unelevated` backend initialized successfully before provider/model use;
-- logical `read-only` canary repetition 1 failed;
-- logical `workspace-write` canary repetition 1 failed;
-- no second canary repetition was required after terminal first-repetition failure;
-- no acceptance prompt was issued.
+The v9 harness created roots with Python 3.13.14 `tempfile.TemporaryDirectory()` under `%TEMP%`. Python 3.13 Windows private `0o700` directory ACL semantics can exclude Codex's restricted token from traversing/reading the root. Independent Codex issue `openai/codex#19791` documents the same private-temp-directory access-denied class.
 
-Both canary traces show that the sandboxed process could not enumerate/read the **workspace root itself**, not merely `.agents/skills/mx-canary/SKILL.md`.
+Exact Codex 0.149.0 evidence also shows `.agents` workspace protection is deny-write, not a blanket read denial. V9 therefore does not establish that local Skills are unreadable under the supported backend.
 
-## Deeper root cause
+Classification: Execution Adapter workspace-creation/ACL confound, not candidate evidence.
 
-Research: `docs/research/MG1-V9-WINDOWS-TEMP-ACL-ANALYSIS.md`.
-
-The v9 harness created outer canary/acceptance roots with Python `tempfile.TemporaryDirectory()` under `%TEMP%`. The exact runtime was Python `3.13.14`.
-
-Python 3.13 Windows private `0o700` directory semantics can apply an ACL restricting the new directory to the interactive user/Administrators. Codex's restricted token can then receive `Access denied` while traversing/reading that root even though the Codex logical policy otherwise allows the workspace.
-
-Independent Codex issue `openai/codex#19791` documents the same restricted-token incompatibility with Python/pytest/tempfile-style private `0o700` temporary directories.
-
-Exact Codex 0.149.0 source also shows:
-
-- its Windows sandbox smoke workspace is a normal user-profile directory rather than a Python private temp root;
-- `.agents` workspace protection is deny-write, not blanket deny-read;
-- restricted-token workspace permissions rely on Windows ACL/capability access to the underlying root.
-
-Therefore v9 is an Execution Adapter workspace-creation confound. It is not candidate evidence and does not prove that local Skills are unreadable under `unelevated`.
-
-## T049 / MG1-v10 proposed identity
+## T049 / MG1-v10 controlling identity
 
 ```text
 Task: T049
-Status: ORCHESTRATOR-CONFORMANCE / READY_FOR_INTEGRATION
+Status: INTEGRATED / CONTROLLING
 Task Contract: docs/tasks/T049-mg1-v10-windows-workspace-acl-compatible-restart.md
 Prior Review: docs/reviews/T023-R8.md
 Research: docs/research/MG1-V9-WINDOWS-TEMP-ACL-ANALYSIS.md
+Integration PR: #252
+Integration merge: 904162ea708b44b4d754bc2f98ccf9dc35890583
 Oracle: MG1-T023-TOPOLOGY-ORACLE-v10
 Execution epoch: MG1-T023-EXECUTION-v10
 Capability source epoch: MG1-2026-08-25-v3
@@ -81,87 +62,123 @@ Required live cell: Codex / native Windows / GPT-5.6 Sol / Medium
 Full-completion ceiling: 480 valid acceptance repetitions
 ```
 
-## V10 provider-free sequencing
+## V10 provider-free gates
 
-Before any synthetic model canary:
+Before a synthetic model canary, the Executor must:
 
-1. resolve the native Windows backend without provider/model use;
-2. create a fresh v10 workspace with sandbox-compatible inherited ACL semantics;
-3. run a provider-free workspace-access probe under the exact backend/logical sandbox;
-4. prove the workspace root can be enumerated/read and a neutral probe nonce can be read exactly;
-5. persist provider/model-call count = zero.
+1. resolve the permitted native Windows backend without provider/model use;
+2. create a fresh disposable workspace with the exact v10 ACL-compatible factory;
+3. avoid Python `TemporaryDirectory`/`mkdtemp` or equivalent private `0o700` outer-root semantics;
+4. run a provider-free sandbox command under the requested logical sandbox;
+5. prove the exact workspace root can be enumerated/read;
+6. prove a neutral probe file/nonce can be read exactly;
+7. persist provider/model calls issued = zero plus workspace factory/ACL diagnostics.
 
-A profile failing the workspace-access gate MUST NOT reach the synthetic model canary.
+If a profile fails workspace readability, no synthetic model canary may be sent for it.
 
 If no permitted profile has a readable workspace, stop:
 
 `BLOCKED / WINDOWS_WORKSPACE_ACL_UNAVAILABLE`
 
-with zero canaries, zero acceptance prompts and zero scored observations.
+with zero synthetic model canaries, zero acceptance prompts and zero scored observations.
 
-## V10 synthetic canary
+## V10 backend/profile order
 
-Only after workspace access passes, run the unchanged mx-canary.
+Backend policy remains:
 
-A complete profile is:
+1. `elevated` first;
+2. `unelevated` fallback only when elevated cannot initialize/is unavailable or reaches a preregistered profile-level failure;
+3. disabled backend forbidden;
+4. Codex CLI stays `0.149.0`.
+
+For each profile:
+
+```text
+backend resolution
+-> ACL-compatible workspace
+-> provider-free workspace-readability gate
+-> unchanged synthetic Skill canary
+-> acceptance only after canary 2/2 PASS
+```
+
+## V10 synthetic canary and acceptance
+
+The mx-canary prompt/body semantics remain unchanged and contain no holdout/candidate content.
+
+A complete selected profile binds:
 
 ```text
 Codex version
 + native Windows backend
 + logical sandbox
 + workspace creation/ACL profile
-+ model/effort
++ GPT-5.6 Sol / Medium
 + ignored config/rules
 + minimal feature surface
 ```
 
-Two fresh canary PASS repetitions are required before acceptance. If workspace access is proven but the unchanged Skill-body canary fails, classify `HOST_CAPABILITY_PREFLIGHT` rather than workspace ACL failure.
+Two fresh synthetic canary PASS repetitions are required before acceptance.
 
-## Preserved semantics
+If workspace access passes but the Skill-body canary fails, classify `HOST_CAPABILITY_PREFLIGHT`, not workspace ACL failure.
 
-V10 changes no candidate or product/eval semantic variable:
+Acceptance uses the exact complete profile and workspace factory that passed preflight. Loss of workspace readability, backend/logical-sandbox/ACL-profile drift, required candidate-body rejection or prohibited unrelated host-surface reappearance is `HOST_SURFACE_DRIFT`; the affected observation is not scored.
 
-- candidate/reference bytes unchanged;
-- corpus v4 unchanged;
-- trial envelope v2 unchanged;
-- semantic expectations unchanged;
-- thresholds unchanged;
-- zero-tolerance gates unchanged;
-- D050 reference/materiality/tie-break rules unchanged;
-- paired 2+1 unchanged;
-- consequence-first ordering unchanged;
-- qualification/materiality futility unchanged;
-- observed-context meaning unchanged;
-- Sol/Medium acceptance cell unchanged;
-- Codex CLI 0.149.0 unchanged.
+Host-observed candidate-body read/use remains activation authority. Model self-report or metadata discovery alone cannot create scored activation.
 
-No v9 or earlier observation may enter v10 score.
+## Preserved cost-bounded method
+
+- paired 2+1 only for still-required pairs;
+- consequence-first class order: cross-profile, ambiguous, negative, near-miss, positive Consumer, positive source-maintainer, positive external-Skill trust, multi-intent;
+- immediate zero-tolerance candidate stop;
+- optimistic-completion qualification futility;
+- challenger materiality futility after a reference exists;
+- 180-second non-capacity attempts;
+- capacity events are non-attempt pauses;
+- token/tool/backend/workspace telemetry retained;
+- 480 is a worst-case ceiling, not a required spend.
 
 ## Forbidden shortcuts
 
 Do not use:
 
-- Python private `tempfile.TemporaryDirectory` / `mkdtemp` for the outer live workspace;
-- dangerous/full-access bypass;
-- interactive approval;
-- broad `Everyone` ACL grants;
-- shared parent temporary-directory ACL mutation;
-- manual candidate/Skill read grants;
+- Python private tempfile semantics for the outer live workspace;
+- `--yolo`, dangerous/full-access bypass;
+- interactive approvals;
+- broad `Everyone`/world ACL grants;
+- parent temporary-directory ACL mutation;
+- manual candidate/Skill-specific read grants;
 - explicit `$skill`/`/skills` acceptance substitution;
 - candidate-body injection into model context;
+- OS/model/effort substitution;
 - silent Codex upgrade;
 - candidate/corpus/threshold/D050 changes.
 
+## T023 next executable identity
+
+```text
+Task: T023
+Status: READY / FRESH V10 EPOCH
+Task Contract: docs/tasks/T023-unified-skill-profile-activation-evals.md
+Controlling revision: docs/tasks/T049-mg1-v10-windows-workspace-acl-compatible-restart.md
+Expected handoff: handoffs/T023-executor-handoff.json
+Implementation Executor launch: Codex NEW / GPT-5.6 Sol / High
+Live acceptance cell: Codex / native Windows / GPT-5.6 Sol / Medium
+Codex CLI baseline: 0.149.0
+Prior observations allowed in v10 score: 0
+Pre-provider requirement: explicit backend resolution + ACL-compatible workspace + provider-free workspace-readability PASS
+Pre-acceptance requirement: unchanged synthetic canary 2/2 PASS under one complete profile
+```
+
 ## Next action
 
-1. Validate the complete T049 branch against canonical `develop@1076a8eccc5003d92e677e83c8ddab3bd165fa90`.
-2. Confirm changes are limited to Orchestrator-owned Markdown plus authorized D052 `oracle.json`.
-3. Confirm `corpus.json`, `trial-envelope.json`, `topologies.json`, all presentation/reference bytes and product/runtime assets are untouched.
-4. Integrate T049/MG1-v10 through PR only if that boundary is clean.
-5. Refresh canonical `develop` and checkpoint v10 as `INTEGRATED / CONTROLLING`.
-6. Only then show D055 and relaunch T023 from fresh canonical `develop`.
-7. Executor adapts only technical workspace factory/ACL evidence/provider-free readability mechanics plus tests, then executes the frozen v10 gates.
-8. Orchestrator independently converges any successor handoff/evidence before topology acceptance.
+1. Refresh current canonical `develop` before Executor launch.
+2. Show D055: Codex `NEW`, GPT-5.6 Sol, High for technical v10 workspace factory/ACL diagnostics/provider-free readability adaptation; live acceptance observations remain Sol / Medium.
+3. Relaunch T023 from fresh canonical `develop` using only `docs/tasks/T023-unified-skill-profile-activation-evals.md` plus D042 freshness.
+4. Executor adapts only technical workspace factory/ACL evidence/provider-free probe/harness tests and preserves frozen D052 assets.
+5. Executor runs deterministic verification, backend resolution and provider-free workspace gate before any model call.
+6. Only after workspace gate PASS may the unchanged synthetic canary run; only after canary 2/2 PASS may acceptance begin.
+7. If acceptance begins, send only observations still required by frozen futility/materiality logic.
+8. Orchestrator independently reviews successor handoff/evidence before topology acceptance.
 
 ## Next chat minimum load
 
@@ -169,4 +186,4 @@ Load only current `develop` identity, `AGENTS.md`, and this checkpoint; then fol
 
 ## Do not
 
-Do not rerun v9; do not import prior observations; do not change corpus v4; do not upgrade Codex inside v10; do not weaken host-observed activation; do not broaden privileges to make the probe/canary pass; do not alter candidate bytes/thresholds/D050 rules; do not write directly to `main`/`develop`.
+Do not rerun v9; do not import prior observations; do not change corpus v4; do not upgrade Codex inside v10; do not weaken host-observed body-use semantics; do not broaden privileges to make workspace/canary pass; do not alter candidate bytes/thresholds/D050 rules; do not write directly to `main`/`develop`.
