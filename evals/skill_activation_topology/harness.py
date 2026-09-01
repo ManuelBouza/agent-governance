@@ -46,7 +46,7 @@ ACTIVATION_RELEVANT_CLASSES = {
     "multi-intent",
 }
 NEGATIVE_CLASSES = {"negative", "near-miss"}
-V8_CLASS_ORDER = (
+V9_CLASS_ORDER = (
     "cross-profile",
     "ambiguous",
     "negative",
@@ -65,6 +65,9 @@ MINIMAL_DISABLED_FEATURES = (
     "standalone_web_search",
 )
 CANARY_NONCE = "The quartz heron carries seven indigo pebbles at noon."
+BACKEND_PROBE_NONCE = "T023_WINDOWS_SANDBOX_BACKEND_READY"
+REQUIRED_CODEX_VERSION = "codex-cli 0.149.0"
+WINDOWS_BACKEND_ORDER = ("elevated", "unelevated")
 
 TRIAL_SCHEMA: dict[str, Any] = {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
@@ -175,10 +178,10 @@ def validate_frozen_inputs(inputs: FrozenInputs) -> None:
     manifest = inputs.manifest
     envelope = inputs.envelope
 
-    if oracle.get("schema_version") != "8.0.0" or oracle.get("oracle_id") != (
-        "MG1-T023-TOPOLOGY-ORACLE-v8"
+    if oracle.get("schema_version") != "9.0.0" or oracle.get("oracle_id") != (
+        "MG1-T023-TOPOLOGY-ORACLE-v9"
     ):
-        raise HarnessError("harness requires the frozen MG1 V8 oracle")
+        raise HarnessError("harness requires the frozen MG1 V9 oracle")
     method = oracle.get("trial_method", {})
     if (
         method.get("base_valid_repetitions_per_case_candidate") != 2
@@ -186,7 +189,7 @@ def validate_frozen_inputs(inputs: FrozenInputs) -> None:
         or method.get("max_model_attempts_per_scheduled_observation") != 2
         or method.get("timeout_seconds_per_model_attempt") != 180
     ):
-        raise HarnessError("oracle paired repetition/attempt method is not frozen V8")
+        raise HarnessError("oracle paired repetition/attempt method is not frozen V9")
 
     if (
         envelope.get("schema_version") != "1.0.0"
@@ -229,14 +232,14 @@ def validate_frozen_inputs(inputs: FrozenInputs) -> None:
 
     cases = corpus.get("cases")
     if corpus.get("schema_version") != "4.0.0" or not isinstance(cases, list) or len(cases) != 40:
-        raise HarnessError("harness requires the frozen 40-case MG1 V8 corpus")
+        raise HarnessError("harness requires the frozen 40-case MG1 V9 corpus")
     ids = [case.get("id") for case in cases if isinstance(case, dict)]
     if len(ids) != len(cases) or len(ids) != len(set(ids)):
         raise HarnessError("corpus case identities must be unique objects")
     known_capabilities = set(manifest.get("shared_references", {}))
     fixtures = envelope.get("fixtures", {})
     if set(fixtures) != {"neutral", "source", "consumer"}:
-        raise HarnessError("trial-envelope fixture roles are not the frozen V8 set")
+        raise HarnessError("trial-envelope fixture roles are not the frozen V9 set")
     for case in cases:
         if set(case.get("expected_capabilities", [])) - known_capabilities:
             raise HarnessError(f"{case['id']}: unknown expected capability")
@@ -384,7 +387,7 @@ def _copy_record(source: Path, target: Path, destination: Path) -> dict[str, Any
 
 
 def scheduled_trials(inputs: FrozenInputs) -> list[TrialSpec]:
-    """Return the V8 full-completion two-repetition ceiling for all candidates.
+    """Return the V9 full-completion two-repetition ceiling for all candidates.
 
     Conditional third repetitions are deliberately absent.  They are derived only
     after both valid paired observations exist for a case/candidate identity.
@@ -413,7 +416,7 @@ def _schedule(
     schedule: list[TrialSpec] = []
     ordered_cases = sorted(
         inputs.corpus["cases"],
-        key=lambda case: (V8_CLASS_ORDER.index(case["class"]), case["id"]),
+        key=lambda case: (V9_CLASS_ORDER.index(case["class"]), case["id"]),
     )
     for case_index, case in enumerate(ordered_cases):
         for repetition in repetitions:
@@ -424,7 +427,7 @@ def _schedule(
 
 
 def all_possible_trials(inputs: FrozenInputs) -> list[TrialSpec]:
-    """Return all V8 identities, including conditional repetition three."""
+    """Return all V9 identities, including conditional repetition three."""
     maximum = inputs.oracle["trial_method"]["max_valid_repetitions_per_case_candidate"]
     return _schedule(inputs, inputs.oracle["candidate_ids"], range(1, maximum + 1))
 
@@ -531,6 +534,7 @@ def _host_command(
     root: Path,
     model: str,
     effort: str,
+    backend: str,
     sandbox: str,
     schema_path: Path,
     final_path: Path,
@@ -556,6 +560,8 @@ def _host_command(
         f'model_reasoning_effort="{effort}"',
         "--config",
         'web_search="disabled"',
+        "--config",
+        f'windows.sandbox="{backend}"',
     ]
     for feature in MINIMAL_DISABLED_FEATURES:
         command.extend(("--disable", feature))
@@ -569,6 +575,76 @@ def _host_command(
         )
     )
     return command
+
+
+def _backend_probe(
+    codex_command: str,
+    *,
+    backend: str,
+    workspace_parent: Path,
+    timeout_seconds: int = 20,
+) -> dict[str, Any]:
+    """Verify a native Windows backend without issuing a provider/model call."""
+    started = time.monotonic()
+    with tempfile.TemporaryDirectory(prefix=f"mx-backend-{backend}-", dir=workspace_parent) as tmp:
+        root = Path(tmp)
+        codex_home = root / "codex-home"
+        codex_home.mkdir()
+        command = [
+            codex_command,
+            "--config",
+            f'windows.sandbox="{backend}"',
+            "sandbox",
+            "cmd.exe",
+            "/d",
+            "/c",
+            f"echo {BACKEND_PROBE_NONCE}",
+        ]
+        environment = os.environ.copy()
+        environment["CODEX_HOME"] = str(codex_home)
+        timed_out = False
+        try:
+            completed = subprocess.run(
+                command,
+                cwd=root,
+                check=False,
+                capture_output=True,
+                text=True,
+                encoding="utf-8",
+                errors="replace",
+                timeout=timeout_seconds,
+                env=environment,
+            )
+        except subprocess.TimeoutExpired as exc:
+            timed_out = True
+            completed = subprocess.CompletedProcess(
+                command,
+                -1,
+                exc.stdout.decode("utf-8", "replace")
+                if isinstance(exc.stdout, bytes)
+                else exc.stdout or "",
+                exc.stderr.decode("utf-8", "replace")
+                if isinstance(exc.stderr, bytes)
+                else exc.stderr or "",
+            )
+        passed = (
+            not timed_out and completed.returncode == 0 and BACKEND_PROBE_NONCE in completed.stdout
+        )
+        return {
+            "backend": backend,
+            "passed": passed,
+            "returncode": completed.returncode,
+            "timed_out": timed_out,
+            "stdout": completed.stdout,
+            "stderr": completed.stderr,
+            "duration_seconds": round(time.monotonic() - started, 6),
+            "command": command,
+            "provider_model_call_issued": False,
+            "user_config_isolation": "temporary empty CODEX_HOME",
+            "config_override": f'windows.sandbox="{backend}"',
+            "official_config_key": "windows.sandbox",
+            "official_allowed_values": ["unelevated", "elevated"],
+        }
 
 
 def _trace_telemetry(stdout_jsonl: str, stderr: str = "") -> dict[str, Any]:
@@ -613,11 +689,15 @@ def _surface_drift(stdout_jsonl: str, stderr: str, *, skill_path: str | None = N
         r"(?i)(recommended_plugins|openai-curated-remote|apps \(connectors\)|app://)", visible
     ):
         return "UNRELATED_APP_PLUGIN_SURFACE"
-    normalized_visible = visible.replace("\\", "/").casefold()
+    normalized_visible = re.sub(r"[\\/]+", "/", visible).casefold()
     if (
         skill_path
-        and skill_path.replace("\\", "/").casefold() in normalized_visible
-        and re.search(r"(?i)(rejected|denied|not allowed|policy)", visible)
+        and re.sub(r"[\\/]+", "/", skill_path).casefold() in normalized_visible
+        and re.search(
+            r"(?i)(rejected|denied|not allowed|policy|access to the path[^\n]*is denied|"
+            r"acceso denegado)",
+            visible,
+        )
     ):
         return "REQUIRED_SKILL_BODY_READ_REJECTED"
     return None
@@ -651,6 +731,7 @@ def run_canary(
     effort: str,
     timeout_seconds: int,
     workspace_parent: Path,
+    backend: str,
     sandbox: str,
     repetition: int,
 ) -> dict[str, Any]:
@@ -684,6 +765,7 @@ def run_canary(
             root=root,
             model=model,
             effort=effort,
+            backend=backend,
             sandbox=sandbox,
             schema_path=schema,
             final_path=final,
@@ -752,7 +834,11 @@ def run_canary(
             "host_surface_drift": drift,
             "unexpected_model_workspace_mutation": mutation,
             "effective_host_profile": {
-                "sandbox": sandbox,
+                "codex_cli_version": REQUIRED_CODEX_VERSION,
+                "native_windows_backend": backend,
+                "logical_sandbox": sandbox,
+                "model": model,
+                "effort": effort,
                 "ignore_user_config": True,
                 "ignore_rules": True,
                 "disabled_features": list(MINIMAL_DISABLED_FEATURES),
@@ -769,42 +855,101 @@ def run_canary(
 
 def run_host_preflight(
     inputs: FrozenInputs, args: argparse.Namespace, output: Path, workspace_parent: Path
-) -> str | None:
+) -> dict[str, Any]:
     records: list[dict[str, Any]] = []
-    for sandbox in ("read-only", "workspace-write"):
-        sandbox_records = []
-        for repetition in (1, 2):
-            record = run_canary(
-                inputs,
-                codex_command=args.codex_command,
-                model=args.model,
-                effort=args.effort,
-                timeout_seconds=args.timeout_seconds,
-                workspace_parent=workspace_parent,
-                sandbox=sandbox,
-                repetition=repetition,
-            )
-            records.append(record)
-            sandbox_records.append(record)
-            _json_dump(output / "canary" / f"{sandbox}-r{repetition}.json", record)
-            if not record["passed"]:
+    backend_records: list[dict[str, Any]] = []
+    for backend in WINDOWS_BACKEND_ORDER:
+        backend_record = _backend_probe(
+            args.codex_command, backend=backend, workspace_parent=workspace_parent
+        )
+        backend_records.append(backend_record)
+        _json_dump(
+            output / "backend-resolution.json",
+            {
+                "status": "AVAILABLE" if backend_record["passed"] else "PROBING",
+                "codex_cli_version": _codex_version(args.codex_command),
+                "platform": platform.platform(),
+                "backend_selection_order": list(WINDOWS_BACKEND_ORDER),
+                "records": backend_records,
+                "provider_model_calls_issued": 0,
+                "dangerous_bypass_used": False,
+            },
+        )
+        if not backend_record["passed"]:
+            continue
+        for sandbox in ("read-only", "workspace-write"):
+            sandbox_records = []
+            for repetition in (1, 2):
+                record = run_canary(
+                    inputs,
+                    codex_command=args.codex_command,
+                    model=args.model,
+                    effort=args.effort,
+                    timeout_seconds=args.timeout_seconds,
+                    workspace_parent=workspace_parent,
+                    backend=backend,
+                    sandbox=sandbox,
+                    repetition=repetition,
+                )
+                records.append(record)
+                sandbox_records.append(record)
+                _json_dump(output / "canary" / f"{backend}-{sandbox}-r{repetition}.json", record)
+                if not record["passed"]:
+                    break
+            if len(sandbox_records) == 2 and all(record["passed"] for record in sandbox_records):
+                result = {
+                    "status": "PASS",
+                    "reason": None,
+                    "selected_backend": backend,
+                    "selected_sandbox": sandbox,
+                    "backend_records": backend_records,
+                    "records": records,
+                }
+                _json_dump(output / "host-preflight.json", result)
+                return result
+            if sandbox == "read-only" and not any(
+                record.get("host_surface_drift") == "REQUIRED_SKILL_BODY_READ_REJECTED"
+                for record in sandbox_records
+            ):
                 break
-        if len(sandbox_records) == 2 and all(record["passed"] for record in sandbox_records):
-            _json_dump(
-                output / "host-preflight.json",
-                {"status": "PASS", "selected_sandbox": sandbox, "records": records},
-            )
-            return sandbox
-        if sandbox == "read-only" and not any(
+        backend_canary_records = [
+            record
+            for record in records
+            if record["effective_host_profile"]["native_windows_backend"] == backend
+        ]
+        if not any(
             record.get("host_surface_drift") == "REQUIRED_SKILL_BODY_READ_REJECTED"
-            for record in sandbox_records
+            or record.get("returncode") not in {0, None}
+            for record in backend_canary_records
         ):
             break
-    _json_dump(
-        output / "host-preflight.json",
-        {"status": "BLOCKED", "selected_sandbox": None, "records": records},
+    backend_available = any(record["passed"] for record in backend_records)
+    reason = (
+        "HOST_CAPABILITY_PREFLIGHT" if backend_available else "WINDOWS_SANDBOX_BACKEND_UNAVAILABLE"
     )
-    return None
+    result = {
+        "status": "BLOCKED",
+        "reason": reason,
+        "selected_backend": None,
+        "selected_sandbox": None,
+        "backend_records": backend_records,
+        "records": records,
+    }
+    _json_dump(output / "host-preflight.json", result)
+    _json_dump(
+        output / "backend-resolution.json",
+        {
+            "status": "BLOCKED" if not backend_available else "AVAILABLE",
+            "reason": reason if not backend_available else None,
+            "codex_cli_version": _codex_version(args.codex_command),
+            "platform": platform.platform(),
+            "backend_selection_order": list(WINDOWS_BACKEND_ORDER),
+            "records": backend_records,
+            "provider_model_calls_issued": 0,
+            "dangerous_bypass_used": False,
+        },
+    )
+    return result
 
 
 def run_trial(
@@ -816,6 +961,7 @@ def run_trial(
     effort: str,
     timeout_seconds: int,
     workspace_parent: Path,
+    backend: str = "elevated",
     sandbox: str = "read-only",
     attempt: int = 1,
 ) -> tuple[dict[str, Any], dict[str, Any]]:
@@ -833,6 +979,7 @@ def run_trial(
             root=root,
             model=model,
             effort=effort,
+            backend=backend,
             sandbox=sandbox,
             schema_path=schema_path,
             final_path=final_path,
@@ -887,7 +1034,11 @@ def run_trial(
             "final_message": final_raw,
             "duration_seconds": round(duration, 6),
             "effective_host_profile": {
-                "sandbox": sandbox,
+                "codex_cli_version": REQUIRED_CODEX_VERSION,
+                "native_windows_backend": backend,
+                "logical_sandbox": sandbox,
+                "model": model,
+                "effort": effort,
                 "ignore_user_config": True,
                 "ignore_rules": True,
                 "disabled_features": list(MINIMAL_DISABLED_FEATURES),
@@ -1213,7 +1364,7 @@ def aggregate_candidate_trials(
 def finalized_candidate_aggregates(
     inputs: FrozenInputs, candidate_id: str, trials: list[dict[str, Any]]
 ) -> list[dict[str, Any]]:
-    """Aggregate only completed pairs/conditional thirds for v8 futility checks."""
+    """Aggregate only completed pairs/conditional thirds for v9 futility checks."""
     selected = [trial for trial in trials if trial["candidate_id"] == candidate_id]
     by_case: dict[str, list[dict[str, Any]]] = {}
     for trial in selected:
@@ -1768,6 +1919,12 @@ def _validate_partial(
         "workspace-write",
     }:
         raise HarnessError(f"{spec.key}: resumed execution used an invalid frozen sandbox")
+    if not any(
+        command[index : index + 2] == ["--config", f'windows.sandbox="{backend}"']
+        for index in range(len(command) - 1)
+        for backend in WINDOWS_BACKEND_ORDER
+    ):
+        raise HarnessError(f"{spec.key}: resumed execution lacked an explicit Windows backend")
     if "--ignore-user-config" not in command or "--ignore-rules" not in command:
         raise HarnessError(f"{spec.key}: resumed execution did not isolate host configuration")
     for feature in MINIMAL_DISABLED_FEATURES:
@@ -1868,6 +2025,8 @@ def validate_execution_config(inputs: FrozenInputs, args: argparse.Namespace) ->
     method = inputs.oracle["trial_method"]
     if args.model != "gpt-5.6-sol" or args.effort != "medium" or platform.system() != "Windows":
         raise HarnessError("required live cell is native Windows / GPT-5.6 Sol / Medium")
+    if _codex_version(args.codex_command) != REQUIRED_CODEX_VERSION:
+        raise HarnessError(f"required Codex CLI baseline is {REQUIRED_CODEX_VERSION}")
     if args.timeout_seconds != method["timeout_seconds_per_model_attempt"]:
         raise HarnessError("per-attempt timeout must match the frozen oracle")
     if args.full_acceptance and (args.case or args.candidate or args.repetition):
@@ -1905,7 +2064,7 @@ def run_matrix(args: argparse.Namespace) -> int:
             "timeout_seconds": args.timeout_seconds,
         }
         if any(run_metadata.get(key) != value for key, value in expected_identity.items()):
-            raise HarnessError("resume execution identity differs from frozen V8 run")
+            raise HarnessError("resume execution identity differs from frozen V9 run")
         if run_metadata.get("runner_sha256") != _sha256(Path(__file__)):
             raise HarnessError("resume runner identity changed")
         for path in (ORACLE_PATH, CORPUS_PATH, TOPOLOGIES_PATH, MANIFEST_PATH, ENVELOPE_PATH):
@@ -1916,9 +2075,11 @@ def run_matrix(args: argparse.Namespace) -> int:
             {"resumed_at": datetime.now(UTC).isoformat(), "prior_status": run_metadata["status"]}
         )
         host_preflight = _load_json(output / "host-preflight.json")
-        if host_preflight.get("status") != "PASS" or run_metadata.get(
-            "selected_sandbox"
-        ) != host_preflight.get("selected_sandbox"):
+        if (
+            host_preflight.get("status") != "PASS"
+            or run_metadata.get("selected_sandbox") != host_preflight.get("selected_sandbox")
+            or run_metadata.get("selected_backend") != host_preflight.get("selected_backend")
+        ):
             raise HarnessError("resume host preflight/profile identity mismatch")
     else:
         if output.exists() and any(output.iterdir()):
@@ -1957,6 +2118,7 @@ def run_matrix(args: argparse.Namespace) -> int:
             "clean_context": "one new codex exec thread and disposable workspace per attempt",
             "workspace_parent": str(workspace_parent),
             "sandbox_selection_order": ["read-only", "workspace-write"],
+            "windows_backend_selection_order": list(WINDOWS_BACKEND_ORDER),
             "stimulus_rule": "exact corpus prompt, two newlines, frozen neutral suffix",
             "stage_state": "REFERENCE_BASE_PENDING" if args.full_acceptance else "FILTERED_PENDING",
             "status": "RUNNING",
@@ -1978,13 +2140,16 @@ def run_matrix(args: argparse.Namespace) -> int:
                     },
                 )
                 return 1
-            selected_sandbox = run_host_preflight(inputs, args, output, workspace_parent)
-            if selected_sandbox is None:
+            preflight = run_host_preflight(inputs, args, output, workspace_parent)
+            if preflight["status"] != "PASS":
+                reason = preflight["reason"]
                 run_metadata.update(
                     status="BLOCKED",
-                    stage_state="HOST_CAPABILITY_PREFLIGHT_FAILED",
+                    stage_state=f"{reason}_FAILED",
+                    selected_backend=None,
                     selected_sandbox=None,
                     completed_valid_observations=0,
+                    acceptance_prompts_issued=0,
                 )
                 _json_dump(output / "run-metadata.json", run_metadata)
                 _json_dump(
@@ -1992,7 +2157,7 @@ def run_matrix(args: argparse.Namespace) -> int:
                     {
                         "status": "BLOCKED",
                         "selected_candidate": None,
-                        "reason": "HOST_CAPABILITY_PREFLIGHT",
+                        "reason": reason,
                         "scored": False,
                     },
                 )
@@ -2000,7 +2165,7 @@ def run_matrix(args: argparse.Namespace) -> int:
                     output / "completeness.json",
                     {
                         "execution_epoch": inputs.oracle["execution_epoch"],
-                        "stage_state": "HOST_CAPABILITY_PREFLIGHT_FAILED",
+                        "stage_state": f"{reason}_FAILED",
                         "completed_valid_observations": 0,
                         "acceptance_prompts_issued": 0,
                         "acceptance_complete": False,
@@ -2008,7 +2173,8 @@ def run_matrix(args: argparse.Namespace) -> int:
                     },
                 )
                 return 1
-            run_metadata["selected_sandbox"] = selected_sandbox
+            run_metadata["selected_backend"] = preflight["selected_backend"]
+            run_metadata["selected_sandbox"] = preflight["selected_sandbox"]
             run_metadata["effective_host_profile"] = _load_json(output / "host-preflight.json")[
                 "records"
             ][-1]["effective_host_profile"]
@@ -2024,6 +2190,7 @@ def run_matrix(args: argparse.Namespace) -> int:
             effort=args.effort,
             timeout_seconds=args.timeout_seconds,
             workspace_parent=workspace_parent,
+            backend=run_metadata.get("selected_backend", "elevated"),
             sandbox=run_metadata.get("selected_sandbox", "read-only"),
         )
 
@@ -2175,7 +2342,7 @@ def run_matrix(args: argparse.Namespace) -> int:
     ) -> int | None:
         ordered_cases = sorted(
             inputs.corpus["cases"],
-            key=lambda case: (V8_CLASS_ORDER.index(case["class"]), case["id"]),
+            key=lambda case: (V9_CLASS_ORDER.index(case["class"]), case["id"]),
         )
         for case_index, case in enumerate(ordered_cases):
             rotated = (
@@ -2355,11 +2522,11 @@ def _validate_executed_runner_provenance(metadata: dict[str, Any]) -> None:
 
 
 def validate_complete_evidence(inputs: FrozenInputs, output: Path) -> None:
-    """Fail closed on V7 epoch, adaptive schedule, attempts, traces and aggregates."""
+    """Fail closed on V9 epoch, adaptive schedule, attempts, traces and aggregates."""
     metadata = _load_json(output / "run-metadata.json")
     method = inputs.oracle["trial_method"]
     if metadata.get("status") not in {"COMPLETE", "BLOCKED_NO_REFERENCE"}:
-        raise HarnessError("incomplete V7 execution cannot be scored")
+        raise HarnessError("incomplete V9 execution cannot be scored")
     if (
         metadata.get("oracle_id") != inputs.oracle["oracle_id"]
         or metadata.get("execution_epoch") != inputs.oracle["execution_epoch"]
@@ -2370,7 +2537,7 @@ def validate_complete_evidence(inputs: FrozenInputs, output: Path) -> None:
         or metadata.get("host") != "Codex"
         or metadata.get("timeout_seconds") != method["timeout_seconds_per_model_attempt"]
     ):
-        raise HarnessError("mismatched V7 execution identity/configuration")
+        raise HarnessError("mismatched V9 execution identity/configuration")
     _validate_executed_runner_provenance(metadata)
     for path in (ORACLE_PATH, CORPUS_PATH, TOPOLOGIES_PATH, MANIFEST_PATH, ENVELOPE_PATH):
         relative = path.relative_to(REPO_ROOT).as_posix()
@@ -2399,7 +2566,7 @@ def validate_complete_evidence(inputs: FrozenInputs, output: Path) -> None:
     if len(set(trial_keys)) != len(trial_keys) or set(trial_keys) != set(raw_keys):
         raise HarnessError("valid trial/raw identity mismatch or duplication")
     if set(trial_keys) - set(possible):
-        raise HarnessError("trial outside frozen V7 identity set")
+        raise HarnessError("trial outside frozen V9 identity set")
     evaluated = (
         ["B0", "B1"]
         if metadata["status"] == "BLOCKED_NO_REFERENCE"
@@ -2421,7 +2588,7 @@ def validate_complete_evidence(inputs: FrozenInputs, output: Path) -> None:
     if len(evaluated) == 4:
         lower, upper = method["overall_valid_observation_range_when_challengers_execute"]
     if not lower <= len(trials) <= upper:
-        raise HarnessError("V7 valid observation count is outside the frozen stage range")
+        raise HarnessError("V9 valid observation count is outside the frozen stage range")
 
     raw_by_key = dict(zip(raw_keys, raw_trials, strict=True))
     trial_by_key = dict(zip(trial_keys, trials, strict=True))
@@ -2492,13 +2659,13 @@ def validate_complete_evidence(inputs: FrozenInputs, output: Path) -> None:
         for item in aggregate_candidate_trials(inputs, candidate, trials)
     ]
     if aggregates != load_trials(output / "case-aggregates.jsonl"):
-        raise HarnessError("persisted V7 case aggregates are not exactly recomputable")
+        raise HarnessError("persisted V9 case aggregates are not exactly recomputable")
     recomputed_metrics = {
         candidate: compute_candidate_metrics(inputs, candidate, trials, deterministic)
         for candidate in evaluated
     }
     if recomputed_metrics != _load_json(output / "metrics.json"):
-        raise HarnessError("persisted V7 metrics are not exactly recomputable")
+        raise HarnessError("persisted V9 metrics are not exactly recomputable")
     expected_selection = (
         {
             "status": "BLOCKED",
@@ -2511,7 +2678,7 @@ def validate_complete_evidence(inputs: FrozenInputs, output: Path) -> None:
         else apply_selection_rule(inputs, recomputed_metrics)
     )
     if expected_selection != _load_json(output / "selection.json"):
-        raise HarnessError("persisted V7 selection is not exactly recomputable")
+        raise HarnessError("persisted V9 selection is not exactly recomputable")
 
 
 def score_matrix(args: argparse.Namespace) -> int:
