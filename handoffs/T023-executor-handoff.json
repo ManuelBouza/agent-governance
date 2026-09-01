@@ -2,92 +2,191 @@
   "task_id": "T023",
   "status": "BLOCKED",
   "task_contract_path": "docs/tasks/T023-unified-skill-profile-activation-evals.md",
-  "branch": "test/t023-skill-activation-topology-evals-v8",
-  "implementation_head_sha": "76a591c2d7a3f48d5e4b780712a78bef4c8e212f",
+  "branch": "test/t023-skill-activation-topology-evals-v9",
+  "implementation_head_sha": "b7b665d5d495be2dd2bf2cbb8f4849fa65ad99c4",
   "base_branch": "develop",
-  "base_sha": "23475b7fbcf427c4dac8dcb06796409660434aa2",
+  "base_sha": "f44227768a911207ac84dcbe20cf88f5d479f74d",
   "sdd_profile": "ASSURED",
   "test_authorship_mode": "mixed",
-  "controlling_revision": "docs/tasks/T047-mg1-v8-cost-bounded-host-evaluation.md",
+  "controlling_revision": "docs/tasks/T048-mg1-v9-native-windows-sandbox-bound-restart.md",
   "files_changed": [
     "evals/skill_activation_topology/harness.py",
     "tests/test_skill_activation_topology_harness.py",
-    "evals/skill_activation_topology/evidence/mg1-v8-codex-windows-gpt-5.6-sol-medium/canary/read-only-r1.json",
-    "evals/skill_activation_topology/evidence/mg1-v8-codex-windows-gpt-5.6-sol-medium/canary/workspace-write-r1.json",
-    "evals/skill_activation_topology/evidence/mg1-v8-codex-windows-gpt-5.6-sol-medium/completeness.json",
-    "evals/skill_activation_topology/evidence/mg1-v8-codex-windows-gpt-5.6-sol-medium/deterministic-evidence.json",
-    "evals/skill_activation_topology/evidence/mg1-v8-codex-windows-gpt-5.6-sol-medium/host-preflight.json",
-    "evals/skill_activation_topology/evidence/mg1-v8-codex-windows-gpt-5.6-sol-medium/run-metadata.json",
-    "evals/skill_activation_topology/evidence/mg1-v8-codex-windows-gpt-5.6-sol-medium/selection.json",
+    "evals/skill_activation_topology/evidence/mg1-v9-codex-windows-gpt-5.6-sol-medium/backend-resolution.json",
+    "evals/skill_activation_topology/evidence/mg1-v9-codex-windows-gpt-5.6-sol-medium/canary/unelevated-read-only-r1.json",
+    "evals/skill_activation_topology/evidence/mg1-v9-codex-windows-gpt-5.6-sol-medium/canary/unelevated-workspace-write-r1.json",
+    "evals/skill_activation_topology/evidence/mg1-v9-codex-windows-gpt-5.6-sol-medium/completeness.json",
+    "evals/skill_activation_topology/evidence/mg1-v9-codex-windows-gpt-5.6-sol-medium/deterministic-evidence.json",
+    "evals/skill_activation_topology/evidence/mg1-v9-codex-windows-gpt-5.6-sol-medium/host-preflight.json",
+    "evals/skill_activation_topology/evidence/mg1-v9-codex-windows-gpt-5.6-sol-medium/run-metadata.json",
+    "evals/skill_activation_topology/evidence/mg1-v9-codex-windows-gpt-5.6-sol-medium/selection.json",
     "handoffs/T023-executor-handoff.json"
   ],
-  "implementation_summary": "Established a fresh isolated worktree exactly at canonical origin/develop 23475b7fbcf427c4dac8dcb06796409660434aa2 while preserving all existing local branches/worktrees. Implemented the frozen MG1-v8 synthetic Skill canary, minimal Codex host surface, read-only then workspace-write sandbox selection, host-surface drift detection, exact 180-second attempts, provider/tool telemetry, semantic-consequence scheduling, qualification futility and challenger materiality certificates without changing Orchestrator-owned corpus/oracle/presentation bytes. All deterministic gates passed. The mandatory host-capability preflight then failed under both permitted sandboxes because every attempted mx-canary SKILL.md body read was rejected by host policy. The run stopped BLOCKED / HOST_CAPABILITY_PREFLIGHT with zero acceptance prompts and zero scored observations, as required.",
+  "implementation_summary": "Established a fresh isolated worktree at canonical origin/develop f44227768a911207ac84dcbe20cf88f5d479f74d while preserving all prior local branches and worktrees. Adapted the technical harness to frozen MG1-v9: exact Codex CLI 0.149.0 enforcement, explicit windows.sandbox backend binding, elevated-first and unelevated fallback probing without provider calls, backend/profile evidence, resume binding, and Windows access-denied drift extraction. The complete deterministic gate passed. Elevated backend initialization timed out; the permitted unelevated backend initialized. Its unchanged synthetic canary then failed once under read-only and once under workspace-write because the required mx-canary SKILL.md body was access-denied. Per T048, no second repetition for a terminal profile failure and no acceptance-corpus prompt were issued. The run stopped BLOCKED / HOST_CAPABILITY_PREFLIGHT with zero scored observations.",
   "oracle": {
-    "oracle_id": "MG1-T023-TOPOLOGY-ORACLE-v8",
-    "execution_epoch": "MG1-T023-EXECUTION-v8",
+    "oracle_id": "MG1-T023-TOPOLOGY-ORACLE-v9",
+    "execution_epoch": "MG1-T023-EXECUTION-v9",
     "capability_source_epoch": "MG1-2026-08-25-v3",
     "presentation_revision": "MG1-T023-PRESENTATIONS-v3",
     "corpus_id": "MG1-T023-CORPUS-v4",
     "trial_envelope_id": "MG1-T023-TRIAL-ENVELOPE-v2",
     "frozen_assets_modified": false,
     "prior_epoch_observations_imported": 0,
+    "synthetic_canary_prompts_issued": 2,
     "acceptance_prompts_issued": 0,
     "scored_observations": 0
   },
+  "host_profile": {
+    "codex_cli_version": "codex-cli 0.149.0",
+    "platform": "native Windows 11",
+    "model": "gpt-5.6-sol",
+    "effort": "medium",
+    "backend_attempts": [
+      {
+        "backend": "elevated",
+        "result": "UNAVAILABLE_TIMEOUT",
+        "provider_model_call_issued": false
+      },
+      {
+        "backend": "unelevated",
+        "result": "AVAILABLE",
+        "provider_model_call_issued": false
+      }
+    ],
+    "selected_backend": null,
+    "logical_sandbox_attempts": [
+      "unelevated/read-only",
+      "unelevated/workspace-write"
+    ],
+    "selected_logical_sandbox": null,
+    "user_config_ignored": true,
+    "execpolicy_rules_ignored": true,
+    "dangerous_bypass_used": false,
+    "adapter_authority": {
+      "installed_help": "codex-cli 0.149.0 --help and sandbox --help",
+      "official_config_reference": "https://developers.openai.com/codex/config-file/config-reference",
+      "resolved_key": "windows.sandbox",
+      "resolved_values": [
+        "elevated",
+        "unelevated"
+      ]
+    }
+  },
   "verification": {
     "commands": [
-      "uv run --locked python evals/skill_activation_topology/harness.py validate",
-      "uv run --locked pytest -q tests/test_skill_activation_topology_harness.py",
-      "uv run --locked ruff check evals/skill_activation_topology/harness.py tests/test_skill_activation_topology_harness.py",
-      "uv run --locked ruff format --check evals/skill_activation_topology/harness.py tests/test_skill_activation_topology_harness.py",
-      "uv run --locked python evals/skill_activation_topology/harness.py verify --output evals/skill_activation_topology/evidence/mg1-v8-codex-windows-gpt-5.6-sol-medium"
+      "uv run --locked pytest tests/test_skill_activation_topology_harness.py -q",
+      "uv run --locked ruff check .",
+      "uv run --locked ruff format --check .",
+      "uv run --locked python evals/skill_activation_topology/harness.py run --output evals/skill_activation_topology/evidence/mg1-v9-codex-windows-gpt-5.6-sol-medium --full-acceptance"
     ],
     "results": {
-      "frozen_input_validation": "PASS: oracle v8, corpus v4, four candidates, 40 cases, 320 full-completion ceiling",
-      "focused_harness_tests": "PASS: 51 tests",
+      "focused_harness_tests": "PASS: 55 tests",
       "ruff_check": "PASS",
-      "ruff_format_check": "PASS",
-      "full_pytest": "PASS: 456 tests",
+      "ruff_format_check": "PASS: 36 files",
+      "full_pytest": "PASS: 460 tests",
       "profile_isolation": "PASS: 48 tests",
       "consumer_source_independence": "PASS: 8 tests",
-      "host_preflight_read_only": "FAIL: 1/2 repetitions executed; five required Skill-body read commands rejected by host policy; nonce not proven",
-      "host_preflight_workspace_write": "FAIL: 1/2 repetitions executed; two required Skill-body read commands rejected by host policy; nonce not proven; no unexpected workspace mutation",
-      "acceptance_execution": "NOT RUN by frozen gate"
+      "backend_elevated": "UNAVAILABLE: initialization probe timed out after 20 seconds; no provider/model call",
+      "backend_unelevated": "PASS: native sandbox probe returned the exact nonce; no provider/model call",
+      "canary_unelevated_read_only": "FAIL: terminal required SKILL.md body access denial; 1/2 repetitions executed",
+      "canary_unelevated_workspace_write": "FAIL: terminal required SKILL.md body access denial; 1/2 repetitions executed; no unexpected workspace mutation",
+      "acceptance_execution": "NOT RUN by frozen host-capability gate"
     },
     "runtime": "Windows 11 / Python 3.13.14 / uv locked environment / codex-cli 0.149.0 / gpt-5.6-sol medium",
     "network_required": true,
-    "network_detail": "Only the two synthetic Codex canary invocations used provider access. No MG1 acceptance prompt was sent.",
-    "evidence_root": "evals/skill_activation_topology/evidence/mg1-v8-codex-windows-gpt-5.6-sol-medium"
+    "network_detail": "Only the two unchanged synthetic canary invocations used provider access. No MG1 acceptance prompt was sent.",
+    "evidence_root": "evals/skill_activation_topology/evidence/mg1-v9-codex-windows-gpt-5.6-sol-medium"
   },
   "code_review": {
-    "status": "COMPLETE_FOR_BLOCKED_OUTCOME",
-    "summary": "Reviewed the v8 implementation against T023, T047, the frozen oracle/envelope and D052 ownership boundary. The canary contains no acceptance prompt or candidate bytes; profile selection is fail-closed; successful activation requires a host-observed body read; Windows-path rejection evidence is normalized from preserved raw stderr; deprecated web-search feature toggles were replaced prospectively with the installed CLI's top-level web_search=disabled control; token totals remain null when not provider-exposed; scheduling and optimistic certificates are deterministic and covered by exact edge tests. No committed Markdown or Orchestrator-owned conformance asset changed.",
-    "residual_risk": "The installed Codex 0.149.0 execution policy rejects local Skill body reads under both permitted sandboxes. No portable topology claim can be made until a future controlling revision supplies a host envelope that passes the frozen canary twice."
+    "reviewed_head_sha": "b7b665d5d495be2dd2bf2cbb8f4849fa65ad99c4",
+    "summary": "Reviewed the v9 implementation against T023, T048, the frozen oracle/envelope and D052 ownership boundary. Backend resolution is model-free, elevated-first, explicitly bound and fail-closed. Canary/acceptance invocations carry the same backend setting, ignored config/rules state and minimal feature surface. Required body-access denials are host-surface failures rather than candidate non-activation. No committed Markdown or Orchestrator-owned conformance asset changed.",
+    "findings": [],
+    "resolved_findings": [
+      "Corrected native Windows access-denied recognition so read-only failure reaches the preregistered workspace-write fallback.",
+      "Collapsed JSON-escaped Windows path separators so preserved Codex event traces deterministically match the required Skill path."
+    ],
+    "upstream_reentry_required": false,
+    "upstream_reentry_stage": null,
+    "residual_risk": "Codex 0.149.0 unelevated sandbox initializes but cannot read the synthetic Skill body under either permitted logical sandbox on this host. Elevated initialization is unavailable in the current execution environment. No portable topology claim can be made from v9."
   },
   "requirement_trace": {
-    "AC-T023-1": {"status": "PASS_DETERMINISTIC_ONLY", "evidence": "deterministic-evidence.json proves unchanged candidate construction, source/distribution integrity and full regressions; live functional equivalence was not entered"},
-    "AC-T023-2": {"status": "NOT_RUN", "evidence": "host preflight blocked before the 40-case acceptance corpus"},
-    "AC-T023-3": {"status": "NOT_RUN", "evidence": "no acceptance observations exist to compare"},
-    "AC-T023-4": {"status": "PASS", "evidence": "oracle/corpus/presentation hashes are frozen; zero acceptance observations and no post-result semantic mutation"},
-    "AC-T023-5": {"status": "PASS_DETERMINISTIC", "evidence": "deterministic-evidence.json records one capability source, one distribution root and single-install feasibility for B0/B1/F2/G3"},
-    "AC-T023-6": {"status": "BLOCKED", "evidence": "selection.json records BLOCKED / HOST_CAPABILITY_PREFLIGHT; no candidate selected"},
-    "AC-T023-7": {"status": "PASS", "evidence": "frozen D052 assets unchanged; required preflight executed from v8 authority; no supplementary cases entered acceptance scoring"},
-    "AC-T047-1": {"status": "BLOCKED_AS_DESIGNED", "evidence": "host-preflight.json shows neither sandbox passed twice and completeness.json proves zero acceptance prompts"},
-    "AC-T047-2": {"status": "NOT_ESTABLISHED", "evidence": "canary commands ignored user config/rules and disabled the named feature flags, but Codex emitted deprecated web-search toggle errors and local plugin-manifest warnings; the harness now uses web_search=disabled prospectively, but the terminal failed preflight was not rerun"},
-    "AC-T047-3": {"status": "PASS", "evidence": "policy-rejected body reads caused terminal preflight failure and were not scored as candidate non-activation"},
-    "AC-T047-4": {"status": "PASS", "evidence": "corpus v4 frozen input validation passed; no prior observations imported"},
-    "AC-T047-5": {"status": "PASS_IMPLEMENTATION_NOT_LIVE", "evidence": "51 focused tests cover semantic order, one false activation futility, three semantic-error futility and optimistic-zero context materiality"},
-    "AC-T047-6": {"status": "PASS", "evidence": "candidate/oracle/presentation hashes unchanged"},
-    "AC-T047-7": {"status": "PASS", "evidence": "raw canary outputs preserve component token usage, rejected/tool counts, durations, profile identity and explicit absence of exact provider total"}
+    "AC-T023-1": {
+      "status": "PASS_DETERMINISTIC_ONLY",
+      "evidence": "deterministic-evidence.json proves unchanged candidate construction, source/distribution integrity and full regressions; live functional equivalence was not entered"
+    },
+    "AC-T023-2": {
+      "status": "NOT_RUN",
+      "evidence": "host-preflight.json blocked before the 40-case acceptance corpus"
+    },
+    "AC-T023-3": {
+      "status": "NOT_RUN",
+      "evidence": "no acceptance observations exist to compare"
+    },
+    "AC-T023-4": {
+      "status": "PASS",
+      "evidence": "frozen oracle/corpus/topology/presentation/envelope hashes were retained; zero prior observations imported and zero acceptance observations created"
+    },
+    "AC-T023-5": {
+      "status": "PASS_DETERMINISTIC",
+      "evidence": "deterministic-evidence.json records one capability source, one distribution root and single-install feasibility"
+    },
+    "AC-T023-6": {
+      "status": "BLOCKED",
+      "evidence": "selection.json records BLOCKED / HOST_CAPABILITY_PREFLIGHT with no candidate selected"
+    },
+    "AC-T023-7": {
+      "status": "PASS",
+      "evidence": "frozen D052 assets unchanged; no supplementary case entered acceptance scoring"
+    },
+    "AC-T048-1": {
+      "status": "PASS",
+      "evidence": "v8 evidence remained unchanged and zero v8 observation entered v9"
+    },
+    "AC-T048-2": {
+      "status": "PASS",
+      "evidence": "corpus v4 hash be56966f790e1640c200bf92b3c7fdf9f9792c6ef2d17a91e7bc4ef3e5583e75 remained frozen"
+    },
+    "AC-T048-3": {
+      "status": "PASS",
+      "evidence": "backend-resolution.json proves explicit non-disabled backend resolution before canary; both canary commands contain windows.sandbox=unelevated"
+    },
+    "AC-T048-4": {
+      "status": "PASS",
+      "evidence": "elevated probe preceded unelevated; read-only preceded workspace-write; terminal first failures were not repeated"
+    },
+    "AC-T048-5": {
+      "status": "BLOCKED_AS_DESIGNED",
+      "evidence": "host-preflight.json records body-access denial under both permitted logical sandboxes; no profile passed 2/2"
+    },
+    "AC-T048-6": {
+      "status": "PASS",
+      "evidence": "commands contain no dangerous bypass, interactive approval, explicit Skill acceptance substitution or pre-injected body"
+    },
+    "AC-T048-7": {
+      "status": "NOT_REACHED",
+      "evidence": "no profile passed canary selection and no acceptance attempt began"
+    },
+    "AC-T048-8": {
+      "status": "PASS",
+      "evidence": "frozen asset hashes match canonical develop; no semantic conformance asset changed"
+    },
+    "AC-T048-9": {
+      "status": "PASS",
+      "evidence": "run-metadata.json records codex-cli 0.149.0; no upgrade occurred"
+    },
+    "AC-T048-10": {
+      "status": "PASS_FOR_BLOCKED_OUTCOME",
+      "evidence": "backend-resolution.json, raw canary records, host-preflight.json, deterministic-evidence.json, completeness.json and selection.json are recomputable terminal evidence"
+    }
   },
   "dependencies_or_config_changes": [],
   "git_status": "Expected clean after final handoff commit",
   "unresolved_issues": [
     {
       "classification": "HOST_CAPABILITY_PREFLIGHT",
-      "detail": "Codex 0.149.0 rejected every required local mx-canary SKILL.md body-read command under both read-only and workspace-write despite --ignore-rules; no permitted profile produced host-observed read/use evidence."
+      "detail": "Elevated native Windows backend initialization timed out. Unelevated initialized, but both read-only and workspace-write canaries received host-observed access denial for .agents/skills/mx-canary/SKILL.md. No permitted complete profile passed 2/2."
     }
   ],
-  "recommended_next_task": "Orchestrator review of the remote BLOCKED evidence and SDD re-entry for the host execution envelope; do not rerun v8 acceptance without a new controlling revision or a host state that can pass the unchanged canary twice.",
+  "recommended_next_task": "Orchestrator convergence review of the remote BLOCKED v9 evidence and host execution-envelope re-entry. Do not issue v9 acceptance prompts unless a permitted exact profile can pass the unchanged canary twice under new durable authority.",
   "chatgpt_read_path": "handoffs/T023-executor-handoff.json"
 }
