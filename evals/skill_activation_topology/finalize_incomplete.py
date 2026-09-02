@@ -141,10 +141,119 @@ def finalize(output: Path, failed_key: str, session_log: Path) -> None:
     )
 
 
+def finalize_host_surface_drift(output: Path) -> None:
+    """Close an interrupted v10 run at its first unscored host-surface drift."""
+    inputs = harness.load_frozen_inputs()
+    metadata = harness._load_json(output / "run-metadata.json")
+    if metadata.get("status") != "RUNNING":
+        raise harness.HarnessError("host-drift finalization requires a running evidence root")
+    if metadata["runner_sha256"] != harness._sha256(Path(harness.__file__)):
+        raise harness.HarnessError("executed runner changed before host-drift preservation")
+    for relative, expected_digest in metadata["frozen_asset_sha256"].items():
+        if harness._sha256(harness.REPO_ROOT / relative) != expected_digest:
+            raise harness.HarnessError(f"frozen asset changed: {relative}")
+
+    attempts = [
+        harness._load_json(path) for path in sorted((output / "attempts").glob("*.json"))
+    ]
+    drift = [item for item in attempts if item.get("failure_class") == "HOST_SURFACE_DRIFT"]
+    if (
+        len(attempts) != 1
+        or len(drift) != 1
+        or drift[0].get("status") != "FAILED"
+        or drift[0].get("attempt") != 1
+        or drift[0].get("raw", {}).get("host_surface_drift") is None
+    ):
+        raise harness.HarnessError("evidence is not a first-attempt host-surface drift stop")
+    preflight = harness._load_json(output / "host-preflight.json")
+    if (
+        preflight.get("status") != "PASS"
+        or preflight.get("selected_backend") != metadata.get("selected_backend")
+        or preflight.get("selected_sandbox") != metadata.get("selected_sandbox")
+        or preflight.get("selected_workspace_acl_profile")
+        != metadata.get("selected_workspace_acl_profile")
+    ):
+        raise harness.HarnessError("host preflight/profile binding is inconsistent")
+
+    harness._jsonl_dump(output / "trials.jsonl", [])
+    harness._jsonl_dump(output / "raw-trials.jsonl", [])
+    harness._jsonl_dump(output / "attempts.jsonl", attempts)
+    harness._jsonl_dump(output / "failed-attempts.jsonl", attempts)
+    harness._jsonl_dump(output / "capacity-events.jsonl", [])
+    harness._json_dump(
+        output / "failure-evidence.json",
+        {
+            "status": "BLOCKED",
+            "type": "HOST_SURFACE_DRIFT",
+            "trial_key": drift[0]["trial_key"],
+            "attempt": 1,
+            "drift_class": drift[0]["raw"]["host_surface_drift"],
+            "acceptance_prompts_issued": 1,
+            "scored_observations": 0,
+            "retry_performed": False,
+            "selection_performed": False,
+            "disposition": (
+                "The affected observation is unscored and new scheduling stopped immediately. "
+                "Resume requires restoration of the exact selected complete host profile."
+            ),
+        },
+    )
+    harness._json_dump(
+        output / "completeness.json",
+        {
+            "execution_epoch": inputs.oracle["execution_epoch"],
+            "stage_state": "HOST_SURFACE_DRIFT",
+            "completed_valid_observations": 0,
+            "acceptance_prompts_issued": 1,
+            "scored_observations": 0,
+            "acceptance_complete": False,
+            "partial_scoring_permitted": False,
+        },
+    )
+    harness._json_dump(
+        output / "selection.json",
+        {
+            "status": "BLOCKED",
+            "selected_candidate": None,
+            "reason": "HOST_SURFACE_DRIFT",
+            "scored": False,
+        },
+    )
+    harness._json_dump(
+        output / "retry-diagnostics.json",
+        {
+            "host_surface_drift": 1,
+            "model_attempts": 1,
+            "non_capacity_failures": 1,
+            "capacity_events": 0,
+            "retry_performed": False,
+        },
+    )
+    metadata.update(
+        status="BLOCKED",
+        stage_state="HOST_SURFACE_DRIFT",
+        completed_valid_observations=0,
+        acceptance_prompts_issued=1,
+        scored_observations=0,
+        capacity_event_count=0,
+        updated_at=datetime.now(UTC).isoformat(),
+    )
+    harness._json_dump(output / "run-metadata.json", metadata)
+    print(json.dumps({"status": "BLOCKED", "reason": "HOST_SURFACE_DRIFT"}))
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, required=True)
-    parser.add_argument("--failed-key", required=True)
-    parser.add_argument("--session-log", type=Path, required=True)
+    parser.add_argument("--failed-key")
+    parser.add_argument("--session-log", type=Path)
+    parser.add_argument("--host-surface-drift", action="store_true")
     args = parser.parse_args()
-    finalize(args.output.resolve(), args.failed_key, args.session_log.resolve())
+    if args.host_surface_drift:
+        if args.failed_key or args.session_log:
+            parser.error("--host-surface-drift cannot be combined with timeout inputs")
+        finalize_host_surface_drift(args.output.resolve())
+    elif args.failed_key and args.session_log:
+        finalize(args.output.resolve(), args.failed_key, args.session_log.resolve())
+    else:
+        parser.error("timeout finalization requires --failed-key and --session-log")

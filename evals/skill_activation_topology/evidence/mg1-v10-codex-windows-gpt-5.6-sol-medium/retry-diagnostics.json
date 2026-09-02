@@ -1,0 +1,7 @@
+{
+  "capacity_events": 0,
+  "host_surface_drift": 1,
+  "model_attempts": 1,
+  "non_capacity_failures": 1,
+  "retry_performed": false
+}

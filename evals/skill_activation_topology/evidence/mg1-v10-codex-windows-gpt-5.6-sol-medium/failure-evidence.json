@@ -1,0 +1,12 @@
+{
+  "acceptance_prompts_issued": 1,
+  "attempt": 1,
+  "disposition": "The affected observation is unscored and new scheduling stopped immediately. Resume requires restoration of the exact selected complete host profile.",
+  "drift_class": "REQUIRED_SKILL_BODY_READ_REJECTED",
+  "retry_performed": false,
+  "scored_observations": 0,
+  "selection_performed": false,
+  "status": "BLOCKED",
+  "trial_key": "WX01--B0--r1",
+  "type": "HOST_SURFACE_DRIFT"
+}

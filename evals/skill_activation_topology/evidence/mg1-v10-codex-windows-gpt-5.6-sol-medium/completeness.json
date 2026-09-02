@@ -1,0 +1,9 @@
+{
+  "acceptance_complete": false,
+  "acceptance_prompts_issued": 1,
+  "completed_valid_observations": 0,
+  "execution_epoch": "MG1-T023-EXECUTION-v10",
+  "partial_scoring_permitted": false,
+  "scored_observations": 0,
+  "stage_state": "HOST_SURFACE_DRIFT"
+}
