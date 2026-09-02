@@ -130,6 +130,14 @@ class CapacityPause(HarnessError):
         self.raw = raw
 
 
+class HostSurfaceDrift(HarnessError):
+    """An unscored host-profile drift that forbids retry and new scheduling."""
+
+    def __init__(self, message: str, raw: dict[str, Any]):
+        super().__init__(message)
+        self.raw = raw
+
+
 @dataclass(frozen=True)
 class FrozenInputs:
     oracle: dict[str, Any]
@@ -2199,6 +2207,7 @@ def execute_logical_observation(
             "status": "STARTED",
             "started_at": datetime.now(UTC).isoformat(),
         }
+        terminal_drift: HostSurfaceDrift | None = None
         try:
             structured, raw = run_trial(inputs, spec, attempt=attempt, **kwargs)
         except CapacityPause as exc:
@@ -2221,6 +2230,8 @@ def execute_logical_observation(
             record.update(
                 status="FAILED", failure_class=exc.failure_class, error=str(exc), raw=exc.raw
             )
+            if exc.failure_class == "HOST_SURFACE_DRIFT":
+                terminal_drift = HostSurfaceDrift(str(exc), exc.raw)
         except HarnessError as exc:
             # Setup failed before the model invocation; there is no observation to score.
             record.update(status="FAILED", failure_class="ATTEMPT_SETUP_ERROR", error=str(exc))
@@ -2228,6 +2239,8 @@ def execute_logical_observation(
             record.update(status="VALID", structured=structured, raw=raw)
         record["completed_at"] = datetime.now(UTC).isoformat()
         _json_dump(journal, record)
+        if terminal_drift is not None:
+            raise terminal_drift
         if record["status"] == "VALID":
             return structured, raw
         print(f"failed attempt {attempt}/{limit} {spec.key}: {record['failure_class']}", flush=True)
@@ -2481,10 +2494,11 @@ def run_matrix(args: argparse.Namespace) -> int:
             },
         )
 
-    def execute_schedule(schedule: list[TrialSpec]) -> tuple[list[str], bool]:
+    def execute_schedule(schedule: list[TrialSpec]) -> tuple[list[str], bool, list[str]]:
         completed = set(persisted_results())
         pending = iter([spec for spec in schedule if spec.key not in completed])
         blocked: list[str] = []
+        host_drift: list[str] = []
         capacity_pause = False
         with concurrent.futures.ThreadPoolExecutor(max_workers=args.workers) as executor:
             futures: dict[concurrent.futures.Future, TrialSpec] = {}
@@ -2502,20 +2516,36 @@ def run_matrix(args: argparse.Namespace) -> int:
                         result = future.result()
                     except CapacityPause:
                         capacity_pause = True
+                    except HostSurfaceDrift:
+                        host_drift.append(spec.key)
                     else:
                         if result is None:
                             blocked.append(spec.key)
                         else:
                             completed.add(spec.key)
                             print(f"completed {len(completed)} {spec.key}", flush=True)
-                if not blocked and not capacity_pause:
+                if not blocked and not capacity_pause and not host_drift:
                     for _ in range(args.workers - len(futures)):
                         spec = next(pending, None)
                         if spec is not None:
                             futures[executor.submit(execute, spec)] = spec
-        return blocked, capacity_pause
+        return blocked, capacity_pause, host_drift
 
-    def stop_for_execution_state(blocked: list[str], capacity: bool, state: str) -> int | None:
+    def stop_for_execution_state(
+        blocked: list[str], capacity: bool, host_drift: list[str], state: str
+    ) -> int | None:
+        if host_drift:
+            export_evidence("HOST_SURFACE_DRIFT", "BLOCKED", host_drift)
+            _json_dump(
+                output / "selection.json",
+                {
+                    "status": "BLOCKED",
+                    "selected_candidate": None,
+                    "reason": "HOST_SURFACE_DRIFT",
+                    "scored": False,
+                },
+            )
+            return 1
         if capacity:
             export_evidence(state, "PAUSED_EXTERNAL_CAPACITY", blocked)
             _json_dump(
@@ -2547,8 +2577,8 @@ def run_matrix(args: argparse.Namespace) -> int:
             schedule = [spec for spec in schedule if spec.repetition in set(args.repetition)]
         if not schedule:
             raise HarnessError("trial filters selected no trials")
-        blocked, capacity = execute_schedule(schedule)
-        terminal = stop_for_execution_state(blocked, capacity, "FILTERED")
+        blocked, capacity, host_drift = execute_schedule(schedule)
+        terminal = stop_for_execution_state(blocked, capacity, host_drift, "FILTERED")
         if terminal is not None:
             return terminal
         export_evidence("FILTERED_COMPLETE", "COMPLETE")
@@ -2575,9 +2605,12 @@ def run_matrix(args: argparse.Namespace) -> int:
                     continue
                 for repetition in (1, 2):
                     spec = TrialSpec(case, candidate, repetition)
-                    blocked, capacity = execute_schedule([spec])
+                    blocked, capacity, host_drift = execute_schedule([spec])
                     stopped = stop_for_execution_state(
-                        blocked, capacity, f"{stage}_{case['id']}_{candidate}_INCOMPLETE"
+                        blocked,
+                        capacity,
+                        host_drift,
+                        f"{stage}_{case['id']}_{candidate}_INCOMPLETE",
                     )
                     if stopped is not None:
                         return stopped
@@ -2598,9 +2631,12 @@ def run_matrix(args: argparse.Namespace) -> int:
                     if spec.case["id"] == case["id"]
                 ]
                 if third:
-                    blocked, capacity = execute_schedule(third)
+                    blocked, capacity, host_drift = execute_schedule(third)
                     stopped = stop_for_execution_state(
-                        blocked, capacity, f"{stage}_{case['id']}_{candidate}_THIRD_INCOMPLETE"
+                        blocked,
+                        capacity,
+                        host_drift,
+                        f"{stage}_{case['id']}_{candidate}_THIRD_INCOMPLETE",
                     )
                     if stopped is not None:
                         return stopped

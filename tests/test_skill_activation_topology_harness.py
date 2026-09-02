@@ -695,6 +695,27 @@ def test_capacity_event_does_not_consume_model_attempt(
     assert event["pending_attempt"] == 1
 
 
+def test_host_surface_drift_stops_without_retry(harness, frozen, tmp_path, monkeypatch) -> None:
+    spec = harness.stage_schedule(frozen, "R")[0]
+    calls = []
+
+    def drift(inputs, trial, *, attempt, **kwargs):
+        calls.append(attempt)
+        raise harness.AttemptFailure(
+            "HOST_SURFACE_DRIFT",
+            "workspace readability changed",
+            {"trial_key": trial.key, "host_surface_drift": "WORKSPACE_UNREADABLE"},
+        )
+
+    monkeypatch.setattr(harness, "run_trial", drift)
+    with pytest.raises(harness.HostSurfaceDrift):
+        harness.execute_logical_observation(frozen, spec, output=tmp_path)
+    assert calls == [1]
+    records = list((tmp_path / "attempts").glob("*.json"))
+    assert len(records) == 1
+    assert harness._load_json(records[0])["failure_class"] == "HOST_SURFACE_DRIFT"
+
+
 def test_v10_schedule_uses_frozen_semantic_consequence_order(harness, frozen) -> None:
     schedule = harness.stage_schedule(frozen, "R")
     first_case_ids = []

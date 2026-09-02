@@ -26,6 +26,7 @@
   },
   "effort": "medium",
   "execution_epoch": "MG1-T023-EXECUTION-v10",
+  "executed_runner_git_commit": "cd0f97b0022176efdabe34e7d7142ff3344fa841",
   "frozen_asset_sha256": {
     "evals/skill_activation_topology/corpus.json": "be56966f790e1640c200bf92b3c7fdf9f9792c6ef2d17a91e7bc4ef3e5583e75",
     "evals/skill_activation_topology/oracle.json": "c47cea6f779b4805f831eeded1097b67bbf634b855c5978091730fc377301736",

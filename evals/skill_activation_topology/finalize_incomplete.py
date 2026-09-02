@@ -153,9 +153,7 @@ def finalize_host_surface_drift(output: Path) -> None:
         if harness._sha256(harness.REPO_ROOT / relative) != expected_digest:
             raise harness.HarnessError(f"frozen asset changed: {relative}")
 
-    attempts = [
-        harness._load_json(path) for path in sorted((output / "attempts").glob("*.json"))
-    ]
+    attempts = [harness._load_json(path) for path in sorted((output / "attempts").glob("*.json"))]
     drift = [item for item in attempts if item.get("failure_class") == "HOST_SURFACE_DRIFT"]
     if (
         len(attempts) != 1
