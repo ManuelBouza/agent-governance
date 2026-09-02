@@ -50,7 +50,7 @@
   "selected_backend": "unelevated",
   "selected_sandbox": "read-only",
   "selected_workspace_acl_profile": "windows-inherited-acl-mkdir-v1",
-  "stage_state": "HOST_SURFACE_DRIFT",
+  "stage_state": "EXECUTION_ADAPTER_TRACE_CLASSIFICATION_DEFECT",
   "started_at": "2026-09-02T05:38:39.640933+00:00",
   "status": "BLOCKED",
   "stimulus_rule": "exact corpus prompt, two newlines, frozen neutral suffix",

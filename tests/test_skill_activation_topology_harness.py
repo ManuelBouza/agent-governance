@@ -1094,6 +1094,25 @@ def test_surface_drift_collapses_json_escaped_windows_separators(harness) -> Non
     )
 
 
+def test_successful_skill_read_with_policy_text_is_not_surface_drift(harness) -> None:
+    stdout = json.dumps(
+        {
+            "type": "item.completed",
+            "item": {
+                "type": "command_execution",
+                "command": r"Get-Content C:\\tmp\\.agents\\skills\\agent-governance\\SKILL.md",
+                "aggregated_output": "Use the applicable source policy without broadening it.",
+                "exit_code": 0,
+                "status": "completed",
+            },
+        }
+    )
+    assert (
+        harness._surface_drift(stdout, "", skill_path=".agents/skills/agent-governance/SKILL.md")
+        is None
+    )
+
+
 def test_successful_body_read_collapses_json_escaped_windows_separators(harness) -> None:
     stdout = json.dumps(
         {

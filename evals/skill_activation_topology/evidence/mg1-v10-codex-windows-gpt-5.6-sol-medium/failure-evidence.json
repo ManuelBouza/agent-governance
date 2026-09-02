@@ -1,12 +1,12 @@
 {
   "acceptance_prompts_issued": 1,
   "attempt": 1,
-  "disposition": "The affected observation is unscored and new scheduling stopped immediately. Resume requires restoration of the exact selected complete host profile.",
-  "drift_class": "REQUIRED_SKILL_BODY_READ_REJECTED",
+  "disposition": "The affected observation is unscored and new scheduling stopped before retry. Trace review proved every required candidate body/reference read completed successfully; the executed runner falsely matched ordinary policy text as rejection. Because the holdout prompt was exposed and v10 resume requires exact runner identity, do not rerun or score this observation without persisted Orchestrator re-entry authority.",
+  "executed_runner_classification": "REQUIRED_SKILL_BODY_READ_REJECTED",
   "retry_performed": false,
   "scored_observations": 0,
   "selection_performed": false,
   "status": "BLOCKED",
   "trial_key": "WX01--B0--r1",
-  "type": "HOST_SURFACE_DRIFT"
+  "type": "EXECUTION_ADAPTER_TRACE_CLASSIFICATION_DEFECT"
 }

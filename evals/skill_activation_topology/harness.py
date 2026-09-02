@@ -863,17 +863,29 @@ def _surface_drift(stdout_jsonl: str, stderr: str, *, skill_path: str | None = N
         r"(?i)(recommended_plugins|openai-curated-remote|apps \(connectors\)|app://)", visible
     ):
         return "UNRELATED_APP_PLUGIN_SURFACE"
-    normalized_visible = re.sub(r"[\\/]+", "/", visible).casefold()
-    if (
-        skill_path
-        and re.sub(r"[\\/]+", "/", skill_path).casefold() in normalized_visible
-        and re.search(
-            r"(?i)(rejected|denied|not allowed|policy|access to the path[^\n]*is denied|"
-            r"acceso denegado)",
-            visible,
+    if skill_path:
+        needle = re.sub(r"[\\/]+", "/", skill_path).casefold()
+        rejection = re.compile(
+            r"(?i)(rejected|denied|not allowed|blocked by policy|"
+            r"access to the path[^\n]*is denied|acceso denegado)"
         )
-    ):
-        return "REQUIRED_SKILL_BODY_READ_REJECTED"
+        relevant_command_seen = False
+        for line in stdout_jsonl.splitlines():
+            try:
+                event = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            item = event.get("item", {})
+            command = re.sub(r"[\\/]+", "/", str(item.get("command", ""))).casefold()
+            if item.get("type") == "command_execution" and needle in command:
+                relevant_command_seen = True
+                diagnostic = f"{item.get('aggregated_output', '')}\n{line}"
+                if item.get("exit_code") not in {None, 0} and rejection.search(diagnostic):
+                    return "REQUIRED_SKILL_BODY_READ_REJECTED"
+        if not relevant_command_seen:
+            normalized_visible = re.sub(r"[\\/]+", "/", visible).casefold()
+            if needle in normalized_visible and rejection.search(visible):
+                return "REQUIRED_SKILL_BODY_READ_REJECTED"
     return None
 
 
