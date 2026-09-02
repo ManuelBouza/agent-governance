@@ -1,4 +1,4 @@
-"""Deterministic technical coverage for the T023 MG1-v9 harness."""
+"""Deterministic technical coverage for the T023 MG1-v10 harness."""
 
 from __future__ import annotations
 
@@ -32,8 +32,8 @@ def frozen(harness):
     return harness.load_frozen_inputs()
 
 
-def test_frozen_mg1_v9_inputs_validate_and_schedule_paired_stage_ceilings(harness, frozen) -> None:
-    assert frozen.oracle["oracle_id"] == "MG1-T023-TOPOLOGY-ORACLE-v9"
+def test_frozen_mg1_v10_inputs_validate_and_schedule_paired_stage_ceilings(harness, frozen) -> None:
+    assert frozen.oracle["oracle_id"] == "MG1-T023-TOPOLOGY-ORACLE-v10"
     assert frozen.oracle["capability_source_epoch"] == "MG1-2026-08-25-v3"
     assert frozen.oracle["presentation_revision"] == "MG1-T023-PRESENTATIONS-v3"
     assert len(harness.scheduled_trials(frozen)) == 320
@@ -156,7 +156,7 @@ def test_trial_output_schema_is_closed(harness) -> None:
     json.dumps(harness.TRIAL_SCHEMA)
 
 
-def test_v9_model_visible_turn_is_exactly_prompt_and_neutral_suffix(harness, frozen) -> None:
+def test_v10_model_visible_turn_is_exactly_prompt_and_neutral_suffix(harness, frozen) -> None:
     suffix = frozen.envelope["user_suffix"]
     forbidden = frozen.envelope["forbidden_added_terms_casefold"]
     for case in frozen.corpus["cases"]:
@@ -167,7 +167,7 @@ def test_v9_model_visible_turn_is_exactly_prompt_and_neutral_suffix(harness, fro
 
 
 @pytest.mark.parametrize("role", ["neutral", "source", "consumer"])
-def test_v9_fixture_materialization_is_exact_and_role_bounded(
+def test_v10_fixture_materialization_is_exact_and_role_bounded(
     tmp_path: Path, harness, frozen, role: str
 ) -> None:
     case = next(case for case in frozen.corpus["cases"] if case["fixture_role"] == role)
@@ -185,7 +185,7 @@ def test_v9_fixture_materialization_is_exact_and_role_bounded(
         assert not any(tmp_path.iterdir())
 
 
-def test_v9_workspace_root_validation_rejects_canonical_path_leak(
+def test_v10_workspace_root_validation_rejects_canonical_path_leak(
     tmp_path: Path, harness, frozen
 ) -> None:
     accepted = harness._validate_workspace_root(frozen, tmp_path)
@@ -376,6 +376,13 @@ def test_resume_rejects_changed_model_effort_or_frozen_identity(
         },
         "fixture_materialization": fixture,
         "workspace_isolation": isolation,
+        "workspace": {
+            "absolute_workspace_root": str(tmp_path),
+            "workspace_creation_method": harness.WORKSPACE_FACTORY_ID,
+            "workspace_acl_profile_identity": harness.WORKSPACE_FACTORY_ID,
+            "private_temp_creation_avoided": True,
+            "cleanup_result": "REMOVED",
+        },
     }
     raw["command"].extend(["--ignore-user-config", "--ignore-rules"])
     for feature in harness.MINIMAL_DISABLED_FEATURES:
@@ -399,7 +406,7 @@ def test_resume_rejects_changed_model_effort_or_frozen_identity(
         )
 
 
-def test_closed_v4_evidence_cannot_enter_v9_scoring(harness, frozen) -> None:
+def test_closed_v4_evidence_cannot_enter_v10_scoring(harness, frozen) -> None:
     evidence = harness.HERE / "evidence" / "mg1-v4-codex-windows-gpt-5.6-sol-medium"
     metadata = harness._load_json(evidence / "run-metadata.json")
     assert metadata["oracle_id"] != frozen.oracle["oracle_id"]
@@ -413,7 +420,7 @@ def test_closed_v6_live_runner_is_bound_to_immutable_git_provenance(harness) -> 
     harness._validate_executed_runner_provenance(metadata)
 
 
-def test_v9_holdout_has_no_exact_prompt_from_closed_v2_evidence(harness, frozen) -> None:
+def test_v10_holdout_has_no_exact_prompt_from_closed_v2_evidence(harness, frozen) -> None:
     evidence = harness.HERE / "evidence" / "mg1-v2-codex-windows-gpt-5.6-sol-medium"
     previous = harness.load_trials(evidence / "raw-trials.jsonl")
     prior_prompts = {
@@ -577,6 +584,7 @@ def test_terminal_exhaustion_stops_new_work_and_exports_without_scoring(
             "codex_cli_version": harness.REQUIRED_CODEX_VERSION,
             "native_windows_backend": "elevated",
             "logical_sandbox": "read-only",
+            "workspace_acl_profile_identity": harness.WORKSPACE_FACTORY_ID,
             "model": "gpt-5.6-sol",
             "effort": "medium",
             "ignore_user_config": True,
@@ -590,6 +598,7 @@ def test_terminal_exhaustion_stops_new_work_and_exports_without_scoring(
                 "reason": None,
                 "selected_backend": "elevated",
                 "selected_sandbox": "read-only",
+                "selected_workspace_acl_profile": harness.WORKSPACE_FACTORY_ID,
                 "records": [{"effective_host_profile": profile}],
             },
         )
@@ -598,6 +607,7 @@ def test_terminal_exhaustion_stops_new_work_and_exports_without_scoring(
             "reason": None,
             "selected_backend": "elevated",
             "selected_sandbox": "read-only",
+            "selected_workspace_acl_profile": harness.WORKSPACE_FACTORY_ID,
         }
 
     monkeypatch.setattr(harness, "run_host_preflight", passing_preflight)
@@ -685,7 +695,28 @@ def test_capacity_event_does_not_consume_model_attempt(
     assert event["pending_attempt"] == 1
 
 
-def test_v9_schedule_uses_frozen_semantic_consequence_order(harness, frozen) -> None:
+def test_host_surface_drift_stops_without_retry(harness, frozen, tmp_path, monkeypatch) -> None:
+    spec = harness.stage_schedule(frozen, "R")[0]
+    calls = []
+
+    def drift(inputs, trial, *, attempt, **kwargs):
+        calls.append(attempt)
+        raise harness.AttemptFailure(
+            "HOST_SURFACE_DRIFT",
+            "workspace readability changed",
+            {"trial_key": trial.key, "host_surface_drift": "WORKSPACE_UNREADABLE"},
+        )
+
+    monkeypatch.setattr(harness, "run_trial", drift)
+    with pytest.raises(harness.HostSurfaceDrift):
+        harness.execute_logical_observation(frozen, spec, output=tmp_path)
+    assert calls == [1]
+    records = list((tmp_path / "attempts").glob("*.json"))
+    assert len(records) == 1
+    assert harness._load_json(records[0])["failure_class"] == "HOST_SURFACE_DRIFT"
+
+
+def test_v10_schedule_uses_frozen_semantic_consequence_order(harness, frozen) -> None:
     schedule = harness.stage_schedule(frozen, "R")
     first_case_ids = []
     for spec in schedule:
@@ -744,6 +775,230 @@ def test_backend_probe_is_model_free_and_binds_requested_backend(
     assert "exec" not in observed["command"]
     assert 'windows.sandbox="elevated"' in observed["command"]
     assert Path(observed["environment"]["CODEX_HOME"]).name == "codex-home"
+
+
+def test_v10_workspace_factory_avoids_python_private_temp_helpers(
+    harness, tmp_path, monkeypatch
+) -> None:
+    def forbidden(*args, **kwargs):
+        pytest.fail("Python private tempfile helper must not create a live v10 workspace")
+
+    monkeypatch.setattr(harness.tempfile, "TemporaryDirectory", forbidden)
+    monkeypatch.setattr(harness.tempfile, "mkdtemp", forbidden)
+    with harness._inherited_acl_workspace(tmp_path, prefix="mx-test-") as (root, evidence):
+        assert root.parent == tmp_path
+        assert root.is_dir()
+        assert evidence["workspace_creation_method"] == harness.WORKSPACE_FACTORY_ID
+        assert evidence["private_temp_creation_avoided"] is True
+        assert evidence["cleanup_result"] == "PENDING"
+    assert not root.exists()
+    assert evidence["cleanup_result"] == "REMOVED"
+
+
+def test_provider_free_workspace_probe_binds_root_nonce_and_no_model(
+    harness, tmp_path, monkeypatch
+) -> None:
+    observed = {}
+
+    def completed(command, **kwargs):
+        observed["command"] = command
+        root = command[command.index("--cd") + 1]
+        stdout = f"{root}\n{harness.WORKSPACE_PROBE_FILENAME}\n{harness.WORKSPACE_PROBE_NONCE}\n"
+        return subprocess.CompletedProcess(command, 0, stdout, "")
+
+    monkeypatch.setattr(harness.subprocess, "run", completed)
+    record = harness._workspace_access_probe(
+        "codex",
+        backend="unelevated",
+        sandbox="read-only",
+        workspace_parent=tmp_path,
+    )
+    assert record["passed"] is True
+    assert record["provider_model_call_issued"] is False
+    assert record["workspace_root_enumerated"] is True
+    assert record["probe_file_read_exactly"] is True
+    assert "exec" not in observed["command"]
+    assert observed["command"][observed["command"].index("--permission-profile") + 1] == (
+        ":read-only"
+    )
+    assert 'windows.sandbox="unelevated"' in observed["command"]
+    assert record["workspace"]["cleanup_result"] == "REMOVED"
+
+
+def test_failed_workspace_probe_stops_before_canary_or_acceptance(
+    harness, frozen, tmp_path, monkeypatch
+) -> None:
+    args = harness.build_parser().parse_args(
+        ["run", "--output", str(tmp_path / "run"), "--full-acceptance"]
+    )
+    args.output.mkdir()
+    monkeypatch.setattr(
+        harness,
+        "_backend_probe",
+        lambda *args, backend, **kwargs: {"backend": backend, "passed": True},
+    )
+    monkeypatch.setattr(
+        harness,
+        "_workspace_access_probe",
+        lambda *args, backend, sandbox, **kwargs: {
+            "backend": backend,
+            "logical_sandbox": sandbox,
+            "passed": False,
+            "provider_model_call_issued": False,
+        },
+    )
+    monkeypatch.setattr(
+        harness,
+        "run_canary",
+        lambda *args, **kwargs: pytest.fail("workspace failure must prevent model canary"),
+    )
+    monkeypatch.setattr(harness, "_codex_version", lambda _: harness.REQUIRED_CODEX_VERSION)
+    result = harness.run_host_preflight(frozen, args, args.output, tmp_path)
+    assert result["reason"] == "WINDOWS_WORKSPACE_ACL_UNAVAILABLE"
+    assert result["records"] == []
+    assert all(
+        record["provider_model_call_issued"] is False for record in result["workspace_records"]
+    )
+
+
+def test_workspace_probe_precedes_two_passing_canaries(
+    harness, frozen, tmp_path, monkeypatch
+) -> None:
+    args = harness.build_parser().parse_args(
+        ["run", "--output", str(tmp_path / "run"), "--full-acceptance"]
+    )
+    args.output.mkdir()
+    events = []
+    monkeypatch.setattr(
+        harness,
+        "_backend_probe",
+        lambda *args, backend, **kwargs: {"backend": backend, "passed": True},
+    )
+
+    def workspace(*args, backend, sandbox, **kwargs):
+        events.append(("workspace", backend, sandbox))
+        return {"backend": backend, "logical_sandbox": sandbox, "passed": True}
+
+    def canary(*args, backend, sandbox, repetition, **kwargs):
+        events.append(("canary", backend, sandbox, repetition))
+        return {
+            "passed": True,
+            "host_surface_drift": None,
+            "returncode": 0,
+            "effective_host_profile": {
+                "native_windows_backend": backend,
+                "logical_sandbox": sandbox,
+                "workspace_acl_profile_identity": harness.WORKSPACE_FACTORY_ID,
+            },
+        }
+
+    monkeypatch.setattr(harness, "_workspace_access_probe", workspace)
+    monkeypatch.setattr(harness, "run_canary", canary)
+    monkeypatch.setattr(harness, "_codex_version", lambda _: harness.REQUIRED_CODEX_VERSION)
+    result = harness.run_host_preflight(frozen, args, args.output, tmp_path)
+    assert result["status"] == "PASS"
+    assert events == [
+        ("workspace", "elevated", "read-only"),
+        ("canary", "elevated", "read-only", 1),
+        ("canary", "elevated", "read-only", 2),
+    ]
+
+
+def test_elevated_workspace_failure_falls_back_to_unelevated(
+    harness, frozen, tmp_path, monkeypatch
+) -> None:
+    args = harness.build_parser().parse_args(
+        ["run", "--output", str(tmp_path / "run"), "--full-acceptance"]
+    )
+    args.output.mkdir()
+    monkeypatch.setattr(
+        harness,
+        "_backend_probe",
+        lambda *args, backend, **kwargs: {"backend": backend, "passed": True},
+    )
+
+    def workspace(*args, backend, sandbox, **kwargs):
+        return {
+            "backend": backend,
+            "logical_sandbox": sandbox,
+            "passed": backend == "unelevated" and sandbox == "read-only",
+        }
+
+    monkeypatch.setattr(harness, "_workspace_access_probe", workspace)
+    monkeypatch.setattr(
+        harness,
+        "run_canary",
+        lambda *args, backend, sandbox, **kwargs: {
+            "passed": True,
+            "host_surface_drift": None,
+            "returncode": 0,
+            "effective_host_profile": {
+                "native_windows_backend": backend,
+                "logical_sandbox": sandbox,
+                "workspace_acl_profile_identity": harness.WORKSPACE_FACTORY_ID,
+            },
+        },
+    )
+    monkeypatch.setattr(harness, "_codex_version", lambda _: harness.REQUIRED_CODEX_VERSION)
+    result = harness.run_host_preflight(frozen, args, args.output, tmp_path)
+    assert result["status"] == "PASS"
+    assert result["selected_backend"] == "unelevated"
+    assert result["selected_sandbox"] == "read-only"
+
+
+def test_canary_refuses_failed_provider_free_workspace_gate(harness, frozen, tmp_path) -> None:
+    with pytest.raises(harness.HarnessError, match="provider-free workspace probe"):
+        harness.run_canary(
+            frozen,
+            codex_command="codex",
+            model="gpt-5.6-sol",
+            effort="medium",
+            timeout_seconds=180,
+            workspace_parent=tmp_path,
+            backend="unelevated",
+            sandbox="read-only",
+            repetition=1,
+            workspace_probe={"passed": False},
+        )
+
+
+def test_skill_canary_failure_after_workspace_pass_is_not_acl_failure(
+    harness, frozen, tmp_path, monkeypatch
+) -> None:
+    args = harness.build_parser().parse_args(
+        ["run", "--output", str(tmp_path / "run"), "--full-acceptance"]
+    )
+    args.output.mkdir()
+    monkeypatch.setattr(
+        harness,
+        "_backend_probe",
+        lambda *args, backend, **kwargs: {"backend": backend, "passed": True},
+    )
+    monkeypatch.setattr(
+        harness,
+        "_workspace_access_probe",
+        lambda *args, backend, sandbox, **kwargs: {
+            "backend": backend,
+            "logical_sandbox": sandbox,
+            "passed": True,
+        },
+    )
+    monkeypatch.setattr(
+        harness,
+        "run_canary",
+        lambda *args, backend, sandbox, **kwargs: {
+            "passed": False,
+            "host_surface_drift": None,
+            "returncode": 0,
+            "effective_host_profile": {
+                "native_windows_backend": backend,
+                "logical_sandbox": sandbox,
+            },
+        },
+    )
+    monkeypatch.setattr(harness, "_codex_version", lambda _: harness.REQUIRED_CODEX_VERSION)
+    result = harness.run_host_preflight(frozen, args, args.output, tmp_path)
+    assert result["reason"] == "HOST_CAPABILITY_PREFLIGHT"
 
 
 def test_backend_unavailable_stops_before_canary_model_call(
@@ -837,6 +1092,39 @@ def test_surface_drift_collapses_json_escaped_windows_separators(harness) -> Non
         harness._surface_drift(stdout, "", skill_path=".agents/skills/mx-canary/SKILL.md")
         == "REQUIRED_SKILL_BODY_READ_REJECTED"
     )
+
+
+def test_successful_skill_read_with_policy_text_is_not_surface_drift(harness) -> None:
+    stdout = json.dumps(
+        {
+            "type": "item.completed",
+            "item": {
+                "type": "command_execution",
+                "command": r"Get-Content C:\\tmp\\.agents\\skills\\agent-governance\\SKILL.md",
+                "aggregated_output": "Use the applicable source policy without broadening it.",
+                "exit_code": 0,
+                "status": "completed",
+            },
+        }
+    )
+    assert (
+        harness._surface_drift(stdout, "", skill_path=".agents/skills/agent-governance/SKILL.md")
+        is None
+    )
+
+
+def test_successful_body_read_collapses_json_escaped_windows_separators(harness) -> None:
+    stdout = json.dumps(
+        {
+            "type": "item.completed",
+            "item": {
+                "type": "command_execution",
+                "command": r"Get-Content C:\\tmp\\.agents\\skills\\mx-canary\\SKILL.md",
+                "exit_code": 0,
+            },
+        }
+    )
+    assert harness._successful_body_read(stdout, ".agents/skills/mx-canary/SKILL.md") is True
 
 
 def test_one_finalized_false_activation_is_exactly_futile(harness, frozen) -> None:

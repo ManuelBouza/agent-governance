@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import argparse
 import concurrent.futures
+import contextlib
 import hashlib
 import json
 import math
@@ -21,8 +22,9 @@ import statistics
 import subprocess
 import tempfile
 import time
+import uuid
 from collections import Counter
-from collections.abc import Iterable
+from collections.abc import Iterable, Iterator
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
@@ -46,7 +48,7 @@ ACTIVATION_RELEVANT_CLASSES = {
     "multi-intent",
 }
 NEGATIVE_CLASSES = {"negative", "near-miss"}
-V9_CLASS_ORDER = (
+V10_CLASS_ORDER = (
     "cross-profile",
     "ambiguous",
     "negative",
@@ -66,6 +68,9 @@ MINIMAL_DISABLED_FEATURES = (
 )
 CANARY_NONCE = "The quartz heron carries seven indigo pebbles at noon."
 BACKEND_PROBE_NONCE = "T023_WINDOWS_SANDBOX_BACKEND_READY"
+WORKSPACE_PROBE_FILENAME = "workspace-probe.txt"
+WORKSPACE_PROBE_NONCE = "T023_V10_WORKSPACE_READABLE"
+WORKSPACE_FACTORY_ID = "windows-inherited-acl-mkdir-v1"
 REQUIRED_CODEX_VERSION = "codex-cli 0.149.0"
 WINDOWS_BACKEND_ORDER = ("elevated", "unelevated")
 
@@ -125,6 +130,14 @@ class CapacityPause(HarnessError):
         self.raw = raw
 
 
+class HostSurfaceDrift(HarnessError):
+    """An unscored host-profile drift that forbids retry and new scheduling."""
+
+    def __init__(self, message: str, raw: dict[str, Any]):
+        super().__init__(message)
+        self.raw = raw
+
+
 @dataclass(frozen=True)
 class FrozenInputs:
     oracle: dict[str, Any]
@@ -178,10 +191,10 @@ def validate_frozen_inputs(inputs: FrozenInputs) -> None:
     manifest = inputs.manifest
     envelope = inputs.envelope
 
-    if oracle.get("schema_version") != "9.0.0" or oracle.get("oracle_id") != (
-        "MG1-T023-TOPOLOGY-ORACLE-v9"
+    if oracle.get("schema_version") != "10.0.0" or oracle.get("oracle_id") != (
+        "MG1-T023-TOPOLOGY-ORACLE-v10"
     ):
-        raise HarnessError("harness requires the frozen MG1 V9 oracle")
+        raise HarnessError("harness requires the frozen MG1 V10 oracle")
     method = oracle.get("trial_method", {})
     if (
         method.get("base_valid_repetitions_per_case_candidate") != 2
@@ -189,7 +202,14 @@ def validate_frozen_inputs(inputs: FrozenInputs) -> None:
         or method.get("max_model_attempts_per_scheduled_observation") != 2
         or method.get("timeout_seconds_per_model_attempt") != 180
     ):
-        raise HarnessError("oracle paired repetition/attempt method is not frozen V9")
+        raise HarnessError("oracle paired repetition/attempt method is not frozen V10")
+    workspace_acl = oracle.get("windows_workspace_acl", {})
+    if (
+        workspace_acl.get("required_before_synthetic_model_calls") is not True
+        or workspace_acl.get("python_private_temp_root_forbidden") is not True
+        or workspace_acl.get("workspace_probe_provider_model_call_allowed") is not False
+    ):
+        raise HarnessError("oracle v10 Windows workspace gate is incomplete")
 
     if (
         envelope.get("schema_version") != "1.0.0"
@@ -232,14 +252,14 @@ def validate_frozen_inputs(inputs: FrozenInputs) -> None:
 
     cases = corpus.get("cases")
     if corpus.get("schema_version") != "4.0.0" or not isinstance(cases, list) or len(cases) != 40:
-        raise HarnessError("harness requires the frozen 40-case MG1 V9 corpus")
+        raise HarnessError("harness requires the frozen 40-case MG1 V10 corpus")
     ids = [case.get("id") for case in cases if isinstance(case, dict)]
     if len(ids) != len(cases) or len(ids) != len(set(ids)):
         raise HarnessError("corpus case identities must be unique objects")
     known_capabilities = set(manifest.get("shared_references", {}))
     fixtures = envelope.get("fixtures", {})
     if set(fixtures) != {"neutral", "source", "consumer"}:
-        raise HarnessError("trial-envelope fixture roles are not the frozen V9 set")
+        raise HarnessError("trial-envelope fixture roles are not the frozen V10 set")
     for case in cases:
         if set(case.get("expected_capabilities", [])) - known_capabilities:
             raise HarnessError(f"{case['id']}: unknown expected capability")
@@ -387,7 +407,7 @@ def _copy_record(source: Path, target: Path, destination: Path) -> dict[str, Any
 
 
 def scheduled_trials(inputs: FrozenInputs) -> list[TrialSpec]:
-    """Return the V9 full-completion two-repetition ceiling for all candidates.
+    """Return the V10 full-completion two-repetition ceiling for all candidates.
 
     Conditional third repetitions are deliberately absent.  They are derived only
     after both valid paired observations exist for a case/candidate identity.
@@ -416,7 +436,7 @@ def _schedule(
     schedule: list[TrialSpec] = []
     ordered_cases = sorted(
         inputs.corpus["cases"],
-        key=lambda case: (V9_CLASS_ORDER.index(case["class"]), case["id"]),
+        key=lambda case: (V10_CLASS_ORDER.index(case["class"]), case["id"]),
     )
     for case_index, case in enumerate(ordered_cases):
         for repetition in repetitions:
@@ -427,7 +447,7 @@ def _schedule(
 
 
 def all_possible_trials(inputs: FrozenInputs) -> list[TrialSpec]:
-    """Return all V9 identities, including conditional repetition three."""
+    """Return all V10 identities, including conditional repetition three."""
     maximum = inputs.oracle["trial_method"]["max_valid_repetitions_per_case_candidate"]
     return _schedule(inputs, inputs.oracle["candidate_ids"], range(1, maximum + 1))
 
@@ -500,6 +520,67 @@ def _validate_workspace_root(inputs: FrozenInputs, root: Path) -> dict[str, Any]
         "canonical_git_metadata_present": False,
         "initially_empty": True,
     }
+
+
+def _acl_diagnostic(root: Path) -> dict[str, Any]:
+    if platform.system() != "Windows":
+        return {"available": False, "reason": "non-Windows host"}
+    try:
+        process = subprocess.Popen(
+            ["icacls", str(root)],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+        )
+        raw, _ = process.communicate(timeout=15)
+    except (OSError, subprocess.SubprocessError) as exc:
+        return {"available": False, "error": str(exc)}
+    output = raw.decode("utf-8", errors="replace")
+    return {
+        "available": process.returncode == 0,
+        "returncode": process.returncode,
+        "stdout": output,
+        "stderr": "",
+    }
+
+
+@contextlib.contextmanager
+def _inherited_acl_workspace(
+    workspace_parent: Path, *, prefix: str
+) -> Iterator[tuple[Path, dict[str, Any]]]:
+    """Create an atomic disposable root with ordinary inherited Windows ACLs."""
+    if platform.system() != "Windows":
+        raise HarnessError("the v10 workspace factory requires native Windows")
+    parent = workspace_parent.resolve(strict=True)
+    root: Path | None = None
+    for _ in range(32):
+        candidate = parent / f"{prefix}{uuid.uuid4().hex}"
+        try:
+            candidate.mkdir()
+        except FileExistsError:
+            continue
+        root = candidate
+        break
+    if root is None:
+        raise HarnessError("cannot allocate a unique v10 disposable workspace")
+    diagnostic: dict[str, Any] = {
+        "absolute_workspace_root": str(root),
+        "workspace_creation_method": WORKSPACE_FACTORY_ID,
+        "workspace_acl_profile_identity": WORKSPACE_FACTORY_ID,
+        "python_runtime": platform.python_version(),
+        "private_temp_creation_avoided": True,
+        "acl_diagnostic": _acl_diagnostic(root),
+        "cleanup_result": "PENDING",
+    }
+    try:
+        yield root, diagnostic
+    finally:
+        try:
+            shutil.rmtree(root)
+        except OSError as exc:
+            diagnostic["cleanup_result"] = "FAILED"
+            diagnostic["cleanup_error"] = str(exc)
+        else:
+            diagnostic["cleanup_result"] = "REMOVED"
 
 
 def _codex_version(codex_command: str) -> str:
@@ -586,8 +667,10 @@ def _backend_probe(
 ) -> dict[str, Any]:
     """Verify a native Windows backend without issuing a provider/model call."""
     started = time.monotonic()
-    with tempfile.TemporaryDirectory(prefix=f"mx-backend-{backend}-", dir=workspace_parent) as tmp:
-        root = Path(tmp)
+    with _inherited_acl_workspace(workspace_parent, prefix=f"mx-backend-{backend}-") as (
+        root,
+        workspace_diagnostic,
+    ):
         codex_home = root / "codex-home"
         codex_home.mkdir()
         command = [
@@ -630,7 +713,7 @@ def _backend_probe(
         passed = (
             not timed_out and completed.returncode == 0 and BACKEND_PROBE_NONCE in completed.stdout
         )
-        return {
+        record = {
             "backend": backend,
             "passed": passed,
             "returncode": completed.returncode,
@@ -644,7 +727,98 @@ def _backend_probe(
             "config_override": f'windows.sandbox="{backend}"',
             "official_config_key": "windows.sandbox",
             "official_allowed_values": ["unelevated", "elevated"],
+            "workspace": workspace_diagnostic,
         }
+    return record
+
+
+def _workspace_access_probe(
+    codex_command: str,
+    *,
+    backend: str,
+    sandbox: str,
+    workspace_parent: Path,
+    timeout_seconds: int = 20,
+) -> dict[str, Any]:
+    """Prove exact-root readability through the native sandbox without a model call."""
+    started = time.monotonic()
+    with _inherited_acl_workspace(
+        workspace_parent, prefix=f"mx-workspace-{backend}-{sandbox}-"
+    ) as (root, workspace_diagnostic):
+        probe = root / WORKSPACE_PROBE_FILENAME
+        probe.write_text(WORKSPACE_PROBE_NONCE + "\n", encoding="utf-8", newline="\n")
+        codex_home = root / "codex-home"
+        codex_home.mkdir()
+        command = [
+            codex_command,
+            "--config",
+            f'windows.sandbox="{backend}"',
+            "sandbox",
+            "--permission-profile",
+            ":read-only" if sandbox == "read-only" else ":workspace",
+            "--cd",
+            str(root),
+            "cmd.exe",
+            "/d",
+            "/c",
+            f"cd & dir /b & type {WORKSPACE_PROBE_FILENAME}",
+        ]
+        environment = os.environ.copy()
+        environment["CODEX_HOME"] = str(codex_home)
+        timed_out = False
+        try:
+            completed = subprocess.run(
+                command,
+                cwd=root,
+                check=False,
+                capture_output=True,
+                text=True,
+                encoding="utf-8",
+                errors="replace",
+                timeout=timeout_seconds,
+                env=environment,
+            )
+        except subprocess.TimeoutExpired as exc:
+            timed_out = True
+            completed = subprocess.CompletedProcess(
+                command,
+                -1,
+                exc.stdout.decode("utf-8", "replace")
+                if isinstance(exc.stdout, bytes)
+                else exc.stdout or "",
+                exc.stderr.decode("utf-8", "replace")
+                if isinstance(exc.stderr, bytes)
+                else exc.stderr or "",
+            )
+        root_observed = str(root).casefold() in completed.stdout.casefold()
+        file_observed = WORKSPACE_PROBE_FILENAME.casefold() in completed.stdout.casefold()
+        nonce_observed = WORKSPACE_PROBE_NONCE in completed.stdout
+        record = {
+            "backend": backend,
+            "logical_sandbox": sandbox,
+            "passed": (
+                not timed_out
+                and completed.returncode == 0
+                and root_observed
+                and file_observed
+                and nonce_observed
+            ),
+            "returncode": completed.returncode,
+            "timed_out": timed_out,
+            "workspace_root_enumerated": root_observed and file_observed,
+            "probe_file_read_exactly": nonce_observed,
+            "probe_nonce": WORKSPACE_PROBE_NONCE,
+            "stdout": completed.stdout,
+            "stderr": completed.stderr,
+            "duration_seconds": round(time.monotonic() - started, 6),
+            "command": command,
+            "provider_model_call_issued": False,
+            "dangerous_bypass_used": False,
+            "interactive_approval_used": False,
+            "network_access_requested": False,
+            "workspace": workspace_diagnostic,
+        }
+    return record
 
 
 def _trace_telemetry(stdout_jsonl: str, stderr: str = "") -> dict[str, Any]:
@@ -689,29 +863,41 @@ def _surface_drift(stdout_jsonl: str, stderr: str, *, skill_path: str | None = N
         r"(?i)(recommended_plugins|openai-curated-remote|apps \(connectors\)|app://)", visible
     ):
         return "UNRELATED_APP_PLUGIN_SURFACE"
-    normalized_visible = re.sub(r"[\\/]+", "/", visible).casefold()
-    if (
-        skill_path
-        and re.sub(r"[\\/]+", "/", skill_path).casefold() in normalized_visible
-        and re.search(
-            r"(?i)(rejected|denied|not allowed|policy|access to the path[^\n]*is denied|"
-            r"acceso denegado)",
-            visible,
+    if skill_path:
+        needle = re.sub(r"[\\/]+", "/", skill_path).casefold()
+        rejection = re.compile(
+            r"(?i)(rejected|denied|not allowed|blocked by policy|"
+            r"access to the path[^\n]*is denied|acceso denegado)"
         )
-    ):
-        return "REQUIRED_SKILL_BODY_READ_REJECTED"
+        relevant_command_seen = False
+        for line in stdout_jsonl.splitlines():
+            try:
+                event = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            item = event.get("item", {})
+            command = re.sub(r"[\\/]+", "/", str(item.get("command", ""))).casefold()
+            if item.get("type") == "command_execution" and needle in command:
+                relevant_command_seen = True
+                diagnostic = f"{item.get('aggregated_output', '')}\n{line}"
+                if item.get("exit_code") not in {None, 0} and rejection.search(diagnostic):
+                    return "REQUIRED_SKILL_BODY_READ_REJECTED"
+        if not relevant_command_seen:
+            normalized_visible = re.sub(r"[\\/]+", "/", visible).casefold()
+            if needle in normalized_visible and rejection.search(visible):
+                return "REQUIRED_SKILL_BODY_READ_REJECTED"
     return None
 
 
 def _successful_body_read(stdout_jsonl: str, relative_path: str) -> bool:
-    needle = relative_path.replace("\\", "/").casefold()
+    needle = re.sub(r"[\\/]+", "/", relative_path).casefold()
     for line in stdout_jsonl.splitlines():
         try:
             event = json.loads(line)
         except json.JSONDecodeError:
             continue
         item = event.get("item", {})
-        command = str(item.get("command", "")).replace("\\", "/").casefold()
+        command = re.sub(r"[\\/]+", "/", str(item.get("command", ""))).casefold()
         if (
             event.get("type") == "item.completed"
             and item.get("type") == "command_execution"
@@ -734,12 +920,15 @@ def run_canary(
     backend: str,
     sandbox: str,
     repetition: int,
+    workspace_probe: dict[str, Any],
 ) -> dict[str, Any]:
+    if not workspace_probe.get("passed"):
+        raise HarnessError("synthetic canary requires a passing provider-free workspace probe")
     started = time.monotonic()
-    with tempfile.TemporaryDirectory(
-        prefix=f"mx-canary-{repetition}-", dir=workspace_parent
-    ) as tmp:
-        root = Path(tmp)
+    with _inherited_acl_workspace(workspace_parent, prefix=f"mx-canary-{repetition}-") as (
+        root,
+        workspace_diagnostic,
+    ):
         isolation = _validate_workspace_root(inputs, root)
         skill = root / ".agents" / "skills" / "mx-canary" / "SKILL.md"
         skill.parent.mkdir(parents=True)
@@ -837,6 +1026,7 @@ def run_canary(
                 "codex_cli_version": REQUIRED_CODEX_VERSION,
                 "native_windows_backend": backend,
                 "logical_sandbox": sandbox,
+                "workspace_acl_profile_identity": WORKSPACE_FACTORY_ID,
                 "model": model,
                 "effort": effort,
                 "ignore_user_config": True,
@@ -844,6 +1034,8 @@ def run_canary(
                 "disabled_features": list(MINIMAL_DISABLED_FEATURES),
             },
             "workspace_isolation": isolation,
+            "workspace": workspace_diagnostic,
+            "provider_free_workspace_probe_passed": True,
             "duration_seconds": round(time.monotonic() - started, 6),
             "telemetry": _trace_telemetry(completed.stdout, completed.stderr),
             "command": command,
@@ -858,6 +1050,7 @@ def run_host_preflight(
 ) -> dict[str, Any]:
     records: list[dict[str, Any]] = []
     backend_records: list[dict[str, Any]] = []
+    workspace_records: list[dict[str, Any]] = []
     for backend in WINDOWS_BACKEND_ORDER:
         backend_record = _backend_probe(
             args.codex_command, backend=backend, workspace_parent=workspace_parent
@@ -878,6 +1071,19 @@ def run_host_preflight(
         if not backend_record["passed"]:
             continue
         for sandbox in ("read-only", "workspace-write"):
+            workspace_record = _workspace_access_probe(
+                args.codex_command,
+                backend=backend,
+                sandbox=sandbox,
+                workspace_parent=workspace_parent,
+            )
+            workspace_records.append(workspace_record)
+            _json_dump(
+                output / "workspace-probes" / f"{backend}-{sandbox}.json",
+                workspace_record,
+            )
+            if not workspace_record["passed"]:
+                continue
             sandbox_records = []
             for repetition in (1, 2):
                 record = run_canary(
@@ -890,6 +1096,7 @@ def run_host_preflight(
                     backend=backend,
                     sandbox=sandbox,
                     repetition=repetition,
+                    workspace_probe=workspace_record,
                 )
                 records.append(record)
                 sandbox_records.append(record)
@@ -902,7 +1109,9 @@ def run_host_preflight(
                     "reason": None,
                     "selected_backend": backend,
                     "selected_sandbox": sandbox,
+                    "selected_workspace_acl_profile": WORKSPACE_FACTORY_ID,
                     "backend_records": backend_records,
+                    "workspace_records": workspace_records,
                     "records": records,
                 }
                 _json_dump(output / "host-preflight.json", result)
@@ -912,6 +1121,11 @@ def run_host_preflight(
                 for record in sandbox_records
             ):
                 break
+        backend_workspace_records = [
+            record for record in workspace_records if record["backend"] == backend
+        ]
+        if not any(record["passed"] for record in backend_workspace_records):
+            continue
         backend_canary_records = [
             record
             for record in records
@@ -924,15 +1138,21 @@ def run_host_preflight(
         ):
             break
     backend_available = any(record["passed"] for record in backend_records)
-    reason = (
-        "HOST_CAPABILITY_PREFLIGHT" if backend_available else "WINDOWS_SANDBOX_BACKEND_UNAVAILABLE"
-    )
+    workspace_available = any(record["passed"] for record in workspace_records)
+    if not backend_available:
+        reason = "WINDOWS_SANDBOX_BACKEND_UNAVAILABLE"
+    elif not workspace_available:
+        reason = "WINDOWS_WORKSPACE_ACL_UNAVAILABLE"
+    else:
+        reason = "HOST_CAPABILITY_PREFLIGHT"
     result = {
         "status": "BLOCKED",
         "reason": reason,
         "selected_backend": None,
         "selected_sandbox": None,
+        "selected_workspace_acl_profile": None,
         "backend_records": backend_records,
+        "workspace_records": workspace_records,
         "records": records,
     }
     _json_dump(output / "host-preflight.json", result)
@@ -966,8 +1186,10 @@ def run_trial(
     attempt: int = 1,
 ) -> tuple[dict[str, Any], dict[str, Any]]:
     started = time.monotonic()
-    with tempfile.TemporaryDirectory(prefix=f"mx-{spec.key}-", dir=workspace_parent) as temporary:
-        root = Path(temporary)
+    with _inherited_acl_workspace(workspace_parent, prefix=f"mx-{spec.key}-") as (
+        root,
+        workspace_diagnostic,
+    ):
         isolation = _validate_workspace_root(inputs, root)
         fixture = materialize_fixture(inputs, spec.case, root)
         provenance = materialize_candidate(inputs, spec.candidate_id, root)
@@ -1037,6 +1259,7 @@ def run_trial(
                 "codex_cli_version": REQUIRED_CODEX_VERSION,
                 "native_windows_backend": backend,
                 "logical_sandbox": sandbox,
+                "workspace_acl_profile_identity": WORKSPACE_FACTORY_ID,
                 "model": model,
                 "effort": effort,
                 "ignore_user_config": True,
@@ -1047,6 +1270,7 @@ def run_trial(
             "materialization": provenance,
             "fixture_materialization": fixture,
             "workspace_isolation": isolation,
+            "workspace": workspace_diagnostic,
         }
         if _is_explicit_capacity_event(raw_record) and not final_raw:
             raise CapacityPause(f"{spec.key}: explicit external capacity event", raw_record)
@@ -1364,7 +1588,7 @@ def aggregate_candidate_trials(
 def finalized_candidate_aggregates(
     inputs: FrozenInputs, candidate_id: str, trials: list[dict[str, Any]]
 ) -> list[dict[str, Any]]:
-    """Aggregate only completed pairs/conditional thirds for v9 futility checks."""
+    """Aggregate only completed pairs/conditional thirds for v10 futility checks."""
     selected = [trial for trial in trials if trial["candidate_id"] == candidate_id]
     by_case: dict[str, list[dict[str, Any]]] = {}
     for trial in selected:
@@ -1957,6 +2181,15 @@ def _validate_partial(
         )
     ):
         raise HarnessError(f"{spec.key}: resumed workspace isolation evidence mismatch")
+    workspace_evidence = raw.get("workspace", {})
+    if (
+        workspace_evidence.get("absolute_workspace_root") != str(workspace)
+        or workspace_evidence.get("workspace_creation_method") != WORKSPACE_FACTORY_ID
+        or workspace_evidence.get("workspace_acl_profile_identity") != WORKSPACE_FACTORY_ID
+        or workspace_evidence.get("private_temp_creation_avoided") is not True
+        or workspace_evidence.get("cleanup_result") != "REMOVED"
+    ):
+        raise HarnessError(f"{spec.key}: resumed v10 workspace factory evidence mismatch")
 
 
 def execute_logical_observation(
@@ -1986,6 +2219,7 @@ def execute_logical_observation(
             "status": "STARTED",
             "started_at": datetime.now(UTC).isoformat(),
         }
+        terminal_drift: HostSurfaceDrift | None = None
         try:
             structured, raw = run_trial(inputs, spec, attempt=attempt, **kwargs)
         except CapacityPause as exc:
@@ -2008,6 +2242,8 @@ def execute_logical_observation(
             record.update(
                 status="FAILED", failure_class=exc.failure_class, error=str(exc), raw=exc.raw
             )
+            if exc.failure_class == "HOST_SURFACE_DRIFT":
+                terminal_drift = HostSurfaceDrift(str(exc), exc.raw)
         except HarnessError as exc:
             # Setup failed before the model invocation; there is no observation to score.
             record.update(status="FAILED", failure_class="ATTEMPT_SETUP_ERROR", error=str(exc))
@@ -2015,6 +2251,8 @@ def execute_logical_observation(
             record.update(status="VALID", structured=structured, raw=raw)
         record["completed_at"] = datetime.now(UTC).isoformat()
         _json_dump(journal, record)
+        if terminal_drift is not None:
+            raise terminal_drift
         if record["status"] == "VALID":
             return structured, raw
         print(f"failed attempt {attempt}/{limit} {spec.key}: {record['failure_class']}", flush=True)
@@ -2064,7 +2302,7 @@ def run_matrix(args: argparse.Namespace) -> int:
             "timeout_seconds": args.timeout_seconds,
         }
         if any(run_metadata.get(key) != value for key, value in expected_identity.items()):
-            raise HarnessError("resume execution identity differs from frozen V9 run")
+            raise HarnessError("resume execution identity differs from frozen V10 run")
         if run_metadata.get("runner_sha256") != _sha256(Path(__file__)):
             raise HarnessError("resume runner identity changed")
         for path in (ORACLE_PATH, CORPUS_PATH, TOPOLOGIES_PATH, MANIFEST_PATH, ENVELOPE_PATH):
@@ -2079,6 +2317,8 @@ def run_matrix(args: argparse.Namespace) -> int:
             host_preflight.get("status") != "PASS"
             or run_metadata.get("selected_sandbox") != host_preflight.get("selected_sandbox")
             or run_metadata.get("selected_backend") != host_preflight.get("selected_backend")
+            or run_metadata.get("selected_workspace_acl_profile")
+            != host_preflight.get("selected_workspace_acl_profile")
         ):
             raise HarnessError("resume host preflight/profile identity mismatch")
     else:
@@ -2117,6 +2357,7 @@ def run_matrix(args: argparse.Namespace) -> int:
             "full_acceptance": args.full_acceptance,
             "clean_context": "one new codex exec thread and disposable workspace per attempt",
             "workspace_parent": str(workspace_parent),
+            "workspace_factory": WORKSPACE_FACTORY_ID,
             "sandbox_selection_order": ["read-only", "workspace-write"],
             "windows_backend_selection_order": list(WINDOWS_BACKEND_ORDER),
             "stimulus_rule": "exact corpus prompt, two newlines, frozen neutral suffix",
@@ -2148,6 +2389,8 @@ def run_matrix(args: argparse.Namespace) -> int:
                     stage_state=f"{reason}_FAILED",
                     selected_backend=None,
                     selected_sandbox=None,
+                    selected_workspace_acl_profile=None,
+                    synthetic_canary_prompts_issued=len(preflight.get("records", [])),
                     completed_valid_observations=0,
                     acceptance_prompts_issued=0,
                 )
@@ -2175,6 +2418,9 @@ def run_matrix(args: argparse.Namespace) -> int:
                 return 1
             run_metadata["selected_backend"] = preflight["selected_backend"]
             run_metadata["selected_sandbox"] = preflight["selected_sandbox"]
+            run_metadata["selected_workspace_acl_profile"] = preflight[
+                "selected_workspace_acl_profile"
+            ]
             run_metadata["effective_host_profile"] = _load_json(output / "host-preflight.json")[
                 "records"
             ][-1]["effective_host_profile"]
@@ -2260,10 +2506,11 @@ def run_matrix(args: argparse.Namespace) -> int:
             },
         )
 
-    def execute_schedule(schedule: list[TrialSpec]) -> tuple[list[str], bool]:
+    def execute_schedule(schedule: list[TrialSpec]) -> tuple[list[str], bool, list[str]]:
         completed = set(persisted_results())
         pending = iter([spec for spec in schedule if spec.key not in completed])
         blocked: list[str] = []
+        host_drift: list[str] = []
         capacity_pause = False
         with concurrent.futures.ThreadPoolExecutor(max_workers=args.workers) as executor:
             futures: dict[concurrent.futures.Future, TrialSpec] = {}
@@ -2281,20 +2528,36 @@ def run_matrix(args: argparse.Namespace) -> int:
                         result = future.result()
                     except CapacityPause:
                         capacity_pause = True
+                    except HostSurfaceDrift:
+                        host_drift.append(spec.key)
                     else:
                         if result is None:
                             blocked.append(spec.key)
                         else:
                             completed.add(spec.key)
                             print(f"completed {len(completed)} {spec.key}", flush=True)
-                if not blocked and not capacity_pause:
+                if not blocked and not capacity_pause and not host_drift:
                     for _ in range(args.workers - len(futures)):
                         spec = next(pending, None)
                         if spec is not None:
                             futures[executor.submit(execute, spec)] = spec
-        return blocked, capacity_pause
+        return blocked, capacity_pause, host_drift
 
-    def stop_for_execution_state(blocked: list[str], capacity: bool, state: str) -> int | None:
+    def stop_for_execution_state(
+        blocked: list[str], capacity: bool, host_drift: list[str], state: str
+    ) -> int | None:
+        if host_drift:
+            export_evidence("HOST_SURFACE_DRIFT", "BLOCKED", host_drift)
+            _json_dump(
+                output / "selection.json",
+                {
+                    "status": "BLOCKED",
+                    "selected_candidate": None,
+                    "reason": "HOST_SURFACE_DRIFT",
+                    "scored": False,
+                },
+            )
+            return 1
         if capacity:
             export_evidence(state, "PAUSED_EXTERNAL_CAPACITY", blocked)
             _json_dump(
@@ -2326,8 +2589,8 @@ def run_matrix(args: argparse.Namespace) -> int:
             schedule = [spec for spec in schedule if spec.repetition in set(args.repetition)]
         if not schedule:
             raise HarnessError("trial filters selected no trials")
-        blocked, capacity = execute_schedule(schedule)
-        terminal = stop_for_execution_state(blocked, capacity, "FILTERED")
+        blocked, capacity, host_drift = execute_schedule(schedule)
+        terminal = stop_for_execution_state(blocked, capacity, host_drift, "FILTERED")
         if terminal is not None:
             return terminal
         export_evidence("FILTERED_COMPLETE", "COMPLETE")
@@ -2342,7 +2605,7 @@ def run_matrix(args: argparse.Namespace) -> int:
     ) -> int | None:
         ordered_cases = sorted(
             inputs.corpus["cases"],
-            key=lambda case: (V9_CLASS_ORDER.index(case["class"]), case["id"]),
+            key=lambda case: (V10_CLASS_ORDER.index(case["class"]), case["id"]),
         )
         for case_index, case in enumerate(ordered_cases):
             rotated = (
@@ -2354,9 +2617,12 @@ def run_matrix(args: argparse.Namespace) -> int:
                     continue
                 for repetition in (1, 2):
                     spec = TrialSpec(case, candidate, repetition)
-                    blocked, capacity = execute_schedule([spec])
+                    blocked, capacity, host_drift = execute_schedule([spec])
                     stopped = stop_for_execution_state(
-                        blocked, capacity, f"{stage}_{case['id']}_{candidate}_INCOMPLETE"
+                        blocked,
+                        capacity,
+                        host_drift,
+                        f"{stage}_{case['id']}_{candidate}_INCOMPLETE",
                     )
                     if stopped is not None:
                         return stopped
@@ -2377,9 +2643,12 @@ def run_matrix(args: argparse.Namespace) -> int:
                     if spec.case["id"] == case["id"]
                 ]
                 if third:
-                    blocked, capacity = execute_schedule(third)
+                    blocked, capacity, host_drift = execute_schedule(third)
                     stopped = stop_for_execution_state(
-                        blocked, capacity, f"{stage}_{case['id']}_{candidate}_THIRD_INCOMPLETE"
+                        blocked,
+                        capacity,
+                        host_drift,
+                        f"{stage}_{case['id']}_{candidate}_THIRD_INCOMPLETE",
                     )
                     if stopped is not None:
                         return stopped
@@ -2522,11 +2791,11 @@ def _validate_executed_runner_provenance(metadata: dict[str, Any]) -> None:
 
 
 def validate_complete_evidence(inputs: FrozenInputs, output: Path) -> None:
-    """Fail closed on V9 epoch, adaptive schedule, attempts, traces and aggregates."""
+    """Fail closed on V10 epoch, adaptive schedule, attempts, traces and aggregates."""
     metadata = _load_json(output / "run-metadata.json")
     method = inputs.oracle["trial_method"]
     if metadata.get("status") not in {"COMPLETE", "BLOCKED_NO_REFERENCE"}:
-        raise HarnessError("incomplete V9 execution cannot be scored")
+        raise HarnessError("incomplete V10 execution cannot be scored")
     if (
         metadata.get("oracle_id") != inputs.oracle["oracle_id"]
         or metadata.get("execution_epoch") != inputs.oracle["execution_epoch"]
@@ -2537,7 +2806,7 @@ def validate_complete_evidence(inputs: FrozenInputs, output: Path) -> None:
         or metadata.get("host") != "Codex"
         or metadata.get("timeout_seconds") != method["timeout_seconds_per_model_attempt"]
     ):
-        raise HarnessError("mismatched V9 execution identity/configuration")
+        raise HarnessError("mismatched V10 execution identity/configuration")
     _validate_executed_runner_provenance(metadata)
     for path in (ORACLE_PATH, CORPUS_PATH, TOPOLOGIES_PATH, MANIFEST_PATH, ENVELOPE_PATH):
         relative = path.relative_to(REPO_ROOT).as_posix()
@@ -2566,7 +2835,7 @@ def validate_complete_evidence(inputs: FrozenInputs, output: Path) -> None:
     if len(set(trial_keys)) != len(trial_keys) or set(trial_keys) != set(raw_keys):
         raise HarnessError("valid trial/raw identity mismatch or duplication")
     if set(trial_keys) - set(possible):
-        raise HarnessError("trial outside frozen V9 identity set")
+        raise HarnessError("trial outside frozen V10 identity set")
     evaluated = (
         ["B0", "B1"]
         if metadata["status"] == "BLOCKED_NO_REFERENCE"
@@ -2588,7 +2857,7 @@ def validate_complete_evidence(inputs: FrozenInputs, output: Path) -> None:
     if len(evaluated) == 4:
         lower, upper = method["overall_valid_observation_range_when_challengers_execute"]
     if not lower <= len(trials) <= upper:
-        raise HarnessError("V9 valid observation count is outside the frozen stage range")
+        raise HarnessError("V10 valid observation count is outside the frozen stage range")
 
     raw_by_key = dict(zip(raw_keys, raw_trials, strict=True))
     trial_by_key = dict(zip(trial_keys, trials, strict=True))
@@ -2659,13 +2928,13 @@ def validate_complete_evidence(inputs: FrozenInputs, output: Path) -> None:
         for item in aggregate_candidate_trials(inputs, candidate, trials)
     ]
     if aggregates != load_trials(output / "case-aggregates.jsonl"):
-        raise HarnessError("persisted V9 case aggregates are not exactly recomputable")
+        raise HarnessError("persisted V10 case aggregates are not exactly recomputable")
     recomputed_metrics = {
         candidate: compute_candidate_metrics(inputs, candidate, trials, deterministic)
         for candidate in evaluated
     }
     if recomputed_metrics != _load_json(output / "metrics.json"):
-        raise HarnessError("persisted V9 metrics are not exactly recomputable")
+        raise HarnessError("persisted V10 metrics are not exactly recomputable")
     expected_selection = (
         {
             "status": "BLOCKED",
@@ -2678,7 +2947,7 @@ def validate_complete_evidence(inputs: FrozenInputs, output: Path) -> None:
         else apply_selection_rule(inputs, recomputed_metrics)
     )
     if expected_selection != _load_json(output / "selection.json"):
-        raise HarnessError("persisted V9 selection is not exactly recomputable")
+        raise HarnessError("persisted V10 selection is not exactly recomputable")
 
 
 def score_matrix(args: argparse.Namespace) -> int:

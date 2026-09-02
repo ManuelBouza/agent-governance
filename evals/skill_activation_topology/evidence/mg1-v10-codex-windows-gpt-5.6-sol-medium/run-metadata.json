@@ -1,0 +1,67 @@
+{
+  "acceptance_prompts_issued": 1,
+  "capability_source_epoch": "MG1-2026-08-25-v3",
+  "capacity_event_count": 0,
+  "clean_context": "one new codex exec thread and disposable workspace per attempt",
+  "codex_cli": "codex-cli 0.149.0",
+  "completed_valid_observations": 0,
+  "corpus_id": "MG1-T023-CORPUS-v4",
+  "effective_host_profile": {
+    "codex_cli_version": "codex-cli 0.149.0",
+    "disabled_features": [
+      "apps",
+      "remote_plugin",
+      "multi_agent",
+      "skill_mcp_dependency_install",
+      "shell_snapshot",
+      "standalone_web_search"
+    ],
+    "effort": "medium",
+    "ignore_rules": true,
+    "ignore_user_config": true,
+    "logical_sandbox": "read-only",
+    "model": "gpt-5.6-sol",
+    "native_windows_backend": "unelevated",
+    "workspace_acl_profile_identity": "windows-inherited-acl-mkdir-v1"
+  },
+  "effort": "medium",
+  "execution_epoch": "MG1-T023-EXECUTION-v10",
+  "executed_runner_git_commit": "cd0f97b0022176efdabe34e7d7142ff3344fa841",
+  "frozen_asset_sha256": {
+    "evals/skill_activation_topology/corpus.json": "be56966f790e1640c200bf92b3c7fdf9f9792c6ef2d17a91e7bc4ef3e5583e75",
+    "evals/skill_activation_topology/oracle.json": "c47cea6f779b4805f831eeded1097b67bbf634b855c5978091730fc377301736",
+    "evals/skill_activation_topology/presentations/manifest.json": "1b5fd0bc52d23e20c25b52dcd681fd2025640811c60890e59275a281f88c1e90",
+    "evals/skill_activation_topology/topologies.json": "2d5726799b3ca33641ac10b0a06c01cec1f5bc65b18389ac94f97ea56697a60b",
+    "evals/skill_activation_topology/trial-envelope.json": "2d483784a8cfd1143c52e976218f2d96e2ccfa324516764ff35f939a6d777b7d"
+  },
+  "full_acceptance": true,
+  "host": "Codex",
+  "max_model_attempts_per_scheduled_observation": 2,
+  "model": "gpt-5.6-sol",
+  "oracle_id": "MG1-T023-TOPOLOGY-ORACLE-v10",
+  "platform": "native Windows (Windows-11-10.0.26200-SP0)",
+  "presentation_revision": "MG1-T023-PRESENTATIONS-v3",
+  "runner_sha256": "0918018795dfb01fc49c87f43e8bb8f7b1f3b97122673c29cdc994c6d7e24f59",
+  "sandbox_selection_order": [
+    "read-only",
+    "workspace-write"
+  ],
+  "scored_observations": 0,
+  "selected_backend": "unelevated",
+  "selected_sandbox": "read-only",
+  "selected_workspace_acl_profile": "windows-inherited-acl-mkdir-v1",
+  "stage_state": "EXECUTION_ADAPTER_TRACE_CLASSIFICATION_DEFECT",
+  "started_at": "2026-09-02T05:38:39.640933+00:00",
+  "status": "BLOCKED",
+  "stimulus_rule": "exact corpus prompt, two newlines, frozen neutral suffix",
+  "timeout_seconds": 180,
+  "trial_envelope_id": "MG1-T023-TRIAL-ENVELOPE-v2",
+  "updated_at": "2026-09-02T05:45:32.633177+00:00",
+  "windows_backend_selection_order": [
+    "elevated",
+    "unelevated"
+  ],
+  "workers": 4,
+  "workspace_factory": "windows-inherited-acl-mkdir-v1",
+  "workspace_parent": "C:\\Users\\Manuel\\AppData\\Local\\Temp"
+}

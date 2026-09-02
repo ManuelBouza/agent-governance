@@ -1,0 +1,8 @@
+{
+  "capacity_events": 0,
+  "executed_runner_host_surface_drift_classification": 1,
+  "model_attempts": 1,
+  "non_capacity_failures": 1,
+  "retry_performed": false,
+  "trace_review_disposition": "FALSE_POSITIVE_EXECUTION_ADAPTER_DEFECT"
+}
