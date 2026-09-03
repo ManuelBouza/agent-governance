@@ -1,15 +1,15 @@
 {
-  "schema_version": "10.0.0",
-  "oracle_id": "MG1-T023-TOPOLOGY-ORACLE-v10",
-  "execution_epoch": "MG1-T023-EXECUTION-v10",
+  "schema_version": "11.0.0",
+  "oracle_id": "MG1-T023-TOPOLOGY-ORACLE-v11",
+  "execution_epoch": "MG1-T023-EXECUTION-v11",
   "capability_source_epoch": "MG1-2026-08-25-v3",
   "presentation_revision": "MG1-T023-PRESENTATIONS-v3",
   "presentation_manifest": "evals/skill_activation_topology/presentations/manifest.json",
-  "corpus_id": "MG1-T023-CORPUS-v4",
+  "corpus_id": "MG1-T023-CORPUS-v5",
   "trial_envelope_id": "MG1-T023-TRIAL-ENVELOPE-v2",
   "trial_envelope_path": "evals/skill_activation_topology/trial-envelope.json",
-  "supersedes_oracle_id": "MG1-T023-TOPOLOGY-ORACLE-v9",
-  "supersession_reason": "Prospective execution-adapter correction after v9 closed BLOCKED before acceptance because Python 3.13 private tempfile ACL semantics made the disposable workspace root inaccessible to the Codex restricted token. V10 preserves v9 candidate/reference bytes, corpus, semantic expectations, thresholds, paired 2+1 aggregation, cost-bounded scheduling, context meaning, D050 selection, Codex version and backend order while replacing only outer-workspace creation semantics and adding a provider-free workspace-readability gate before the unchanged Skill canary.",
+  "supersedes_oracle_id": "MG1-T023-TOPOLOGY-ORACLE-v10",
+  "supersession_reason": "Prospective post-v10 restart after v10 proved the Windows host/workspace/Skill-body path but exposed exactly one acceptance prompt under an immutable runner whose host-surface classifier was later found defective. V11 preserves v10 candidates, presentations, semantic expectations, thresholds, paired 2+1 aggregation, cost-bounded scheduling, context meaning, D050 selection, Codex version, backend/workspace/preflight method and corrected observability while rotating only the exposed WX01 holdout stimulus into fresh semantically equivalent WX00 and binding a new corpus/execution identity. T050 behavior-preservingly refactored the technical harness before this restart.",
   "candidate_ids": ["B0", "B1", "F2", "G3"],
   "prior_experiment_policy": {
     "mg1_v2_status": "CLOSED_BLOCKED",
@@ -20,20 +20,24 @@
     "mg1_v7_status": "CLOSED_BLOCKED_HOST_EXECUTION_ENVELOPE_DEFECT",
     "mg1_v8_status": "CLOSED_BLOCKED_HOST_CAPABILITY_PREFLIGHT",
     "mg1_v9_status": "CLOSED_BLOCKED_WORKSPACE_ACL_CONFOUND",
+    "mg1_v10_status": "CLOSED_BLOCKED_EXECUTION_ADAPTER_TRACE_CLASSIFICATION_DEFECT",
     "mg1_v8_acceptance_prompts_issued": 0,
     "mg1_v9_acceptance_prompts_issued": 0,
-    "mg1_v9_scored_observations": 0,
-    "prior_v2_v3_v4_v6_v7_v8_v9_observations_may_enter_v10_score": false,
+    "mg1_v10_acceptance_prompts_issued": 1,
+    "mg1_v10_scored_observations": 0,
+    "mg1_v10_exposed_unscored_case_id": "WX01",
+    "prior_v2_v3_v4_v6_v7_v8_v9_v10_observations_may_enter_v11_score": false,
     "mg1_v5_completed_observations": 0,
     "prior_results_may_be_used_only_for_method_confounds_cost_diagnostics_and_non_scored_regression": true,
-    "prior_results_may_not_tune_v10_candidate_presentations_thresholds_selection_expected_semantics_or_case_order": true
+    "prior_results_may_not_tune_v11_candidate_presentations_thresholds_selection_expected_semantics_or_case_order": true,
+    "v10_exposed_prompt_may_not_be_reused_as_v11_acceptance_stimulus": true
   },
   "trial_method": {
     "scoring_unit": "case_candidate_aggregate",
     "clean_context_required": true,
-    "candidate_construction": "byte-copy only from the frozen v3 presentation manifest; candidate and reference bytes must be identical to v9",
+    "candidate_construction": "byte-copy only from the frozen v3 presentation manifest; candidate and reference bytes must be identical to v10",
     "training_partition": null,
-    "training_partition_reason": "V10 reuses MG1-T023-CORPUS-v4 byte-identically because v8 and v9 issued zero acceptance prompts. Prior evidence is diagnostic only and cannot enter score or tune candidate wording, thresholds, ordering or selection.",
+    "training_partition_reason": "V11 uses MG1-T023-CORPUS-v5 derived from v4 only by retiring the exact v10-exposed WX01 stimulus and inserting fresh semantically equivalent cross-profile case WX00. V10 produced one unscored exposed acceptance attempt and zero scored observations. No prior observation enters v11 score or may tune candidate wording, thresholds, ordering or selection.",
     "reference_stage_candidates": ["B0", "B1"],
     "challenger_stage_candidates": ["F2", "G3"],
     "base_valid_repetitions_per_case_candidate": 2,
@@ -58,10 +62,10 @@
     "early_stop_policy": "The full-completion ranges are ceilings rather than mandatory minima. Stop future candidate observations whenever the frozen optimistic-completion futility rules prove qualification or material challenger status impossible.",
     "max_model_attempts_per_scheduled_observation": 2,
     "timeout_seconds_per_model_attempt": 180,
-    "attempt_isolation": "Every model attempt uses a fresh Codex thread and a disposable workspace satisfying v10 environment isolation, the frozen workspace-ACL profile and the selected complete host profile.",
+    "attempt_isolation": "Every model attempt uses a fresh Codex thread and a disposable workspace satisfying v11 epoch isolation while preserving the frozen v10 backend/workspace/minimal-surface host profile.",
     "model_attempt_failure_rule": "A timeout, malformed structured response, non-capacity provider failure, or other non-capacity execution failure consumes the current model attempt. Preserve it as diagnostic evidence. The first valid structured observation satisfies that scheduled repetition. Never retry after a valid observation exists.",
     "external_capacity_event_rule": "An explicit account/service usage-limit or quota-capacity failure before a valid structured result is an external capacity event, not a model attempt. Persist it separately, leave the repetition pending at the same attempt ordinal, and stop new live scheduling promptly.",
-    "pause_resume_rule": "The same v10 epoch may resume after capacity returns or after host-surface drift is restored to the exact already-selected complete host profile. Previously valid v10 observations remain authoritative and must not be rerun or replaced. Resume verifies exact epoch, frozen asset hashes, runner identity, Codex version, native Windows backend, logical sandbox, workspace creation/ACL profile, minimal feature surface, host/model/effort, observation uniqueness, attempt ordinals, stage state, futility state and evidence integrity before new calls.",
+    "pause_resume_rule": "The same v11 epoch may resume after capacity returns or after host-surface drift is restored to the exact already-selected complete host profile. Previously valid v11 observations remain authoritative and must not be rerun or replaced. Resume verifies exact epoch, frozen asset hashes, runner identity, Codex version, native Windows backend, logical sandbox, workspace creation/ACL profile, minimal feature surface, host/model/effort, observation uniqueness, attempt ordinals, stage state, futility state and evidence integrity before new calls.",
     "terminal_failure_rule": "If both permitted non-capacity model attempts fail for a scheduled repetition, stop BLOCKED and do not claim a topology selection from partial evidence.",
     "mechanical_smoke_cases_may_be_used": true,
     "smoke_cases_enter_acceptance_score": false
@@ -125,8 +129,8 @@
     "acceptance_holdout_or_candidate_content_allowed": false,
     "workspace_access_gate_must_pass_first": true,
     "synthetic_skill_path": ".agents/skills/mx-canary/SKILL.md",
-    "synthetic_skill_rule": "Use the v8/v9 deterministic neutral local Skill whose body contains a unique fixed nonce sentence not inferable from metadata and unrelated to Agent Governance/candidate/profile/holdout semantics.",
-    "prompt_rule": "Use the v8/v9 neutral synthetic prompt that explicitly asks to apply the mx-canary local instruction and return the body nonce in a minimal structured record.",
+    "synthetic_skill_rule": "Use the v8/v9/v10 deterministic neutral local Skill whose body contains a unique fixed nonce sentence not inferable from metadata and unrelated to Agent Governance/candidate/profile/holdout semantics.",
+    "prompt_rule": "Use the v8/v9/v10 neutral synthetic prompt that explicitly asks to apply the mx-canary local instruction and return the body nonce in a minimal structured record.",
     "required_valid_repetitions_per_selected_profile": 2,
     "complete_profile_identity_fields": [
       "codex_cli_version",
@@ -234,12 +238,13 @@
     "preflight_binding_rule": "Acceptance uses only the complete host profile that passed the provider-free workspace gate and two synthetic body-read/use canary repetitions. Codex version, native Windows backend, logical sandbox, workspace ACL profile and minimal feature identity are persisted and compared on every attempt/resume.",
     "host_surface_drift_rule": "After preflight, a disabled/different native backend, different logical sandbox/workspace ACL profile, unexpected loss of workspace readability, explicit rejection affecting required candidate-body read/use, or reappearance of unrelated app/plugin catalog payload is HOST_SURFACE_DRIFT. The affected observation is not scored as candidate behavior and new scheduling stops immediately.",
     "unobservable_rule": "If the selected host profile cannot continue to distinguish metadata discovery from candidate-body activation, stop/pause before scoring affected observations rather than infer non-activation from model prose or failed tools.",
-    "context_measure_rule": "observed_context_bytes is the UTF-8 byte sum of unique successfully host-read candidate SKILL.md body and reference files according to the frozen presentation manifest. Byte measures are not exact tokens."
+    "context_measure_rule": "observed_context_bytes is the UTF-8 byte sum of unique successfully host-read candidate SKILL.md body and reference files according to the frozen presentation manifest. Byte measures are not exact tokens.",
+    "successful_output_text_is_not_rejection_rule": "Policy/rejection-like text contained inside a successful relevant command output does not itself establish access rejection. Required-body rejection must derive from a relevant failed/denied host event or another first-party event that unambiguously proves rejection."
   },
   "cost_telemetry": {
     "per_invocation_fields_when_available": ["input_tokens", "cached_input_tokens", "reasoning_tokens", "output_tokens", "total_tokens", "tool_call_count", "policy_rejected_tool_call_count", "unrelated_app_plugin_resource_count", "unrelated_app_plugin_resource_bytes", "duration_seconds", "capacity_status", "codex_cli_version", "native_windows_backend", "logical_sandbox", "workspace_acl_profile_identity", "effective_host_profile_identity"],
     "missing_token_usage_rule": "If the installed Codex event stream does not expose exact token fields, record token_usage_available=false and retain available tool/duration/context proxies. Do not invent estimates or substitute a different host/model solely for telemetry.",
-    "rollout_budget_policy": "Do not require the experimental Codex rollout-budget feature for v10 acceptance because budget reminders/tracking behavior could alter the evaluated execution path.",
+    "rollout_budget_policy": "Do not require the experimental Codex rollout-budget feature for v11 acceptance because budget reminders/tracking behavior could alter the evaluated execution path.",
     "prompt_cache_policy": "Record cached-input tokens when available. Caching is diagnostic/cost information and does not enter candidate scoring."
   },
   "host_model_matrix": {
@@ -252,12 +257,13 @@
       "D051 one-product/single-install feasibility",
       "candidate-sensitive host-read context evidence",
       "stimulus/workspace isolation evidence",
-      "v10 Windows-backend resolution evidence",
-      "v10 provider-free workspace-access evidence",
-      "v10 host-capability preflight evidence",
-      "futility/materiality certificates for every early-stopped candidate"
+      "v11 Windows-backend resolution evidence preserving v10 method",
+      "v11 provider-free workspace-access evidence preserving v10 method",
+      "v11 host-capability preflight evidence preserving v10 method",
+      "futility/materiality certificates for every early-stopped candidate",
+      "T050 code-health/dependency/symbol-map verification before provider use"
     ],
-    "substitution_rule": "If the required live cell cannot execute reproducibly under the frozen v10 method, T023 is BLOCKED; do not silently substitute another host/model/effort/OS/CLI version."
+    "substitution_rule": "If the required live cell cannot execute reproducibly under the frozen v11 method, T023 is BLOCKED; do not silently substitute another host/model/effort/OS/CLI version."
   },
   "trial_output_contract": {
     "required_fields": ["case_id", "candidate_id", "repetition", "semantic_outcome", "granted_capabilities", "permission_broadening", "host_trace_available"],
