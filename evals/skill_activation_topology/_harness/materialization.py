@@ -128,7 +128,7 @@ def _inherited_acl_workspace(
 ) -> Iterator[tuple[Path, dict[str, Any]]]:
     """Create an atomic disposable root with ordinary inherited Windows ACLs."""
     if platform.system() != "Windows":
-        raise HarnessError("the v10 workspace factory requires native Windows")
+        raise HarnessError("the v11 workspace factory requires native Windows")
     parent = workspace_parent.resolve(strict=True)
     root: Path | None = None
     for _ in range(32):
@@ -140,7 +140,7 @@ def _inherited_acl_workspace(
         root = candidate
         break
     if root is None:
-        raise HarnessError("cannot allocate a unique v10 disposable workspace")
+        raise HarnessError("cannot allocate a unique v11 disposable workspace")
     diagnostic: dict[str, Any] = {
         "absolute_workspace_root": str(root),
         "workspace_creation_method": WORKSPACE_FACTORY_ID,

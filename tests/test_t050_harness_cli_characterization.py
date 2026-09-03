@@ -94,7 +94,7 @@ def test_validate_cli_success_output_and_exit(harness, capsys) -> None:
     assert harness.main(["validate"]) == 0
     assert json.loads(capsys.readouterr().out) == {
         "status": "PASS",
-        "oracle_id": "MG1-T023-TOPOLOGY-ORACLE-v10",
+        "oracle_id": "MG1-T023-TOPOLOGY-ORACLE-v11",
         "cases": 40,
         "candidates": ["B0", "B1", "F2", "G3"],
         "scheduled_trials": 320,

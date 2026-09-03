@@ -1,4 +1,4 @@
-"""Deterministic technical coverage for the T023 MG1-v10 harness."""
+"""Deterministic technical coverage for the T023 MG1-v11 harness."""
 
 from __future__ import annotations
 
@@ -32,8 +32,8 @@ def frozen(harness):
     return harness.load_frozen_inputs()
 
 
-def test_frozen_mg1_v10_inputs_validate_and_schedule_paired_stage_ceilings(harness, frozen) -> None:
-    assert frozen.oracle["oracle_id"] == "MG1-T023-TOPOLOGY-ORACLE-v10"
+def test_frozen_mg1_v11_inputs_validate_and_schedule_paired_stage_ceilings(harness, frozen) -> None:
+    assert frozen.oracle["oracle_id"] == "MG1-T023-TOPOLOGY-ORACLE-v11"
     assert frozen.oracle["capability_source_epoch"] == "MG1-2026-08-25-v3"
     assert frozen.oracle["presentation_revision"] == "MG1-T023-PRESENTATIONS-v3"
     assert len(harness.scheduled_trials(frozen)) == 320
@@ -156,7 +156,7 @@ def test_trial_output_schema_is_closed(harness) -> None:
     json.dumps(harness.TRIAL_SCHEMA)
 
 
-def test_v10_model_visible_turn_is_exactly_prompt_and_neutral_suffix(harness, frozen) -> None:
+def test_v11_model_visible_turn_is_exactly_prompt_and_neutral_suffix(harness, frozen) -> None:
     suffix = frozen.envelope["user_suffix"]
     forbidden = frozen.envelope["forbidden_added_terms_casefold"]
     for case in frozen.corpus["cases"]:
@@ -167,7 +167,7 @@ def test_v10_model_visible_turn_is_exactly_prompt_and_neutral_suffix(harness, fr
 
 
 @pytest.mark.parametrize("role", ["neutral", "source", "consumer"])
-def test_v10_fixture_materialization_is_exact_and_role_bounded(
+def test_v11_fixture_materialization_is_exact_and_role_bounded(
     tmp_path: Path, harness, frozen, role: str
 ) -> None:
     case = next(case for case in frozen.corpus["cases"] if case["fixture_role"] == role)
@@ -185,7 +185,7 @@ def test_v10_fixture_materialization_is_exact_and_role_bounded(
         assert not any(tmp_path.iterdir())
 
 
-def test_v10_workspace_root_validation_rejects_canonical_path_leak(
+def test_v11_workspace_root_validation_rejects_canonical_path_leak(
     tmp_path: Path, harness, frozen
 ) -> None:
     accepted = harness._validate_workspace_root(frozen, tmp_path)
@@ -406,7 +406,7 @@ def test_resume_rejects_changed_model_effort_or_frozen_identity(
         )
 
 
-def test_closed_v4_evidence_cannot_enter_v10_scoring(harness, frozen) -> None:
+def test_closed_v4_evidence_cannot_enter_v11_scoring(harness, frozen) -> None:
     evidence = harness.HERE / "evidence" / "mg1-v4-codex-windows-gpt-5.6-sol-medium"
     metadata = harness._load_json(evidence / "run-metadata.json")
     assert metadata["oracle_id"] != frozen.oracle["oracle_id"]
@@ -420,7 +420,7 @@ def test_closed_v6_live_runner_is_bound_to_immutable_git_provenance(harness) -> 
     harness._validate_executed_runner_provenance(metadata)
 
 
-def test_v10_holdout_has_no_exact_prompt_from_closed_v2_evidence(harness, frozen) -> None:
+def test_v11_holdout_has_no_exact_prompt_from_closed_v2_evidence(harness, frozen) -> None:
     evidence = harness.HERE / "evidence" / "mg1-v2-codex-windows-gpt-5.6-sol-medium"
     previous = harness.load_trials(evidence / "raw-trials.jsonl")
     prior_prompts = {
@@ -716,14 +716,14 @@ def test_host_surface_drift_stops_without_retry(harness, frozen, tmp_path, monke
     assert harness._load_json(records[0])["failure_class"] == "HOST_SURFACE_DRIFT"
 
 
-def test_v10_schedule_uses_frozen_semantic_consequence_order(harness, frozen) -> None:
+def test_v11_schedule_uses_frozen_semantic_consequence_order(harness, frozen) -> None:
     schedule = harness.stage_schedule(frozen, "R")
     first_case_ids = []
     for spec in schedule:
         if spec.case["id"] not in first_case_ids:
             first_case_ids.append(spec.case["id"])
     assert first_case_ids[:8] == [
-        "WX01",
+        "WX00",
         "WX02",
         "WX03",
         "WX04",
@@ -777,11 +777,11 @@ def test_backend_probe_is_model_free_and_binds_requested_backend(
     assert Path(observed["environment"]["CODEX_HOME"]).name == "codex-home"
 
 
-def test_v10_workspace_factory_avoids_python_private_temp_helpers(
+def test_v11_workspace_factory_avoids_python_private_temp_helpers(
     harness, tmp_path, monkeypatch
 ) -> None:
     def forbidden(*args, **kwargs):
-        pytest.fail("Python private tempfile helper must not create a live v10 workspace")
+        pytest.fail("Python private tempfile helper must not create a live v11 workspace")
 
     monkeypatch.setattr(harness.tempfile, "TemporaryDirectory", forbidden)
     monkeypatch.setattr(harness.tempfile, "mkdtemp", forbidden)

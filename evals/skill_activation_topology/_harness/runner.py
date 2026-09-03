@@ -90,7 +90,7 @@ def _resume_metadata(
         "timeout_seconds": args.timeout_seconds,
     }
     if any(metadata.get(key) != value for key, value in expected_identity.items()):
-        raise HarnessError("resume execution identity differs from frozen V10 run")
+        raise HarnessError("resume execution identity differs from frozen V11 run")
     if metadata.get("runner_sha256") != _sha256(HARNESS_PATH):
         raise HarnessError("resume runner identity changed")
     for relative, digest in _frozen_hashes().items():
