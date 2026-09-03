@@ -1,0 +1,179 @@
+{
+  "task_id": "T050",
+  "status": "DONE",
+  "task_contract_path": "docs/tasks/T050-agent-legible-harness-refactor-and-code-health-ratchet.md",
+  "acceptance_authority_path": "docs/reviews/T050-RF1.md",
+  "branch": "refactor/t050-agent-legible-harness",
+  "implementation_head_sha": "ee77e185e09d4672e8f427f49bd888fa7b2c681c",
+  "base_branch": "develop",
+  "base_sha": "e7c3be305afd4be34ee87956603aaf115fd7c988",
+  "canonical_develop_sha_at_continuation": "76a8c59d599d9b6299ba1ca749738bc795471359",
+  "submitted_head_sha": "ee77e185e09d4672e8f427f49bd888fa7b2c681c",
+  "reviewed_head_sha": "ee77e185e09d4672e8f427f49bd888fa7b2c681c",
+  "head_identity": "submitted_head_sha and reviewed_head_sha identify the verified implementation commit; the terminal returned HEAD is the pushed handoff-containing successor.",
+  "files_changed": [
+    "code-health.json",
+    "evals/skill_activation_topology/harness.py",
+    "evals/skill_activation_topology/_harness/__init__.py",
+    "evals/skill_activation_topology/_harness/aggregation.py",
+    "evals/skill_activation_topology/_harness/cli.py",
+    "evals/skill_activation_topology/_harness/codex_adapter.py",
+    "evals/skill_activation_topology/_harness/evidence.py",
+    "evals/skill_activation_topology/_harness/frozen_inputs.py",
+    "evals/skill_activation_topology/_harness/host_preflight.py",
+    "evals/skill_activation_topology/_harness/materialization.py",
+    "evals/skill_activation_topology/_harness/models.py",
+    "evals/skill_activation_topology/_harness/observability.py",
+    "evals/skill_activation_topology/_harness/provenance.py",
+    "evals/skill_activation_topology/_harness/run_support.py",
+    "evals/skill_activation_topology/_harness/runner.py",
+    "evals/skill_activation_topology/_harness/scheduling.py",
+    "evals/skill_activation_topology/_harness/scoring.py",
+    "evals/skill_activation_topology/_harness/storage.py",
+    "evals/skill_activation_topology/_harness/trial_execution.py",
+    "tests/test_code_health.py",
+    "tools/code_health.py"
+  ],
+  "implementation_summary": "Decomposed the 3,133-line MG1 topology harness into a 212-line compatibility/CLI facade and cohesive acyclic implementation modules. Added a deterministic fail-closed Python code-health checker, persisted size ratchets, scoped Ruff complexity enforcement, AST symbol mapping, dependency-direction validation, and implementation tests without changing frozen semantics or evidence behavior.",
+  "module_loc": {
+    "evals/skill_activation_topology/harness.py": {"before": 3133, "after": 212},
+    "evals/skill_activation_topology/_harness/__init__.py": {"before": 0, "after": 1},
+    "evals/skill_activation_topology/_harness/aggregation.py": {"before": 0, "after": 327},
+    "evals/skill_activation_topology/_harness/cli.py": {"before": 0, "after": 88},
+    "evals/skill_activation_topology/_harness/codex_adapter.py": {"before": 0, "after": 162},
+    "evals/skill_activation_topology/_harness/evidence.py": {"before": 0, "after": 259},
+    "evals/skill_activation_topology/_harness/frozen_inputs.py": {"before": 0, "after": 182},
+    "evals/skill_activation_topology/_harness/host_preflight.py": {"before": 0, "after": 464},
+    "evals/skill_activation_topology/_harness/materialization.py": {"before": 0, "after": 232},
+    "evals/skill_activation_topology/_harness/models.py": {"before": 0, "after": 174},
+    "evals/skill_activation_topology/_harness/observability.py": {"before": 0, "after": 173},
+    "evals/skill_activation_topology/_harness/provenance.py": {"before": 0, "after": 395},
+    "evals/skill_activation_topology/_harness/run_support.py": {"before": 0, "after": 306},
+    "evals/skill_activation_topology/_harness/runner.py": {"before": 0, "after": 385},
+    "evals/skill_activation_topology/_harness/scheduling.py": {"before": 0, "after": 80},
+    "evals/skill_activation_topology/_harness/scoring.py": {"before": 0, "after": 321},
+    "evals/skill_activation_topology/_harness/storage.py": {"before": 0, "after": 27},
+    "evals/skill_activation_topology/_harness/trial_execution.py": {"before": 0, "after": 262}
+  },
+  "modules_over_600_loc": [],
+  "size_ratchet": {
+    "configuration": "code-health.json",
+    "hard_limit": 1000,
+    "facade_baseline": 212,
+    "grandfathered_no_net_growth": {
+      "src/agent_governance/engine.py": 1794,
+      "tests/test_repository_context.py": 1540,
+      "tests/test_skill_activation_topology_harness.py": 1177,
+      "tools/repository_context.py": 1117
+    },
+    "result": "PASS; all governed Python modules satisfy their hard limit or persisted no-net-growth baseline"
+  },
+  "complexity": {
+    "command": "uv run --locked python tools/code_health.py check --root .",
+    "rules": ["C901 <= 10", "PLR0912 <= 12", "PLR0915 <= 50"],
+    "scoped_files": 21,
+    "result": "PASS; zero diagnostics and no per-file complexity ignores"
+  },
+  "symbol_map": {
+    "command": "uv run --locked python tools/code_health.py map --root .",
+    "result": "PASS; machine-readable AST metadata emitted",
+    "sample": {
+      "module_path": "evals/skill_activation_topology/harness.py",
+      "physical_loc": 212,
+      "definitions": [
+        {"name": "execute_logical_observation", "start_line": 129, "end_line": 133},
+        {"name": "run_matrix", "start_line": 146, "end_line": 152},
+        {"name": "build_parser", "start_line": 181, "end_line": 196},
+        {"name": "main", "start_line": 199, "end_line": 208}
+      ],
+      "direct_imports_include": ["_harness", "argparse", "json", "pathlib"]
+    }
+  },
+  "characterization_evidence": {
+    "accepted_baseline": "handoffs/T050-rf1-baseline.json",
+    "accepted_review": "docs/reviews/T050-RF1.md",
+    "baseline_tests_unchanged_after_rf1": true,
+    "post_refactor_result": "PASS; 71 passed in 1.66s",
+    "surfaces": "CLI, frozen inputs, materialization/workspace, Codex adapter, trace observability, retries/scheduling, evidence/provenance, scoring/selection"
+  },
+  "live_evaluation_spend": {
+    "synthetic_skill_canary_calls": 0,
+    "acceptance_prompts": 0,
+    "scored_observations": 0,
+    "other_provider_model_calls": 0
+  },
+  "frozen_semantic_asset_comparison": {
+    "reference": "handoffs/T050-rf1-baseline.json#/frozen_semantic_asset_sha256",
+    "assets_checked": 25,
+    "hash_mismatches": [],
+    "git_diff_command": "git diff --exit-code e7c3be305afd4be34ee87956603aaf115fd7c988 -- evals/skill_activation_topology/corpus.json evals/skill_activation_topology/oracle.json evals/skill_activation_topology/presentations evals/skill_activation_topology/presentations-v3 evals/skill_activation_topology/topologies.json evals/skill_activation_topology/trial-envelope.json",
+    "result": "PASS; all frozen D052 assets are byte-identical to the T050 base"
+  },
+  "product_semantics_comparison": {
+    "command": "git diff --exit-code e7c3be305afd4be34ee87956603aaf115fd7c988 -- governance-core src/agent_governance governance-skill maintainer-skill",
+    "result": "PASS; Core/runtime/profile and Skill semantics unchanged"
+  },
+  "verification": {
+    "commands": [
+      "uv run --locked ruff check .",
+      "uv run --locked ruff format --check .",
+      "uv run --locked python tools/code_health.py check --root .",
+      "uv run --locked python tools/code_health.py map --root .",
+      "uv run --locked python evals/skill_activation_topology/harness.py validate",
+      "uv run --locked python -m pytest tests/test_skill_activation_topology_harness.py tests/test_t050_harness_cli_characterization.py -q",
+      "uv run --locked python -m pytest",
+      "git diff --check"
+    ],
+    "results": {
+      "ruff_check": "PASS; All checks passed",
+      "ruff_format_check": "PASS; 56 files already formatted",
+      "code_health": "PASS; sizes, complexity and dependency direction/cycle checks green",
+      "symbol_map": "PASS; source-derived JSON emitted and tested",
+      "mg1_deterministic_validation": "PASS; 40 cases, 320 scheduled trials, no provider call",
+      "focused_characterization": "PASS; 71 passed in 1.66s",
+      "code_health_and_symbol_map_tests": "PASS; 6 tests included in full suite",
+      "full_pytest": "PASS; 482 passed in 90.52s",
+      "git_diff_check": "PASS"
+    },
+    "runtime": {
+      "platform": "win32",
+      "python": "3.13.14",
+      "pytest": "9.1.1",
+      "ruff": "0.16.2"
+    },
+    "network_required": false,
+    "isolated_pre_existing_failures": []
+  },
+  "dependencies_or_config_changes": [
+    "Added code-health.json; no dependency or lockfile changes."
+  ],
+  "git_status": "Implementation commit clean before creation of this handoff; final handoff commit and push required.",
+  "unresolved_issues": [],
+  "recommended_next_task": "ChatGPT Orchestrator Converge/Accept review of T050 from the pushed branch and this handoff.",
+  "chatgpt_read_path": "handoffs/T050-executor-handoff.json",
+  "sdd_profile": "ASSURED",
+  "code_review": {
+    "reviewed_head_sha": "ee77e185e09d4672e8f427f49bd888fa7b2c681c",
+    "summary": "Reviewed the complete implementation diff against the accepted RF1 characterization and T050 architecture. The facade preserves the legacy import/monkeypatch surface while delegating cohesive responsibilities; runner provenance remains bound to the stable harness path; extracted imports are acyclic and respect configured layering; scoring does not invoke Codex or mutate workspaces; frozen assets and product semantics are unchanged.",
+    "findings": [],
+    "resolved_findings": [
+      "Split initially over-complex validation, preflight, provenance, runner and trial functions until scoped Ruff complexity checks passed.",
+      "Preserved historical runner SHA/provenance identity by binding provenance to the facade path rather than an extracted module path.",
+      "Preserved parser description and facade-level monkeypatch compatibility verified by the accepted characterization suite."
+    ],
+    "upstream_reentry_required": false,
+    "upstream_reentry_stage": null
+  },
+  "requirement_trace": {
+    "AC-T050-1": "Accepted unchanged RF1 characterization suite passes 71 tests after decomposition.",
+    "AC-T050-2": "harness.py is a 212-line compatibility/CLI facade.",
+    "AC-T050-3": "Every extracted implementation module is <=500 lines; none exceeds 600.",
+    "AC-T050-4": "tools/code_health.py and code-health.json enforce the hard limit and grandfathered no-net-growth ratchets with fail-closed tests.",
+    "AC-T050-5": "Scoped Ruff C901/PLR0912/PLR0915 enforcement passes with no silent ignores.",
+    "AC-T050-6": "The AST map emits module path, LOC, top-level definitions/ranges and direct imports as JSON.",
+    "AC-T050-7": "25 frozen asset hashes match RF1 and base diffs for semantic assets and product semantics are empty.",
+    "AC-T050-8": "Accepted deterministic behavior coverage passes across all characterized technical surfaces.",
+    "AC-T050-9": "All live MG1/provider/model counters are zero.",
+    "AC-T050-10": "Ruff, formatting, 482-test full suite, focused suite, checker, map, validation and dependency checks pass."
+  }
+}

@@ -1,0 +1,93 @@
+{
+  "task_id": "T050",
+  "status": "PARTIAL",
+  "checkpoint": "RF1_CHARACTERIZATION_BASELINE",
+  "task_contract_path": "docs/tasks/T050-agent-legible-harness-refactor-and-code-health-ratchet.md",
+  "branch": "refactor/t050-agent-legible-harness",
+  "base_branch": "develop",
+  "base_sha": "e7c3be305afd4be34ee87956603aaf115fd7c988",
+  "characterization_head_sha": "6d3384916d7b753a72a54fb6d2b77ac15b8d7182",
+  "checkpoint_head_identity": "The artifact-containing pushed successor is reported as the terminal visible HEAD; characterization_head_sha is its reviewed ancestor.",
+  "harness_baseline": {
+    "path": "evals/skill_activation_topology/harness.py",
+    "physical_loc": 3133,
+    "sha256": "51f570333bb3c147149d57ecd1e746616c050fc1ce37b9aa5d82576cd91c6759"
+  },
+  "characterization_assets": {
+    "tests/test_skill_activation_topology_harness.py": "54fe52b92fbed85a8608e844550eae27719e6a1b92dfcf70b2d9ded2a97185b7",
+    "tests/test_t050_harness_cli_characterization.py": "2f17c86e903a151e09270295f17ff8fd0610c52fcd23e1f5b8d1d57b630cc452"
+  },
+  "characterized_surfaces": {
+    "cli": "validate/materialize/run/score/verify subcommands, arguments, defaults, dispatch, success/error/usage exits",
+    "frozen_inputs": "oracle/corpus/envelope/topology/manifest identity, schema checks and paired scheduling ceilings",
+    "materialization_workspace": "candidate byte copies, role-bounded fixtures, canonical-path exclusion, inherited-ACL workspace construction and provider-free workspace probe",
+    "codex_adapter": "minimal host command, backend probe, version/profile binding and preflight sequencing",
+    "trace_observability": "successful entrypoint/reference reads, failed-read exclusion, telemetry, V10 access rejection and host-surface-drift classification",
+    "attempts_scheduling": "fresh-workspace retry, exhaustion, capacity pauses, paired 2+1 conditional thirds, futility and materiality",
+    "evidence_provenance": "attempt journals, completeness/retry outputs, immutable historical runner binding and exact recomputation checks",
+    "scoring_selection": "case aggregation, threshold metrics, critical violations, reference choice and challenger selection"
+  },
+  "verification": {
+    "commands": [
+      "uv sync --locked",
+      "uv run --locked ruff check .",
+      "uv run --locked ruff format --check .",
+      "uv run --locked python -m pytest tests/test_skill_activation_topology_harness.py tests/test_t050_harness_cli_characterization.py -q",
+      "uv run --locked python -m pytest"
+    ],
+    "results": {
+      "uv_sync": "PASS; Python 3.13.14; locked dependencies resolved and installed",
+      "ruff_check": "PASS; All checks passed",
+      "ruff_format_check": "PASS; 37 files already formatted",
+      "focused_characterization": "PASS; 71 passed in 6.59s",
+      "full_pytest": "PASS; 476 passed in 107.50s"
+    },
+    "runtime": {
+      "platform": "win32",
+      "python": "3.13.14",
+      "pytest": "9.1.1",
+      "ruff": "0.16.2"
+    },
+    "test_runtime_network_required": false,
+    "isolated_pre_existing_failures": []
+  },
+  "live_evaluation_spend": {
+    "synthetic_skill_canary_calls": 0,
+    "acceptance_prompts": 0,
+    "scored_observations": 0,
+    "other_provider_model_calls": 0
+  },
+  "frozen_semantic_asset_sha256": {
+    "evals/skill_activation_topology/corpus.json": "be56966f790e1640c200bf92b3c7fdf9f9792c6ef2d17a91e7bc4ef3e5583e75",
+    "evals/skill_activation_topology/oracle.json": "c47cea6f779b4805f831eeded1097b67bbf634b855c5978091730fc377301736",
+    "evals/skill_activation_topology/presentations-v3/B0/agent-governance/SKILL.md": "ae9ca833126b0f52e46976ca0b92b3384e617a1c962e207171b0012dadee99c1",
+    "evals/skill_activation_topology/presentations-v3/B1/agent-governance-router/SKILL.md": "c2156eb5ec13586cdd91f47094859258b2351c9715d4e12043d9e318ca3e48b0",
+    "evals/skill_activation_topology/presentations-v3/F2/consumer-governance/SKILL.md": "c8410a3f76c7ec2d29d95df178751e996ae8d405170304c136a5d7e4f9a2f204",
+    "evals/skill_activation_topology/presentations-v3/F2/source-maintainer/SKILL.md": "b2c04992fd1162afdf2b341103a4054799c2130c627e87601f3d0627cbd0c132",
+    "evals/skill_activation_topology/presentations-v3/G3/consumer-lifecycle/SKILL.md": "16259bf24f29c4b4786f4d80c1957c1b8c343a720ba6ed16c1426e77ad1e3825",
+    "evals/skill_activation_topology/presentations-v3/G3/external-skill-trust/SKILL.md": "3a5cbf42c51a2171c4024d79fcd9f819701602933ff3ba547766650d3847a685",
+    "evals/skill_activation_topology/presentations-v3/G3/source-maintainer/SKILL.md": "c463a3e8d2ffdfee67ca09feb720ab3f720c16be9e63deec3d1ce60addca0d81",
+    "evals/skill_activation_topology/presentations-v3/shared/consumer-lifecycle.md": "bbd42745f1e47c41f4643cf3d456f2f0186bc96d1f2a385768d58b9f98375b10",
+    "evals/skill_activation_topology/presentations-v3/shared/external-skill-trust.md": "a4bc7bd80a6ad7377d873f69a530b0fe4d4f481414c6a3a3eeb58a3be8d70e51",
+    "evals/skill_activation_topology/presentations-v3/shared/source-maintainer.md": "80a44c1c4cf5a2134d46be38c198d4b55d244f227e012765f5bcd15b627a657d",
+    "evals/skill_activation_topology/presentations/B0/agent-governance/SKILL.md": "04847ad3f33355b067dc5e868530095ec07dc291ec2965a0e8bfa7e3109b2e92",
+    "evals/skill_activation_topology/presentations/B1/agent-governance-router/SKILL.md": "0cc5c8ba9a645e4d6afaec06e1d3e8d86fa85465f89e4d3bd0b2c5d0c66d269c",
+    "evals/skill_activation_topology/presentations/F2/consumer-governance/SKILL.md": "b02c9ffcb6b477a15d56440be94010f6b6d3886f0904ea37735987dce996a2d8",
+    "evals/skill_activation_topology/presentations/F2/source-maintainer/SKILL.md": "8d0923ef071ae416607cbc681762f58726519de0f2fc9c6b52d5ed23a756eee8",
+    "evals/skill_activation_topology/presentations/G3/consumer-lifecycle/SKILL.md": "88d9b89bfa81c6178353f90a532aa3736dda898bed8672b84294a0ef3d30102e",
+    "evals/skill_activation_topology/presentations/G3/external-skill-trust/SKILL.md": "46fe08a6e292793bf919c078f9597b481aefbe87d288fbe0327dd25570c2a8f5",
+    "evals/skill_activation_topology/presentations/G3/source-maintainer/SKILL.md": "0540e8c70cfcae340a8b7e1f9e4935764c1606a89d634171e9e95b40adf2262a",
+    "evals/skill_activation_topology/presentations/manifest.json": "1b5fd0bc52d23e20c25b52dcd681fd2025640811c60890e59275a281f88c1e90",
+    "evals/skill_activation_topology/presentations/shared/consumer-lifecycle.md": "46ee41af7d4f7f8b1b1e97492aed1c844f3a94e14fbe530c5b2a337764b6c063",
+    "evals/skill_activation_topology/presentations/shared/external-skill-trust.md": "254124e52d50a0f615b652d770a67f75d7543b23385e382bf52eabf8e13ccafb",
+    "evals/skill_activation_topology/presentations/shared/source-maintainer.md": "b1afb7f07a616bac844205e7095b996f5dde77521741adc377a5c8f74acbb522",
+    "evals/skill_activation_topology/topologies.json": "2d5726799b3ca33641ac10b0a06c01cec1f5bc65b18389ac94f97ea56697a60b",
+    "evals/skill_activation_topology/trial-envelope.json": "2d483784a8cfd1143c52e976218f2d96e2ccfa324516764ff35f939a6d777b7d"
+  },
+  "mutation_state": "No structural mutation has begun.",
+  "unresolved_issues": [
+    "RF3 is gated on ChatGPT Orchestrator acceptance of this pushed RF1 characterization baseline."
+  ],
+  "recommended_next_task": "After Orchestrator RF1 acceptance, continue T050 RF3 on this branch without weakening the characterization baseline.",
+  "chatgpt_read_path": "handoffs/T050-rf1-baseline.json"
+}
