@@ -1,0 +1,11 @@
+{
+  "acceptance_complete": false,
+  "capacity_event_count": 0,
+  "completed_valid_observations": 2,
+  "execution_epoch": "MG1-T023-EXECUTION-v11",
+  "exhausted_observations": [
+    "WC01--B0: paired base repetitions incomplete"
+  ],
+  "partial_scoring_permitted": false,
+  "stage_state": "EXECUTION_ADAPTER_SCHEDULER_DEFECT"
+}

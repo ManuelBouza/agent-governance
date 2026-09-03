@@ -31,10 +31,10 @@ def _load_json(path: Path) -> dict[str, Any]:
 
 
 def _validate_oracle_method(oracle: dict[str, Any]) -> None:
-    if oracle.get("schema_version") != "10.0.0" or oracle.get("oracle_id") != (
-        "MG1-T023-TOPOLOGY-ORACLE-v10"
+    if oracle.get("schema_version") != "11.0.0" or oracle.get("oracle_id") != (
+        "MG1-T023-TOPOLOGY-ORACLE-v11"
     ):
-        raise HarnessError("harness requires the frozen MG1 V10 oracle")
+        raise HarnessError("harness requires the frozen MG1 V11 oracle")
     method = oracle.get("trial_method", {})
     if (
         method.get("base_valid_repetitions_per_case_candidate") != 2
@@ -42,14 +42,14 @@ def _validate_oracle_method(oracle: dict[str, Any]) -> None:
         or method.get("max_model_attempts_per_scheduled_observation") != 2
         or method.get("timeout_seconds_per_model_attempt") != 180
     ):
-        raise HarnessError("oracle paired repetition/attempt method is not frozen V10")
+        raise HarnessError("oracle paired repetition/attempt method is not frozen V11")
     workspace_acl = oracle.get("windows_workspace_acl", {})
     if (
         workspace_acl.get("required_before_synthetic_model_calls") is not True
         or workspace_acl.get("python_private_temp_root_forbidden") is not True
         or workspace_acl.get("workspace_probe_provider_model_call_allowed") is not False
     ):
-        raise HarnessError("oracle v10 Windows workspace gate is incomplete")
+        raise HarnessError("oracle v11 Windows workspace gate is incomplete")
 
 
 def _validate_envelope(oracle: dict[str, Any], envelope: dict[str, Any]) -> None:
@@ -105,17 +105,17 @@ def _validate_document_identities(inputs: FrozenInputs) -> None:
 def _validate_cases(inputs: FrozenInputs, known_capabilities: set[str]) -> None:
     cases = inputs.corpus.get("cases")
     if (
-        inputs.corpus.get("schema_version") != "4.0.0"
+        inputs.corpus.get("schema_version") != "5.0.0"
         or not isinstance(cases, list)
         or len(cases) != 40
     ):
-        raise HarnessError("harness requires the frozen 40-case MG1 V10 corpus")
+        raise HarnessError("harness requires the frozen 40-case MG1 V11 corpus")
     ids = [case.get("id") for case in cases if isinstance(case, dict)]
     if len(ids) != len(cases) or len(ids) != len(set(ids)):
         raise HarnessError("corpus case identities must be unique objects")
     fixtures = inputs.envelope.get("fixtures", {})
     if set(fixtures) != {"neutral", "source", "consumer"}:
-        raise HarnessError("trial-envelope fixture roles are not the frozen V10 set")
+        raise HarnessError("trial-envelope fixture roles are not the frozen V11 set")
     for case in cases:
         if set(case.get("expected_capabilities", [])) - known_capabilities:
             raise HarnessError(f"{case['id']}: unknown expected capability")

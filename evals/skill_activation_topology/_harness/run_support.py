@@ -17,7 +17,7 @@ from .aggregation import (
 )
 from .frozen_inputs import _load_json
 from .models import (
-    V10_CLASS_ORDER,
+    V11_CLASS_ORDER,
     CapacityPause,
     FrozenInputs,
     HarnessError,
@@ -291,7 +291,7 @@ class RunContext:
     ) -> int | None:
         ordered_cases = sorted(
             self.inputs.corpus["cases"],
-            key=lambda case: (V10_CLASS_ORDER.index(case["class"]), case["id"]),
+            key=lambda case: (V11_CLASS_ORDER.index(case["class"]), case["id"]),
         )
         for case_index, case in enumerate(ordered_cases):
             offset = case_index % len(candidates)

@@ -270,7 +270,7 @@ def aggregate_candidate_trials(
 def finalized_candidate_aggregates(
     inputs: FrozenInputs, candidate_id: str, trials: list[dict[str, Any]]
 ) -> list[dict[str, Any]]:
-    """Aggregate only completed pairs/conditional thirds for v10 futility checks."""
+    """Aggregate only completed pairs/conditional thirds for v11 futility checks."""
     selected = [trial for trial in trials if trial["candidate_id"] == candidate_id]
     by_case: dict[str, list[dict[str, Any]]] = {}
     for trial in selected:

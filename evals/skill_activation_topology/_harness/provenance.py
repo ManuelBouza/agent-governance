@@ -77,7 +77,7 @@ def score_matrix(args: argparse.Namespace) -> int:
 def _validate_run_identity(inputs: FrozenInputs, metadata: dict[str, Any]) -> None:
     method = inputs.oracle["trial_method"]
     if metadata.get("status") not in {"COMPLETE", "BLOCKED_NO_REFERENCE"}:
-        raise HarnessError("incomplete V10 execution cannot be scored")
+        raise HarnessError("incomplete V11 execution cannot be scored")
     if (
         metadata.get("oracle_id") != inputs.oracle["oracle_id"]
         or metadata.get("execution_epoch") != inputs.oracle["execution_epoch"]
@@ -88,7 +88,7 @@ def _validate_run_identity(inputs: FrozenInputs, metadata: dict[str, Any]) -> No
         or metadata.get("host") != "Codex"
         or metadata.get("timeout_seconds") != method["timeout_seconds_per_model_attempt"]
     ):
-        raise HarnessError("mismatched V10 execution identity/configuration")
+        raise HarnessError("mismatched V11 execution identity/configuration")
     _validate_executed_runner_provenance(metadata)
     for path in (ORACLE_PATH, CORPUS_PATH, TOPOLOGIES_PATH, MANIFEST_PATH, ENVELOPE_PATH):
         relative = path.relative_to(REPO_ROOT).as_posix()
@@ -133,7 +133,7 @@ def _validate_schedule_records(
     if len(set(trial_keys)) != len(trial_keys) or set(trial_keys) != set(raw_keys):
         raise HarnessError("valid trial/raw identity mismatch or duplication")
     if set(trial_keys) - set(possible):
-        raise HarnessError("trial outside frozen V10 identity set")
+        raise HarnessError("trial outside frozen V11 identity set")
     evaluated = (
         ["B0", "B1"]
         if metadata["status"] == "BLOCKED_NO_REFERENCE"
@@ -150,12 +150,13 @@ def _validate_schedule_records(
         trial["candidate_id"] in {"F2", "G3"} for trial in trials
     ):
         raise HarnessError("challenger evidence exists despite no qualifying reference")
-    lower = method["reference_stage_base_valid_observations"]
-    upper = method["reference_stage_max_valid_observations"]
+    lower = method["reference_stage_full_completion_base_valid_observations"]
+    upper = method["reference_stage_full_completion_max_valid_observations"]
     if len(evaluated) == 4:
-        lower, upper = method["overall_valid_observation_range_when_challengers_execute"]
+        lower = lower + method["challenger_stage_full_completion_base_valid_observations"]
+        upper = method["overall_full_completion_ceiling_when_challengers_execute"]
     if not lower <= len(trials) <= upper:
-        raise HarnessError("V10 valid observation count is outside the frozen stage range")
+        raise HarnessError("V11 valid observation count is outside the frozen stage range")
     return trials, raw_trials, attempts, possible, trial_keys, raw_keys, evaluated
 
 
@@ -246,13 +247,13 @@ def _validate_recomputed_outputs(
         for item in aggregate_candidate_trials(inputs, candidate, trials)
     ]
     if aggregates != load_trials(output / "case-aggregates.jsonl"):
-        raise HarnessError("persisted V10 case aggregates are not exactly recomputable")
+        raise HarnessError("persisted V11 case aggregates are not exactly recomputable")
     recomputed_metrics = {
         candidate: compute_candidate_metrics(inputs, candidate, trials, deterministic)
         for candidate in evaluated
     }
     if recomputed_metrics != _load_json(output / "metrics.json"):
-        raise HarnessError("persisted V10 metrics are not exactly recomputable")
+        raise HarnessError("persisted V11 metrics are not exactly recomputable")
     expected_selection = (
         {
             "status": "BLOCKED",
@@ -265,11 +266,11 @@ def _validate_recomputed_outputs(
         else apply_selection_rule(inputs, recomputed_metrics)
     )
     if expected_selection != _load_json(output / "selection.json"):
-        raise HarnessError("persisted V10 selection is not exactly recomputable")
+        raise HarnessError("persisted V11 selection is not exactly recomputable")
 
 
 def validate_complete_evidence(inputs: FrozenInputs, output: Path) -> None:
-    """Fail closed on V10 epoch, adaptive schedule, attempts, traces and aggregates."""
+    """Fail closed on V11 epoch, adaptive schedule, attempts, traces and aggregates."""
     metadata = _load_json(output / "run-metadata.json")
     _validate_run_identity(inputs, metadata)
     deterministic = _validate_deterministic_evidence(output)
@@ -327,6 +328,26 @@ def verify_deterministic(args: argparse.Namespace) -> int:
     command_groups = {
         "ruff_check": ["uv", "run", "--locked", "ruff", "check", "."],
         "ruff_format_check": ["uv", "run", "--locked", "ruff", "format", "--check", "."],
+        "code_health": [
+            "uv",
+            "run",
+            "--locked",
+            "python",
+            "tools/code_health.py",
+            "check",
+            "--root",
+            ".",
+        ],
+        "symbol_map": [
+            "uv",
+            "run",
+            "--locked",
+            "python",
+            "tools/code_health.py",
+            "map",
+            "--root",
+            ".",
+        ],
         "full_pytest": ["uv", "run", "--locked", "python", "-m", "pytest"],
         "profile_isolation": [
             "uv",
@@ -383,7 +404,10 @@ def verify_deterministic(args: argparse.Namespace) -> int:
     )
     evidence["quality_gate"] = (
         "PASS"
-        if all(runs[name]["returncode"] == 0 for name in ("ruff_check", "ruff_format_check"))
+        if all(
+            runs[name]["returncode"] == 0
+            for name in ("ruff_check", "ruff_format_check", "code_health", "symbol_map")
+        )
         else "FAIL"
     )
     evidence["runtime"] = {

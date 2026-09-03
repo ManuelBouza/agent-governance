@@ -1,0 +1,45 @@
+{
+  "backend": "elevated",
+  "command": [
+    "codex",
+    "--config",
+    "windows.sandbox=\"elevated\"",
+    "sandbox",
+    "--permission-profile",
+    ":read-only",
+    "--cd",
+    "C:\\Users\\Manuel\\AppData\\Local\\Temp\\mx-workspace-elevated-read-only-c09f640d1cbf45f4826e5f0c0af0af11",
+    "cmd.exe",
+    "/d",
+    "/c",
+    "cd & dir /b & type workspace-probe.txt"
+  ],
+  "dangerous_bypass_used": false,
+  "duration_seconds": 5.743395,
+  "interactive_approval_used": false,
+  "logical_sandbox": "read-only",
+  "network_access_requested": false,
+  "passed": true,
+  "probe_file_read_exactly": true,
+  "probe_nonce": "T023_V11_WORKSPACE_READABLE",
+  "provider_model_call_issued": false,
+  "returncode": 0,
+  "stderr": "WARNING: proceeding, even though we could not create PATH aliases: Refusing to create helper binaries under temporary dir \"C:\\\\Users\\\\Manuel\\\\AppData\\\\Local\\\\Temp\\\\\" (codex_home: AbsolutePathBuf(\"C:\\\\Users\\\\Manuel\\\\AppData\\\\Local\\\\Temp\\\\mx-workspace-elevated-read-only-c09f640d1cbf45f4826e5f0c0af0af11\\\\codex-home\"))\n",
+  "stdout": "C:\\Users\\Manuel\\AppData\\Local\\Temp\\mx-workspace-elevated-read-only-c09f640d1cbf45f4826e5f0c0af0af11\ncodex-home\nworkspace-probe.txt\nT023_V11_WORKSPACE_READABLE\n",
+  "timed_out": false,
+  "workspace": {
+    "absolute_workspace_root": "C:\\Users\\Manuel\\AppData\\Local\\Temp\\mx-workspace-elevated-read-only-c09f640d1cbf45f4826e5f0c0af0af11",
+    "acl_diagnostic": {
+      "available": true,
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "C:\\Users\\Manuel\\AppData\\Local\\Temp\\mx-workspace-elevated-read-only-c09f640d1cbf45f4826e5f0c0af0af11 S-1-5-21-965703239-1801539544-3535568239-2966609813:(I)(OI)(CI)(M)\n                                                                                                    S-1-5-21-1375816575-2984022745-1738778535-3468548623:(I)(OI)(CI)(M)\n                                                                                                    DESKTOP-BT7KN1Q\\CodexSandboxUsers:(I)(OI)(CI)(M)\n                                                                                                    S-1-5-21-4566481-1930213289-2389048370-1190599383:(I)(OI)(CI)(M)\n                                                                                                    S-1-5-21-257627083-2204788138-750427104-3225170843:(I)(OI)(CI)(M,DC)\n                                                                                                    S-1-5-21-2896815453-4141213827-4229018463-2336812607:(I)(OI)(CI)(M,DC)\n                                                                                                    S-1-5-21-1104148370-703031354-90619025-567212464:(I)(OI)(CI)(M,DC)\n                                                                                                    NT AUTHORITY\\SYSTEM:(I)(OI)(CI)(F)\n                                                                                                    BUILTIN\\Administradores:(I)(OI)(CI)(F)\n                                                                                                    DESKTOP-BT7KN1Q\\Manuel:(I)(OI)(CI)(F)\n                                                                                                    S-1-15-3-2968813833-811790644-2202111208-3784096404-1081847329-2708967783-1438471679:(I)(F)\n                                                                                                    S-1-15-3-2968813833-811790644-2202111208-3784096404-1081847329-2708967783-1438471679:(I)(OI)(CI)(IO)(F)\n\nSe procesaron correctamente 1 archivos; error al procesar 0 archivos\r\n"
+    },
+    "cleanup_result": "REMOVED",
+    "private_temp_creation_avoided": true,
+    "python_runtime": "3.13.14",
+    "workspace_acl_profile_identity": "windows-inherited-acl-mkdir-v1",
+    "workspace_creation_method": "windows-inherited-acl-mkdir-v1"
+  },
+  "workspace_root_enumerated": true
+}

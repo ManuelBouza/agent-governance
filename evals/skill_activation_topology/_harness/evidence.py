@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+import hashlib
+import json
+import subprocess
 import tempfile
 from datetime import UTC, datetime
 from pathlib import Path
@@ -28,6 +31,58 @@ from .models import (
 )
 from .storage import _json_dump
 from .trial_execution import run_trial
+
+
+def _holdout_rotation_evidence(inputs: FrozenInputs) -> dict[str, Any]:
+    relative = CORPUS_PATH.relative_to(REPO_ROOT).as_posix()
+    try:
+        change = subprocess.check_output(
+            ["git", "log", "-1", "--format=%H", "--", relative],
+            cwd=REPO_ROOT,
+            text=True,
+        ).strip()
+        prior_bytes = subprocess.check_output(
+            ["git", "show", f"{change}^:{relative}"], cwd=REPO_ROOT
+        )
+        prior = json.loads(prior_bytes)
+    except (subprocess.CalledProcessError, json.JSONDecodeError) as exc:
+        raise HarnessError("cannot resolve the frozen corpus v4 predecessor") from exc
+    current_cases = {case["id"]: case for case in inputs.corpus["cases"]}
+    prior_cases = {case["id"]: case for case in prior.get("cases", [])}
+    shared_ids = set(current_cases) & set(prior_cases)
+    rotated = {
+        key: value
+        for key, value in current_cases.get("WX00", {}).items()
+        if key not in {"id", "prompt"}
+    }
+    exposed = {
+        key: value
+        for key, value in prior_cases.get("WX01", {}).items()
+        if key not in {"id", "prompt"}
+    }
+    valid = (
+        len(current_cases) == len(prior_cases) == 40
+        and set(current_cases) - set(prior_cases) == {"WX00"}
+        and set(prior_cases) - set(current_cases) == {"WX01"}
+        and all(current_cases[case_id] == prior_cases[case_id] for case_id in shared_ids)
+        and rotated == exposed
+        and current_cases["WX00"]["prompt"] != prior_cases["WX01"]["prompt"]
+    )
+    if not valid:
+        raise HarnessError("corpus v5 is not the frozen WX01-to-WX00 rotation of corpus v4")
+    return {
+        "status": "PASS",
+        "corpus_change_commit": change,
+        "prior_corpus_id": prior.get("corpus_id"),
+        "prior_sha256": hashlib.sha256(prior_bytes).hexdigest(),
+        "current_corpus_id": inputs.corpus["corpus_id"],
+        "current_sha256": _sha256(CORPUS_PATH),
+        "unchanged_case_count": len(shared_ids),
+        "retired_case_id": "WX01",
+        "replacement_case_id": "WX00",
+        "semantic_fields_equal": True,
+        "prompt_changed": True,
+    }
 
 
 def build_deterministic_evidence(inputs: FrozenInputs) -> dict[str, Any]:
@@ -63,6 +118,10 @@ def build_deterministic_evidence(inputs: FrozenInputs) -> dict[str, Any]:
         "presentation_revision": inputs.oracle["presentation_revision"],
         "corpus_id": inputs.oracle["corpus_id"],
         "trial_envelope_id": inputs.oracle["trial_envelope_id"],
+        "execution_epoch": inputs.oracle["execution_epoch"],
+        "prior_acceptance_observations_imported": 0,
+        "provider_model_calls_issued_during_deterministic_gate": 0,
+        "holdout_rotation": _holdout_rotation_evidence(inputs),
         "frozen_asset_sha256": {
             path.relative_to(REPO_ROOT).as_posix(): _sha256(path)
             for path in (ORACLE_PATH, CORPUS_PATH, TOPOLOGIES_PATH, MANIFEST_PATH, ENVELOPE_PATH)
@@ -221,7 +280,7 @@ def _validate_resumed_workspace(
         or workspace_evidence.get("cleanup_result") != "REMOVED"
     )
     if invalid:
-        raise HarnessError(f"{spec.key}: resumed v10 workspace factory evidence mismatch")
+        raise HarnessError(f"{spec.key}: resumed v11 workspace factory evidence mismatch")
 
 
 def _validate_partial(
