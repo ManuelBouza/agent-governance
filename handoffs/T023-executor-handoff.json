@@ -2,32 +2,43 @@
   "task_id": "T023",
   "status": "BLOCKED",
   "task_contract_path": "docs/tasks/T023-unified-skill-profile-activation-evals.md",
-  "branch": "test/t023-skill-activation-topology-evals-v10",
-  "implementation_head_sha": "3dfe8cf94b3dea7cdee35cd2fcec84cf027b6c09",
+  "branch": "test/t023-skill-activation-topology-evals-v11",
+  "implementation_head_sha": "2b6dfba40397c7cc758c38b313dd0c7c5ba09bd6",
   "base_branch": "develop",
-  "base_sha": "a8660573bf9319c065f7ed0adc61ed262989b06e",
+  "base_sha": "950972590746c3637ddb96002e4bb7bb988b28a5",
   "sdd_profile": "ASSURED",
   "test_authorship_mode": "mixed",
-  "controlling_revision": "docs/tasks/T049-mg1-v10-windows-workspace-acl-compatible-restart.md",
+  "controlling_revision": "docs/tasks/T051-mg1-v11-post-v10-holdout-rotation-restart.md",
   "files_changed": [
+    "evals/skill_activation_topology/_harness/aggregation.py",
+    "evals/skill_activation_topology/_harness/evidence.py",
+    "evals/skill_activation_topology/_harness/frozen_inputs.py",
+    "evals/skill_activation_topology/_harness/materialization.py",
+    "evals/skill_activation_topology/_harness/models.py",
+    "evals/skill_activation_topology/_harness/provenance.py",
+    "evals/skill_activation_topology/_harness/run_support.py",
+    "evals/skill_activation_topology/_harness/runner.py",
+    "evals/skill_activation_topology/_harness/scheduling.py",
     "evals/skill_activation_topology/harness.py",
-    "evals/skill_activation_topology/finalize_incomplete.py",
     "tests/test_skill_activation_topology_harness.py",
-    "evals/skill_activation_topology/evidence/mg1-v10-codex-windows-gpt-5.6-sol-medium/",
+    "tests/test_skill_activation_topology_v11.py",
+    "tests/test_t050_harness_cli_characterization.py",
+    "evals/skill_activation_topology/evidence/mg1-v11-codex-windows-gpt-5.6-sol-medium/",
     "handoffs/T023-executor-handoff.json"
   ],
-  "implementation_summary": "Established an isolated current baseline at canonical origin/develop a8660573bf9319c065f7ed0adc61ed262989b06e without altering prior local work. Implemented the v10 inherited-ACL Windows workspace factory, ACL diagnostics, provider-free native-sandbox readability gate, elevated-to-unelevated fallback, complete workspace profile binding, terminal-class separation, and no-retry HOST_SURFACE_DRIFT handling. Frozen corpus, trial envelope, topology and presentation assets were not changed. The deterministic gate passed. Unelevated/read-only passed the provider-free exact-root/nonce probe and the unchanged Skill canary 2/2. One acceptance prompt was then issued. The executed runner falsely classified successful body/reference reads as HOST_SURFACE_DRIFT because it matched ordinary policy text in successful output; scheduling was interrupted before retry. Technical review corrected that extractor, but v10 cannot resume under the frozen exact-runner identity after holdout exposure. The observation remains unscored and the task closes BLOCKED / EXECUTION_ADAPTER_TRACE_CLASSIFICATION_DEFECT pending persisted Orchestrator re-entry authority.",
+  "implementation_summary": "Established a fresh worktree from canonical origin/develop 950972590746c3637ddb96002e4bb7bb988b28a5 without altering prior T023 worktrees. Mechanically adapted the accepted modular harness to oracle v11, execution v11 and corpus v5; retained the 212-line facade; added the mandatory code-health/symbol-map live gate; added machine-readable zero-carryover and WX01-to-WX00 rotation proof; and updated technical regression expectations without changing frozen D052 assets. All deterministic gates passed. Elevated/read-only then passed the provider-free workspace gate and unchanged synthetic canary 2/2. Acceptance produced two valid fresh WX00/B0 repetitions before the immutable runner stopped with EXECUTION_ADAPTER_SCHEDULER_DEFECT. The observations remain unscored, no topology was selected, and v11 was closed rather than resumed under a changed runner.",
   "oracle": {
-    "oracle_id": "MG1-T023-TOPOLOGY-ORACLE-v10",
-    "execution_epoch": "MG1-T023-EXECUTION-v10",
+    "oracle_id": "MG1-T023-TOPOLOGY-ORACLE-v11",
+    "execution_epoch": "MG1-T023-EXECUTION-v11",
     "capability_source_epoch": "MG1-2026-08-25-v3",
     "presentation_revision": "MG1-T023-PRESENTATIONS-v3",
-    "corpus_id": "MG1-T023-CORPUS-v4",
+    "corpus_id": "MG1-T023-CORPUS-v5",
     "trial_envelope_id": "MG1-T023-TRIAL-ENVELOPE-v2",
     "frozen_assets_modified": false,
     "prior_epoch_observations_imported": 0,
     "synthetic_canary_prompts_issued": 2,
-    "acceptance_prompts_issued": 1,
+    "acceptance_prompts_issued": 2,
+    "completed_valid_observations": 2,
     "scored_observations": 0
   },
   "host_profile": {
@@ -35,95 +46,100 @@
     "platform": "native Windows 11",
     "model": "gpt-5.6-sol",
     "effort": "medium",
-    "selected_backend": "unelevated",
+    "selected_backend": "elevated",
     "selected_logical_sandbox": "read-only",
     "workspace_acl_profile_identity": "windows-inherited-acl-mkdir-v1",
-    "provider_free_workspace_probe": "PASS: exact CWD enumeration, probe filename and nonce; zero provider/model calls",
+    "provider_free_workspace_probe": "PASS: exact CWD enumeration, probe filename and v11 nonce; zero provider/model calls",
     "synthetic_canary": "PASS: 2/2 exact body nonce with host-observed successful SKILL.md reads",
     "user_config_ignored": true,
     "execpolicy_rules_ignored": true,
     "dangerous_bypass_used": false,
     "interactive_approval_used": false,
     "broad_acl_grant_used": false,
-    "parent_acl_mutated": false,
-    "adapter_authority": {
-      "installed_help": "codex-cli 0.149.0 --help, sandbox --help and exec --help",
-      "official_source": "https://github.com/openai/codex/blob/main/codex-rs/cli/src/debug_sandbox.rs",
-      "permission_profiles": [
-        ":read-only",
-        ":workspace"
-      ],
-      "native_backend_key": "windows.sandbox"
-    }
+    "parent_acl_mutated": false
   },
   "verification": {
     "commands": [
       "uv run --locked ruff check .",
       "uv run --locked ruff format --check .",
+      "uv run --locked python tools/code_health.py check --root .",
+      "uv run --locked python tools/code_health.py map --root .",
+      "uv run --locked python evals/skill_activation_topology/harness.py validate",
+      "uv run --locked python -m pytest tests/test_skill_activation_topology_harness.py tests/test_skill_activation_topology_v11.py tests/test_t050_harness_cli_characterization.py tests/test_code_health.py -q",
       "uv run --locked python -m pytest",
-      "uv run --locked python -m pytest tests/test_skill_activation_topology_harness.py -q",
-      "uv run --locked python evals/skill_activation_topology/harness.py run --output evals/skill_activation_topology/evidence/mg1-v10-codex-windows-gpt-5.6-sol-medium --full-acceptance"
+      "uv run --locked python evals/skill_activation_topology/harness.py run --output evals/skill_activation_topology/evidence/mg1-v11-codex-windows-gpt-5.6-sol-medium --full-acceptance",
+      "git diff --check"
     ],
     "results": {
       "ruff_check": "PASS",
-      "ruff_format_check": "PASS: 36 files",
-      "full_pytest": "PASS: 470 tests",
-      "focused_harness_tests": "PASS: 65 tests",
+      "ruff_format_check": "PASS: 57 files",
+      "code_health": "PASS: size ratchets, scoped complexity, dependencies and cycles green",
+      "symbol_map": "PASS: deterministic AST map emitted",
+      "mg1_v11_validation": "PASS: oracle v11, corpus v5, 40 cases, 320 base scheduled trials",
+      "focused_harness_and_code_health": "PASS: 81 tests",
+      "full_pytest": "PASS: 486 tests in 111.11 seconds",
+      "holdout_rotation": "PASS: 39 cases unchanged; WX01 retired; WX00 added with matching frozen semantic fields and a different prompt",
+      "frozen_asset_integrity": "PASS: presentations, topologies and trial envelope are byte-identical across the v5 corpus transition; no D052 asset changed on this branch",
       "full_deterministic_regression": "PASS",
       "profile_isolation_regression": "PASS",
       "consumer_source_independence_regression": "PASS",
-      "provider_free_workspace_gate": "PASS under unelevated/read-only; exact nonce; zero provider/model calls",
+      "provider_free_workspace_gate": "PASS under elevated/read-only; exact nonce; zero provider/model calls",
       "synthetic_canary": "PASS 2/2 under the selected complete profile",
-      "acceptance_execution": "BLOCKED after one unscored prompt by executed-runner trace-classification defect; no retry; no selection"
+      "acceptance_execution": "BLOCKED after two valid fresh WX00/B0 repetitions by EXECUTION_ADAPTER_SCHEDULER_DEFECT; zero scored observations; no selection"
     },
-    "runtime": "Windows 11 / Python 3.13.14 / uv locked environment / codex-cli 0.149.0 / gpt-5.6-sol medium",
+    "runtime": "Windows 11 / Python 3.13.14 / pytest 9.1.1 / Ruff 0.16.2 / uv locked environment / codex-cli 0.149.0 / gpt-5.6-sol medium",
     "network_required": true,
-    "network_detail": "Provider access was used only for two unchanged synthetic canaries and one acceptance attempt. Provider-free backend/workspace probes used no model call.",
-    "evidence_root": "evals/skill_activation_topology/evidence/mg1-v10-codex-windows-gpt-5.6-sol-medium"
+    "network_detail": "Provider access was used only for two unchanged synthetic canaries and two fresh v11 acceptance attempts. Deterministic, backend and workspace probes issued zero provider/model calls.",
+    "evidence_root": "evals/skill_activation_topology/evidence/mg1-v11-codex-windows-gpt-5.6-sol-medium"
   },
+  "dependencies_or_config_changes": [],
+  "git_status": "Implementation/evidence commit clean before creation of this handoff; final handoff commit and push required.",
+  "unresolved_issues": [
+    {
+      "classification": "EXECUTION_ADAPTER_SCHEDULER_DEFECT",
+      "detail": "After the first B0 pair completed, RunContext._conditional_third passed the complete corpus to conditional_third_specs. That helper requires paired repetitions for every supplied case and failed on unscheduled WC01. Because acceptance had begun, correcting the scheduler would change the immutable v11 runner identity; the epoch cannot be resumed or rerun without persisted Orchestrator re-entry authority."
+    }
+  ],
+  "recommended_next_task": "Orchestrator convergence review of this remote BLOCKED v11 result, followed by persisted Plan & Trace re-entry for a fresh epoch that corrects and preregisters scheduler characterization before any new acceptance call. Do not score, rerun, replace or import the v11 WX00/B0 observations.",
+  "chatgpt_read_path": "handoffs/T023-executor-handoff.json",
   "code_review": {
-    "reviewed_head_sha": "3dfe8cf94b3dea7cdee35cd2fcec84cf027b6c09",
-    "summary": "Reviewed implementation and terminal evidence against T023, T049, the frozen v10 oracle and D052 ownership. Live outer roots use atomic Path.mkdir creation with inherited ACLs rather than Python private tempfile helpers. Provider-free probing precedes canary, canary precedes acceptance, and the selected backend/sandbox/workspace profile is bound. Frozen semantic assets and committed Markdown are unchanged. Raw acceptance trace proves successful candidate-body/reference reads; the executed runner's HOST_SURFACE_DRIFT label was a technical false positive and is retained only as executed-runner diagnostic evidence, while terminal evidence classifies the actual blocker as EXECUTION_ADAPTER_TRACE_CLASSIFICATION_DEFECT.",
-    "findings": [],
+    "reviewed_head_sha": "2b6dfba40397c7cc758c38b313dd0c7c5ba09bd6",
+    "summary": "Reviewed the implementation and evidence against T023, T051 and the D052 boundary. The v11 adaptation is identity/mechanical only; the 212-line facade and T050 modular architecture remain intact; frozen corpus/oracle/presentation/topology/envelope bytes were not changed by the Executor; deterministic and host-preflight requirements passed; and raw attempts prove successful host-observed body/reference reads. Technical review identified an acceptance scheduler defect after two valid observations. No post-exposure runner correction, resume, scoring or topology inference was performed.",
+    "findings": [
+      {
+        "severity": "BLOCKING",
+        "classification": "EXECUTION_ADAPTER_SCHEDULER_DEFECT",
+        "evidence": "evals/skill_activation_topology/evidence/mg1-v11-codex-windows-gpt-5.6-sol-medium/failure-evidence.json",
+        "detail": "conditional_third_specs validates all corpus pairs although adaptive execution calls it after each individual case pair. It therefore fails on the first unscheduled case."
+      }
+    ],
     "resolved_findings": [
-      "Replaced Python private live workspaces with atomic inherited-ACL Windows roots and persisted ACL/cleanup diagnostics.",
-      "Resolved Codex 0.149.0 provider-free logical sandbox invocation through built-in :read-only/:workspace permission profiles.",
-      "Corrected elevated workspace-probe failure to continue through the preregistered unelevated fallback.",
-      "Collapsed JSON-escaped Windows separators for successful body-read extraction.",
-      "Made genuine HOST_SURFACE_DRIFT terminal on the first affected attempt with no retry or new scheduling.",
-      "Restricted access-rejection detection to failed relevant command events so successful Skill content containing policy text cannot create false drift."
+      "Bound harness validation, schedule labels, workspace nonce and diagnostics to the frozen v11/v5 identities.",
+      "Added required code-health and symbol-map commands to the pre-provider live gate.",
+      "Corrected historical full-completion range key lookups to the integrated oracle field names.",
+      "Added deterministic proof of zero prior-observation carryover and the exact one-case holdout rotation."
     ],
     "upstream_reentry_required": true,
     "upstream_reentry_stage": "Plan & Trace",
-    "residual_risk": "The first holdout/candidate prompt was exposed under the pre-correction execution runner. Frozen v10 exact-runner resume and non-replacement rules prevent executor-authorized continuation after the classifier correction. No topology result may be inferred from the unscored raw response."
+    "residual_risk": "The two fresh v11 acceptance observations were exposed under the immutable defective scheduler. They are valid raw observations but remain unscored and cannot be imported into a successor epoch."
   },
   "requirement_trace": {
-    "AC-T023-1": {"status": "PASS_DETERMINISTIC_ONLY", "evidence": "deterministic-evidence.json records all mandatory regressions PASS; live equivalence did not complete"},
-    "AC-T023-2": {"status": "BLOCKED", "evidence": "only WX01/B0/r1/a1 was attempted; trials.jsonl and raw-trials.jsonl contain zero scored observations"},
+    "AC-T023-1": {"status": "PASS_DETERMINISTIC_ONLY", "evidence": "deterministic-evidence.json records all mandatory regressions and code-health gates PASS; live controlled equivalence did not complete"},
+    "AC-T023-2": {"status": "BLOCKED", "evidence": "trials.jsonl/raw-trials.jsonl contain only WX00/B0/r1 and r2; completeness.json forbids partial scoring"},
     "AC-T023-3": {"status": "NOT_COMPLETED", "evidence": "no multidimensional candidate comparison or metrics were produced"},
-    "AC-T023-4": {"status": "PASS", "evidence": "frozen oracle/corpus/topology/presentation/envelope hashes retained; no threshold or semantic-oracle mutation"},
-    "AC-T023-5": {"status": "PASS_DETERMINISTIC", "evidence": "deterministic-evidence.json preserves one capability source, one distribution root and single-install feasibility"},
-    "AC-T023-6": {"status": "BLOCKED", "evidence": "selection.json records no selected candidate and no scoring"},
-    "AC-T023-7": {"status": "PASS", "evidence": "D052 semantic assets unchanged; supplementary technical tests remain separate from acceptance score"},
-    "AC-T049-1": {"status": "PASS", "evidence": "zero prior observations imported into v10"},
-    "AC-T049-2": {"status": "PASS", "evidence": "frozen asset hashes in run-metadata.json match canonical develop"},
-    "AC-T049-3": {"status": "PASS", "evidence": "workspace records identify windows-inherited-acl-mkdir-v1 and private_temp_creation_avoided=true"},
-    "AC-T049-4": {"status": "PASS", "evidence": "workspace-probes/unelevated-read-only.json proves exact-root readability and nonce with provider_model_call_issued=false"},
-    "AC-T049-5": {"status": "NOT_APPLICABLE", "evidence": "a permitted workspace/profile passed provider-free readability"},
-    "AC-T049-6": {"status": "PASS", "evidence": "host-preflight.json and two canary records establish unchanged body-read/use canary 2/2"},
-    "AC-T049-7": {"status": "PASS_UNTIL_TERMINAL_DEFECT", "evidence": "first acceptance attempt used the exact selected Codex/backend/read-only/workspace-ACL/model/config/feature profile"},
-    "AC-T049-8": {"status": "PASS", "evidence": "no dangerous bypass, approval, broad ACL grant, parent ACL mutation, explicit Skill substitution or manual candidate grant"},
-    "AC-T049-9": {"status": "BLOCKED_BEFORE_COMPARISON", "evidence": "one acceptance attempt was preserved unscored; retry and new scheduling stopped; cost-bounded comparison did not complete"},
-    "AC-T049-10": {"status": "PASS_FOR_BLOCKED_OUTCOME", "evidence": "backend, workspace, canary, raw attempt, failure, completeness, retry and selection artifacts reconstruct the terminal state"}
-  },
-  "dependencies_or_config_changes": [],
-  "git_status": "Expected clean after final handoff commit",
-  "unresolved_issues": [
-    {
-      "classification": "EXECUTION_ADAPTER_TRACE_CLASSIFICATION_DEFECT",
-      "detail": "The executed runner falsely classified ordinary policy text from successful candidate body/reference reads as access rejection. The extractor is corrected and regression-tested, but the exposed holdout observation cannot be rerun or continued under v10's exact-runner identity without persisted Orchestrator re-entry authority."
-    }
-  ],
-  "recommended_next_task": "Orchestrator convergence review of the remote BLOCKED v10 evidence and persisted Plan & Trace re-entry decision. Do not rerun, replace or score WX01/B0/r1/a1, and do not resume v10 with the corrected runner absent explicit durable authority.",
-  "chatgpt_read_path": "handoffs/T023-executor-handoff.json"
+    "AC-T023-4": {"status": "PASS", "evidence": "frozen hashes and rotation proof retained; no threshold, classification or semantic-oracle mutation"},
+    "AC-T023-5": {"status": "PASS_DETERMINISTIC", "evidence": "deterministic-evidence.json preserves one source/distribution root and single-install feasibility"},
+    "AC-T023-6": {"status": "BLOCKED", "evidence": "selection.json records no candidate and scored=false"},
+    "AC-T023-7": {"status": "PASS", "evidence": "D052 assets unchanged; executor technical tests/evidence remain separate from the frozen semantic oracle"},
+    "AC-T051-1": {"status": "PASS", "evidence": "zero prior observations imported; v10 evidence remains historical only"},
+    "AC-T051-2": {"status": "PASS", "evidence": "holdout_rotation in deterministic-evidence.json proves 39 unchanged cases plus WX01-to-WX00 replacement"},
+    "AC-T051-3": {"status": "PASS", "evidence": "run metadata binds oracle v11, execution v11 and corpus v5"},
+    "AC-T051-4": {"status": "PASS", "evidence": "frozen presentation/topology/trial-envelope hashes preserved and semantic fields unchanged"},
+    "AC-T051-5": {"status": "PASS", "evidence": "code health, dependencies, symbol map and focused T050 characterization are green; facade remains 212 lines"},
+    "AC-T051-6": {"status": "PASS", "evidence": "provider-free elevated/read-only workspace probe preceded canary PASS 2/2"},
+    "AC-T051-7": {"status": "PASS", "evidence": "both acceptance attempts preserve successful host-observed Skill body/reference reads without false rejection"},
+    "AC-T051-8": {"status": "BLOCKED_BY_RUNNER", "evidence": "adaptive execution stopped on scheduler defect before cost-bounded comparison could proceed"},
+    "AC-T051-9": {"status": "PASS_FOR_BLOCKED_OUTCOME", "evidence": "deterministic, backend, workspace, canary, raw attempt, failure, completeness, retry and selection artifacts reconstruct the terminal state"},
+    "AC-T051-10": {"status": "PASS", "evidence": "Executor changed only technical harness/tests/evidence/handoff; no Markdown or D052 semantic asset changed"}
+  }
 }
