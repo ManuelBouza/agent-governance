@@ -1,9 +1,9 @@
 # Current ChatGPT Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O192  
+Checkpoint-Sequence: O193  
 Canonical-Branch: `develop`  
-Current-Work-Unit: T051/MG1-v11 holdout-rotation restart is integrated and controlling; T023 is ready for a fresh v11 epoch after deterministic identity adaptation and preflight  
+Current-Work-Unit: T052/MG1-v12 pair-scoped scheduler restart is integrated and controlling; T023 is ready for a fresh v12 epoch after deterministic scheduler adaptation/preflight  
 Chat-Closure: CONTINUE_CURRENT_CHAT  
 Active-Executor: none  
 Active-Executor-Surface: ChatGPT Orchestrator
@@ -12,122 +12,171 @@ Active-Executor-Surface: ChatGPT Orchestrator
 
 - D053, D054, D040, D042, D048, D050, D051, D052, D055 and D056 remain controlling. Core protocol remains `1.15.0`.
 - T021 and T022 are `ACCEPTED`.
-- T023 v2-v10 remain closed according to reviews `T023-R1.md` through `T023-R9.md`; v10 is `BLOCKED / EXECUTION_ADAPTER_TRACE_CLASSIFICATION_DEFECT`.
-- V10 evidence/infrastructure integration PR `#254`; merge `c0c29cd7f338b3395b7b7f06955265018e030b5b`.
-- T050 is `ACCEPTED`; acceptance review `docs/reviews/T050-R1.md`; RF6 integration PR `#258`, merge `b8eae481e65e0aefc690b666e5eed6d01be85ea4`.
-- T050 canonical harness facade is `212` physical LOC with extracted modules under `evals/skill_activation_topology/_harness/`, active `code-health.json` ratchet and `tools/code_health.py` size/complexity/dependency/symbol-map checks.
-- T051 Task Contract: `docs/tasks/T051-mg1-v11-post-v10-holdout-rotation-restart.md`.
-- T051 integration PR `#260`; merge `a15c63df0bf2e252c02d4dc5a3ce4f58a6e6df0a`.
+- T050 is `ACCEPTED`; review `docs/reviews/T050-R1.md`; RF6 integration PR `#258`, merge `b8eae481e65e0aefc690b666e5eed6d01be85ea4`.
+- T050 canonical harness facade remains `212` physical LOC with extracted modules under `evals/skill_activation_topology/_harness/`, active `code-health.json` ratchet and `tools/code_health.py` size/complexity/dependency/symbol-map checks.
+- T023 v2-v11 are closed. V10 review: `docs/reviews/T023-R9.md`. V11 review: `docs/reviews/T023-R10.md`.
+- V11 evidence/infrastructure integration PR `#262`; merge `f80058d9301d7347631a83f690f31dbc029523e8`.
+- T052 Task Contract: `docs/tasks/T052-mg1-v12-pair-scoped-scheduler-restart.md`.
+- T052 integration PR `#263`; merge `c9c1c7420c9cd971fc9b40eb983925534dab90c0`.
 
-## V10 terminal evidence carried forward
+## MG1-v11 terminal result
 
-MG1-v10 successfully proved the host path that earlier epochs could not:
+MG1-v11 is closed:
 
-- provider-free Windows workspace readability PASS under the selected `unelevated/read-only` profile;
-- unchanged synthetic Skill canary PASS `2/2` with successful host-observed `SKILL.md` reads.
+`BLOCKED / EXECUTION_ADAPTER_SCHEDULER_DEFECT`.
 
-V10 then exposed exactly one acceptance prompt: `WX01/B0/r1/a1`.
+Submitted Executor state:
 
-That attempt was left unscored because immutable runner `cd0f97b0022176efdabe34e7d7142ff3344fa841` falsely classified successful body/reference reads as `HOST_SURFACE_DRIFT / REQUIRED_SKILL_BODY_READ_REJECTED` by matching policy-like text inside successful command output. The technical classifier correction was made only after the attempt, so v10 was correctly closed rather than resumed under a changed runner identity.
+```text
+Branch: test/t023-skill-activation-topology-evals-v11
+Canonical base: 950972590746c3637ddb96002e4bb7bb988b28a5
+Executed runner: 4b0fd7a4ee53b99d9ca9627e5fca524a0a9a3d51
+Implementation/evidence HEAD: 2b6dfba40397c7cc758c38b313dd0c7c5ba09bd6
+Terminal HEAD: d05c3033fd597480f5e5f105176684eed68385c5
+Handoff: handoffs/T023-executor-handoff.json
+```
 
-V10 acceptance prompts issued: `1`. V10 scored observations: `0`. Selection: none.
+V11 successfully passed:
 
-The exposed v10 observation remains immutable and diagnostic only. It MUST NOT be rescored, rerun as v10, imported into v11 score or used to tune candidates/thresholds/selection.
+- deterministic/code-health/symbol-map gates;
+- focused T023/T050 tests and full pytest (`486` PASS reported by the Executor);
+- provider-free Windows workspace gate;
+- unchanged synthetic Skill canary `2/2`;
+- host-observed successful Skill body/reference reads under acceptance.
 
-## T050 accepted code-health boundary
+Selected live profile was Codex CLI `0.149.0`, native Windows 11, native backend `elevated`, logical sandbox `read-only`, inherited-ACL workspace profile, GPT-5.6 Sol / Medium.
 
-T050 remains controlling for agent-legible code health:
+V11 issued exactly two fresh acceptance prompts, `WX00/B0/r1/a1` and `WX00/B0/r2/a1`. Both produced valid raw observations. Scored observations: `0`. Selection: none.
+
+The immutable runner then failed because conditional-third evaluation was applied to the complete unfinished corpus and required `[r1,r2]` for unrelated not-yet-scheduled pairs, raising on `WC01/B0` immediately after the first completed pair. This is deterministic scheduler plumbing, not candidate behavior, host drift, provider instability or semantic oracle defect.
+
+The two V11 observations are immutable diagnostic evidence only. They MUST NOT be rescored, imported into a successor score, rerun as V11 evidence or used to tune candidates, thresholds, selection or replacement-stimulus wording.
+
+## T050 code-health boundary
+
+The following remains mandatory for T023 successors:
 
 - `evals/skill_activation_topology/harness.py`: `212` LOC no-net-growth ratchet;
 - extracted implementation modules target `<=500` and hard limit `1000` unless separately persisted;
 - scoped `C901 <=10`, `PLR0912 <=12`, `PLR0915 <=50`;
 - dependency direction/cycle checks;
 - deterministic AST symbol/code map;
-- accepted RF1 characterization behavior remains regression authority.
+- accepted RF1 characterization behavior as regression authority.
 
-A T023 successor MUST run the deterministic code-health gate before provider/model use and MUST NOT re-grow the facade or replace it with another monolith.
+Do not create a second project-owned top-level generic coding Skill. The future Maintainer Skill remains the single source-maintenance Skill and may progressively route to `docs/AGENT-LEGIBLE-CODE-HEALTH.md`; mechanical enforcement remains Skill-independent.
 
-Do not create a second project-owned top-level generic coding Skill. The future Maintainer Skill remains the one top-level source-maintenance Skill and may progressively route to `docs/AGENT-LEGIBLE-CODE-HEALTH.md`; mechanical checks remain Skill-independent.
-
-## T051 / MG1-v11 controlling identity
+## T052 / MG1-v12 controlling identity
 
 ```text
-Task: T051
+Task: T052
 Status: INTEGRATED / CONTROLLING
-Task Contract: docs/tasks/T051-mg1-v11-post-v10-holdout-rotation-restart.md
-Oracle: MG1-T023-TOPOLOGY-ORACLE-v11
-Execution epoch: MG1-T023-EXECUTION-v11
-Corpus: MG1-T023-CORPUS-v5
+Task Contract: docs/tasks/T052-mg1-v12-pair-scoped-scheduler-restart.md
+Oracle: MG1-T023-TOPOLOGY-ORACLE-v12
+Execution epoch: MG1-T023-EXECUTION-v12
+Corpus: MG1-T023-CORPUS-v6
 Capability source epoch: MG1-2026-08-25-v3
 Presentation revision: MG1-T023-PRESENTATIONS-v3
 Trial envelope: MG1-T023-TRIAL-ENVELOPE-v2
 Codex CLI baseline: 0.149.0
 Required live cell: Codex / native Windows / GPT-5.6 Sol / Medium
-Prior observations allowed in v11 score: 0
+Prior observations allowed in v12 score: 0
 Full-completion ceiling when challengers execute: 480 valid observations
 ```
 
-## V11 holdout rotation
+## V12 holdout rotation
 
-Corpus v5 contains exactly 40 cases and is derived from corpus v4 by one prospective rotation only:
+Corpus v6 contains exactly 40 cases and is derived from corpus v5 by one prospective exposure-hygiene rotation:
 
-- retired exposed v4/v10 case `WX01` and its exact prompt;
-- added fresh case `WX00`;
-- `WX00` remains `cross-profile` with `fixture_role=source`;
-- expected capabilities remain `source-maintainer`;
+- retire V11-exposed `WX00` and its exact prompt;
+- add fresh `WX00R`;
+- `WX00R` remains `cross-profile`, `fixture_role=source`;
+- expected capability remains `source-maintainer`;
 - expected semantic outcome remains `bounded-rejection`;
 - forbidden capability remains `consumer-lifecycle`;
-- the boundary under test remains: canonical source maintenance must not create/use Consumer coordination authority as the basis for a source-product policy decision.
+- semantic boundary remains that source maintenance must not create/use Consumer coordination authority to justify source-product policy changes;
+- `WX00R` sorts before `WX02`, preserving the first cross-profile scheduling position from V11.
 
-The other 39 cases remain unchanged. Class counts, 29 activation-expected cases, 11 negative/near-miss cases, four cross-profile cases, four ambiguous cases and all final denominators remain unchanged.
+The other 39 cases remain unchanged. Class counts and all metric/futility denominators remain unchanged.
 
-Corpus v5 and oracle v11 were frozen in `develop` before any v11 acceptance execution.
+Retired `WX01` and `WX00` prompts MUST NOT be used as V12 acceptance stimuli.
 
-## V11 preserved method
+## V12 scheduler correction
 
-V11 preserves from v10:
+Conditional-third decisions are now prospectively specified as **pair-scoped**.
+
+For one `(case_id, candidate_id)` pair:
+
+- no decision is made until its base `r1/r2` exist;
+- agreement on all frozen trigger fields schedules no third and advances;
+- disagreement schedules exactly one `r3` for that pair unless an already-observed terminal condition suppresses future work;
+- after required `r3`, the pair finalizes and advances;
+- `r4` is always forbidden;
+- missing repetitions for unrelated unscheduled pairs are normal adaptive state and MUST NOT raise incomplete-pair errors.
+
+Candidate-level critical/futility state continues to stop future work under the frozen v11 semantics.
+
+## V12 provider-free scheduler simulation gate
+
+Before **any provider/model call**, the Executor must use an injected/fake observation adapter to prove the adaptive scheduler without Codex/model/network inference.
+
+Required deterministic scenarios include:
+
+1. agreeing pair -> no `r3`, then forward progress to a later previously unscheduled pair;
+2. disagreeing non-terminal pair -> exactly one `r3`, then forward progress;
+3. no fourth repetition can be scheduled or accepted;
+4. critical cross-profile/ambiguous event -> candidate terminal without reconfirmation calls;
+5. scripted full reference-stage adaptive dry run traverses the complete B0/B1 case set without unscheduled-pair exceptions when scripted observations keep candidates eligible.
+
+Evidence must bind the exact tested runner and state `provider_model_calls_issued=0`.
+
+Any failure in this gate blocks V12 before backend resolution, synthetic canary or acceptance spend.
+
+## V12 preserved experiment method
+
+V12 otherwise preserves V11:
 
 - B0/B1 reference first; F2/G3 only after a reference exists;
 - candidate/reference/presentation bytes;
 - Core/engine/profile/capability semantics;
-- trial envelope and exact model-visible prompt suffix;
+- trial envelope/model-visible suffix;
 - thresholds and D050 selection;
-- paired 2+1 aggregation and no fourth repetition;
+- paired 2+1 and no fourth repetition;
 - consequence-first class scheduling;
 - immediate cross-profile/ambiguous any-occurrence gates;
-- exact optimistic qualification futility and challenger materiality futility;
-- 180-second non-capacity attempts;
-- explicit capacity events as non-attempt pauses;
-- Codex 0.149.0 / native Windows / Sol Medium live cell;
-- explicit native backend resolution, elevated-first / unelevated fallback;
+- exact optimistic qualification and challenger-materiality futility;
+- `180` second non-capacity attempts;
+- capacity events as non-attempt pauses;
+- Codex CLI `0.149.0` / native Windows / Sol Medium live cell;
+- explicit native backend selection, elevated-first / unelevated fallback;
 - inherited-ACL-compatible disposable workspaces;
 - provider-free workspace-readability gate;
 - unchanged mx-canary with two PASS repetitions before acceptance;
 - ignored user config/rules and minimal host feature surface;
-- host-observed successful candidate-body read/use as activation authority.
+- host-observed successful candidate-body read/use as activation authority;
+- corrected rejection semantics: policy-like text in successful output alone is not an access rejection.
 
-Corrected rejection semantics are now explicit: rejection-like text inside a successful relevant command output does not itself establish Skill-body access rejection. Required-body rejection must come from a relevant failed/denied host event or equivalent unambiguous first-party evidence.
+## V12 deterministic pre-provider sequence
 
-## V11 deterministic pre-provider gate
+Before any provider/model call:
 
-Before any provider/model call, Executor must adapt only technical identity plumbing required by oracle v11/corpus v5 and run/persist at minimum:
-
-1. Ruff check;
-2. Ruff format check;
-3. `tools/code_health.py check --root .`;
-4. deterministic symbol-map validation;
-5. full pytest;
-6. focused T023/T050 harness characterization/code-health tests;
-7. deterministic harness validation against oracle v11/corpus v5;
-8. frozen candidate/presentation/topology/trial-envelope hash verification;
-9. proof corpus v5 differs from v4 only by preregistered `WX01 -> WX00` rotation;
-10. provider/model calls issued = zero during the deterministic gate.
+1. adapt only technical v12/v6 identity plumbing and pair-scoped scheduler mechanics;
+2. Ruff check;
+3. Ruff format check;
+4. `tools/code_health.py check --root .`;
+5. deterministic symbol-map generation/validation;
+6. focused T023/T050 characterization and code-health tests;
+7. full pytest;
+8. harness validation against oracle v12/corpus v6;
+9. frozen candidate/presentation/topology/trial-envelope hash verification;
+10. proof corpus v6 differs from v5 only by the preregistered `WX00 -> WX00R` rotation plus identity/policy metadata;
+11. provider-free adaptive-scheduler simulation gate PASS;
+12. provider/model calls issued during all deterministic gates = `0`.
 
 A red deterministic gate blocks live execution.
 
-## V11 live gate sequence
+## V12 live gate sequence
 
-Only after deterministic gates are green:
+Only after all deterministic/scheduler gates are green:
 
 ```text
 backend resolution without provider
@@ -140,45 +189,38 @@ backend resolution without provider
 ```
 
 Workspace failure before canary remains `WINDOWS_WORKSPACE_ACL_UNAVAILABLE`.
-
 Workspace PASS but no complete canary profile remains `HOST_CAPABILITY_PREFLIGHT`.
-
 Post-preflight profile/readability/body-read drift remains unscored `HOST_SURFACE_DRIFT` and stops new scheduling.
 
 ## T023 next executable identity
 
 ```text
 Task: T023
-Status: READY / FRESH V11 EPOCH
+Status: READY / FRESH V12 EPOCH
 Task Contract: docs/tasks/T023-unified-skill-profile-activation-evals.md
-Controlling revision: docs/tasks/T051-mg1-v11-post-v10-holdout-rotation-restart.md
+Controlling revision: docs/tasks/T052-mg1-v12-pair-scoped-scheduler-restart.md
 Expected handoff: handoffs/T023-executor-handoff.json
 Implementation Executor launch: Codex NEW / GPT-5.6 Sol / High
 Live acceptance cell: Codex / native Windows / GPT-5.6 Sol / Medium
 Codex CLI baseline: 0.149.0
-Prior observations allowed in v11 score: 0
-Pre-provider requirement: v11 identity adaptation + deterministic/code-health gates PASS
+Prior observations allowed in v12 score: 0
+Pre-provider requirement: v12 identity/scheduler adaptation + deterministic/code-health/scheduler-simulation gates PASS
 Pre-acceptance requirement: provider-free workspace gate PASS + unchanged synthetic canary 2/2 PASS
 ```
 
-Executor may mechanically update technical oracle/corpus identity validation, deterministic tests, evidence/run metadata identity and resume checks. Executor MUST NOT edit Markdown or semantically alter D052 corpus/oracle/presentations/thresholds/selection.
-
-## Operational integrity note
-
-During this Orchestrator turn an API probe was accidentally written to `main` as `docs/tasks/__probe.txt` in commit `10cd97896b5d95aeae58e833841bed0c2919611d` and immediately removed in commit `fa23a9cc53e6e191d1cdd9c2fe89fe2f00e581de`.
-
-This was not T051 work and did not touch `develop`. The post-removal `main` tree SHA is `a0253eac9fd4aed59aca022fa7522178a9bfd310`, exactly equal to the pre-probe parent `9cfb62c3107b0fd36d3360c7b694d5c9afd95e80` tree SHA, so no repository content delta remains on `main`. The two commits are procedural history only and carry no release/task authority.
+Executor may change only authorized technical harness/tests/evidence mechanics needed to realize T052. Executor MUST NOT edit Markdown or semantically alter D052 corpus/oracle/presentations/thresholds/selection.
 
 ## Next action
 
 1. Refresh current canonical `develop` before Executor launch.
-2. Show D055: Executor `Codex`; Session `NEW`; Model `GPT-5.6 Sol`; Effort `High`. Rationale: fresh acceptance epoch plus mechanical v11 identity adaptation and high-risk live host/evidence execution; live observations remain Sol / Medium.
-3. Launch exactly `docs/tasks/T023-unified-skill-profile-activation-evals.md` from current canonical `develop` using only D042 freshness plus the persisted task pointer; T051 is discovered through current repository authority.
-4. Executor first adapts only technical v11 identity plumbing and runs all deterministic/code-health gates with zero provider calls.
+2. Show D055: Executor `Codex`; Session `NEW`; Model `GPT-5.6 Sol`; Effort `High`. Rationale: fresh epoch plus correction/characterization of adaptive scheduler and high-risk live evidence execution; live observations remain Sol / Medium.
+3. Launch exactly `docs/tasks/T023-unified-skill-profile-activation-evals.md` from canonical `develop` using pointer-only transport; T052 is discovered through current repository authority.
+4. Executor first adapts technical v12 identities/pair-scoped scheduler and runs all deterministic/code-health/scheduler simulation gates with zero provider calls.
 5. Only after deterministic PASS may backend/workspace/provider-free/synthetic preflight execute.
-6. Only after one complete profile passes canary 2/2 may v11 acceptance begin.
+6. Only after one complete profile passes canary `2/2` may V12 acceptance begin.
 7. Acceptance sends only observations still required by frozen futility/materiality logic.
-8. Orchestrator independently converges the successor handoff/evidence before topology acceptance.
+8. Executor persists/pushes the handoff and returns only status, handoff path, branch and pushed HEAD.
+9. Orchestrator independently converges the remote evidence before topology acceptance.
 
 ## Next chat minimum load
 
@@ -186,4 +228,4 @@ Load only current `develop` identity, `AGENTS.md`, and this checkpoint; then fol
 
 ## Do not
 
-Do not resume v10; do not score/rerun/import `WX01/B0/r1/a1`; do not use the retired `WX01` prompt in v11 acceptance; do not import any prior observation; do not alter corpus v5/oracle v11 after live execution begins; do not change candidates/presentations/thresholds/D050/trial envelope; do not upgrade Codex or substitute host/model/effort; do not weaken provider-free/canary/body-read observability gates; do not bypass code-health; do not write directly to `main`/`develop`.
+Do not resume V11; do not score/rerun/import its `WX00/B0` observations; do not reuse retired `WX00` or `WX01` prompts in V12 acceptance; do not import any prior observation; do not alter corpus v6/oracle v12 after live execution begins; do not change candidates/presentations/thresholds/D050/trial envelope; do not upgrade Codex or substitute host/model/effort; do not weaken pair-scoped scheduler semantics, provider-free scheduler simulation, workspace/canary/body-read observability gates or code-health; do not write directly to `main`/`develop`.
