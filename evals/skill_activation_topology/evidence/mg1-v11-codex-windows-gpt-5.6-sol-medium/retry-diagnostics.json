@@ -1,0 +1,26 @@
+{
+  "B0": {
+    "capacity_events": 0,
+    "failure_classes": {},
+    "model_attempts": 2,
+    "non_capacity_failures": 0
+  },
+  "B1": {
+    "capacity_events": 0,
+    "failure_classes": {},
+    "model_attempts": 0,
+    "non_capacity_failures": 0
+  },
+  "F2": {
+    "capacity_events": 0,
+    "failure_classes": {},
+    "model_attempts": 0,
+    "non_capacity_failures": 0
+  },
+  "G3": {
+    "capacity_events": 0,
+    "failure_classes": {},
+    "model_attempts": 0,
+    "non_capacity_failures": 0
+  }
+}

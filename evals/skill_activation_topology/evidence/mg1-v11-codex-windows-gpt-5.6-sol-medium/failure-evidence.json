@@ -1,0 +1,36 @@
+{
+  "status": "BLOCKED",
+  "reason": "EXECUTION_ADAPTER_SCHEDULER_DEFECT",
+  "error": "WC01--B0: paired base repetitions incomplete",
+  "execution_epoch": "MG1-T023-EXECUTION-v11",
+  "oracle_id": "MG1-T023-TOPOLOGY-ORACLE-v11",
+  "corpus_id": "MG1-T023-CORPUS-v5",
+  "executed_runner_git_commit": "4b0fd7a4ee53b99d9ca9627e5fca524a0a9a3d51",
+  "runner_sha256": "22240dccda331f908e5c6e5b69a68ce6afdf1507f5b8e82d0f7f18b6a2c7f19c",
+  "deterministic_gate": "PASS",
+  "provider_free_workspace_gate": "PASS",
+  "synthetic_canary": "PASS_2_OF_2",
+  "selected_host_profile": {
+    "codex_cli_version": "codex-cli 0.149.0",
+    "native_windows_backend": "elevated",
+    "logical_sandbox": "read-only",
+    "workspace_acl_profile_identity": "windows-inherited-acl-mkdir-v1",
+    "model": "gpt-5.6-sol",
+    "effort": "medium"
+  },
+  "acceptance_prompts_issued": 2,
+  "completed_valid_observations": 2,
+  "scored_observations": 0,
+  "prior_acceptance_observations_imported": 0,
+  "last_completed_pair": [
+    "WX00--B0--r1",
+    "WX00--B0--r2"
+  ],
+  "diagnosis": "After completing the first B0 pair, RunContext._conditional_third called conditional_third_specs with the complete corpus. That helper requires paired repetitions for every supplied case and failed on the first not-yet-scheduled corpus case, WC01. The failure is technical scheduler plumbing, not candidate behavior or an oracle defect.",
+  "epoch_resume_permitted": false,
+  "resume_prohibition": "Acceptance had started under the immutable runner. Correcting the scheduler would change runner identity, so v11 was closed rather than resumed or rerun.",
+  "topology_selection": null,
+  "semantic_assets_changed": false,
+  "upstream_reentry_required": true,
+  "upstream_reentry_stage": "Plan & Trace"
+}
