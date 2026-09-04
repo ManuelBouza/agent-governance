@@ -12,7 +12,11 @@ import time
 from pathlib import Path
 from typing import Any
 
-from .aggregation import aggregate_candidate_trials
+from .aggregation import (
+    aggregate_candidate_trials,
+    finalized_candidate_aggregates,
+    qualification_futility_certificate,
+)
 from .evidence import _validate_partial
 from .frozen_inputs import _load_json, _sha256, load_frozen_inputs
 from .models import (
@@ -53,6 +57,8 @@ def score_matrix(args: argparse.Namespace) -> int:
     output = args.output.resolve()
     validate_complete_evidence(inputs, output)
     metadata = _load_json(output / "run-metadata.json")
+    if metadata["status"] == "BLOCKED_NO_REFERENCE":
+        return 0
     trials = load_trials(output / "trials.jsonl")
     deterministic = _load_json(output / "deterministic-evidence.json")
     candidates = (
@@ -144,13 +150,17 @@ def _validate_schedule_records(
         for stage in (("R",) if len(evaluated) == 2 else ("R", "C"))
         for spec in stage_schedule(inputs, stage)
     }
-    if not expected_base <= set(trial_keys):
+    if metadata["status"] != "BLOCKED_NO_REFERENCE" and not expected_base <= set(trial_keys):
         raise HarnessError("mandatory paired base schedule is incomplete")
     if metadata["status"] == "BLOCKED_NO_REFERENCE" and any(
         trial["candidate_id"] in {"F2", "G3"} for trial in trials
     ):
         raise HarnessError("challenger evidence exists despite no qualifying reference")
-    lower = method["reference_stage_full_completion_base_valid_observations"]
+    lower = (
+        1
+        if metadata["status"] == "BLOCKED_NO_REFERENCE"
+        else method["reference_stage_full_completion_base_valid_observations"]
+    )
     upper = method["reference_stage_full_completion_max_valid_observations"]
     if len(evaluated) == 4:
         lower = lower + method["challenger_stage_full_completion_base_valid_observations"]
@@ -240,7 +250,11 @@ def _validate_recomputed_outputs(
     trials: list[dict[str, Any]],
     evaluated: list[str],
     deterministic: dict[str, Any],
+    metadata: dict[str, Any],
 ) -> None:
+    if metadata["status"] == "BLOCKED_NO_REFERENCE":
+        _validate_futile_reference_outputs(inputs, output, trials, evaluated)
+        return
     aggregates = [
         item
         for candidate in evaluated
@@ -269,6 +283,48 @@ def _validate_recomputed_outputs(
         raise HarnessError("persisted V12 selection is not exactly recomputable")
 
 
+def _validate_futile_reference_outputs(
+    inputs: FrozenInputs,
+    output: Path,
+    trials: list[dict[str, Any]],
+    evaluated: list[str],
+) -> None:
+    aggregates = [
+        item
+        for candidate in evaluated
+        for item in finalized_candidate_aggregates(inputs, candidate, trials)
+    ]
+    if aggregates != load_trials(output / "case-aggregates.jsonl"):
+        raise HarnessError("persisted V12 futile aggregates are not exactly recomputable")
+    certificates = {
+        candidate: qualification_futility_certificate(inputs, candidate, trials)
+        for candidate in evaluated
+    }
+    if any(not certificate["terminal"] for certificate in certificates.values()):
+        raise HarnessError("BLOCKED_NO_REFERENCE requires terminal qualification futility")
+    for candidate, certificate in certificates.items():
+        if certificate != _load_json(output / "futility-certificates" / f"{candidate}.json"):
+            raise HarnessError(f"{candidate}: persisted futility certificate is not recomputable")
+    expected_reference = {
+        "status": "BLOCKED",
+        "single_family_reference": None,
+        "reason": "both single-family candidates are FUTILE_QUALIFICATION",
+        "futility": certificates,
+    }
+    expected_selection = {
+        "status": "BLOCKED",
+        "selected_candidate": None,
+        "reason": "NO QUALIFYING SINGLE-FAMILY REFERENCE",
+        "scored": True,
+    }
+    if _load_json(output / "metrics-reference.json") != {}:
+        raise HarnessError("futile reference stage must not contain partial metrics")
+    if _load_json(output / "reference-selection.json") != expected_reference:
+        raise HarnessError("persisted V12 futile reference decision is not recomputable")
+    if _load_json(output / "selection.json") != expected_selection:
+        raise HarnessError("persisted V12 futile selection is not recomputable")
+
+
 def validate_complete_evidence(inputs: FrozenInputs, output: Path) -> None:
     """Fail closed on V12 epoch, adaptive schedule, attempts, traces and aggregates."""
     metadata = _load_json(output / "run-metadata.json")
@@ -291,7 +347,7 @@ def validate_complete_evidence(inputs: FrozenInputs, output: Path) -> None:
             workspaces,
             thread_ids,
         )
-    _validate_recomputed_outputs(inputs, output, trials, evaluated, deterministic)
+    _validate_recomputed_outputs(inputs, output, trials, evaluated, deterministic, metadata)
 
 
 def _validate_executed_runner_provenance(metadata: dict[str, Any]) -> None:
