@@ -17,14 +17,14 @@ from .aggregation import (
 )
 from .frozen_inputs import _load_json
 from .models import (
-    V11_CLASS_ORDER,
+    V12_CLASS_ORDER,
     CapacityPause,
     FrozenInputs,
     HarnessError,
     HostSurfaceDrift,
     TrialSpec,
 )
-from .scheduling import all_possible_trials
+from .scheduling import all_possible_trials, validate_repetition
 from .storage import _json_dump, _jsonl_dump
 
 Observation = tuple[dict[str, Any], dict[str, Any]]
@@ -41,6 +41,7 @@ class RunContext:
     execute_observation: ExecuteObservation
 
     def execute(self, spec: TrialSpec) -> Observation | None:
+        validate_repetition(self.inputs, spec)
         return self.execute_observation(
             self.inputs,
             spec,
@@ -291,7 +292,7 @@ class RunContext:
     ) -> int | None:
         ordered_cases = sorted(
             self.inputs.corpus["cases"],
-            key=lambda case: (V11_CLASS_ORDER.index(case["class"]), case["id"]),
+            key=lambda case: (V12_CLASS_ORDER.index(case["class"]), case["id"]),
         )
         for case_index, case in enumerate(ordered_cases):
             offset = case_index % len(candidates)

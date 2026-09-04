@@ -33,6 +33,7 @@ from .models import (
 )
 from .provenance import verify_deterministic
 from .run_support import RunContext
+from .scheduler_simulation import run_provider_free_scheduler_simulation
 from .scheduling import scheduled_trials, stage_schedule
 from .scoring import (
     candidate_qualifies,
@@ -90,7 +91,7 @@ def _resume_metadata(
         "timeout_seconds": args.timeout_seconds,
     }
     if any(metadata.get(key) != value for key, value in expected_identity.items()):
-        raise HarnessError("resume execution identity differs from frozen V11 run")
+        raise HarnessError("resume execution identity differs from frozen V12 run")
     if metadata.get("runner_sha256") != _sha256(HARNESS_PATH):
         raise HarnessError("resume runner identity changed")
     for relative, digest in _frozen_hashes().items():
@@ -207,7 +208,9 @@ def _start_new_run(
     _json_dump(output / "run-metadata.json", metadata)
     if not args.full_acceptance:
         return metadata, None
-    _json_dump(output / "deterministic-evidence.json", build_deterministic_evidence(inputs))
+    deterministic = build_deterministic_evidence(inputs)
+    deterministic["adaptive_scheduler_preflight"] = run_provider_free_scheduler_simulation(inputs)
+    _json_dump(output / "deterministic-evidence.json", deterministic)
     verify_args = argparse.Namespace(output=output, timeout_seconds=900)
     if verify_deterministic(verify_args) != 0:
         return metadata, _block_deterministic_gate(output, metadata)

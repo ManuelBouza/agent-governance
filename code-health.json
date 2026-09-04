@@ -42,6 +42,7 @@
     ["evidence"],
     ["provenance"],
     ["run_support"],
+    ["scheduler_simulation"],
     ["runner"],
     ["cli"]
   ]

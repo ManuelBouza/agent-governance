@@ -77,7 +77,7 @@ def score_matrix(args: argparse.Namespace) -> int:
 def _validate_run_identity(inputs: FrozenInputs, metadata: dict[str, Any]) -> None:
     method = inputs.oracle["trial_method"]
     if metadata.get("status") not in {"COMPLETE", "BLOCKED_NO_REFERENCE"}:
-        raise HarnessError("incomplete V11 execution cannot be scored")
+        raise HarnessError("incomplete V12 execution cannot be scored")
     if (
         metadata.get("oracle_id") != inputs.oracle["oracle_id"]
         or metadata.get("execution_epoch") != inputs.oracle["execution_epoch"]
@@ -88,7 +88,7 @@ def _validate_run_identity(inputs: FrozenInputs, metadata: dict[str, Any]) -> No
         or metadata.get("host") != "Codex"
         or metadata.get("timeout_seconds") != method["timeout_seconds_per_model_attempt"]
     ):
-        raise HarnessError("mismatched V11 execution identity/configuration")
+        raise HarnessError("mismatched V12 execution identity/configuration")
     _validate_executed_runner_provenance(metadata)
     for path in (ORACLE_PATH, CORPUS_PATH, TOPOLOGIES_PATH, MANIFEST_PATH, ENVELOPE_PATH):
         relative = path.relative_to(REPO_ROOT).as_posix()
@@ -133,7 +133,7 @@ def _validate_schedule_records(
     if len(set(trial_keys)) != len(trial_keys) or set(trial_keys) != set(raw_keys):
         raise HarnessError("valid trial/raw identity mismatch or duplication")
     if set(trial_keys) - set(possible):
-        raise HarnessError("trial outside frozen V11 identity set")
+        raise HarnessError("trial outside frozen V12 identity set")
     evaluated = (
         ["B0", "B1"]
         if metadata["status"] == "BLOCKED_NO_REFERENCE"
@@ -156,7 +156,7 @@ def _validate_schedule_records(
         lower = lower + method["challenger_stage_full_completion_base_valid_observations"]
         upper = method["overall_full_completion_ceiling_when_challengers_execute"]
     if not lower <= len(trials) <= upper:
-        raise HarnessError("V11 valid observation count is outside the frozen stage range")
+        raise HarnessError("V12 valid observation count is outside the frozen stage range")
     return trials, raw_trials, attempts, possible, trial_keys, raw_keys, evaluated
 
 
@@ -247,13 +247,13 @@ def _validate_recomputed_outputs(
         for item in aggregate_candidate_trials(inputs, candidate, trials)
     ]
     if aggregates != load_trials(output / "case-aggregates.jsonl"):
-        raise HarnessError("persisted V11 case aggregates are not exactly recomputable")
+        raise HarnessError("persisted V12 case aggregates are not exactly recomputable")
     recomputed_metrics = {
         candidate: compute_candidate_metrics(inputs, candidate, trials, deterministic)
         for candidate in evaluated
     }
     if recomputed_metrics != _load_json(output / "metrics.json"):
-        raise HarnessError("persisted V11 metrics are not exactly recomputable")
+        raise HarnessError("persisted V12 metrics are not exactly recomputable")
     expected_selection = (
         {
             "status": "BLOCKED",
@@ -266,11 +266,11 @@ def _validate_recomputed_outputs(
         else apply_selection_rule(inputs, recomputed_metrics)
     )
     if expected_selection != _load_json(output / "selection.json"):
-        raise HarnessError("persisted V11 selection is not exactly recomputable")
+        raise HarnessError("persisted V12 selection is not exactly recomputable")
 
 
 def validate_complete_evidence(inputs: FrozenInputs, output: Path) -> None:
-    """Fail closed on V11 epoch, adaptive schedule, attempts, traces and aggregates."""
+    """Fail closed on V12 epoch, adaptive schedule, attempts, traces and aggregates."""
     metadata = _load_json(output / "run-metadata.json")
     _validate_run_identity(inputs, metadata)
     deterministic = _validate_deterministic_evidence(output)
@@ -324,6 +324,35 @@ def verify_deterministic(args: argparse.Namespace) -> int:
     evidence = _load_json(evidence_path)
     if evidence.get("oracle_id") != inputs.oracle["oracle_id"]:
         raise HarnessError("deterministic evidence does not match the current frozen oracle")
+    scheduler = evidence.get("adaptive_scheduler_preflight", {})
+    scenarios = scheduler.get("scenarios", {})
+    required_scenarios = {
+        "agreeing_pair_forward_progress",
+        "conditional_third_forward_progress",
+        "no_fourth_repetition",
+        "critical_terminal",
+        "full_reference_adaptive_dry_run",
+    }
+    module_root = REPO_ROOT / "evals" / "skill_activation_topology" / "_harness"
+    expected_hashes = {
+        name: hashlib.sha256((module_root / name).read_bytes()).hexdigest()
+        for name in (
+            "run_support.py",
+            "aggregation.py",
+            "scheduling.py",
+            "scheduler_simulation.py",
+        )
+    }
+    scheduler_invalid = (
+        scheduler.get("status") != "PASS"
+        or scheduler.get("execution_epoch") != inputs.oracle["execution_epoch"]
+        or scheduler.get("provider_model_calls_issued") != 0
+        or set(scenarios) != required_scenarios
+        or any(value.get("status") != "PASS" for value in scenarios.values())
+        or scheduler.get("tested_module_sha256") != expected_hashes
+    )
+    if scheduler_invalid:
+        raise HarnessError("provider-free adaptive scheduler simulation evidence is invalid")
 
     command_groups = {
         "ruff_check": ["uv", "run", "--locked", "ruff", "check", "."],
@@ -410,6 +439,7 @@ def verify_deterministic(args: argparse.Namespace) -> int:
         )
         else "FAIL"
     )
+    evidence["provider_model_calls_issued_during_deterministic_gate"] = 0
     evidence["runtime"] = {
         "python": platform.python_version(),
         "platform": platform.platform(),
