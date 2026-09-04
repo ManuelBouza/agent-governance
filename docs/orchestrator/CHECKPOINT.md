@@ -1,226 +1,222 @@
 # Current ChatGPT Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O193  
+Checkpoint-Sequence: O194  
 Canonical-Branch: `develop`  
-Current-Work-Unit: T052/MG1-v12 pair-scoped scheduler restart is integrated and controlling; T023 is ready for a fresh v12 epoch after deterministic scheduler adaptation/preflight  
+Current-Work-Unit: T023/MG1-v12 is closed with a valid `BLOCKED / NO QUALIFYING SINGLE-FAMILY REFERENCE` result; next Orchestrator work is the requested Codex persistent-coordinator pilot specification before any normative D055 change  
 Chat-Closure: CONTINUE_CURRENT_CHAT  
 Active-Executor: none  
 Active-Executor-Surface: ChatGPT Orchestrator
 
 ## Durable frontier
 
-- D053, D054, D040, D042, D048, D050, D051, D052, D055 and D056 remain controlling. Core protocol remains `1.15.0`.
+- D053, D054, D040, D041, D042, D048, D050, D051, D052, D055 and D056 remain controlling. Core protocol remains `1.15.0`.
 - T021 and T022 are `ACCEPTED`.
-- T050 is `ACCEPTED`; review `docs/reviews/T050-R1.md`; RF6 integration PR `#258`, merge `b8eae481e65e0aefc690b666e5eed6d01be85ea4`.
-- T050 canonical harness facade remains `212` physical LOC with extracted modules under `evals/skill_activation_topology/_harness/`, active `code-health.json` ratchet and `tools/code_health.py` size/complexity/dependency/symbol-map checks.
-- T023 v2-v11 are closed. V10 review: `docs/reviews/T023-R9.md`. V11 review: `docs/reviews/T023-R10.md`.
-- V11 evidence/infrastructure integration PR `#262`; merge `f80058d9301d7347631a83f690f31dbc029523e8`.
-- T052 Task Contract: `docs/tasks/T052-mg1-v12-pair-scoped-scheduler-restart.md`.
-- T052 integration PR `#263`; merge `c9c1c7420c9cd971fc9b40eb983925534dab90c0`.
+- T050 is `ACCEPTED`; review `docs/reviews/T050-R1.md`; integration PR `#258`, merge `b8eae481e65e0aefc690b666e5eed6d01be85ea4`.
+- T050 code-health boundary remains active: `evals/skill_activation_topology/harness.py` ratcheted at `212` LOC, extracted modules governed by size/complexity/dependency checks, deterministic AST symbol map available.
+- T023 v2-v11 remain closed according to reviews `T023-R1.md` through `T023-R10.md`.
+- T052/MG1-v12 controlling specification remains `docs/tasks/T052-mg1-v12-pair-scoped-scheduler-restart.md`.
+- V12 convergence review: `docs/reviews/T023-R11.md`.
+- V12 evidence/infrastructure integration PR `#266`; merge `2abc33ad954dbca81975b653bc0a607abdd32f8f`.
+- Codex persistent-coordinator research memo: `docs/research/CODEX-PERSISTENT-EXECUTOR-COORDINATOR-RESEARCH.md`; research PR `#265`, merge `91f62278e439be8f5eb7e50c3f6aaac9331fa99e`.
+- The persistent-coordinator memo is `RESEARCH / NON-CONTROLLING`; D055 has not yet changed.
 
-## MG1-v11 terminal result
+## MG1-v12 terminal result
 
-MG1-v11 is closed:
+MG1-v12 is closed as a **valid experimental result**:
 
-`BLOCKED / EXECUTION_ADAPTER_SCHEDULER_DEFECT`.
+`BLOCKED / NO QUALIFYING SINGLE-FAMILY REFERENCE`.
 
-Submitted Executor state:
+Submitted Executor identity:
 
 ```text
-Branch: test/t023-skill-activation-topology-evals-v11
-Canonical base: 950972590746c3637ddb96002e4bb7bb988b28a5
-Executed runner: 4b0fd7a4ee53b99d9ca9627e5fca524a0a9a3d51
-Implementation/evidence HEAD: 2b6dfba40397c7cc758c38b313dd0c7c5ba09bd6
-Terminal HEAD: d05c3033fd597480f5e5f105176684eed68385c5
+Branch: test/t023-skill-activation-topology-evals-v12
+Canonical execution base: 2696378eb7aef2815cca393102d53f6e25367f29
+Live runner: 7b79ba6589becea6d71ab95c7c36e2e158225675
+Implementation/evidence HEAD: 32fee8e50ee2fb59c6a9fcc147777f0c2b356e10
+Terminal HEAD: 3e5bec392d0b8e5804c4efaad74b795b08dc9779
 Handoff: handoffs/T023-executor-handoff.json
+Evidence: evals/skill_activation_topology/evidence/mg1-v12-codex-windows-gpt-5.6-sol-medium/
 ```
 
-V11 successfully passed:
+V12 successfully established the execution method that prior epochs had failed to prove:
 
-- deterministic/code-health/symbol-map gates;
-- focused T023/T050 tests and full pytest (`486` PASS reported by the Executor);
-- provider-free Windows workspace gate;
-- unchanged synthetic Skill canary `2/2`;
-- host-observed successful Skill body/reference reads under acceptance.
+- deterministic/code-health/symbol-map gates PASS;
+- focused tests PASS: `77`;
+- full pytest PASS: `488`;
+- provider-free adaptive-scheduler simulation PASS, including full `160`-observation B0/B1 dry run with zero provider/model calls;
+- pair-scoped conditional-third behavior PASS;
+- provider-free Windows workspace gate PASS;
+- unchanged synthetic Skill canary PASS `2/2`;
+- accepted live profile: Codex CLI `0.149.0`, native Windows 11, `elevated/read-only`, inherited-ACL workspace, GPT-5.6 Sol / Medium;
+- no capacity event and no post-preflight host-surface drift.
 
-Selected live profile was Codex CLI `0.149.0`, native Windows 11, native backend `elevated`, logical sandbox `read-only`, inherited-ACL workspace profile, GPT-5.6 Sol / Medium.
+V12 issued `72` fresh acceptance prompts and produced `72` valid observations. Two conditional third repetitions were required. No prior-epoch observation entered V12 scoring or futility state.
 
-V11 issued exactly two fresh acceptance prompts, `WX00/B0/r1/a1` and `WX00/B0/r2/a1`. Both produced valid raw observations. Scored observations: `0`. Selection: none.
+## Reference-family result
 
-The immutable runner then failed because conditional-third evaluation was applied to the complete unfinished corpus and required `[r1,r2]` for unrelated not-yet-scheduled pairs, raising on `WC01/B0` immediately after the first completed pair. This is deterministic scheduler plumbing, not candidate behavior, host drift, provider instability or semantic oracle defect.
+Both single-family reference candidates are terminally non-qualifying under the frozen V12 thresholds.
 
-The two V11 observations are immutable diagnostic evidence only. They MUST NOT be rescored, imported into a successor score, rerun as V11 evidence or used to tune candidates, thresholds, selection or replacement-stimulus wording.
+### B0
 
-## T050 code-health boundary
+- terminal certificate: `FUTILE_QUALIFICATION`;
+- one false activation among `11` negative/near-miss cases;
+- false activation case: `WM02`;
+- `WM02` is the near-miss asking for a maintainer policy for an unrelated Go library;
+- host-observed entrypoint: `agent-governance` despite expected entrypoint set being empty;
+- best possible final false-activation rate: `1/11 = 0.090909...`;
+- frozen maximum: `0.05`.
 
-The following remains mandatory for T023 successors:
+### B1
 
-- `evals/skill_activation_topology/harness.py`: `212` LOC no-net-growth ratchet;
-- extracted implementation modules target `<=500` and hard limit `1000` unless separately persisted;
-- scoped `C901 <=10`, `PLR0912 <=12`, `PLR0915 <=50`;
-- dependency direction/cycle checks;
-- deterministic AST symbol/code map;
-- accepted RF1 characterization behavior as regression authority.
+- terminal certificate: `FUTILE_QUALIFICATION`;
+- one false activation among `11` negative/near-miss cases;
+- false activation case: `WM05`;
+- `WM05` asks for a linting Skill while explicitly stating Agent Governance is not installed;
+- host-observed entrypoint: `agent-governance-router` despite expected entrypoint set being empty;
+- best possible final false-activation rate: `1/11 = 0.090909...`;
+- frozen maximum: `0.05`.
 
-Do not create a second project-owned top-level generic coding Skill. The future Maintainer Skill remains the single source-maintenance Skill and may progressively route to `docs/AGENT-LEGIBLE-CODE-HEALTH.md`; mechanical enforcement remains Skill-independent.
+For both candidates the frozen false-activation denominator is fixed. No future unfinished case can reduce `1/11` to `<=0.05`; qualification is mathematically impossible.
 
-## T052 / MG1-v12 controlling identity
+The terminal failed bound is `false_activation_rate`. Other optimistic qualification bounds do not reverse the result.
+
+## D050 consequence
+
+D050 requires at least one qualifying B0/B1 reference before challenger execution.
+
+Therefore:
 
 ```text
-Task: T052
-Status: INTEGRATED / CONTROLLING
-Task Contract: docs/tasks/T052-mg1-v12-pair-scoped-scheduler-restart.md
-Oracle: MG1-T023-TOPOLOGY-ORACLE-v12
-Execution epoch: MG1-T023-EXECUTION-v12
-Corpus: MG1-T023-CORPUS-v6
-Capability source epoch: MG1-2026-08-25-v3
-Presentation revision: MG1-T023-PRESENTATIONS-v3
-Trial envelope: MG1-T023-TRIAL-ENVELOPE-v2
-Codex CLI baseline: 0.149.0
-Required live cell: Codex / native Windows / GPT-5.6 Sol / Medium
-Prior observations allowed in v12 score: 0
-Full-completion ceiling when challengers execute: 480 valid observations
+B0 -> FUTILE_QUALIFICATION
+B1 -> FUTILE_QUALIFICATION
+F2 -> NOT_SCHEDULED_NO_REFERENCE
+G3 -> NOT_SCHEDULED_NO_REFERENCE
+selected topology -> none
 ```
 
-## V12 holdout rotation
+F2/G3 are **not** behaviorally accepted or rejected by V12. Their non-execution is a D050 consequence, not evidence against them.
 
-Corpus v6 contains exactly 40 cases and is derived from corpus v5 by one prospective exposure-hygiene rotation:
+Do not run challengers outside D050 merely to obtain a result.
 
-- retire V11-exposed `WX00` and its exact prompt;
-- add fresh `WX00R`;
-- `WX00R` remains `cross-profile`, `fixture_role=source`;
-- expected capability remains `source-maintainer`;
-- expected semantic outcome remains `bounded-rejection`;
-- forbidden capability remains `consumer-lifecycle`;
-- semantic boundary remains that source maintenance must not create/use Consumer coordination authority to justify source-product policy changes;
-- `WX00R` sorts before `WX02`, preserving the first cross-profile scheduling position from V11.
+## Post-live verifier note
 
-The other 39 cases remain unchanged. Class counts and all metric/futility denominators remain unchanged.
+The immutable live runner was `7b79ba6589becea6d71ab95c7c36e2e158225675`.
 
-Retired `WX01` and `WX00` prompts MUST NOT be used as V12 acceptance stimuli.
+After live execution the only technical-code change before the reviewed evidence HEAD was in `evals/skill_activation_topology/_harness/provenance.py`, plus evidence persistence. The live runner's generic verification path incorrectly assumed full reference-stage completion even when adaptive futility legitimately produced `BLOCKED_NO_REFERENCE`.
 
-## V12 scheduler correction
+The post-live verifier correction:
 
-Conditional-third decisions are now prospectively specified as **pair-scoped**.
+- did not change aggregation, scheduling, scoring or futility semantics;
+- did not alter raw observations or frozen D052 assets;
+- did not issue additional model observations;
+- independently recomputes finalized aggregates, both futility certificates, blocked reference state and final selection.
 
-For one `(case_id, candidate_id)` pair:
+`T023-R11.md` accepts this as Code Review & Verify plumbing, not retrospective experimental redesign/rescoring.
 
-- no decision is made until its base `r1/r2` exist;
-- agreement on all frozen trigger fields schedules no third and advances;
-- disagreement schedules exactly one `r3` for that pair unless an already-observed terminal condition suppresses future work;
-- after required `r3`, the pair finalizes and advances;
-- `r4` is always forbidden;
-- missing repetitions for unrelated unscheduled pairs are normal adaptive state and MUST NOT raise incomplete-pair errors.
+## MG1 re-entry boundary
 
-Candidate-level critical/futility state continues to stop future work under the frozen v11 semantics.
+MG1 re-enters `Explore / Specify`, not another execution epoch.
 
-## V12 provider-free scheduler simulation gate
+V12 is the first recent epoch whose terminal blocker is accepted candidate/topology behavior rather than host/method/adapter failure.
 
-Before **any provider/model call**, the Executor must use an injected/fake observation adapter to prove the adaptive scheduler without Codex/model/network inference.
+Any future MG1 work must therefore investigate the design problem revealed by near-miss overactivation before authorizing another acceptance run.
 
-Required deterministic scenarios include:
+Potential research questions include:
 
-1. agreeing pair -> no `r3`, then forward progress to a later previously unscheduled pair;
-2. disagreeing non-terminal pair -> exactly one `r3`, then forward progress;
-3. no fourth repetition can be scheduled or accepted;
-4. critical cross-profile/ambiguous event -> candidate terminal without reconfirmation calls;
-5. scripted full reference-stage adaptive dry run traverses the complete B0/B1 case set without unscheduled-pair exceptions when scripted observations keep candidates eligible.
+- why unified reference descriptions activate on unrelated `maintainer` language (`WM02`);
+- why thin-router wording activates on generic `Skill`/linting language when Agent Governance is explicitly absent (`WM05`);
+- whether a revised reference-family trigger contract can preserve positive/source/consumer coverage while tightening near-miss precision;
+- whether D050's requirement for a qualifying single-family reference still represents the desired product-selection question after this substantive result.
 
-Evidence must bind the exact tested runner and state `provider_model_calls_issued=0`.
+No automatic V13 is authorized.
 
-Any failure in this gate blocks V12 before backend resolution, synthetic canary or acceptance spend.
+A candidate/presentation redesign may use closed V12 evidence for root-cause/design research, but a new acceptance epoch must establish a prospective fresh holdout boundary because V12 exposed substantial corpus content.
 
-## V12 preserved experiment method
+Do not relax the `0.05` false-activation threshold post hoc.
 
-V12 otherwise preserves V11:
+## Persistent Codex Executor Coordinator research
 
-- B0/B1 reference first; F2/G3 only after a reference exists;
-- candidate/reference/presentation bytes;
-- Core/engine/profile/capability semantics;
-- trial envelope/model-visible suffix;
-- thresholds and D050 selection;
-- paired 2+1 and no fourth repetition;
-- consequence-first class scheduling;
-- immediate cross-profile/ambiguous any-occurrence gates;
-- exact optimistic qualification and challenger-materiality futility;
-- `180` second non-capacity attempts;
-- capacity events as non-attempt pauses;
-- Codex CLI `0.149.0` / native Windows / Sol Medium live cell;
-- explicit native backend selection, elevated-first / unelevated fallback;
-- inherited-ACL-compatible disposable workspaces;
-- provider-free workspace-readability gate;
-- unchanged mx-canary with two PASS repetitions before acceptance;
-- ignored user config/rules and minimal host feature surface;
-- host-observed successful candidate-body read/use as activation authority;
-- corrected rejection semantics: policy-like text in successful output alone is not an access rejection.
+The user requested investigation and eventual incorporation of a Codex execution topology that retains one coordinator context and delegates bounded work to subagents.
 
-## V12 deterministic pre-provider sequence
-
-Before any provider/model call:
-
-1. adapt only technical v12/v6 identity plumbing and pair-scoped scheduler mechanics;
-2. Ruff check;
-3. Ruff format check;
-4. `tools/code_health.py check --root .`;
-5. deterministic symbol-map generation/validation;
-6. focused T023/T050 characterization and code-health tests;
-7. full pytest;
-8. harness validation against oracle v12/corpus v6;
-9. frozen candidate/presentation/topology/trial-envelope hash verification;
-10. proof corpus v6 differs from v5 only by the preregistered `WX00 -> WX00R` rotation plus identity/policy metadata;
-11. provider-free adaptive-scheduler simulation gate PASS;
-12. provider/model calls issued during all deterministic gates = `0`.
-
-A red deterministic gate blocks live execution.
-
-## V12 live gate sequence
-
-Only after all deterministic/scheduler gates are green:
+The integrated research memo concludes that the preferred architecture is:
 
 ```text
-backend resolution without provider
--> inherited-ACL workspace creation
--> provider-free workspace readability/nonce probe
--> unchanged synthetic Skill canary
--> require 2/2 PASS for one complete host profile
--> acceptance Stage R
--> Stage C only if a reference survives
+one persistent Codex Executor coordinator root per coherent continuity scope/dossier
+        |
+        +-- fresh bounded Explorer child
+        +-- fresh bounded Worker child
+        +-- fresh bounded Verifier/Reviewer child
+        +-- optional narrow Specialist child
+        |
+        +-- concise summaries + Git/evidence references only
 ```
 
-Workspace failure before canary remains `WINDOWS_WORKSPACE_ACL_UNAVAILABLE`.
-Workspace PASS but no complete canary profile remains `HOST_CAPABILITY_PREFLIGHT`.
-Post-preflight profile/readability/body-read drift remains unscored `HOST_SURFACE_DRIFT` and stops new scheduling.
+Key constraints:
 
-## T023 next executable identity
+- Git remains authoritative; retained chat state is only an execution optimization;
+- D042 freshness/reconciliation remains mandatory before each Human-to-Executor governed work unit;
+- D041 already permits internal subagents/workers inside Executor-owned stages 5-6;
+- D053 stage ownership remains unchanged;
+- child agents do not receive Human-facing D055 launch cards; they are private Executor mechanics;
+- persist the coordinator root, not the complete child tree as a correctness dependency;
+- close disposable children after concise result transfer;
+- parallel read-heavy children are preferred initially;
+- normally only one writer per mutable worktree/branch;
+- thread/session identifiers are runtime metadata, never Governance authority;
+- resume failure must degrade to fresh Git bootstrap, never correctness failure.
 
-```text
-Task: T023
-Status: READY / FRESH V12 EPOCH
-Task Contract: docs/tasks/T023-unified-skill-profile-activation-evals.md
-Controlling revision: docs/tasks/T052-mg1-v12-pair-scoped-scheduler-restart.md
-Expected handoff: handoffs/T023-executor-handoff.json
-Implementation Executor launch: Codex NEW / GPT-5.6 Sol / High
-Live acceptance cell: Codex / native Windows / GPT-5.6 Sol / Medium
-Codex CLI baseline: 0.149.0
-Prior observations allowed in v12 score: 0
-Pre-provider requirement: v12 identity/scheduler adaptation + deterministic/code-health/scheduler-simulation gates PASS
-Pre-acceptance requirement: provider-free workspace gate PASS + unchanged synthetic canary 2/2 PASS
-```
+Current D055 still defaults a first new Task Contract/work unit to `NEW`. The research proposes a future distinction between a persistent Coordinator Root lifecycle and fresh internal Child lifecycle, but no normative change is authorized yet.
 
-Executor may change only authorized technical harness/tests/evidence mechanics needed to realize T052. Executor MUST NOT edit Markdown or semantically alter D052 corpus/oracle/presentations/thresholds/selection.
+## Next work unit — T053 pilot specification
+
+`T053` is currently free and is reserved as the recommended next Task ID for a **Codex Persistent Executor Coordinator Pilot**.
+
+The pilot must be specified by the Orchestrator before launch and should deliberately avoid changing D055 first.
+
+Recommended Phase-1 shape under current rules:
+
+1. one T053 Task Contract with a coherent technical maintenance scope and at least two represented execution phases/checkpoints;
+2. first Human-to-Executor T053 launch: Codex `NEW` root, as current D055 requires;
+3. root uses native stable Codex subagents for bounded internal work;
+4. phase checkpoint returns `PARTIAL`/evidence to Orchestrator;
+5. after Orchestrator acceptance of the checkpoint, same T053/same represented branch may use `CONTINUE` under current D055;
+6. root must repeat D042 Git/current-authority reconciliation before the continuation;
+7. second phase uses fresh bounded child agents rather than reusing child reasoning trees;
+8. normally at most three concurrent children during the pilot and at most one write-capable child per mutable worktree;
+9. children return concise status/findings/files/verification/Git-evidence/blocker summaries, not full transcripts;
+10. close completed children after summary transfer.
+
+The pilot should use the native documented Codex multi-agent/thread surface first. Do **not** build an App Server/SDK session manager or modify consumer Core semantics before measured Phase-1 evidence.
+
+## Pilot telemetry
+
+T053 should record when available:
+
+- coordinator root input/output/reasoning tokens;
+- child input/output/reasoning tokens;
+- total tokens;
+- time to first useful technical action;
+- repeated instruction/file reads attributable to bootstrap;
+- root context occupancy/compaction events;
+- child spawn count and rationale;
+- child failures/retries;
+- wall-clock completion time;
+- review rework and acceptance outcome;
+- stale-authority/branch/worktree incidents, which must remain zero.
+
+The optimization objective is lower repeated bootstrap and lower root context pollution at equal-or-better accepted quality, not simply fewer sessions.
+
+Only after a measured T053 pilot should the Orchestrator consider a normative D055 continuity refinement or consumer-project portability.
 
 ## Next action
 
-1. Refresh current canonical `develop` before Executor launch.
-2. Show D055: Executor `Codex`; Session `NEW`; Model `GPT-5.6 Sol`; Effort `High`. Rationale: fresh epoch plus correction/characterization of adaptive scheduler and high-risk live evidence execution; live observations remain Sol / Medium.
-3. Launch exactly `docs/tasks/T023-unified-skill-profile-activation-evals.md` from canonical `develop` using pointer-only transport; T052 is discovered through current repository authority.
-4. Executor first adapts technical v12 identities/pair-scoped scheduler and runs all deterministic/code-health/scheduler simulation gates with zero provider calls.
-5. Only after deterministic PASS may backend/workspace/provider-free/synthetic preflight execute.
-6. Only after one complete profile passes canary `2/2` may V12 acceptance begin.
-7. Acceptance sends only observations still required by frozen futility/materiality logic.
-8. Executor persists/pushes the handoff and returns only status, handoff path, branch and pushed HEAD.
-9. Orchestrator independently converges the remote evidence before topology acceptance.
+1. Orchestrator creates and integrates `docs/tasks/T053-codex-persistent-executor-coordinator-pilot.md` from current `develop`.
+2. T053 must define a useful bounded technical maintenance deliverable, two-phase same-Task continuity, subagent roles, one-writer/worktree safety, concise child-return contract, telemetry and recovery/fallback behavior.
+3. Keep D055 unchanged for the pilot: first T053 launch `NEW`; same-task/same-branch accepted follow-up may `CONTINUE`.
+4. Do not launch a T053 Executor until its Task Contract and checkpoint authority are integrated.
+5. Separately, MG1 remains in Orchestrator Explore/Specify. Do not launch V13 or modify V12 evidence while the pilot is being specified.
+6. After T053 evidence is accepted, decide whether to refine D055 and whether the continuity topology should become a portable Agent Governance adapter pattern.
 
 ## Next chat minimum load
 
@@ -228,4 +224,4 @@ Load only current `develop` identity, `AGENTS.md`, and this checkpoint; then fol
 
 ## Do not
 
-Do not resume V11; do not score/rerun/import its `WX00/B0` observations; do not reuse retired `WX00` or `WX01` prompts in V12 acceptance; do not import any prior observation; do not alter corpus v6/oracle v12 after live execution begins; do not change candidates/presentations/thresholds/D050/trial envelope; do not upgrade Codex or substitute host/model/effort; do not weaken pair-scoped scheduler semantics, provider-free scheduler simulation, workspace/canary/body-read observability gates or code-health; do not write directly to `main`/`develop`.
+Do not rerun V12; do not relax V12 thresholds; do not execute F2/G3 outside D050; do not infer challenger quality from non-execution; do not import V12 observations into a future acceptance score; do not create V13 before upstream MG1 design authority; do not treat persistent Codex context as authoritative state; do not change D055 before the pilot; do not require child-thread persistence for correctness; do not allow overlapping writers on one worktree; do not bypass D042 on coordinator continuation; do not write directly to `main`/`develop`.
