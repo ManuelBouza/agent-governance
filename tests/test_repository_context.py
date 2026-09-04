@@ -273,9 +273,13 @@ def test_cli_output_is_stable_and_tool_stays_outside_consumer_package(
         str(output),
     ]
 
-    first = subprocess.run(command, check=True, capture_output=True, timeout=30)
+    first = subprocess.run(
+        command, cwd=measured_repository, check=True, capture_output=True, timeout=30
+    )
     first_bytes = output.read_bytes()
-    second = subprocess.run(command, check=True, capture_output=True, timeout=30)
+    second = subprocess.run(
+        command, cwd=measured_repository, check=True, capture_output=True, timeout=30
+    )
 
     assert first.stdout == second.stdout == b""
     assert output.read_bytes() == first_bytes
@@ -885,29 +889,21 @@ def test_ac_rcab_6_no_mutation_drift(repo_root: Path, tmp_path: Path) -> None:
     # No network or dependency changes — manifest uses only stdlib
     import ast as _ast
 
-    source = (repo_root / "tools" / "repository_context.py").read_text()
-    tree = _ast.parse(source)
-    imports = [
-        node.names[0].name if isinstance(node, _ast.Import) else node.module
-        for node in _ast.walk(tree)
-        if isinstance(node, (_ast.Import, _ast.ImportFrom))
-    ]
-    for imp in imports:
-        if imp is None:
-            continue
-        top = imp.split(".")[0]
-        assert top in (
-            "argparse",
-            "hashlib",
-            "json",
-            "os",
-            "posixpath",
-            "re",
-            "subprocess",
-            "tempfile",
-            "pathlib",
-            "__future__",
-        ), f"unexpected import: {top}"
+    implementation_paths = [repo_root / "tools" / "repository_context.py"]
+    implementation_paths.extend(sorted((repo_root / "tools" / "_repository_context").glob("*.py")))
+    for implementation_path in implementation_paths:
+        tree = _ast.parse(implementation_path.read_text())
+        for node in _ast.walk(tree):
+            if not isinstance(node, (_ast.Import, _ast.ImportFrom)):
+                continue
+            if isinstance(node, _ast.ImportFrom) and node.level:
+                continue
+            imported = node.names[0].name if isinstance(node, _ast.Import) else node.module
+            assert imported is not None
+            top = imported.split(".")[0]
+            assert top in sys.stdlib_module_names or top == "_repository_context", (
+                f"unexpected import in {implementation_path.relative_to(repo_root)}: {top}"
+            )
 
 
 def test_manifest_snapshot_integrity_on_real_repository(repo_root: Path) -> None:
