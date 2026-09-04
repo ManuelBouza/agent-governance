@@ -1,0 +1,75 @@
+{
+  "candidate_id": "B0",
+  "certificate_type": "FUTILE_QUALIFICATION",
+  "completed_case_ids": [
+    "WA01",
+    "WA02",
+    "WA03",
+    "WA04",
+    "WM01",
+    "WM02",
+    "WN01",
+    "WN02",
+    "WN03",
+    "WN04",
+    "WN05",
+    "WN06",
+    "WX00R",
+    "WX02",
+    "WX03",
+    "WX04"
+  ],
+  "failed_bounds": [
+    "false_activation_rate"
+  ],
+  "fixed_denominators": {
+    "cases": 40,
+    "expected_entrypoints": 29,
+    "negative_near_miss_cases": 11
+  },
+  "observed": {
+    "false_activations": 1,
+    "false_positives": 1,
+    "overactivations": 1,
+    "semantic_errors": 2,
+    "true_positives": 8,
+    "wrong_specialists": 0
+  },
+  "optimistic_final_bounds": {
+    "activation_f1": 0.983050847457627,
+    "activation_precision": 0.9666666666666667,
+    "activation_recall": 1.0,
+    "false_activation_rate": 0.09090909090909091,
+    "overactivation_rate": 0.025,
+    "semantic_outcome_accuracy": 0.95,
+    "wrong_specialist_rate": 0.0
+  },
+  "remaining_case_ids": [
+    "WC01",
+    "WC02",
+    "WC03",
+    "WC04",
+    "WC05",
+    "WC06",
+    "WE01",
+    "WE02",
+    "WE03",
+    "WE04",
+    "WE05",
+    "WI01",
+    "WI02",
+    "WI03",
+    "WI04",
+    "WI05",
+    "WM03",
+    "WM04",
+    "WM05",
+    "WS01",
+    "WS02",
+    "WS03",
+    "WS04",
+    "WS05"
+  ],
+  "remaining_optimistic_expected_entrypoints": 21,
+  "terminal": true
+}

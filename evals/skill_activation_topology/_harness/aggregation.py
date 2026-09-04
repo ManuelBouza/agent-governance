@@ -50,8 +50,15 @@ def conditional_third_specs(
             pair = sorted(
                 by_pair.get((case["id"], candidate), []), key=lambda item: item["repetition"]
             )
-            if len(pair) != 2 or [item["repetition"] for item in pair] != [1, 2]:
-                raise HarnessError(f"{case['id']}--{candidate}: paired base repetitions incomplete")
+            if not pair:
+                continue
+            repetitions = [item["repetition"] for item in pair]
+            if repetitions == [1]:
+                continue
+            if repetitions not in ([1, 2], [1, 2, 3]):
+                raise HarnessError(f"{case['id']}--{candidate}: invalid repetition sequence")
+            if len(pair) == 3:
+                continue
             if disagreement_fields(*pair) and not candidate_has_critical_violation(
                 trials, candidate
             ):
@@ -270,7 +277,7 @@ def aggregate_candidate_trials(
 def finalized_candidate_aggregates(
     inputs: FrozenInputs, candidate_id: str, trials: list[dict[str, Any]]
 ) -> list[dict[str, Any]]:
-    """Aggregate only completed pairs/conditional thirds for v11 futility checks."""
+    """Aggregate only completed pairs/conditional thirds for v12 futility checks."""
     selected = [trial for trial in trials if trial["candidate_id"] == candidate_id]
     by_case: dict[str, list[dict[str, Any]]] = {}
     for trial in selected:

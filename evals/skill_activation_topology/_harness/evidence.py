@@ -29,6 +29,7 @@ from .models import (
     HostSurfaceDrift,
     TrialSpec,
 )
+from .scheduling import validate_repetition
 from .storage import _json_dump
 from .trial_execution import run_trial
 
@@ -46,30 +47,30 @@ def _holdout_rotation_evidence(inputs: FrozenInputs) -> dict[str, Any]:
         )
         prior = json.loads(prior_bytes)
     except (subprocess.CalledProcessError, json.JSONDecodeError) as exc:
-        raise HarnessError("cannot resolve the frozen corpus v4 predecessor") from exc
+        raise HarnessError("cannot resolve the frozen corpus v5 predecessor") from exc
     current_cases = {case["id"]: case for case in inputs.corpus["cases"]}
     prior_cases = {case["id"]: case for case in prior.get("cases", [])}
     shared_ids = set(current_cases) & set(prior_cases)
     rotated = {
         key: value
-        for key, value in current_cases.get("WX00", {}).items()
+        for key, value in current_cases.get("WX00R", {}).items()
         if key not in {"id", "prompt"}
     }
     exposed = {
         key: value
-        for key, value in prior_cases.get("WX01", {}).items()
+        for key, value in prior_cases.get("WX00", {}).items()
         if key not in {"id", "prompt"}
     }
     valid = (
         len(current_cases) == len(prior_cases) == 40
-        and set(current_cases) - set(prior_cases) == {"WX00"}
-        and set(prior_cases) - set(current_cases) == {"WX01"}
+        and set(current_cases) - set(prior_cases) == {"WX00R"}
+        and set(prior_cases) - set(current_cases) == {"WX00"}
         and all(current_cases[case_id] == prior_cases[case_id] for case_id in shared_ids)
         and rotated == exposed
-        and current_cases["WX00"]["prompt"] != prior_cases["WX01"]["prompt"]
+        and current_cases["WX00R"]["prompt"] != prior_cases["WX00"]["prompt"]
     )
     if not valid:
-        raise HarnessError("corpus v5 is not the frozen WX01-to-WX00 rotation of corpus v4")
+        raise HarnessError("corpus v6 is not the frozen WX00-to-WX00R rotation of corpus v5")
     return {
         "status": "PASS",
         "corpus_change_commit": change,
@@ -78,8 +79,8 @@ def _holdout_rotation_evidence(inputs: FrozenInputs) -> dict[str, Any]:
         "current_corpus_id": inputs.corpus["corpus_id"],
         "current_sha256": _sha256(CORPUS_PATH),
         "unchanged_case_count": len(shared_ids),
-        "retired_case_id": "WX01",
-        "replacement_case_id": "WX00",
+        "retired_case_id": "WX00",
+        "replacement_case_id": "WX00R",
         "semantic_fields_equal": True,
         "prompt_changed": True,
     }
@@ -165,7 +166,9 @@ def execute_logical_observation(
     inputs: FrozenInputs, spec: TrialSpec, *, output: Path, **kwargs: Any
 ) -> tuple[dict[str, Any], dict[str, Any]] | None:
     """Persist model attempts; explicit capacity events consume no attempt ordinal."""
-    limit = inputs.oracle["trial_method"]["max_model_attempts_per_scheduled_observation"]
+    method = inputs.oracle["trial_method"]
+    validate_repetition(inputs, spec)
+    limit = method["max_model_attempts_per_scheduled_observation"]
     prior = _validated_prior_attempts(output, spec)
     valid = [item for item in prior if item["status"] == "VALID"]
     if valid:
@@ -280,7 +283,7 @@ def _validate_resumed_workspace(
         or workspace_evidence.get("cleanup_result") != "REMOVED"
     )
     if invalid:
-        raise HarnessError(f"{spec.key}: resumed v11 workspace factory evidence mismatch")
+        raise HarnessError(f"{spec.key}: resumed v12 workspace factory evidence mismatch")
 
 
 def _validate_partial(

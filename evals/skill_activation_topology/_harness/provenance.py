@@ -12,7 +12,11 @@ import time
 from pathlib import Path
 from typing import Any
 
-from .aggregation import aggregate_candidate_trials
+from .aggregation import (
+    aggregate_candidate_trials,
+    finalized_candidate_aggregates,
+    qualification_futility_certificate,
+)
 from .evidence import _validate_partial
 from .frozen_inputs import _load_json, _sha256, load_frozen_inputs
 from .models import (
@@ -53,6 +57,8 @@ def score_matrix(args: argparse.Namespace) -> int:
     output = args.output.resolve()
     validate_complete_evidence(inputs, output)
     metadata = _load_json(output / "run-metadata.json")
+    if metadata["status"] == "BLOCKED_NO_REFERENCE":
+        return 0
     trials = load_trials(output / "trials.jsonl")
     deterministic = _load_json(output / "deterministic-evidence.json")
     candidates = (
@@ -77,7 +83,7 @@ def score_matrix(args: argparse.Namespace) -> int:
 def _validate_run_identity(inputs: FrozenInputs, metadata: dict[str, Any]) -> None:
     method = inputs.oracle["trial_method"]
     if metadata.get("status") not in {"COMPLETE", "BLOCKED_NO_REFERENCE"}:
-        raise HarnessError("incomplete V11 execution cannot be scored")
+        raise HarnessError("incomplete V12 execution cannot be scored")
     if (
         metadata.get("oracle_id") != inputs.oracle["oracle_id"]
         or metadata.get("execution_epoch") != inputs.oracle["execution_epoch"]
@@ -88,7 +94,7 @@ def _validate_run_identity(inputs: FrozenInputs, metadata: dict[str, Any]) -> No
         or metadata.get("host") != "Codex"
         or metadata.get("timeout_seconds") != method["timeout_seconds_per_model_attempt"]
     ):
-        raise HarnessError("mismatched V11 execution identity/configuration")
+        raise HarnessError("mismatched V12 execution identity/configuration")
     _validate_executed_runner_provenance(metadata)
     for path in (ORACLE_PATH, CORPUS_PATH, TOPOLOGIES_PATH, MANIFEST_PATH, ENVELOPE_PATH):
         relative = path.relative_to(REPO_ROOT).as_posix()
@@ -133,7 +139,7 @@ def _validate_schedule_records(
     if len(set(trial_keys)) != len(trial_keys) or set(trial_keys) != set(raw_keys):
         raise HarnessError("valid trial/raw identity mismatch or duplication")
     if set(trial_keys) - set(possible):
-        raise HarnessError("trial outside frozen V11 identity set")
+        raise HarnessError("trial outside frozen V12 identity set")
     evaluated = (
         ["B0", "B1"]
         if metadata["status"] == "BLOCKED_NO_REFERENCE"
@@ -144,19 +150,23 @@ def _validate_schedule_records(
         for stage in (("R",) if len(evaluated) == 2 else ("R", "C"))
         for spec in stage_schedule(inputs, stage)
     }
-    if not expected_base <= set(trial_keys):
+    if metadata["status"] != "BLOCKED_NO_REFERENCE" and not expected_base <= set(trial_keys):
         raise HarnessError("mandatory paired base schedule is incomplete")
     if metadata["status"] == "BLOCKED_NO_REFERENCE" and any(
         trial["candidate_id"] in {"F2", "G3"} for trial in trials
     ):
         raise HarnessError("challenger evidence exists despite no qualifying reference")
-    lower = method["reference_stage_full_completion_base_valid_observations"]
+    lower = (
+        1
+        if metadata["status"] == "BLOCKED_NO_REFERENCE"
+        else method["reference_stage_full_completion_base_valid_observations"]
+    )
     upper = method["reference_stage_full_completion_max_valid_observations"]
     if len(evaluated) == 4:
         lower = lower + method["challenger_stage_full_completion_base_valid_observations"]
         upper = method["overall_full_completion_ceiling_when_challengers_execute"]
     if not lower <= len(trials) <= upper:
-        raise HarnessError("V11 valid observation count is outside the frozen stage range")
+        raise HarnessError("V12 valid observation count is outside the frozen stage range")
     return trials, raw_trials, attempts, possible, trial_keys, raw_keys, evaluated
 
 
@@ -240,20 +250,24 @@ def _validate_recomputed_outputs(
     trials: list[dict[str, Any]],
     evaluated: list[str],
     deterministic: dict[str, Any],
+    metadata: dict[str, Any],
 ) -> None:
+    if metadata["status"] == "BLOCKED_NO_REFERENCE":
+        _validate_futile_reference_outputs(inputs, output, trials, evaluated)
+        return
     aggregates = [
         item
         for candidate in evaluated
         for item in aggregate_candidate_trials(inputs, candidate, trials)
     ]
     if aggregates != load_trials(output / "case-aggregates.jsonl"):
-        raise HarnessError("persisted V11 case aggregates are not exactly recomputable")
+        raise HarnessError("persisted V12 case aggregates are not exactly recomputable")
     recomputed_metrics = {
         candidate: compute_candidate_metrics(inputs, candidate, trials, deterministic)
         for candidate in evaluated
     }
     if recomputed_metrics != _load_json(output / "metrics.json"):
-        raise HarnessError("persisted V11 metrics are not exactly recomputable")
+        raise HarnessError("persisted V12 metrics are not exactly recomputable")
     expected_selection = (
         {
             "status": "BLOCKED",
@@ -266,11 +280,53 @@ def _validate_recomputed_outputs(
         else apply_selection_rule(inputs, recomputed_metrics)
     )
     if expected_selection != _load_json(output / "selection.json"):
-        raise HarnessError("persisted V11 selection is not exactly recomputable")
+        raise HarnessError("persisted V12 selection is not exactly recomputable")
+
+
+def _validate_futile_reference_outputs(
+    inputs: FrozenInputs,
+    output: Path,
+    trials: list[dict[str, Any]],
+    evaluated: list[str],
+) -> None:
+    aggregates = [
+        item
+        for candidate in evaluated
+        for item in finalized_candidate_aggregates(inputs, candidate, trials)
+    ]
+    if aggregates != load_trials(output / "case-aggregates.jsonl"):
+        raise HarnessError("persisted V12 futile aggregates are not exactly recomputable")
+    certificates = {
+        candidate: qualification_futility_certificate(inputs, candidate, trials)
+        for candidate in evaluated
+    }
+    if any(not certificate["terminal"] for certificate in certificates.values()):
+        raise HarnessError("BLOCKED_NO_REFERENCE requires terminal qualification futility")
+    for candidate, certificate in certificates.items():
+        if certificate != _load_json(output / "futility-certificates" / f"{candidate}.json"):
+            raise HarnessError(f"{candidate}: persisted futility certificate is not recomputable")
+    expected_reference = {
+        "status": "BLOCKED",
+        "single_family_reference": None,
+        "reason": "both single-family candidates are FUTILE_QUALIFICATION",
+        "futility": certificates,
+    }
+    expected_selection = {
+        "status": "BLOCKED",
+        "selected_candidate": None,
+        "reason": "NO QUALIFYING SINGLE-FAMILY REFERENCE",
+        "scored": True,
+    }
+    if _load_json(output / "metrics-reference.json") != {}:
+        raise HarnessError("futile reference stage must not contain partial metrics")
+    if _load_json(output / "reference-selection.json") != expected_reference:
+        raise HarnessError("persisted V12 futile reference decision is not recomputable")
+    if _load_json(output / "selection.json") != expected_selection:
+        raise HarnessError("persisted V12 futile selection is not recomputable")
 
 
 def validate_complete_evidence(inputs: FrozenInputs, output: Path) -> None:
-    """Fail closed on V11 epoch, adaptive schedule, attempts, traces and aggregates."""
+    """Fail closed on V12 epoch, adaptive schedule, attempts, traces and aggregates."""
     metadata = _load_json(output / "run-metadata.json")
     _validate_run_identity(inputs, metadata)
     deterministic = _validate_deterministic_evidence(output)
@@ -291,7 +347,7 @@ def validate_complete_evidence(inputs: FrozenInputs, output: Path) -> None:
             workspaces,
             thread_ids,
         )
-    _validate_recomputed_outputs(inputs, output, trials, evaluated, deterministic)
+    _validate_recomputed_outputs(inputs, output, trials, evaluated, deterministic, metadata)
 
 
 def _validate_executed_runner_provenance(metadata: dict[str, Any]) -> None:
@@ -324,6 +380,35 @@ def verify_deterministic(args: argparse.Namespace) -> int:
     evidence = _load_json(evidence_path)
     if evidence.get("oracle_id") != inputs.oracle["oracle_id"]:
         raise HarnessError("deterministic evidence does not match the current frozen oracle")
+    scheduler = evidence.get("adaptive_scheduler_preflight", {})
+    scenarios = scheduler.get("scenarios", {})
+    required_scenarios = {
+        "agreeing_pair_forward_progress",
+        "conditional_third_forward_progress",
+        "no_fourth_repetition",
+        "critical_terminal",
+        "full_reference_adaptive_dry_run",
+    }
+    module_root = REPO_ROOT / "evals" / "skill_activation_topology" / "_harness"
+    expected_hashes = {
+        name: hashlib.sha256((module_root / name).read_bytes()).hexdigest()
+        for name in (
+            "run_support.py",
+            "aggregation.py",
+            "scheduling.py",
+            "scheduler_simulation.py",
+        )
+    }
+    scheduler_invalid = (
+        scheduler.get("status") != "PASS"
+        or scheduler.get("execution_epoch") != inputs.oracle["execution_epoch"]
+        or scheduler.get("provider_model_calls_issued") != 0
+        or set(scenarios) != required_scenarios
+        or any(value.get("status") != "PASS" for value in scenarios.values())
+        or scheduler.get("tested_module_sha256") != expected_hashes
+    )
+    if scheduler_invalid:
+        raise HarnessError("provider-free adaptive scheduler simulation evidence is invalid")
 
     command_groups = {
         "ruff_check": ["uv", "run", "--locked", "ruff", "check", "."],
@@ -410,6 +495,7 @@ def verify_deterministic(args: argparse.Namespace) -> int:
         )
         else "FAIL"
     )
+    evidence["provider_model_calls_issued_during_deterministic_gate"] = 0
     evidence["runtime"] = {
         "python": platform.python_version(),
         "platform": platform.platform(),

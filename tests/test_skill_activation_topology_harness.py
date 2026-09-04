@@ -1,4 +1,4 @@
-"""Deterministic technical coverage for the T023 MG1-v11 harness."""
+"""Deterministic technical coverage for the T023 MG1-v12 harness."""
 
 from __future__ import annotations
 
@@ -32,8 +32,8 @@ def frozen(harness):
     return harness.load_frozen_inputs()
 
 
-def test_frozen_mg1_v11_inputs_validate_and_schedule_paired_stage_ceilings(harness, frozen) -> None:
-    assert frozen.oracle["oracle_id"] == "MG1-T023-TOPOLOGY-ORACLE-v11"
+def test_frozen_mg1_v12_inputs_validate_and_schedule_paired_stage_ceilings(harness, frozen) -> None:
+    assert frozen.oracle["oracle_id"] == "MG1-T023-TOPOLOGY-ORACLE-v12"
     assert frozen.oracle["capability_source_epoch"] == "MG1-2026-08-25-v3"
     assert frozen.oracle["presentation_revision"] == "MG1-T023-PRESENTATIONS-v3"
     assert len(harness.scheduled_trials(frozen)) == 320
@@ -716,14 +716,14 @@ def test_host_surface_drift_stops_without_retry(harness, frozen, tmp_path, monke
     assert harness._load_json(records[0])["failure_class"] == "HOST_SURFACE_DRIFT"
 
 
-def test_v11_schedule_uses_frozen_semantic_consequence_order(harness, frozen) -> None:
+def test_v12_schedule_uses_frozen_semantic_consequence_order(harness, frozen) -> None:
     schedule = harness.stage_schedule(frozen, "R")
     first_case_ids = []
     for spec in schedule:
         if spec.case["id"] not in first_case_ids:
             first_case_ids.append(spec.case["id"])
     assert first_case_ids[:8] == [
-        "WX00",
+        "WX00R",
         "WX02",
         "WX03",
         "WX04",
@@ -777,11 +777,11 @@ def test_backend_probe_is_model_free_and_binds_requested_backend(
     assert Path(observed["environment"]["CODEX_HOME"]).name == "codex-home"
 
 
-def test_v11_workspace_factory_avoids_python_private_temp_helpers(
+def test_v12_workspace_factory_avoids_python_private_temp_helpers(
     harness, tmp_path, monkeypatch
 ) -> None:
     def forbidden(*args, **kwargs):
-        pytest.fail("Python private tempfile helper must not create a live v11 workspace")
+        pytest.fail("Python private tempfile helper must not create a live v12 workspace")
 
     monkeypatch.setattr(harness.tempfile, "TemporaryDirectory", forbidden)
     monkeypatch.setattr(harness.tempfile, "mkdtemp", forbidden)

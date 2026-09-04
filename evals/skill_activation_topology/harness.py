@@ -19,7 +19,6 @@ from typing import Any
 
 # Direct script execution exposes this directory, while importlib-based compatibility
 # loading does not. Implementation imports therefore intentionally follow the bootstrap.
-# Re-exported names are the legacy facade surface consumed by deterministic tests/tools.
 # ruff: noqa: E402, F401
 _FACADE_DIR = Path(__file__).resolve().parent
 if str(_FACADE_DIR) not in sys.path:
@@ -80,7 +79,7 @@ from _harness.models import (
     REQUIRED_CODEX_VERSION,
     TOPOLOGIES_PATH,
     TRIAL_SCHEMA,
-    V11_CLASS_ORDER,
+    V12_CLASS_ORDER,
     WINDOWS_BACKEND_ORDER,
     WORKSPACE_FACTORY_ID,
     WORKSPACE_PROBE_FILENAME,
@@ -106,6 +105,7 @@ from _harness.provenance import (
     validate_complete_evidence,
     verify_deterministic,
 )
+from _harness.scheduler_simulation import run_provider_free_scheduler_simulation
 from _harness.scheduling import (
     _schedule,
     _trial_prompt,
