@@ -45,6 +45,7 @@ See D057 for transition semantics and required metadata for new research.
 | R009 | `docs/research/CODEX-CHILD-SANDBOX-INHERITANCE-RESEARCH.md` | COMPLETE | EVALUATING | `docs/tasks/T056-codex-read-only-child-requalification.md`; `docs/reviews/T056-R1.md`; `docs/tasks/T057-codex-read-only-child-requalification-v2.md`; evidence PR `#284` | none | Official source supports parent-derived child permission inheritance and the 0.153.4 parent-owned reload fix. T056 accepted as execution with `PARTIAL_OBSERVABILITY`: version/capability gates, parent `:read-only` receipt, real-child correlation, and requested/resolved `Terra / Low` passed, but a controller misparse of `thread/loaded/list` terminated App Server before child reattachment. R009 remains EVALUATING under T057, which corrects only that harness defect and preserves all material controls. |
 | R010 | `docs/research/GPT6-ASTRA-EXECUTOR-LAUNCH-PROFILE-RESEARCH.md` | COMPLETE | DEFERRED | no empirical project evaluation yet | none | GPT-6 Astra is an official quality-first flagship and current Codex source supports it, but availability alone does not justify globally replacing Sol under D055. T056/T057 remain `GPT-5.6 Sol / Medium` to avoid a model-family confound. Global/default Astra adoption is deferred pending task-level or comparative evidence and host/account availability. |
 | R011 | `docs/research/CODEX-COORDINATOR-IDENTITY-WORKTREE-HYGIENE-RESEARCH.md` | COMPLETE | DECIDED | current source-maintenance workflow; T056/T057 local-execution lineage | `docs/decisions/D058-executor-coordinator-session-and-worktree-hygiene.md` | Codex supports explicit Human-visible thread naming, while existing branch cleanup did not fully require obsolete-worktree retirement plus primary-checkout convergence. D058 adopts deterministic coordinator chat names, exclusive writable worktrees for concurrent work units, fail-closed local-state classification, post-integration worktree retirement, and a clean/current primary checkout baseline. |
+| R012 | `docs/research/CHATGPT-GIT-WORKSPACE-AND-GITHUB-TRANSPORT-RESEARCH.md` | COMPLETE | NOT_REQUIRED | empirical ChatGPT/GitHub experiment at `develop` `20ed0e64dd6c98f38be42cd3cc28fcc220d06c5e`; temporary branch `test/chatgpt-git-workflow`; remote test commit `c4a2c43a65554ed9c52a4047f954373935b06a07` | none | ChatGPT can use a real temporary local Git working tree for status/diff/staging/commits and separately use the GitHub connector for canonical remote reads/writes. Direct CLI GitHub transport was unavailable in the tested runtime; Library is a separate persistence surface, not the Git working tree. No workflow/policy adoption is implied. |
 
 ## Live research frontier
 
@@ -87,6 +88,11 @@ R011 — Codex coordinator identity / worktree hygiene
   COMPLETE / DECIDED
   Decision: D058
   Deterministic coordinator naming + exclusive writable worktrees + safe local closure are adopted source-maintenance policy
+
+R012 — ChatGPT Git workspace / GitHub transport
+  COMPLETE / NOT_REQUIRED
+  Real temporary local Git semantics + explicit GitHub connector transport are empirically supported
+  Library remains a separate persistence surface; no source-maintenance workflow change is adopted
 ```
 
 T057 is not a routing pilot. Even a passing T057 result requires Orchestrator convergence and explicit D057 transitions before R007 may return to `EVALUATING`.
