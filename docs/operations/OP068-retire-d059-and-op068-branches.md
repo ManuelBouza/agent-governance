@@ -1,6 +1,6 @@
 # OP068 — Retire D059 and OP068 Post-Integration Branches
 
-Status: DRAFT  
+Status: READY  
 Operation-ID: OP068  
 Type: post-integration branch/worktree closure  
 Base branch: `develop`  
@@ -9,7 +9,7 @@ Receipt anchor: GitHub issue `#289`
 Target integrated PR: `#288`  
 Target branch: `docs/d059-operational-terminal-transport`  
 Contract-authoring branch: `docs/op068-retire-d059-branch`  
-Contract-authoring PR: PENDING BEFORE INTEGRATION
+Contract-authoring PR: `#290`
 
 ## Objective
 
@@ -33,16 +33,16 @@ The branch is eligible for deletion only if GitHub still reports PR #288 merged 
 
 ### OP068 contract-authoring PR
 
-Before this contract is integrated, ChatGPT Orchestrator MUST replace the pending PR marker above and below with the exact created PR number and reviewed head SHA.
-
 ```text
-PR: PENDING
+PR: 290
 base: develop
 head branch: docs/op068-retire-d059-branch
-reviewed head: PENDING
+reviewed head: derive from the final merged GitHub PR #290 record at execution time
 ```
 
-Execution is forbidden while any `PENDING` marker remains in the integrated contract.
+The executor MUST read merged PR #290 from GitHub after synchronizing the canonical remote, take its exact recorded `head_sha`, and require the current remote `docs/op068-retire-d059-branch` head to equal that value before deletion. This dynamic derivation avoids impossible self-referential SHA persistence while retaining exact merged-PR/head deletion authority.
+
+Execution is forbidden unless PR #290 is merged into `develop`.
 
 ## Human-visible coordinator
 
@@ -59,8 +59,8 @@ Before mutation:
 - synchronize canonical remote under D042/RB001;
 - establish current safe local `develop == origin/develop` without discarding local work;
 - verify GitHub receipt publication capability to issue #289;
-- verify both target PRs are merged into `develop`;
-- verify each current remote target branch head exactly equals its reviewed PR head;
+- verify PR #288 and PR #290 are both merged into `develop`;
+- verify each current remote target branch head exactly equals the applicable reviewed PR head;
 - inspect accessible worktrees/local branches for either target branch;
 - preserve any unrepresented/ambiguous local work.
 
@@ -69,7 +69,7 @@ If either target branch differs from its reviewed PR head, stop `BLOCKED_REVIEW`
 ## Authorized effects
 
 - delete remote `docs/d059-operational-terminal-transport` after exact PR #288/head verification;
-- delete remote `docs/op068-retire-d059-branch` after exact contract-authoring PR/head verification;
+- delete remote `docs/op068-retire-d059-branch` after exact PR #290/head verification;
 - switch away from either branch in accessible local checkouts;
 - remove safe local copies of those two topic branches after verifying no unique/unrepresented work;
 - remove obsolete linked worktrees for those branches only when evidence-safe;
@@ -94,7 +94,7 @@ Do not:
 
 `DONE` requires:
 
-- both target PRs confirmed merged into `develop`;
+- PR #288 and PR #290 confirmed merged into `develop`;
 - both target remote branches absent after deletion;
 - any accessible local copies/worktrees safely retired or explicitly absent;
 - primary checkout `develop == origin/develop` and tracked clean;
