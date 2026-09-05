@@ -45,13 +45,13 @@ See D057 for transition semantics and required metadata for new research.
 | R009 | `docs/research/CODEX-CHILD-SANDBOX-INHERITANCE-RESEARCH.md` | COMPLETE | DECIDED | `docs/tasks/T056-codex-read-only-child-requalification.md`; `docs/reviews/T056-R1.md`; `docs/tasks/T057-codex-read-only-child-requalification-v2.md`; `docs/reviews/T057-R1.md`; evidence PRs `#284`, `#296` | `docs/decisions/D063-qualified-codex-read-only-child-measurement-surface.md` | Official source supports parent-derived child permission inheritance and the 0.153.4 parent-owned reload fix. T057 empirically closed the remaining child provenance gate: parent and exact child both returned `activePermissionProfile.id=:read-only`, parent residency was continuous, and exact child usage/duration/reroute evidence was captured. D063 adopts the qualified surface subject to native version/capability revalidation. |
 | R010 | `docs/research/GPT6-ASTRA-EXECUTOR-LAUNCH-PROFILE-RESEARCH.md` | COMPLETE | DEFERRED | no empirical project evaluation yet | none | GPT-6 Astra is an official quality-first flagship and current Codex source supports it, but availability alone does not justify globally replacing Sol under D055. T056/T057 remained `GPT-5.6 Sol / Medium` to avoid a model-family confound. Global/default Astra adoption is deferred pending task-level or comparative evidence and host/account availability. |
 | R011 | `docs/research/CODEX-COORDINATOR-IDENTITY-WORKTREE-HYGIENE-RESEARCH.md` | COMPLETE | DECIDED | current source-maintenance workflow; T056/T057 local-execution lineage | `docs/decisions/D058-executor-coordinator-session-and-worktree-hygiene.md` | Codex supports explicit Human-visible thread naming, while existing branch cleanup did not fully require obsolete-worktree retirement plus primary-checkout convergence. D058 adopts deterministic coordinator chat names, exclusive writable worktrees for concurrent work units, fail-closed local-state classification, post-integration worktree retirement, and a clean/current primary checkout baseline. |
-| R012 | `docs/research/CODEX-COORDINATOR-DELEGATION-POLICY-RESEARCH.md` | COMPLETE | DEFERRED | R006; T053; `docs/reviews/T053-R1.md`; R007; current Codex 0.153.4 + official OpenAI multi-agent guidance | none | Pure optional delegation is insufficient if the Human-visible Executor root is intended to act as a real coordinator: current Codex may require an explicit user/`AGENTS.md`/Skill delegation request. Exact global worker choreography is too prescriptive. Recommended direction is a semantic delegation obligation (Agent Governance defines when/bounds; Executor chooses concrete decomposition/worker mechanics). T057 is now converged, so R012 is the immediate decision gate before the next normal non-experimental implementation task. |
+| R012 | `docs/research/CODEX-COORDINATOR-DELEGATION-POLICY-RESEARCH.md` | COMPLETE | DECIDED | R006; T053; `docs/reviews/T053-R1.md`; R007; T057 terminal convergence; current Codex 0.153.4 + official OpenAI multi-agent guidance | `docs/decisions/D065-semantic-executor-delegation-obligation.md` | D065 adopts the semantic delegation obligation: Agent Governance defines material delegation triggers/anti-triggers plus safety/evidence bounds, while the Executor coordinator retains concrete decomposition, child count/roles, sequencing/parallelism and mechanics. Exact topology remains Task/Operational-Contract-specific only when materially authoritative. No child compute-routing policy is implied. |
 | R013 | `docs/research/CODEX-TASK-SCOPED-COORDINATOR-CONTINUITY-RESEARCH.md` | COMPLETE | DECIDED | R006; T053; `docs/reviews/T053-R1.md`; R012; current OpenAI long-running/compaction guidance | `docs/decisions/D060-task-scoped-executor-coordinator-continuity.md` | Adopt one Human-visible Executor Coordinator Root per exact Task/Operational Contract. `NEW` at work-unit start, `CONTINUE` through normal same-task phases/rework, retire at closure, and start a new root for the next work unit. `root-2+` is failover only. Root context stays compact through durable Git pointers, concise summaries and supported compaction/fresh child contexts rather than cross-task root reuse. |
-| R014 | `docs/research/CHATGPT-GIT-WORKSPACE-AND-GITHUB-TRANSPORT-RESEARCH.md` | COMPLETE | NOT_REQUIRED | workspace/GitHub experiment at `develop` `20ed0e64dd6c98f38be42cd3cc28fcc220d06c5e`; `ManuelBouza/test_biblioteca` round-trip commits `d82750a45f43f45a16c498674391a7a7e15dc319`, `af02345fcfed0ebe7d4b6503af7e89cdf48b84cf`; capability-matrix commits `5d04c16e5705e308457072792e4f3c5204768864`, `dafe8a821e09a09a6200e4c5afed447fcf03320e`; cross-chat Library snapshot round trip; official OpenAI Library storage/retention docs checked 2026-09-05; lifecycle appendix `docs/research/CHATGPT-GIT-WORKSPACE-LIBRARY-SNAPSHOT-LIFECYCLE-APPENDIX.md` | none | ChatGPT can combine real temporary-workspace Git semantics, persistent Library working-file/version storage, packaged full-repository snapshots including `.git`, cross-chat Git-history continuation, and explicit GitHub connector transport. Multi-file reconstruction in one remote commit and stale-base rejection via HTTP 409 were verified; connector reconstruction did not preserve the equivalent local commit SHA automatically. Library is persistent storage, not a native Git working tree/remote, and synchronization remains explicit. Official Plus Library limits currently document 20 GB total storage and 512 MB per uploaded file; files are documented as retained until manual deletion, with vendor facts treated as volatile. A non-normative fail-closed lifecycle design recommends steady-state retention of validated `main`/`develop` snapshots plus active branches, retirement of merged-branch snapshots only after positive merge evidence and validated target refresh, and retention of closed-unmerged/ambiguous work. No workflow/policy adoption is implied. |
+| R014 | `docs/research/CHATGPT-GIT-WORKSPACE-AND-GITHUB-TRANSPORT-RESEARCH.md` | COMPLETE | NOT_REQUIRED | workspace/GitHub experiment; `ManuelBouza/test_biblioteca` Library/GitHub round trips; full `.git` and cross-chat snapshot tests; multi-file/409 capability matrix; Library lifecycle qualification PRs `test_biblioteca#1` and `#2`; official OpenAI Library storage/retention docs checked 2026-09-05 | none | ChatGPT can combine real temporary-workspace Git semantics, persistent Library file/version storage, packaged full-repository snapshots including `.git`, cross-chat Git-history continuation, and explicit GitHub connector transport. The Library GC core is empirically qualified: a real merged branch was retired only after target snapshot round-trip validation and exact Git-tree equivalence; closed-unmerged work was retained; a corrupt candidate left the validated current snapshot untouched. Library deletion moved test artifacts to Trash rather than proving immediate physical erasure. The quota-pressure selector remains unqualified. Library is storage, not a native Git working tree/remote; synchronization and cleanup remain explicit. No workflow/policy adoption is implied. |
 
 ## Live research frontier
 
-The child-observability research line is now decided:
+The child-observability research line is decided:
 
 ```text
 R008 — Codex child observability surface
@@ -63,7 +63,7 @@ R009 — Codex child sandbox inheritance / receipt
   T057 closed the exact-child :read-only provenance and continuous-parent-residency gate
 ```
 
-Deferred dependencies remain:
+Deferred dependency:
 
 ```text
 R007 — adaptive subagent compute routing
@@ -72,11 +72,6 @@ R007 — adaptive subagent compute routing
   remaining gate: corrected successor evaluation with T054 P2 confound removed,
                   first-attempt-qualified mapping, D063 measurement boundary,
                   and explicit D057 transition before execution
-
-R012 — coordinator delegation policy
-  COMPLETE / DEFERRED
-  research conclusion: semantic delegation obligation is preferred over pure optional delegation or exact global worker choreography
-  current gate: decide immediately after T057 convergence before the next normal non-experimental implementation task
 ```
 
 Completed/decided coordinator research:
@@ -89,6 +84,10 @@ R006 — persistent Executor coordinator
 
 R011 — coordinator identity / worktree hygiene
   COMPLETE / DECIDED -> D058
+
+R012 — coordinator delegation policy
+  COMPLETE / DECIDED -> D065
+  semantic delegation obligation adopted; concrete orchestration remains Executor-owned
 
 R013 — task-scoped coordinator continuity
   COMPLETE / DECIDED -> D060
@@ -104,14 +103,16 @@ R010 — GPT-6 Astra Executor launch profile
 
 R014 — ChatGPT Git workspace / Library / GitHub transport
   COMPLETE / NOT_REQUIRED
-  temporary-workspace Git, Library persistence, and GitHub canonical transport remain separate layers
-  full Git repository snapshots including .git were recovered across chats with Git history intact and advanced
-  multi-file one-commit transport and stale-base conflict detection were verified; Library remains storage rather than a Git remote
-  current official Library quotas/retention are recorded as volatile product facts, not governance policy
-  non-normative snapshot lifecycle: retain validated main/develop + active branches; retire merged-branch Library snapshots only after verified merge and validated target refresh; ambiguous/closed-unmerged state is retained fail-closed
+  full Git snapshots including .git persist across chats and can continue Git history
+  explicit GitHub transport, multi-file one-commit reconstruction, and stale-base rejection are verified
+  Library lifecycle/GC core: QUALIFIED / NON_NORMATIVE
+  merged snapshot retirement after target validation: VERIFIED
+  closed-unmerged retention: VERIFIED
+  invalid candidate preserves current: VERIFIED
+  remaining GC gap: quota-pressure automatic selector
 ```
 
-D063 qualifies the measurement substrate only. It does not adopt child-routing policy, alter D055, establish backend-served per-turn model identity, or authorize savings claims. R007 remains separately deferred until a corrected evaluation is specified and explicitly transitioned. R012 remains the next policy-decision gate.
+D063 qualifies the measurement substrate only. D065 establishes delegation posture only. Neither adopts child compute routing, alters D055, establishes backend-served per-turn model identity, or authorizes savings claims. R007 remains separately deferred until a corrected evaluation is specified and explicitly transitioned.
 
 ## Required workflow for new research
 
