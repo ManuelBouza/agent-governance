@@ -1,0 +1,210 @@
+{
+  "schema_version": 1,
+  "task_id": "T054",
+  "status": "DONE",
+  "task_contract_path": "docs/tasks/T054-adaptive-subagent-compute-routing-pilot.md",
+  "sdd_profile": "ASSURED",
+  "branch": "test/t054-adaptive-subagent-compute-routing-pilot",
+  "implementation_head_sha": "c19285cf67d97318d70f6e5edcf13ea65805f6c6",
+  "base_branch": "develop",
+  "base_sha": "5ef2580ea708cbf4759efc4533c306f02f22391c",
+  "root": {
+    "executor": "Codex",
+    "session": "NEW",
+    "requested_model": "GPT-5.6 Sol",
+    "requested_reasoning_effort": "Medium",
+    "effective_model": null,
+    "effective_model_availability_reason": "The host did not expose a separate immutable effective root-model field.",
+    "effective_reasoning_effort": null,
+    "effective_reasoning_availability_reason": "The host did not expose a separate immutable effective root-reasoning field.",
+    "profile_change_during_pilot": false
+  },
+  "files_changed": [
+    "handoffs/T054-adaptive-routing-telemetry.json",
+    "handoffs/T054-executor-handoff.json"
+  ],
+  "implementation_summary": "Executed the frozen T054 read-only matched-arm pilot from current canonical develop using six fresh first-attempt children and two permitted diagnosis-only escalation children. Persisted requested/effective-profile observability, exact root oracles, child scores, durations, escalation outcomes, safety controls, and the frozen NOT_QUALIFIED decision. No product code or Markdown was changed.",
+  "pilot_decision": "NOT_QUALIFIED",
+  "pilot_decision_basis": "CONTROL passed 2/3. ADAPTIVE passed 1/3 on first attempt and required two diagnosis escalations. P1 ADAPTIVE used a non-physical LOC metric; both P2 arms added one edge outside the frozen characterized graph; both P3 arms found the seeded high-severity defect without invented material findings.",
+  "capability_preflight": {
+    "explicit_child_model_override_supported": true,
+    "explicit_child_reasoning_override_supported": true,
+    "fork_turns_supported": true,
+    "service_tier_override_supported": false,
+    "effective_child_model_observable": false,
+    "effective_child_reasoning_observable": false,
+    "effective_service_tier_observable": false,
+    "per_child_token_metrics_observable": false,
+    "per_child_duration_observable": true,
+    "result": "PASS_WITH_OBSERVABILITY_LIMITS",
+    "evidence_path": "handoffs/T054-adaptive-routing-telemetry.json"
+  },
+  "profile_summary": [
+    {
+      "probe": "P1",
+      "arm": "ADAPTIVE",
+      "requested_model": "GPT-5.6 Luna",
+      "requested_reasoning_effort": "Low",
+      "requested_fork_turns": "none",
+      "effective_model": null,
+      "effective_reasoning_effort": null,
+      "profile_resolution_verified": false,
+      "oracle_score": 0
+    },
+    {
+      "probe": "P1",
+      "arm": "CONTROL",
+      "requested_model": "inherit root / GPT-5.6 Sol equivalent",
+      "requested_reasoning_effort": "inherit root / Medium equivalent",
+      "requested_fork_turns": "none",
+      "effective_model": null,
+      "effective_reasoning_effort": null,
+      "profile_resolution_verified": false,
+      "oracle_score": 1
+    },
+    {
+      "probe": "P2",
+      "arm": "CONTROL",
+      "requested_model": "inherit root / GPT-5.6 Sol equivalent",
+      "requested_reasoning_effort": "inherit root / Medium equivalent",
+      "requested_fork_turns": "none",
+      "effective_model": null,
+      "effective_reasoning_effort": null,
+      "profile_resolution_verified": false,
+      "oracle_score": 0
+    },
+    {
+      "probe": "P2",
+      "arm": "ADAPTIVE",
+      "requested_model": "GPT-5.6 Terra",
+      "requested_reasoning_effort": "Medium",
+      "requested_fork_turns": "none",
+      "effective_model": null,
+      "effective_reasoning_effort": null,
+      "profile_resolution_verified": false,
+      "oracle_score": 0
+    },
+    {
+      "probe": "P3",
+      "arm": "ADAPTIVE",
+      "requested_model": "GPT-5.6 Terra",
+      "requested_reasoning_effort": "High",
+      "requested_fork_turns": "none",
+      "effective_model": null,
+      "effective_reasoning_effort": null,
+      "profile_resolution_verified": false,
+      "oracle_score": 1
+    },
+    {
+      "probe": "P3",
+      "arm": "CONTROL",
+      "requested_model": "inherit root / GPT-5.6 Sol equivalent",
+      "requested_reasoning_effort": "inherit root / Medium equivalent",
+      "requested_fork_turns": "none",
+      "effective_model": null,
+      "effective_reasoning_effort": null,
+      "profile_resolution_verified": false,
+      "oracle_score": 1
+    }
+  ],
+  "probe_scores": {
+    "control_pass_count": 2,
+    "control_probe_count": 3,
+    "adaptive_pass_count": 1,
+    "adaptive_probe_count": 3,
+    "adaptive_escalation_count": 2,
+    "material_false_negative_count": 0,
+    "material_false_positive_count": 0,
+    "exactness_false_positive_edge_count": 2,
+    "verified_effective_profile_count": 0
+  },
+  "escalation_evidence": {
+    "count": 2,
+    "first_attempt_scores_replaced": false,
+    "P1": "Fresh Terra/Medium diagnosis identified Get-Content | Measure-Object -Line blank-line exclusion and returned corrected physical LOC.",
+    "P2": "Fresh Sol/Medium diagnosis reproduced the canonical 18-edge extraction and excluded package-bootstrap __init__ execution from the characterized graph.",
+    "evidence_path": "handoffs/T054-adaptive-routing-telemetry.json"
+  },
+  "usage_and_duration": {
+    "available_control_tokens": null,
+    "available_control_tokens_availability_reason": "Per-child attributable token metrics were not exposed by host.",
+    "available_adaptive_tokens": null,
+    "available_adaptive_tokens_availability_reason": "Per-child attributable token metrics were not exposed by host.",
+    "available_control_duration_seconds": 156.5439108,
+    "available_adaptive_duration_seconds": 141.759423,
+    "diagnosis_escalation_duration_seconds": 114.6341767,
+    "quantitative_token_cost_savings_claim": null,
+    "quantitative_claim_availability_reason": "Effective profiles and attributable usage were not observable, and ADAPTIVE did not preserve first-attempt quality."
+  },
+  "verification": {
+    "commands": [
+      "git fetch --prune origin",
+      "git rev-parse HEAD",
+      "git rev-parse origin/develop",
+      "uv sync --locked",
+      "root-owned complete physical-line/config oracle for P1",
+      "root-owned locked Python AST/dependency/symbol oracle for P2",
+      "root-owned locked Python fixture digest and same-process two-root reproduction for P3",
+      "uv run --locked python -m json.tool handoffs/T054-adaptive-routing-telemetry.json",
+      "uv run --locked python -m pytest tests/test_repository_context_extraction.py tests/test_code_health.py",
+      "uv run --locked python tools/code_health.py --help",
+      "uv run --locked python tools/code_health.py check",
+      "git diff --check"
+    ],
+    "results": {
+      "d042_base_identity": "PASS: local bootstrap and origin/develop both 5ef2580ea708cbf4759efc4533c306f02f22391c before execution.",
+      "locked_environment": "PASS: CPython 3.13.14 and locked dependencies synchronized.",
+      "P1_oracle": "PASS: eight exact module paths/LOC, ratchet 232, hard limit 1000, no exceedance.",
+      "P2_oracle": "PASS: exact 18-edge graph, acyclic, and six symbol owners derived independently.",
+      "P3_oracle": "PASS: fixture SHA-256 3a7659a30f87e5b895dd6064c798d8930deb6737d937d32c9b079f7371d8aa9b; second root bound to first-root measurement module in same process.",
+      "telemetry_json": "PASS",
+      "focused_pytest": "PASS: 9 passed",
+      "code_health": "PASS after resolving the required `check` subcommand through installed --help; the initial invocation without a subcommand was rejected and was not treated as evidence.",
+      "git_diff_check": "PASS"
+    },
+    "runtime": "Windows; Git 2.53.0.windows.2; uv 0.11.32; CPython 3.13.14; pytest 9.1.1",
+    "network_required": "Git fetch and final push require the canonical remote. Pilot probes and deterministic verification used local inputs only."
+  },
+  "code_review": {
+    "reviewed_head_sha": "c19285cf67d97318d70f6e5edcf13ea65805f6c6",
+    "summary": "Reviewed the evidence-only delta against the frozen Task Contract. Telemetry preserves first-attempt failures, permitted escalations, requested/effective observability limits, root oracles, safety controls, and the required frozen decision without modifying product code or Markdown.",
+    "findings": [],
+    "resolved_findings": [
+      "Corrected the verification invocation after installed help showed that code_health.py requires the `check` subcommand; reran successfully."
+    ],
+    "upstream_reentry_required": false,
+    "upstream_reentry_stage": null
+  },
+  "requirement_trace": {
+    "AC-T054-1": "D042 bootstrap evidence records exact origin/develop identity, preserved prior local work, and the fixed NEW Sol/Medium requested root profile with no mid-pilot change.",
+    "AC-T054-2": "Telemetry capability_preflight records supported and unavailable host fields without inference.",
+    "AC-T054-3": "Exactly six first-attempt children cover P1/P2/P3 CONTROL and ADAPTIVE arms; two additional fresh diagnosis-only escalations follow the frozen failure policy.",
+    "AC-T054-4": "Each pair used the same prepared message and tool surface with fork_turns=none; only spawn-time compute fields differed.",
+    "AC-T054-5": "Telemetry root_oracles records independent P1/P2 calculations and the frozen off-worktree P3 fixture digest/reproduction.",
+    "AC-T054-6": "All first-attempt failures and both escalation outcomes are preserved; no score was replaced.",
+    "AC-T054-7": "Requested profiles and coordinator-observed durations are present; effective profiles, service tier, and tokens are null with reasons.",
+    "AC-T054-8": "All children were fresh, prompt-bounded read-only, sequential, completed/closed, and the tracked worktree remained free of child/product mutations.",
+    "AC-T054-9": "pilot_decision is exactly NOT_QUALIFIED and no quantitative savings claim is made.",
+    "AC-T054-10": "Only authorized non-Markdown handoff/telemetry evidence changed; no authority leakage, static agent catalog, D055 change, or root escalation occurred."
+  },
+  "dependencies_or_config_changes": [],
+  "git_status": "Expected clean tracked worktree after final handoff commit; verified again before push.",
+  "unresolved_issues": [
+    "The host did not expose effective child model/reasoning/service-tier receipts or attributable child token metrics.",
+    "The host did not expose a per-child sandbox-capability override; read-only behavior was bounded by identical prompts and verified through the clean tracked worktree.",
+    "The adaptive profile mapping is NOT_QUALIFIED by this pilot because first-attempt quality was 1/3 with two escalations."
+  ],
+  "safety_and_authority": {
+    "tracked_product_code_changed": false,
+    "markdown_changed": false,
+    "branch_or_write_safety_incidents": 0,
+    "authority_leakage": false,
+    "no_authority_leakage_statement": "The root retained accountability; children were disposable non-authoritative read-only workers and did not redefine probes, oracles, policy, Task Contract authority, or acceptance."
+  },
+  "recommended_next_task": "ChatGPT Orchestrator convergence of T054 from the pushed evidence branch; any research-ledger or policy disposition remains Orchestrator-owned.",
+  "chatgpt_read_path": [
+    "docs/tasks/T054-adaptive-subagent-compute-routing-pilot.md",
+    "handoffs/T054-executor-handoff.json",
+    "handoffs/T054-adaptive-routing-telemetry.json"
+  ]
+}
