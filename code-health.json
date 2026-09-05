@@ -14,21 +14,25 @@
   "ratchets": {
     "evals/skill_activation_topology/harness.py": 212,
     "src/agent_governance/engine.py": 1794,
-    "tests/test_repository_context.py": 1540,
+    "tests/test_repository_context.py": 233,
     "tests/test_skill_activation_topology_harness.py": 1177,
-    "tools/repository_context.py": 1117
+    "tools/repository_context.py": 232
   },
   "complexity_paths": [
     "evals/skill_activation_topology/harness.py",
     "evals/skill_activation_topology/_harness/*.py",
     "tools/code_health.py",
+    "tools/repository_context.py",
+    "tools/_repository_context/*.py",
     "tests/test_code_health.py",
     "tests/test_t050_harness_cli_characterization.py"
   ],
   "symbol_map_paths": [
     "evals/skill_activation_topology/harness.py",
     "evals/skill_activation_topology/_harness/*.py",
-    "tools/code_health.py"
+    "tools/code_health.py",
+    "tools/repository_context.py",
+    "tools/_repository_context/*.py"
   ],
   "dependency_package": "evals/skill_activation_topology/_harness",
   "dependency_layers": [

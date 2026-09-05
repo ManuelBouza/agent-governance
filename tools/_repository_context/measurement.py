@@ -5,9 +5,10 @@ from __future__ import annotations
 import hashlib
 import posixpath
 import re
+import tempfile
 from pathlib import Path, PurePosixPath
 
-from .common import MeasurementError, canonical_json
+from .common import MeasurementError, canonical_json, relative_output
 from .tracked_files import git, read_tracked_file, tracked_paths
 
 SCHEMA_VERSION = "1.0.0"
@@ -216,3 +217,16 @@ def validate_canonical_identity(*reports: dict[str, object]) -> None:
             raise MeasurementError(
                 f"canonical identity mismatch at report index {index}: {reference} != {current}"
             )
+
+
+def write_report(root: Path, output: Path) -> dict[str, object]:
+    """Build a report and atomically write its canonical JSON bytes."""
+    excluded = {_relative} if (_relative := relative_output(root, output)) else set()
+    report = build_report(root, excluded_paths=excluded)
+    output = output.resolve()
+    output.parent.mkdir(parents=True, exist_ok=True)
+    with tempfile.NamedTemporaryFile(dir=output.parent, delete=False) as stream:
+        temporary = Path(stream.name)
+        stream.write(canonical_json(report))
+    temporary.replace(output)
+    return report

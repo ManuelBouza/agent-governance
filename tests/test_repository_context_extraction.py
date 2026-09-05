@@ -68,15 +68,17 @@ def test_dynamic_loading_is_isolated_between_source_roots(repo_root: Path, tmp_p
     assert sys.path == original_sys_path
 
 
-def test_measurement_extraction_dependency_graph_is_acyclic(repo_root: Path) -> None:
-    """The extracted Phase-1 slice has a deterministic one-way dependency graph."""
+def test_repository_context_package_dependency_graph_is_acyclic(repo_root: Path) -> None:
+    """The complete extracted package has the characterized one-way dependency graph."""
     tools = repo_root / "tools"
     modules = {
         "repository_context": tools / "repository_context.py",
         "_repository_context": tools / "_repository_context" / "__init__.py",
-        "_repository_context.common": tools / "_repository_context" / "common.py",
-        "_repository_context.measurement": tools / "_repository_context" / "measurement.py",
-        "_repository_context.tracked_files": tools / "_repository_context" / "tracked_files.py",
+        **{
+            f"_repository_context.{path.stem}": path
+            for path in (tools / "_repository_context").glob("*.py")
+            if path.name != "__init__.py"
+        },
     }
     edges: set[tuple[str, str]] = set()
     for source, path in modules.items():
@@ -93,21 +95,32 @@ def test_measurement_extraction_dependency_graph_is_acyclic(repo_root: Path) -> 
                     for target in ast.walk(assignment_target)
                     if isinstance(target, ast.Name)
                 }
-                if {"_common", "_measurement", "_tracked_files"} <= names:
-                    edges.update(
-                        {
-                            (source, "_repository_context.common"),
-                            (source, "_repository_context.measurement"),
-                            (source, "_repository_context.tracked_files"),
-                        }
-                    )
+                loaded = {
+                    f"_repository_context.{name.removeprefix('_')}"
+                    for name in names
+                    if name.startswith("_")
+                    and f"_repository_context.{name.removeprefix('_')}" in modules
+                }
+                edges.update((source, target) for target in loaded)
 
     assert edges == {
         ("repository_context", "_repository_context.common"),
         ("repository_context", "_repository_context.measurement"),
+        ("repository_context", "_repository_context.projection"),
+        ("repository_context", "_repository_context.registry"),
+        ("repository_context", "_repository_context.snapshot"),
         ("repository_context", "_repository_context.tracked_files"),
         ("_repository_context.measurement", "_repository_context.common"),
         ("_repository_context.measurement", "_repository_context.tracked_files"),
+        ("_repository_context.projection", "_repository_context.common"),
+        ("_repository_context.projection", "_repository_context.measurement"),
+        ("_repository_context.projection", "_repository_context.registry"),
+        ("_repository_context.projection", "_repository_context.tracked_files"),
+        ("_repository_context.registry", "_repository_context.common"),
+        ("_repository_context.registry", "_repository_context.tracked_files"),
+        ("_repository_context.snapshot", "_repository_context.common"),
+        ("_repository_context.snapshot", "_repository_context.projection"),
+        ("_repository_context.snapshot", "_repository_context.registry"),
         ("_repository_context.tracked_files", "_repository_context.common"),
     }
     assert all(target != "repository_context" for _, target in edges)
