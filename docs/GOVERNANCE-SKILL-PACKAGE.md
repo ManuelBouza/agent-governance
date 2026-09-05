@@ -1,7 +1,7 @@
 # Agent Governance Skill Package Design
 
 Status: DESIGN-APPROVED  
-Controlling decisions: D044, D050, D051
+Controlling decisions: D044, D050, D051, D062
 
 ## Goal
 
@@ -10,6 +10,8 @@ Define one **Agent Governance Distribution** over one canonical Governance Core,
 The distribution may expose one or multiple generated Agent Skill entrypoints after T023 selects the activation topology. Those entrypoints are routing/packaging projections of one product and are not independently maintained Governance products.
 
 For Consumer use, D051 requires **single-install / self-bootstrap** behavior: installing the Agent Governance distribution once must provide every Agent-Governance-owned reusable artifact needed to bootstrap and normally operate a governed repository. The user must not manually assemble additional Agent Governance Core/runtime/template/schema/Skill support packages.
+
+D062 additionally requires the installed Consumer distribution to carry portable long-lived-branch protection bootstrap guidance so an adopting repository does not need to read this source checkout to learn the writable-readiness invariant.
 
 ## Architectural units
 
@@ -63,7 +65,7 @@ It contains, as applicable:
 - generated Skill entrypoint(s) and focused references;
 - the shared deterministic runtime/engine;
 - a generated, traceable Consumer Core snapshot;
-- bootstrap templates/assets;
+- bootstrap templates/assets, including portable repository writable-readiness/branch-protection guidance;
 - deterministic schemas/configuration required by runtime/package operation;
 - product, topology, protocol, installed-footprint compatibility and provenance metadata.
 
@@ -91,6 +93,8 @@ validate / operate
 After the Agent Governance distribution is installed, Consumer bootstrap MUST NOT require the user to separately install or copy another Agent Governance Skill, Core archive, runtime package, template bundle, schema bundle or source checkout.
 
 Normal bootstrap from an installed release MUST resolve Agent-Governance-owned reusable material from inside that distribution and MUST NOT require a network fetch of missing Agent Governance payload files.
+
+Repository-provider administration required to protect the adopting repository's own branches is project infrastructure, not a second Agent Governance installation dependency. The distribution must nevertheless carry the guidance needed to perform/verify the invariant without accessing this source repository.
 
 If the selected topology exposes several generated Skills, the supported platform wrapper/bundle must install them as one Agent Governance product unit. Users are not expected to discover and independently install each generated Agent Governance entrypoint.
 
@@ -166,6 +170,7 @@ Rules:
 - use governance roles, not vendor identities;
 - trigger for governance/coordination operations, not generic SDD/planning/testing;
 - route to `COEXISTENCE.md` only when existing project capabilities may overlap;
+- route to packaged repository branch-protection guidance only during bootstrap/writable-readiness work where branch/PR protection is material;
 - never embed source-product maintenance workflow, project state or future task content;
 - keep the activation/routing body deliberately small and measured under the applicable T023 context/eval evidence;
 - do not require read/write access to the canonical source repository after installation.
@@ -180,15 +185,17 @@ Reusable assets include conceptually:
 - `SKILL-APPROVAL.template.json` — discovery source + exact canonical artifact provenance/revision/digest/risk/permission/dependency approval record;
 - `CAPABILITIES.template.json` — compact capability/provider/coexistence classifications and decision references;
 - `STATE.template.json` — constant-size frontier;
-- `EXCHANGE.template.jsonl` — role-based event seed.
+- `EXCHANGE.template.jsonl` — role-based event seed;
+- `REPOSITORY-BRANCH-PROTECTION.md` — portable provider-neutral writable-readiness invariant with a GitHub adapter example and verification/receipt guidance.
 
 Rules:
 
-- placeholders only; no domain/vendor defaults;
+- placeholders only where the asset is a template; operational guidance may define portable safety invariants and provider-adapter examples;
 - future task detail stays outside WORKPLAN;
 - native SDD/spec content is referenced instead of copied when it remains the project's source;
 - Skill approval records pin immutable audited artifacts;
 - bootstrap never silently overwrites existing state or third-party managed files;
+- bootstrap must not claim remote branch protection is configured unless effective provider state was actually verified;
 - templates/assets are bundled with the Agent Governance distribution and are not separately installed by the user.
 
 ### Deterministic Consumer command surface
@@ -204,6 +211,8 @@ The current Consumer v1 deterministic surface includes:
 - `archive` — validate/prepare mission archival without destroying history.
 
 The exact CLI evolves only through its accepted contract/migration gates.
+
+The current deterministic CLI does not implicitly gain repository-provider administration merely because D062 exists. Remote branch/ruleset administration and effective-state reads require supported provider/project surfaces and Human authority as applicable.
 
 Rules:
 
@@ -255,6 +264,8 @@ Instead:
 - external Skills are separately discovered, audited and approved under `SKILL-DISCOVERY.md` / `SKILL-SUPPLY-CHAIN.md`;
 - optional external capabilities are not hidden prerequisites for basic Agent Governance operation.
 
+Repository-provider branch protection is a project infrastructure control and is handled through the provider/project's own administration surface. Agent Governance packages the required invariant/guidance, not the provider itself.
+
 ## Test/Eval Separation
 
 At minimum maintain distinguishable coverage for:
@@ -275,6 +286,7 @@ At minimum maintain distinguishable coverage for:
 - Skill discovery/supply-chain controls;
 - existing Skill host-selection/shadowing checks;
 - SDD/Skill/tool coexistence and managed-file preservation;
+- repository long-lived-branch writable-readiness protection detection/gating without assuming one provider;
 - source-repository independence;
 - source-maintainer overlay exclusion;
 - positive/negative/near-miss Consumer activation.
@@ -293,6 +305,7 @@ At minimum maintain distinguishable coverage for:
 - selected topology reproducibility;
 - one Agent Governance distribution identity/version across all entrypoints;
 - clean one-install bootstrap on every supported release-target packaging path;
+- packaged repository branch-protection guidance available without source-checkout access;
 - no out-of-band Agent Governance support files after installation;
 - artifact/source isolation;
 - explicit update-vs-project-migration separation.
@@ -328,7 +341,7 @@ Before releasing the selected topology, define and validate:
 5. deterministic topology/package generation;
 6. one Agent Governance product/version/provenance identity;
 7. D051 one-install/self-bootstrap journey for every supported Consumer release-target packaging path;
-8. source-independence and source-maintainer-overlay exclusion;
+8. source-independence, packaged repository-protection bootstrap guidance and source-maintainer-overlay exclusion;
 9. explicit upgrade/project-migration lifecycle;
 10. Consumer v1 rollback evidence.
 

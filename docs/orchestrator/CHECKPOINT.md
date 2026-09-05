@@ -1,113 +1,140 @@
 # Current ChatGPT Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O211  
+Checkpoint-Sequence: O213  
 Canonical-Branch: `develop`  
-Current-Work-Unit: T057 is running under its frozen Task Contract; D061 branch-target write guard is being integrated after repeated Orchestrator direct-develop authoring incidents  
+Current-Work-Unit: T057 evidence is integrated and T057 is accepted as `QUALIFIED_READ_ONLY_CHILD_SURFACE`; D063 closes R008/R009 measurement-surface research, with task cleanup and R012 delegation-policy decision next  
 Chat-Closure: CONTINUE_CURRENT_CHAT  
 Active-Executor: Codex  
-Active-Executor-Surface: `AG | agent-governance | T057 | root-1` on native Windows Codex 0.153.4; frozen GPT-5.6 Sol / Medium
+Active-Executor-Surface: `AG | agent-governance | T057 | root-1` on native Windows Codex 0.153.4; retain only for same-task post-integration cleanup, then retire under D060
 
 ## Durable frontier
 
-- D039, D041, D042, D053, D054, D055, D056, D057, D058, D059 and D060 remain controlling.
-- D061 adds fail-closed ChatGPT Orchestrator branch-target mutation policy after integration.
+- D039, D041, D042, D053, D054, D055, D056, D057, D058, D059, D060, D061 and D062 remain controlling.
 - Core protocol remains `1.15.0`.
-- OP067 and OP068 remain accepted `DONE`.
-- T057 was launched from `develop@20ed0e64dd6c98f38be42cd3cc28fcc220d06c5e` and remains frozen: one provider-backed parent, exactly one real child, root GPT-5.6 Sol / Medium, requested child GPT-5.6 Terra / Low, `:read-only`, no compensating second provider-backed attempt.
-- R009 remains `COMPLETE / EVALUATING` under T057.
-- R008 and R007 remain `COMPLETE / DEFERRED` pending qualified measurement and explicit D057 transitions.
-- R010 remains `COMPLETE / DEFERRED`.
-- R011 remains `COMPLETE / DECIDED` through D058.
-- R012 remains `COMPLETE / DEFERRED`; delegation policy must be reconsidered immediately after T057 convergence.
-- R013 remains `COMPLETE / DECIDED` through D060; one exact Task/Operational Contract owns one Human-visible coordinator root lifecycle.
+- Repository hard guard remains GitHub ruleset `22339910` / `Protect long-lived branches`: active, targets `main` + `develop`, requires PR transport, restricts deletion, blocks non-fast-forward, no bypass actors, connected actor bypass `never`.
+- T057 evidence was integrated through PR `#296` at `947c5ed1edcff86603a4c3e8d3cf9bf96eabdfc6`.
+- T057 submitted executor HEAD is `4dd957aaf76235376ace709bf5117378c89e46aa`; frozen launch base is `20ed0e64dd6c98f38be42cd3cc28fcc220d06c5e`.
+- The T057 branch changed only the two authorized JSON evidence files.
+- `docs/reviews/T057-R1.md` accepts T057 with `QUALIFIED_READ_ONLY_CHILD_SURFACE`.
+- D063 (`docs/decisions/D063-qualified-codex-read-only-child-measurement-surface.md`) adopts the bounded, version-sensitive Codex read-only child measurement substrate.
+- R008 is `COMPLETE / DECIDED -> D063`.
+- R009 is `COMPLETE / DECIDED -> D063`.
+- R007 remains `COMPLETE / DEFERRED`; its measurement-substrate blocker is cleared, but a corrected successor evaluation still needs the T054 P2 confound removed, a first-attempt-qualified mapping, D063 measurement semantics, and an explicit D057 transition before execution.
+- R010 remains `COMPLETE / DEFERRED`; no global GPT-6 Astra launch-profile migration is adopted.
+- R011 remains `COMPLETE / DECIDED -> D058`.
+- R012 remains `COMPLETE / DEFERRED`; now that T057 has converged, semantic delegation policy is the immediate policy-decision gate before the next normal non-experimental implementation task.
+- R013 remains `COMPLETE / DECIDED -> D060`.
+- D062 source-product branch protection/bootstrap material is integrated through PR `#295`; its remote topic branch still requires evidence-safe retirement.
 
-## D060 — task-scoped coordinator continuity
+## T057 accepted qualification
+
+Task:
+
+`docs/tasks/T057-codex-read-only-child-requalification-v2.md`
+
+Review:
+
+`docs/reviews/T057-R1.md`
+
+Accepted outcome:
 
 ```text
-new Task/Operational Contract -> NEW / root-1
-same contract lifecycle        -> CONTINUE same root
-contract closes                -> retire root
-next contract                  -> NEW / root-1
+QUALIFIED_READ_ONLY_CHILD_SURFACE
 ```
 
-`root-2+` is same-task failover only. Fresh review/exploration inside one task should use internal fresh children/contexts, not another Human-visible coordinator.
+Accepted host/control facts:
 
-T057 already conforms as `AG | agent-governance | T057 | root-1`. Do not restart or alter it because later policy changed.
+```text
+Codex CLI/App Server/native schema: 0.153.4
+root: GPT-5.6 Sol / Medium
+coordinator: AG | agent-governance | T057 | root-1
+provider-backed attempts: 1
+thread/loaded/list: data array<string>
+parent activePermissionProfile.id: :read-only
+child activePermissionProfile.id: :read-only
+parent residency through reattachment: PASS
+child requested/resolved: gpt-5.6-terra / low
+backend-served profile verified: false
+reroute observed: false
+exact child total tokens: 22536
+exact child durationMs: 4516
+tracked/global mutation: none outside authorized evidence artifacts
+```
 
-## D061 — Orchestrator branch-target write guard
+The configured/resolved child profile is qualified evidence of configured thread state only. Absence of reroute is not backend identity proof.
 
-Decision:
+## D063 — qualified measurement substrate
 
-`docs/decisions/D061-orchestrator-branch-target-write-guard.md`
+D063 adopts R008/R009 after T057.
 
-Mandatory normal Markdown authoring sequence:
+Future child-routing evaluations may rely on the surface only after installed native version/capability revalidation and only when exact-child identity, read-only profile provenance, parent residency, exact non-estimated usage, exact duration and reroute evidence are captured.
+
+D063 does not:
+
+- adopt child-routing policy;
+- change D055;
+- prove backend-served per-turn model identity;
+- authorize cost/savings claims;
+- eliminate the need for a corrected R007 evaluation design.
+
+## D060 — same-task coordinator closure
+
+T057 used one task-scoped Human-visible coordinator root exactly as required:
+
+```text
+AG | agent-governance | T057 | root-1
+```
+
+Do not open a new T057 root merely for post-integration cleanup. If the existing root remains recoverable, cleanup is `CONTINUE` on that same coordinator. Retire the root after T057 branch/worktree closure is complete.
+
+## R012 post-T057 decision gate
+
+R012 research conclusion remains:
+
+```text
+pure optional worker delegation is too weak for a true Executor Coordinator
+exact global worker choreography is too prescriptive
+preferred direction = semantic delegation obligation
+```
+
+The next normative decision must resolve whether Agent Governance will require the coordinator to delegate when material semantic triggers are present while leaving concrete worker decomposition/count/sequencing/mechanics to the Executor.
+
+Do not conflate this with R007 compute routing.
+
+## Repository/branch hygiene
+
+D061 remains mandatory for every Orchestrator Markdown write:
 
 ```text
 refresh develop
 -> create topic branch
--> verify exact branch exists at intended base SHA
+-> verify exact topic branch/base
 -> mutate only with explicit branch=<verified-topic>
--> verify develop did not move because of the mutation
+-> verify develop unchanged by mutation
 -> review diff
 -> PR to develop
 ```
 
-Fail closed:
+The provider hard guard independently rejects routine direct writes to `main`/`develop`.
 
-- no content mutation before topic-branch creation + verification;
-- never omit the branch field on a normal Orchestrator content mutation;
-- never supply `main` or `develop` to a normal content mutation;
-- missing/nonexistent topic branch -> create/verify it or STOP, never retry on a long-lived branch;
-- unexpected long-lived-branch movement -> STOP and classify the incident.
+Outstanding closure items after this convergence change is integrated:
 
-Repository-side enforcement is still required. Current `develop` is not protected, so GitHub will accept a mistaken direct update. Human/repository administration should add an active ruleset/protection targeting at least `develop` and `main`, requiring PR flow and denying routine bypass to the Orchestrator write actor/connection.
+- T057 execution branch/worktree via TASK T057 canonical cleanup flow;
+- PR #295 branch `docs/d062-repository-branch-protection-bootstrap` if still present;
+- this T057 convergence documentation branch after its PR is merged.
 
-## Direct-write incident record
-
-The following accidental Orchestrator commits were direct `develop` writes and are retained in history rather than hidden by rewriting:
-
-```text
-2a2f34baa5e90724c46555c876aabe68309a8b99  R012 placeholder
-59c44d88e202c24928fd4908470bd91099703023  R013 placeholder
-7a116b92c706801c9259ce152096609adb465563  D061 placeholder
-```
-
-The D061 incident reproduced the root cause explicitly: the mutation call supplied `branch="develop"`; because `develop` had no enforced protection, GitHub accepted it. This confirms the failure is Orchestrator target selection plus missing repository-side enforcement, not an implicit fallback bug.
-
-Do not rewrite history to hide these incidents.
-
-## T057 active execution
-
-Task Contract:
-
-`docs/tasks/T057-codex-read-only-child-requalification-v2.md`
-
-When T057 returns terminal fields, converge exact branch/HEAD, telemetry and handoff against its frozen launch base plus current canonical `develop`. Later Markdown-only governance changes are unrelated to T057 implementation-base validity.
-
-If T057 needs same-task rework and its root remains recoverable, D060 requires `CONTINUE` in `AG | agent-governance | T057 | root-1`.
-
-## R012 post-T057 gate
-
-After T057 convergence, before the next normal non-experimental implementation task, explicitly decide whether to adopt the semantic delegation obligation recommended by R012:
-
-```text
-Agent Governance defines when delegation is required and safety/evidence bounds.
-Executor coordinator chooses concrete decomposition, workers, sequencing/parallelism and mechanics.
-```
-
-Do not conflate this with R007 child compute routing.
+Do not delete ambiguous local work; use evidence-safe cleanup only.
 
 ## Next action
 
-1. Integrate D061 + O211 through a topic-branch PR; do not alter running T057.
-2. Human/repository admin enables GitHub protection/ruleset for `develop` and `main` requiring PRs and no routine bypass for the Orchestrator write connection.
-3. Allow T057 to finish unchanged.
-4. Converge T057 from GitHub evidence.
-5. Transition R009/R008 under D057 from the result.
-6. Decide R012 before the next normal implementation task.
-7. Retire merged documentation topic branches through evidence-safe cleanup without interfering with T057.
-8. Do not launch MG1-v13 concurrently.
+1. Review and integrate the T057 convergence Markdown branch through PR to `develop`.
+2. Revalidate `develop`, the T057 review/D063 registry transition and current branch inventory.
+3. `CONTINUE` `AG | agent-governance | T057 | root-1` only for canonical same-task post-integration cleanup of TASK T057; retire the root after closure.
+4. Complete evidence-safe retirement of merged documentation branches, including PR #295 and the T057 convergence branch, without touching unrelated retained/review state.
+5. Decide R012 and, if accepted, persist the semantic delegation policy before the next normal non-experimental implementation task.
+6. Keep R007 deferred until a corrected successor evaluation is explicitly specified and transitioned under D057.
+7. Do not launch MG1-v13 concurrently.
 
 ## Next chat minimum load
 
@@ -116,10 +143,11 @@ Load current `develop` identity, `AGENTS.md`, and this checkpoint.
 Then:
 
 - apply D061 before any Orchestrator repository mutation;
-- if T057 is still running, do not modify its frozen topology;
-- if T057 returned terminal fields, load T057, its exact handoff/telemetry, R009 and the research registry;
-- after T057 convergence, load R012 before the next normal implementation launch.
+- verify D063/T057 review and R008/R009 registry state if this convergence change is integrated;
+- if T057 cleanup is not complete, use the same T057 coordinator root when recoverable;
+- load R012 before authoring the next normal implementation launch policy;
+- load R007 only if a corrected routing-evaluation design is being considered.
 
 ## Do not
 
-Do not perform normal Orchestrator content writes to `main` or `develop`. Do not omit the branch target on content mutations. Do not retry a missing topic branch by targeting a long-lived branch. Do not restart or add workers to T057. Do not use `root-2` merely for fresh context. Do not adopt R012 implicitly. Do not rewrite history to hide authoring incidents.
+Do not reopen or rerun T057. Do not overstate backend-served model identity. Do not infer savings from the single T057 synthetic turn. Do not reactivate R007 implicitly. Do not adopt R012 implicitly. Do not open `root-2` for ordinary T057 cleanup. Do not perform normal Orchestrator content writes to `main` or `develop`, omit branch targets, grant routine agent bypass, weaken stronger branch controls, or rewrite history to hide prior incidents.
