@@ -3,13 +3,14 @@
 Status: ACTIVE SOURCE-MAINTAINER GUIDANCE  
 Controlling decision: `docs/decisions/D055-executor-launch-session-and-compute-profile.md`  
 Coordinator/worktree refinement: `docs/decisions/D058-executor-coordinator-session-and-worktree-hygiene.md`  
+Task-scoped coordinator continuity: `docs/decisions/D060-task-scoped-executor-coordinator-continuity.md`  
 Bootstrap authority: `docs/decisions/D042-remote-baseline-freshness-before-contract-load.md`
 
 ## Purpose
 
 Provide the compact Human-facing launch metadata that ChatGPT Orchestrator must give before every prompt delegated to an Agente de IA Ejecutor, and normalize the minimal transport prompt used to reach persisted Git authority safely.
 
-This file maps the portable D055 policy onto the currently selected Executor adapter. It does not change Task Contract semantics and does not make any model/product a source dependency.
+This file maps the portable D055 policy onto the currently selected Executor adapter. D060 prospectively refines the session-lifetime portion of D055/D058. It does not change Task Contract semantics and does not make any model/product a source dependency.
 
 ## Required launch card
 
@@ -24,13 +25,13 @@ Effort: <exact recommended reasoning setting>
 Rationale: <one concise sentence>
 ```
 
-For the current Codex adapter, D058 requires:
+For the current Codex adapter, D058/D060 require:
 
 ```text
 Coordinator-Chat: AG | <repo> | <work-unit> | root-<n>
 ```
 
-The first coordinator for a work unit uses `root-1`. Same-work-unit `CONTINUE` keeps the same name. A required fresh root for the same work unit increments the ordinal.
+The first coordinator for a work unit uses `root-1`. The same work unit normally keeps that exact root for its entire lifecycle. `root-2+` is reserved for explicit same-task failover when the prior root cannot safely continue; it is not a routine fresh-context choice.
 
 The coordinator name is Human navigation/continuity metadata, not Task Contract authority. The Human applies the exact name through the supported host UI/session naming surface before substantive execution.
 
@@ -88,24 +89,55 @@ Do **not** add to the prompt:
 
 A SHA may appear in a prompt only when the persisted authority makes that exact identity materially necessary for safe reconciliation or verification. It must never replace the required fresh remote synchronization.
 
-## Session rule
+## Session rule — D060 task-scoped continuity
 
 Use this decision order:
 
 ```text
-new Task Contract/work unit?                  -> NEW
-same Task Contract + same represented branch? -> CONTINUE
-cold-start/independence evidence required?     -> NEW
-executor/host/checkout changed?                -> NEW
-prior context stale/contaminated/unrelated?    -> NEW
-same-task rework/follow-up with clean context? -> CONTINUE
+new Task/Operational Contract work unit?      -> NEW / root-1
+same work unit and root safely recoverable?   -> CONTINUE same root
+same task after Orchestrator barrier/review?   -> CONTINUE same root
+fresh independent technical perspective?      -> keep root; use internal fresh child/context
+prior root unavailable/corrupt/unrecoverable?  -> NEW same task / next root ordinal (failover)
+context irreparably contaminated?              -> NEW same task / next root ordinal (failover)
+new successor Task/Operational Contract?       -> NEW / root-1 for the new work unit
 ```
 
-Under D058, `CONTINUE` additionally requires the same coordinator chat identity. If multiple chats could plausibly represent the work unit and the correct one cannot be identified, use `NEW` with the next root ordinal rather than guessing.
+A work unit is the exact persisted Task Contract ID/path or Operational Contract ID/path. A review/rework revision that continues the same Task ID remains the same work unit. A successor Task ID is a new work unit even if it shares product area, research lineage or branch ancestry.
 
-A newly governing `AGENTS.md` change uses D043 conditional reload when the host can refresh it safely; otherwise use `NEW`.
+Under D060, `CONTINUE` is not merely an optimization for same-task follow-up; it is the normal required coordinator continuity behavior while the original root remains safe and recoverable.
 
-Session continuity never exempts D042 remote freshness. `CONTINUE` preserves useful conversation context, not stale repository state.
+Need for independent review, exploration or noisy test/log analysis does not normally justify a second Human-visible coordinator. Prefer a fresh bounded internal child/subagent or equivalent fresh context while the root remains the task coordinator.
+
+`root-2+` is failover only. The launch rationale must state why the prior root cannot safely continue, and the old/replacement roots must not remain concurrently writable for the same task/worktree.
+
+A newly governing `AGENTS.md` or review change does not by itself require a new root when the active host can safely reload it. D042/D043 freshness/reload still applies on every continuation.
+
+Session continuity never exempts D042 remote freshness. `CONTINUE` preserves useful task context, not stale repository state.
+
+## Root context-hygiene rule
+
+The Human-visible root should remain a compact task ledger.
+
+Prefer retaining:
+
+```text
+exact task/authority pointer
+current phase/status
+branch/worktree identity
+relevant accepted constraints
+concise child findings
+completed actions represented in Git/evidence
+unresolved blockers/findings
+latest Orchestrator review/gate
+next concrete action
+```
+
+Avoid retaining unnecessary raw logs, large command output, full file dumps, full child transcripts, abandoned implementation traces and repeated copies of persisted authority.
+
+When supported, safe host-native compaction may be used to reduce context pressure. Compaction is execution state only; Git and persisted authority remain canonical.
+
+D060 defines root lifetime, not the exact worker-delegation policy. R012 separately controls the pending question of when delegation should become semantically mandatory.
 
 ## Worktree rule
 
@@ -132,7 +164,7 @@ Do not raise effort to compensate for an incomplete specification or missing Des
 
 ## Current adapter — Codex
 
-Research baseline: 2026-08-23; naming surface revalidated 2026-09-05  
+Research baseline: 2026-08-23; naming/session guidance revalidated 2026-09-05  
 Surface: ChatGPT desktop app -> Codex  
 Current host: native Windows source-maintenance workstation
 
@@ -147,6 +179,8 @@ OpenAI currently exposes the GPT-5.6 family in Codex with Sol, Terra and Luna ti
 | Exceptional long-horizon work | GPT-5.6 Sol | XHigh/Max only when justified | only after concrete evidence that High is insufficient |
 
 Codex currently supports explicit thread/session naming. R011 records the inspected current source surface; exact naming UI/commands remain vendor-specific and may change.
+
+Current OpenAI long-running-agent guidance also recommends deliberate compaction and preservation of completed actions, active assumptions, IDs, tool outcomes, unresolved blockers and the next concrete goal. D060 adopts that principle only as context hygiene; vendor compaction is never correctness authority.
 
 ### Conservative fallbacks
 
@@ -176,7 +210,7 @@ Session: NEW
 Coordinator-Chat: AG | agent-governance | TNNN | root-1
 Model: GPT-5.6 Sol
 Effort: Medium
-Rationale: first launch of a new bounded implementation task; the Task Contract carries the design and normal multi-file technical reasoning remains.
+Rationale: first launch of a new bounded implementation task; this root remains the Human-visible coordinator through the complete TNNN lifecycle.
 ```
 
 ### Same-task R1 rework
@@ -187,10 +221,18 @@ Session: CONTINUE
 Coordinator-Chat: AG | agent-governance | TNNN | root-1
 Model: GPT-5.6 Sol
 Effort: Medium
-Rationale: same represented Task Contract/branch and coordinator chat; the persisted review supplies the revised authority, so retaining implementation context avoids redundant reload cost.
+Rationale: same Task Contract and recoverable coordinator root; reload the persisted review/current authority and continue without discarding useful task context.
 ```
 
-### Read-only post-integration baseline
+### Same-task independent review
+
+```text
+Human-visible root: CONTINUE AG | agent-governance | TNNN | root-1
+Freshness need: delegate a bounded fresh Verifier/Reviewer child when supported
+Do not open root-2 solely to obtain independent technical reasoning.
+```
+
+### Read-only post-integration operation
 
 ```text
 Executor: Codex
@@ -198,10 +240,21 @@ Session: NEW
 Coordinator-Chat: AG | agent-governance | OPNNN | root-1
 Model: GPT-5.6 Luna
 Effort: Low
-Rationale: independent read-only verification with deterministic commands/postconditions; no implementation reasoning is required.
+Rationale: this Operational Contract is a new governed work unit with its own coordinator lifecycle.
 ```
 
-### Subtle concurrency/security correction
+### Same-task root failover
+
+```text
+Executor: Codex
+Session: NEW
+Coordinator-Chat: AG | agent-governance | TNNN | root-2
+Model: <minimum sufficient current model>
+Effort: <minimum sufficient effort>
+Rationale: root-1 is no longer recoverable/safe to continue; this is explicit same-task failover, not a fresh-review convenience.
+```
+
+### Subtle concurrency/security correction in a new task
 
 ```text
 Executor: Codex
@@ -209,7 +262,7 @@ Session: NEW
 Coordinator-Chat: AG | agent-governance | TNNN | root-1
 Model: GPT-5.6 Sol
 Effort: High
-Rationale: the technical work has non-local ordering/fail-closed risk where extra reasoning materially reduces implementation/review risk.
+Rationale: new Task Contract with non-local ordering/fail-closed risk where extra reasoning materially reduces implementation/review risk.
 ```
 
 ## Re-evaluation
@@ -218,15 +271,19 @@ The Orchestrator should periodically re-check official Executor documentation wh
 
 - available model tiers change;
 - effort labels/semantics change;
-- session/thread naming surfaces change;
+- session/thread naming or compaction surfaces change;
 - a new Executor replaces the current adapter;
-- repeated AG evidence shows the current mapping is systematically over- or under-provisioned.
+- repeated AG evidence shows task-scoped continuation is creating material context degradation despite hygiene;
+- repeated AG evidence shows the current compute mapping is systematically over- or under-provisioned.
 
-Provider mapping and naming-surface changes are operating-guidance updates, not Governance Core protocol changes.
+Provider mapping and naming/compaction surface changes are operating-guidance updates, not Governance Core protocol changes.
 
 ## Current OpenAI references
 
 - https://openai.com/index/gpt-5-6/
 - https://developers.openai.com/api/docs/guides/latest-model
+- https://developers.openai.com/api/docs/guides/latest-model?model=gpt-5.5
+- https://developers.openai.com/api/docs/guides/latest-model?model=gpt-5.2
+- https://developers.openai.com/codex/use-cases
 - https://help.openai.com/en/articles/20001354-gpt-56-in-chatgpt/
 - https://help.openai.com/en/articles/20001275/
