@@ -39,28 +39,32 @@ See D057 for transition semantics and required metadata for new research.
 | R003 | `docs/research/MG1-V7-COST-AND-HOST-EXECUTION-ANALYSIS.md` | COMPLETE | SUPERSEDED | T023 successor-method lineage through later MG1 versions | none | Cost/host-execution findings informed subsequent MG1 method revisions; the specific v7 execution path is no longer current. |
 | R004 | `docs/research/MG1-V8-WINDOWS-SANDBOX-ROOT-CAUSE.md` | COMPLETE | SUPERSEDED | `docs/reviews/T023-R7.md`; successor MG1 host-preflight work | none | Root-cause analysis informed later host/workspace corrections; v8 restart authority is no longer current. |
 | R005 | `docs/research/MG1-V9-WINDOWS-TEMP-ACL-ANALYSIS.md` | COMPLETE | SUPERSEDED | T023 successor-method lineage; current terminal MG1 state `docs/reviews/T023-R11.md` | none | ACL findings remain diagnostic evidence; the v9-specific remediation path has been superseded by later MG1 iterations. |
-| R006 | `docs/research/CODEX-PERSISTENT-EXECUTOR-COORDINATOR-RESEARCH.md` | COMPLETE | EVALUATING | `docs/tasks/T053-codex-persistent-executor-coordinator-pilot.md`; `docs/reviews/T053-R1.md` | none | T053 produced positive qualitative persistence/context-locality evidence, but no global D055 persistence policy decision has been accepted. Further compute/routing evidence remains relevant before policy evolution. |
-| R007 | `docs/research/ADAPTIVE-SUBAGENT-COMPUTE-ROUTING-RESEARCH.md` | COMPLETE | EVALUATING | `docs/tasks/T054-adaptive-subagent-compute-routing-pilot.md` | none | Analytical recommendation is under controlled T054 evaluation. T054-specific `Sol/Medium` root and child profiles are experiment controls, not a global child-routing decision. |
+| R006 | `docs/research/CODEX-PERSISTENT-EXECUTOR-COORDINATOR-RESEARCH.md` | COMPLETE | DEFERRED | `docs/tasks/T053-codex-persistent-executor-coordinator-pilot.md`; `docs/reviews/T053-R1.md`; `docs/reviews/T054-R1.md` | none | T053 produced positive qualitative persistence/context-locality evidence, but no attributable token/context metrics. T054 did not add causal persistence evidence. No global D055 persistence-policy change is adopted. Reconsider only with materially better persistence observability or a separate normative justification that does not depend on an unverified efficiency claim. |
+| R007 | `docs/research/ADAPTIVE-SUBAGENT-COMPUTE-ROUTING-RESEARCH.md` | COMPLETE | DEFERRED | `docs/tasks/T054-adaptive-subagent-compute-routing-pilot.md`; `docs/reviews/T054-R1.md`; PR `#277` | none | T054 execution was accepted with pilot decision `NOT_QUALIFIED`: P1 exposed a real `Luna / Low` exactness failure, P2 had a shared task/oracle-semantics confound across both arms, and P3 passed in both arms. Effective child profiles and attributable token usage were not observable. No global child-routing policy is adopted. Reconsider only after a successor evaluation removes the P2 confound, uses a first-attempt-qualified mapping, and preferably runs on a surface with effective-profile/usage receipts. |
 
 ## Live research frontier
 
-The research items with current operational relevance are:
+There is currently no `ACTIVE` or `EVALUATING` research item.
+
+The two most recent research lines are consciously deferred:
 
 ```text
 R006 — persistent Executor coordinator
   Research-State: COMPLETE
-  Decision-State: EVALUATING
-  Evidence: T053 accepted
+  Decision-State: DEFERRED
+  Evidence: T053 accepted; T054 adds no persistence-causal evidence
   Global policy decision: none
+  Reconsideration condition: better persistence observability or separate normative justification
 
 R007 — adaptive subagent compute routing
   Research-State: COMPLETE
-  Decision-State: EVALUATING
-  Evaluation: T054 specified, not yet executed
+  Decision-State: DEFERRED
+  Evaluation: T054 accepted; pilot decision NOT_QUALIFIED
   Global policy decision: none
+  Reconsideration condition: corrected successor evaluation + first-attempt-qualified mapping; preferably effective-profile/usage observability
 ```
 
-The current checkpoint should reference these live items while they remain operationally relevant. Historical MG1 research remains discoverable here without bloating the checkpoint.
+The current checkpoint may reference these deferred items while their reconsideration conditions define the next research frontier. Historical MG1 research remains discoverable here without bloating the checkpoint.
 
 ## Required workflow for new research
 
