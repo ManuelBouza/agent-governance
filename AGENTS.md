@@ -32,6 +32,7 @@ Do not create a live `.agent-governance/` / `.agent-coordination/` consumer foot
 - Executor launch-profile guidance: `docs/EXECUTOR-LAUNCH-PROFILES.md`.
 - ChatGPT Orchestrator checkpoint policy: `docs/ORCHESTRATOR-CHECKPOINTS.md`.
 - Current ChatGPT Orchestrator checkpoint: `docs/orchestrator/CHECKPOINT.md`.
+- Research-to-decision traceability: `docs/decisions/D057-research-decision-traceability.md` and `docs/RESEARCH-TRACEABILITY.md`.
 - Executable source-maintenance task records: `docs/tasks/`.
 - Persisted executor handoffs: `handoffs/`.
 - Product decisions and operating instructions: `docs/`.
@@ -190,6 +191,21 @@ D027 and `docs/ORCHESTRATOR-CHECKPOINTS.md` define how ChatGPT source-maintenanc
 - the checkpoint is source-maintenance state only and MUST NOT create or substitute a consumer `.agent-coordination/` instance.
 
 When chat closure is recommended, the minimal next-chat prompt should point only to the repository, `AGENTS.md`, and `docs/orchestrator/CHECKPOINT.md`.
+
+## Research traceability invariant
+
+D057 and `docs/RESEARCH-TRACEABILITY.md` define how material Orchestrator research survives iteration and how it may become normative authority.
+
+- every material research effort that can influence product design, policy, evaluation method, Executor configuration or future implementation MUST be persisted in Git before downstream reliance;
+- every new research artifact receives a stable `Rxxx` identity plus independent `Research-State` and `Decision-State` metadata;
+- `docs/RESEARCH-TRACEABILITY.md` is the complete research ledger and records evaluation/outcome/decision references;
+- a complete research memo is evidence, not policy: only an explicit accepted normative artifact plus a registry transition to `DECIDED` can promote its conclusion to decision authority;
+- `EVALUATING`, `DEFERRED`, `REJECTED` and `SUPERSEDED` dispositions remain durable so later chats do not rediscover or silently reinterpret prior work;
+- completed research MUST NOT be silently rewritten to match later conclusions; use successor/supersession lineage while preserving Git history;
+- volatile vendor/model/pricing/regulatory facts MUST be refreshed before a later decision materially relies on them;
+- the current checkpoint carries only live research frontier items, while the registry retains the full historical ledger.
+
+Chat turnover, prompt repetition or Executor session changes never alter research/decision state; only persisted Git changes do.
 
 ## Testing Skill/capability invariant
 
