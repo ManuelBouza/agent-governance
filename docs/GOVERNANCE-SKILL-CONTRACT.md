@@ -37,6 +37,8 @@ For every supported Consumer release-target packaging path:
 
 The distribution may itself be acquired through the host/platform's normal package-delivery mechanism. D051 constrains what is required **after** the product is installed.
 
+Repository-provider administration required to protect the adopting repository's own long-lived branches is project infrastructure, not a hidden Agent Governance package dependency. The installed distribution MUST carry enough portable guidance to identify the required invariant without reading this source repository.
+
 Project-native tooling and separately approved third-party Skills are not hidden Agent Governance dependencies. Governance may discover/reuse/audit them under coexistence/supply-chain rules, but Agent Governance itself MUST remain usable without requiring arbitrary optional third-party capability installation.
 
 ## Non-Authority Invariant
@@ -45,6 +47,8 @@ The Skill/distribution MUST NOT replace or redefine the Governance Core or proje
 
 Existing SDD/specification systems, Skills, registries, memory, permissions, testing and other project-native capabilities remain governed by `COEXISTENCE.md`: detect first, reuse/adapt before adding, and fail closed on unresolved authority/ownership overlap.
 
+Existing stronger compatible repository-security/branch controls remain project authority and MUST NOT be weakened to match Agent Governance baseline examples.
+
 ## Supported Operations
 
 ### 1. Bootstrap governance
@@ -52,10 +56,28 @@ Initialize the canonical modular Core, project instance skeleton and adapter req
 
 Before material mutation, inspect relevant project-native capability/instruction surfaces under `COEXISTENCE.md` and stop on unresolved collisions.
 
+Bootstrap MUST also inspect the repository/provider branch and PR/MR capability surface sufficiently to identify actual long-lived branches, existing protection and normal automated-writer bypass state when those facts are available through supported surfaces.
+
+Before normal agentic writable operation, a provider that supports enforceable branch protection MUST have verified server-side protection for the repository's long-lived integration/stable targets with the semantic equivalent of:
+
+- normal changes require PR/MR transport;
+- branch deletion is restricted;
+- force/non-fast-forward updates are blocked;
+- the normal agent/app/connector used for automated repository writes has no routine bypass;
+- enforcement is active.
+
+If a compatible stronger project-native control exists, bootstrap MUST `REUSE` it. If a bounded compatible adjustment is required, `ADAPT` it without weakening unrelated policy. If the control is missing and the active agent cannot administer provider settings, bootstrap MUST return a Human/repository-administration gate with the bounded required action, then verify the effective provider-side state before writable readiness is granted.
+
+Read-only bootstrap/coexistence inspection may continue while protection is missing. Missing administration capability is not permission for normal automated writable work to continue unprotected.
+
+The verified control MUST be represented by durable project evidence in an existing compatible project-native security/operations/governance record where one exists. Bootstrap MUST NOT create a competing authority file solely to imitate the source repository's ledger filename. Exact consumer receipt layout remains a package/footprint design concern until canonically materialized.
+
 Bootstrap MUST source required Agent-Governance-owned reusable Core/templates/runtime support from the already-installed distribution and create only the durable project baseline required by the current footprint contract. Demand-driven task/decision/Skill records are created when needed rather than pre-materializing future work.
 
 ### 2. Validate installation
 Validate required files, Core/project separation, protocol-version consistency, direct references, context budgets, versions, adapters, STATE, WORKPLAN sequence, coexistence inventory, Skill approval records and EXCHANGE coherence.
+
+When validating repository writable readiness, also verify the effective long-lived-branch protection state from a supported provider/project surface. A structural Governance installation may be valid while writable readiness remains blocked; report those states separately rather than pretending local files prove remote repository protection.
 
 ### 3. Cold-start reconstruction
 Start from STATE + GOVERNANCE, follow routed context only, replay EXCHANGE after the checkpoint when needed, and identify protocol, phase/gates, current frontier, blockers, controlling decisions and next permitted action.
@@ -80,6 +102,8 @@ Preserve history, validate no unresolved active state unless explicitly cancelle
 
 ### 10. Portability test
 Verify reusable assets are project-independent and work with at least two distinct agent-adapter configurations without depending on one vendor when generic repository capabilities suffice.
+
+Repository protection guidance MUST be semantic/provider-neutral at the contract level. Provider-specific examples may exist as adapters/assets but MUST NOT make GitHub or another single provider mandatory.
 
 ### 11. Validate sequential execution
 Validate that:
@@ -160,12 +184,16 @@ The Consumer Governance capability MUST NOT:
 - become the only copy of governance rules/templates/state;
 - assume a project domain;
 - assume OpenCode, Codex, Claude Code, Antigravity, ChatGPT or another named product is always active;
+- assume GitHub, GitLab, Bitbucket, Azure DevOps or another named repository provider is always active;
 - expose future task contents merely to optimize planning or implementation;
-- require a second manually installed Agent Governance support payload after the product distribution is installed.
+- require a second manually installed Agent Governance support payload after the product distribution is installed;
+- weaken/bypass compatible project-native branch protection to make automation easier.
 
 ## Deterministic vs Judgment Operations
 
 Use deterministic tooling for layout/reference/budget checks, JSON/JSONL validation, role/event validation, state-transition validation, stale-checkpoint detection, execution-order/dependency checks, Skill canonical-source/revision/approval-record matching, host-selected Skill identity comparison, coexistence evidence discovery where mechanically detectable, and template/bootstrap generation.
+
+Provider branch/ruleset effective-state reads SHOULD be deterministic where a supported API/CLI surface exists. Repository administration itself may require Human authority or a provider-specific adapter and MUST NOT be falsely attributed to the current deterministic Governance CLI unless that capability is actually implemented.
 
 Use agent judgment for Human strategic input, genuine scope/acceptance ambiguity, evidence review against strategic acceptance, capability-provider classification where semantics matter, authority/ownership conflict interpretation, candidate relevance, provenance confidence, risk interpretation and Skill approval suitability.
 
@@ -177,6 +205,7 @@ The Skill MUST follow progressive disclosure:
 - `SKILL.md` or selected generated entrypoint provides activation and operational routing;
 - Core modules are loaded only when routed;
 - `COEXISTENCE.md` is loaded only when existing SDD/Skill/tooling boundaries matter;
+- repository branch-protection guidance is loaded only for bootstrap/writable-readiness work where it is material;
 - deterministic tooling replaces duplicated validation prose;
 - project state stays in the project instance;
 - implementation loads WORKPLAN metadata plus only the currently disclosed task record, exact referenced native artifacts, and exact required approved Skill artifacts;
@@ -187,6 +216,8 @@ The Skill MUST follow progressive disclosure:
 Read-only validation is default. Mutation requires an identified target, preserved authority ordering, non-destructive behavior, audit preservation, stop-on-strategic-conflict semantics and no bypass of adapter restrictions.
 
 Shared/third-party managed project files require safe composition under `COEXISTENCE.md`; unsafe overwrite is a blocker.
+
+On providers with an enforceable equivalent control, normal governed writable operation is blocked until long-lived-branch protection is verified or an explicit Human alternative-control/risk disposition exists because the provider cannot supply the invariant.
 
 External Skill acquisition MUST occur in a quarantine/review location before active installation. Approval is artifact-specific; revision/dependency/permission changes require re-audit.
 
@@ -211,8 +242,9 @@ The Consumer Governance capability is acceptable only if:
 16. a repository with Gentle-AI-like, Spec Kit-like, OpenSpec-like or custom SDD fixtures reuses/adapts existing capability ownership without duplicate specs/plans/tasks;
 17. a repository with no SDD/third-party Skills remains fully governable without Governance installing them;
 18. unsafe managed-file or governance-Skill overlap is detected and fails closed rather than being overwritten/shadowed;
-19. one supported Agent Governance distribution installation is sufficient to bootstrap and normally operate a clean Consumer repository without manually installed supplemental Agent Governance payload files, while the resulting project remains durably governable from its own installed authority/state.
+19. one supported Agent Governance distribution installation is sufficient to bootstrap and normally operate a clean Consumer repository without manually installed supplemental Agent Governance payload files, while the resulting project remains durably governable from its own installed authority/state;
+20. on a repository provider that exposes enforceable branch protection, bootstrap/writable-readiness detects or requires verified long-lived-branch PR/MR transport, deletion restriction, force/non-fast-forward blocking and absence of routine agent bypass before normal automated writable work proceeds.
 
 ## Release Gate
 
-Do not author/release final Consumer entrypoint(s) until operation boundaries, package layout, exact Consumer trigger corpus, activation description, CLI contracts and template fields are finalized and validated against the current protocol, including source independence, D051 single-install/self-bootstrap behavior, sequential disclosure, Skill discovery resolution, supply-chain semantics, ecosystem coexistence and non-overlap with existing SDD/orchestration Skills.
+Do not author/release final Consumer entrypoint(s) until operation boundaries, package layout, exact Consumer trigger corpus, activation description, CLI contracts and template fields are finalized and validated against the current protocol, including source independence, D051 single-install/self-bootstrap behavior, sequential disclosure, Skill discovery resolution, supply-chain semantics, ecosystem coexistence, repository writable-readiness protection and non-overlap with existing SDD/orchestration Skills.
