@@ -77,22 +77,29 @@ The same repository/object database may support multiple concurrent task worktre
 
 Read-only inspection may share repository objects/state only when it cannot mutate or interfere with another work unit and the controlling contract permits it.
 
-### 4. Worktree identity
+### 4. Durable coordinator/workspace identity
 
 Before mutation, a writable Executor must establish which checkout/worktree owns the work unit and verify that no other active writable coordinator owns that same surface.
 
-Persisted handoff/receipt evidence for D058-governed work SHOULD identify:
+For D058-governed work that produces a durable handoff or Operational Contract receipt, the evidence SHALL identify:
 
 ```text
 coordinator_session.name
 coordinator_session.mode
-coordinator_session.host_thread_id  # supported surface only; nullable
 workspace.branch
 workspace.worktree_label
 workspace.isolation
 ```
 
-A relative/local label is sufficient. Absolute personal workstation paths are not required as canonical project evidence.
+When a supported host surface exposes a stable thread/session ID, also persist:
+
+```text
+coordinator_session.host_thread_id
+```
+
+If that ID is unavailable through a supported surface, record null/unavailable with a reason; do not inspect private persistence merely to obtain it.
+
+A relative/local worktree label is sufficient. Absolute personal workstation paths are not required as canonical project evidence.
 
 ### 5. Prelaunch hygiene gate
 
@@ -164,7 +171,7 @@ The Executor owns compatible Git/worktree commands under D054. Repository policy
 
 ## Codex adapter consequence
 
-Current Codex supports explicit thread rename/new-session naming. The Orchestrator launch card for Codex therefore adds:
+Codex 0.153.4 supports explicit thread rename/new-session naming. The Orchestrator launch card for Codex therefore adds:
 
 ```text
 Coordinator-Chat: AG | <repo> | <work-unit> | root-<n>
