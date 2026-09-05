@@ -1,7 +1,7 @@
 # Current ChatGPT Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O196  
+Checkpoint-Sequence: O197  
 Canonical-Branch: `develop`  
 Current-Work-Unit: T053 Phase 1 is accepted; Phase 2 is authorized only as a same-root `CONTINUE` on the represented T053 branch  
 Chat-Closure: CONTINUE_CURRENT_CHAT  
@@ -14,11 +14,12 @@ Active-Executor-Surface: persistent T053 coordinator root
 - T050 is `ACCEPTED`; code-health/symbol-map boundary remains active.
 - T023/MG1-v12 is closed as valid `BLOCKED / NO QUALIFYING SINGLE-FAMILY REFERENCE`; review `docs/reviews/T023-R11.md`. No MG1-v13 is authorized; MG1 remains in Orchestrator Explore/Specify.
 - Persistent-coordinator research: `docs/research/CODEX-PERSISTENT-EXECUTOR-COORDINATOR-RESEARCH.md`.
+- Adaptive child-compute research: `docs/research/ADAPTIVE-SUBAGENT-COMPUTE-ROUTING-RESEARCH.md`. Current Codex supports task-specific child model/reasoning selection plus bounded context-fork controls; the research is prospective only and does not modify T053 Phase 2 or D055.
 - T053 Task Contract: `docs/tasks/T053-codex-persistent-executor-coordinator-pilot.md`.
 - T053 planning PR `#268`, merge `a6af47bedc843a6f1d7f834a32894fdc7539181c`.
 - Phase-1 review: `docs/reviews/T053-P1.md`.
 - Phase-1 review PR `#270`, merge `6b9f370c00bb57cc5a7cbbec0313a5d1eea9f68d`.
-- D055 remains unchanged by the pilot.
+- D055 remains unchanged by the pilot and by the adaptive child-compute research.
 
 ## T053 Phase-1 accepted state
 
@@ -80,6 +81,8 @@ Operational evidence:
 Token/context metrics were not exposed by the used Codex coordination surface and are correctly persisted as `null` with availability reasons.
 
 Phase 1 provides positive evidence for bounded child specialization but does **not** yet prove persistent-root value. The decisive evidence is same-root Phase-2 continuation and whether retained summaries avoid repeated orientation/large-surface rereads without bypassing D042.
+
+Phase-1 telemetry does not persist child model/reasoning selections. The adaptive child-compute research closes that knowledge gap prospectively; it must not be retroactively interpreted as T053 evidence.
 
 ## T053 Phase-2 executable identity
 
@@ -159,14 +162,17 @@ Phase 2 telemetry must distinguish retained-root benefit from mere session reuse
 
 A positive future D055/portability recommendation is not automatic. Final Orchestrator convergence must decide whether persistence demonstrated useful context locality/less repeated orientation at acceptable compute and equal-or-better technical quality.
 
+Adaptive child compute routing is a separate prospective hypothesis. If T053 supports continuing the coordinator pattern, specify and evaluate that hypothesis in a distinct follow-up pilot rather than attributing it to T053.
+
 ## Next action
 
 1. Human returns to the **same Codex root/chat used for T053 Phase 1**.
 2. Show D055: Codex / CONTINUE / GPT-5.6 Sol / High.
 3. Send pointer-only continuation transport naming the represented branch, T053 and `docs/reviews/T053-P1.md`.
 4. Executor performs Phase 2 under the current Task Contract and returns terminal handoff fields only.
-5. Orchestrator converges final T053 evidence before any D055 or consumer-portability change.
-6. Do not launch MG1-v13 concurrently.
+5. Orchestrator converges final T053 evidence before any D055, adaptive child-compute, or consumer-portability change.
+6. If T053 convergence supports the coordinator pattern, use `docs/research/ADAPTIVE-SUBAGENT-COMPUTE-ROUTING-RESEARCH.md` to specify a separate controlled child-routing pilot.
+7. Do not launch MG1-v13 concurrently.
 
 ## Next chat minimum load
 
@@ -174,4 +180,4 @@ Load only current `develop` identity, `AGENTS.md`, and this checkpoint; then fol
 
 ## Do not
 
-Do not treat coordinator memory as authority; do not bypass D042 on continuation; do not resume Phase-1 children; do not permit overlapping writers on one worktree; do not silently substitute a NEW root if CONTINUE is unavailable; do not build App Server/SDK persistence or a custom `.codex/agents/` catalog in T053; do not change D055 before final measured evidence; do not merge the partial Phase-1 implementation separately; do not rerun MG1-v12 or launch V13.
+Do not treat coordinator memory as authority; do not bypass D042 on continuation; do not resume Phase-1 children; do not permit overlapping writers on one worktree; do not silently substitute a NEW root if CONTINUE is unavailable; do not build App Server/SDK persistence or a custom `.codex/agents/` catalog in T053; do not change D055 before final measured evidence; do not retrofit adaptive child compute routing into T053 Phase 2; do not merge the partial Phase-1 implementation separately; do not rerun MG1-v12 or launch V13.
