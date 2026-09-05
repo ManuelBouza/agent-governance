@@ -1,6 +1,7 @@
 # Source Product Operational Contracts
 
-Status: ACTIVE
+Status: ACTIVE  
+Controlling decision: `docs/decisions/D059-operational-receipt-and-terminal-transport-separation.md`
 
 ## Purpose
 
@@ -15,10 +16,11 @@ Every delegated executor action MUST be reconstructable from canonical Git/GitHu
 ```text
 prompt = bootstrap transport only
 persisted contract + referenced Git policy = complete instruction
-executor receipt = durable completion transport
+executor receipt = durable detailed completion evidence
+terminal response = compact convergence pointer only
 ```
 
-A prompt MAY identify the repository, base branch, abstract executor role, exactly one persisted contract path, the canonical-remote freshness precondition, an optional D043 `AGENTS.md` reload when the governing integrated change modified that file, and the completion response shape. It MUST NOT carry operation-specific targets, branch names, SHAs, deletion decisions, commands, exceptions, or acceptance semantics that are absent from the persisted contract.
+A prompt MAY identify the repository, base branch, abstract executor role, exactly one persisted contract path, the canonical-remote freshness precondition, an optional D043 `AGENTS.md` reload when the governing integrated change modified that file, and the standard compact completion response shape. It MUST NOT carry operation-specific targets, branch names, SHAs, deletion decisions, commands, exceptions, or acceptance semantics that are absent from the persisted contract.
 
 If concrete information is required to perform the operation safely or correctly, ChatGPT MUST persist it in the Operational Contract or a controlling Git policy before launch.
 
@@ -51,8 +53,10 @@ Each Operational Contract MUST contain:
 - safety/precondition invariants;
 - evidence/verification requirements;
 - stop/escalation conditions;
-- exact minimal completion response schema;
+- exact detailed durable-receipt schema;
 - a durable GitHub receipt anchor identifying the PR or issue where the executor must publish the completion receipt.
+
+The interactive completion response is not operation-specific. D059 fixes it to the standard compact terminal envelope defined below.
 
 Dynamic facts MAY remain dynamic only when the contract explicitly identifies the authoritative source and deterministic derivation rule. The prompt MUST NOT supply those facts as an alternative authority.
 
@@ -64,13 +68,32 @@ Every READY Operational Contract executed under this policy MUST define a durabl
 
 Before the first mutation, the executor MUST establish that the configured GitHub identity can publish a top-level comment to the receipt anchor. If it cannot establish that capability safely, it MUST stop before mutation and report `BLOCKED` through the available interactive channel.
 
-After verification and before claiming `DONE`, the executor MUST publish one final top-level receipt comment to the configured anchor using the exact envelope defined by `docs/OPERATIONAL-CONTRACTS.md`. The receipt contains the exact contract-defined completion response, including all exception/evidence fields. The executor then returns the same completion response to the interactive caller as a convenience copy.
+After verification and before claiming `DONE`, the executor MUST publish one final top-level receipt comment to the configured anchor using the exact detailed envelope defined by the Operational Contract. The durable receipt contains all operation-specific status/reason, exception and evidence fields required for reconstruction and review.
 
 A `DONE` claim is valid only when the durable receipt publication succeeded. If repository mutation completed but final receipt publication fails, the executor MUST report `PARTIAL` through the interactive channel, perform no broader compensating mutation, and preserve enough local evidence for recovery.
 
-ChatGPT MUST read the durable receipt directly from GitHub before closing the operation. Human-relayed completion text is non-authoritative convenience transport and MAY be omitted, truncated, or malformed without losing the canonical receipt. The Human Owner therefore only needs to signal that the executor has finished; precise copy/paste of the completion fields is not required.
+ChatGPT MUST read the durable receipt directly from GitHub before closing the operation. Human-relayed completion text is non-authoritative convenience transport and MAY be omitted, truncated, or malformed without losing the canonical receipt. The Human Owner therefore only needs to signal that the executor has finished; precise copy/paste of receipt fields is not required.
 
 The receipt is execution evidence, not governance acceptance authority. ChatGPT still independently verifies all GitHub-observable acceptance criteria and treats local-only claims according to the contract.
+
+## Standard interactive completion response
+
+After successful durable receipt publication, the Executor returns only:
+
+```text
+STATUS: DONE | BLOCKED | PARTIAL
+RECEIPT: <durable GitHub receipt URL>
+COORDINATOR: <Human-visible coordinator name or n/a>
+```
+
+Rules:
+
+- do not repeat the detailed receipt envelope in chat;
+- operation-specific blocked reasons remain in the durable receipt while terminal `STATUS` is `BLOCKED`;
+- if receipt publication fails after mutation, return `STATUS: PARTIAL` and `RECEIPT: unavailable`;
+- `COORDINATOR` uses the D058 Human-visible coordinator identity when applicable, otherwise `n/a`.
+
+This terminal response is navigation/transport only. It is not the detailed operation evidence surface.
 
 ## Integration gate
 
@@ -95,6 +118,8 @@ If the operation contract itself is integrated by a PR whose source branch must 
 
 Once execution begins, the executor MUST NOT edit the Operational Contract. Material changes require a persisted ChatGPT revision integrated into `develop` before execution continues. Chat-only corrections are not valid operational authority.
 
+Completed operations remain governed historically by the contract revision that was integrated when they executed. A later policy refinement MUST NOT retroactively relabel a contract-conforming historical terminal response as an Executor defect.
+
 ## Canonical launch prompt
 
 Normal form:
@@ -109,7 +134,7 @@ Then load and execute the authoritative Operational Contract:
 
 Treat that Operational Contract and its referenced repository policies as the complete operation specification. Do not infer, supplement, or expand operation scope from this prompt.
 
-Publish the contract-defined durable GitHub completion receipt, then return only the same completion response defined by the Operational Contract.
+Publish the contract-defined detailed durable GitHub completion receipt, then return only the standard compact interactive completion response from docs/OPERATION-CONTRACTS.md.
 ```
 
 If and only if the governing integrated change modified `AGENTS.md`, insert this line after the remote-freshness paragraph and before the contract pointer:
@@ -122,6 +147,6 @@ Normal substitutions are limited to repository identity, base branch, exactly on
 
 ## Audit invariant
 
-A reviewer must be able to reconstruct from Git/GitHub, without the initiating chat and without Human copy/paste, what operation was authorized, why, which durable targets it covered, which safety rules controlled it, what exact completion response the executor published, what ChatGPT independently verified, and what canonical state resulted.
+A reviewer must be able to reconstruct from Git/GitHub, without the initiating chat and without Human copy/paste, what operation was authorized, why, which durable targets it covered, which safety rules controlled it, what detailed completion receipt the executor published, what ChatGPT independently verified, and what canonical state resulted.
 
 If reconstruction requires prompt text beyond the contract pointer/bootstrap or Human-relayed executor output, the delegation is nonconforming.
