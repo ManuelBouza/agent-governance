@@ -43,6 +43,7 @@ See D057 for transition semantics and required metadata for new research.
 | R007 | `docs/research/ADAPTIVE-SUBAGENT-COMPUTE-ROUTING-RESEARCH.md` | COMPLETE | DEFERRED | `docs/tasks/T054-adaptive-subagent-compute-routing-pilot.md`; `docs/reviews/T054-R1.md`; PR `#277` | none | T054 execution was accepted with pilot decision `NOT_QUALIFIED`: P1 exposed a real `Luna / Low` exactness failure, P2 had a shared task/oracle-semantics confound across both arms, and P3 passed in both arms. No global child-routing policy is adopted. Reconsider only after a successor evaluation removes the P2 confound, uses a first-attempt-qualified mapping, and the measurement substrate is qualified. |
 | R008 | `docs/research/CODEX-CHILD-OBSERVABILITY-SURFACE-RESEARCH.md` | COMPLETE | DEFERRED | `docs/tasks/T055-codex-child-observability-qualification.md`; `docs/reviews/T055-R1.md`; PR `#280`; successor R009/T056 | none | T055 execution was accepted with `PARTIAL_OBSERVABILITY`. Model/reasoning, exact child/turn usage and duration were observable, but the 0.149.0 post-run child lifecycle receipt did not prove an unambiguous non-write permission profile. R009 found a material post-0.149 parent-owned child reload fix and a stronger profile-ID receipt path. R008 remains deferred until T056 qualifies that surface. |
 | R009 | `docs/research/CODEX-CHILD-SANDBOX-INHERITANCE-RESEARCH.md` | COMPLETE | EVALUATING | `docs/tasks/T056-codex-read-only-child-requalification.md` | none | Official source shows spawned children inherit the parent permission snapshot; profile-ID selection `:read-only` plus `activePermissionProfile` is the preferred provenance path; and commit `d21794d6` / PR #40477 (2026-08-24), included in Codex 0.153.4, fixed parent-owned V2 child reload so unloaded children reattach through the actual parent and inherit its execution policy. T056 is a new version-gated requalification. The last observed installed host was 0.149.0, so execution must not start until the installed host naturally/explicitly reaches a qualifying version outside the Executor task. |
+| R010 | `docs/research/GPT6-ASTRA-EXECUTOR-LAUNCH-PROFILE-RESEARCH.md` | COMPLETE | DEFERRED | no empirical project evaluation yet | none | GPT-6 Astra is an official quality-first flagship and current Codex source supports it, but availability alone does not justify changing the frozen T056 root or globally replacing Sol under D055. T056 remains `GPT-5.6 Sol / Medium` to avoid adding a model-family confound. Global/default Astra adoption is deferred pending task-level or comparative evidence and host/account availability. |
 
 ## Live research frontier
 
@@ -52,7 +53,7 @@ R009 — Codex child sandbox inheritance / receipt
   Decision-State: EVALUATING
   Evaluation: T056 planned
   Current gate: installed Codex/App Server must be >= 0.153.4 and preserve the native required schema
-  Last observed host: 0.149.0 during T055
+  Last observed host: 0.149.0 during T055; reconfirmed by Human on 2026-09-05 after the desktop app update
   Executor may not globally upgrade Codex to satisfy the gate
 ```
 
@@ -70,6 +71,15 @@ R007 — adaptive subagent compute routing
 R006 — persistent Executor coordinator
   COMPLETE / DEFERRED
   No global D055 persistence-session policy change
+```
+
+Completed vendor/model research not adopted as policy:
+
+```text
+R010 — GPT-6 Astra Executor launch profile
+  COMPLETE / DEFERRED
+  T056 remains Sol / Medium
+  No global D055 Astra migration adopted
 ```
 
 T056 is not a routing pilot. Even a passing T056 result requires Orchestrator convergence and explicit D057 transitions before R007 may return to `EVALUATING`.
