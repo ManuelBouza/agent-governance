@@ -1,9 +1,9 @@
 # Current ChatGPT Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O198  
+Checkpoint-Sequence: O199  
 Canonical-Branch: `develop`  
-Current-Work-Unit: T053 is accepted and integrated; T054 adaptive subagent compute routing pilot is authorized after this checkpoint/task branch is integrated  
+Current-Work-Unit: T053 is accepted/integrated; T054 adaptive subagent compute routing pilot is specified but not yet executed, with corrected root baseline `GPT-5.6 Sol / Medium`  
 Chat-Closure: CONTINUE_CURRENT_CHAT  
 Active-Executor: Codex  
 Active-Executor-Surface: fresh T054 calibration root
@@ -12,9 +12,9 @@ Active-Executor-Surface: fresh T054 calibration root
 
 - D039, D041, D042, D053, D054, D055 and D056 remain controlling. Core protocol remains `1.15.0`.
 - T050 is `ACCEPTED`; code-health/symbol-map boundary remains active.
-- T023/MG1-v12 remains closed as valid `BLOCKED / NO QUALIFYING SINGLE-FAMILY REFERENCE`; review `docs/reviews/T023-R11.md`. No MG1-v13 is authorized.
+- T023/MG1-v12 remains closed as valid `BLOCKED / NO QUALIFYING SINGLE-FAMILY REFERENCE`; no MG1-v13 is authorized.
 - Adaptive child-compute research: `docs/research/ADAPTIVE-SUBAGENT-COMPUTE-ROUTING-RESEARCH.md`.
-- D055 remains unchanged. Root launch guidance and child compute routing remain separate layers.
+- D055 remains unchanged as global policy. T054's Human-facing root profile is an experiment-specific launch choice; child routing remains a separate layer.
 
 ## T053 final state
 
@@ -31,7 +31,7 @@ Authoritative records:
 - implementation PR: `#273`;
 - integrated technical commit: `9a7e4de08b7b3bece5883bd33d0a4aa2fa247c97`.
 
-Accepted technical result:
+Accepted result:
 
 ```text
 tools/repository_context.py              1117 -> 232 LOC
@@ -41,85 +41,90 @@ focused repository-context/code-health    65 PASS
 Ruff / format / code-health / symbol map / cycle checks / diff-check PASS
 ```
 
-All extracted runtime and focused test modules are below `500` LOC; old `1117`/`1540` ratchets are replaced by final `232`/`233` values. No Executor-authored Markdown or Governance Core change occurred.
+Persistent-root coordination is supported for further controlled evaluation on qualitative context-locality evidence. T053 does not support a quantitative token/cost claim because the host did not expose attributable root/child usage metrics.
 
-### T053 coordinator conclusion
-
-Persistent-root coordination is supported for further controlled evaluation:
-
-- original root continued `NEW -> CONTINUE` across the Orchestrator barrier;
-- D042/current Git authority passed in both phases;
-- one-writer invariant held and branch/worktree incidents were `0`;
-- Phase-1 children were not reused;
-- retained concise Phase-1 summaries avoided rereading the `915`-line Phase-1 facade, `1536`-line test module, child transcripts and raw logs before fresh Phase-2 exploration;
-- final technical quality improved materially.
-
-Observability limit: the host exposed neither an immutable root fingerprint nor attributable root/child token/context metrics. T053 therefore supports a qualitative context-locality/reduced-reread claim, **not a quantitative token/cost/compute-saving claim**.
-
-The merged implementation topic branch `refactor/t053-repository-context-coordinator-pilot` was still present when final review was prepared. It is frozen at the reviewed head and remains a cleanup candidate under `docs/BRANCHING.md`; the current Orchestrator GitHub surface does not expose branch deletion.
-
-## T054 executable identity
+## T054 correction status
 
 Task Contract: `docs/tasks/T054-adaptive-subagent-compute-routing-pilot.md`.
 
-T054 is a separate read-only matched-arm calibration. It does not modify product code or persistent-root policy.
+T054 had **not been launched** when the coordinator-effort question was re-evaluated. Therefore no evidence is invalidated and no experimental run must be discarded.
 
-Human-visible D055 root launch profile:
+O198's T054-specific `GPT-5.6 Sol / High` root guidance is superseded before execution.
+
+Corrected frozen root profile:
 
 ```text
 Executor: Codex
 Session: NEW
 Model: GPT-5.6 Sol
-Effort: High
+Effort: Medium
 Task: T054
 Expected evidence branch: test/t054-adaptive-subagent-compute-routing-pilot
 ```
 
-Rationale: the fresh root coordinates the experiment and supplies the fixed root-equivalent CONTROL baseline; the experimental variable is child compute selection.
+Rationale: use Sol for coordinator capability but Medium as the proportionate balanced reasoning baseline. High is not justified merely by the coordinator role; it remains appropriate when a bounded task's complexity, verification burden, edge cases, security risk, or measured eval result warrants it.
 
-### Frozen T054 experiment
+Do not change the root model/effort mid-pilot. If the root itself cannot coordinate at the frozen profile, stop for Orchestrator re-entry rather than silently escalating and contaminating the matched comparison.
+
+## Frozen T054 experiment
+
+T054 remains a separate read-only matched-arm calibration. It does not modify product code, persistent-root policy, or D055.
 
 After D042 and host capability preflight, use six fresh read-only children in three matched pairs:
 
 ```text
 P1 deterministic inventory
-  CONTROL: inherited root-equivalent Sol/High, fork_turns=none
+  CONTROL: inherited root-equivalent GPT-5.6 Sol / Medium, fork_turns=none
   ADAPTIVE: GPT-5.6 Luna / Low, fork_turns=none
 
 P2 dependency + symbol mapping
-  CONTROL: inherited root-equivalent Sol/High, fork_turns=none
+  CONTROL: inherited root-equivalent GPT-5.6 Sol / Medium, fork_turns=none
   ADAPTIVE: GPT-5.6 Terra / Medium, fork_turns=none
 
 P3 adversarial independent review
-  CONTROL: inherited root-equivalent Sol/High, fork_turns=none
+  CONTROL: inherited root-equivalent GPT-5.6 Sol / Medium, fork_turns=none
   ADAPTIVE: GPT-5.6 Terra / High, fork_turns=none
 ```
 
-All children are read-only; maximum concurrently open children is `2`; no child reuse; no `.codex/agents/` catalog. Matched pair task content/tool access must remain equivalent. P1/P2 use deterministic root-computed oracles. P3 uses the frozen temporary fixed-package-name isolation defect outside tracked repository state.
+P3 deliberately allows higher reasoning on a lower model tier; the hypothesis is task-appropriate compute allocation, not monotonic reduction of every parameter.
 
-Required evidence:
+Safety/experimental envelope:
 
-- capability preflight for model/reasoning/fork/service-tier controls and effective-profile/token observability;
-- requested **and effective** child model/reasoning/service-tier where observable;
-- `fork_turns`, timestamps/duration, token metrics where exposed;
-- first-attempt oracle result for each arm;
-- escalation/retry evidence without overwriting original failures;
-- final pilot decision exactly one of `QUALIFIED`, `QUALIFIED_QUALITY_OBSERVABILITY_LIMITED`, `NOT_QUALIFIED`, `BLOCKED_CAPABILITY`;
-- no quantitative savings claim without effective-profile/usage evidence.
+- one NEW Human-visible Codex root;
+- exactly six fresh read-only matched children unless capability-blocked;
+- maximum `2` concurrently open children;
+- no write-capable child;
+- no child reuse;
+- no `.codex/agents/` catalog;
+- matched task content, repository/fixture input and tool access equivalent;
+- `fork_turns=none` for all matched children;
+- P1/P2 deterministic root-computed oracles;
+- P3 frozen temporary fixed-package-name isolation defect outside tracked repository state;
+- preserve all first-attempt failures and any escalation evidence;
+- no quantitative savings claim without effective-profile and attributable usage evidence.
 
 Persist only authorized non-Markdown evidence:
 
 - `handoffs/T054-adaptive-routing-telemetry.json`;
 - `handoffs/T054-executor-handoff.json`.
 
+Final pilot decision remains exactly one of:
+
+```text
+QUALIFIED
+QUALIFIED_QUALITY_OBSERVABILITY_LIMITED
+NOT_QUALIFIED
+BLOCKED_CAPABILITY
+```
+
 ## Next action
 
-1. Integrate this O198/T054 specification branch into `develop` before Executor launch.
+1. Integrate this O199/T054 correction into `develop` before Executor launch.
 2. Human starts a **NEW** Codex root for T054.
-3. Show D055: Codex / NEW / GPT-5.6 Sol / High.
+3. Show launch profile: Codex / NEW / GPT-5.6 Sol / Medium.
 4. Send pointer-only transport to current `docs/tasks/T054-adaptive-subagent-compute-routing-pilot.md` on canonical `develop`.
 5. Executor runs T054 exactly as frozen and returns terminal handoff fields only.
-6. Orchestrator converges the evidence from GitHub before any D055, child-routing adapter, or consumer-portability policy change.
+6. Orchestrator converges evidence from GitHub before any D055, child-routing adapter, or consumer-portability policy change.
 7. Do not launch MG1-v13 concurrently.
 
 ## Next chat minimum load
@@ -128,4 +133,4 @@ Load only current `develop` identity, `AGENTS.md`, and this checkpoint; then fol
 
 ## Do not
 
-Do not treat session memory as authority; do not bypass D042; do not reuse the T053 root for T054; do not mutate tracked product code in T054; do not permit write-capable T054 children; do not leak the P3 oracle into child prompts; do not add a `.codex/agents/` catalog solely for T054; do not silently substitute Sol for a lower-tier ADAPTIVE arm and count it as successful routing; do not infer effective model/effort or tokens when the host does not expose them; do not change D055 or consumer policy before T054 convergence; do not rerun MG1-v12 or launch V13.
+Do not use O198's superseded `Sol/High` T054 launch profile; do not treat session memory as authority; do not bypass D042; do not reuse the T053 root for T054; do not mutate tracked product code in T054; do not permit write-capable T054 children; do not leak the P3 oracle into child prompts; do not add a `.codex/agents/` catalog solely for T054; do not silently substitute Sol for a lower-tier ADAPTIVE arm and count it as successful routing; do not infer effective model/effort or tokens when the host does not expose them; do not change D055 or consumer policy before T054 convergence; do not rerun MG1-v12 or launch V13.
