@@ -1,164 +1,140 @@
 # Current ChatGPT Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O212  
+Checkpoint-Sequence: O213  
 Canonical-Branch: `develop`  
-Current-Work-Unit: T057 remains running under its frozen Task Contract; D061 is integrated, repository-side long-lived branch protection is now verified active, and D062 packages that safety invariant for future Consumer bootstrap  
+Current-Work-Unit: T057 evidence is integrated and T057 is accepted as `QUALIFIED_READ_ONLY_CHILD_SURFACE`; D063 closes R008/R009 measurement-surface research, with task cleanup and R012 delegation-policy decision next  
 Chat-Closure: CONTINUE_CURRENT_CHAT  
 Active-Executor: Codex  
-Active-Executor-Surface: `AG | agent-governance | T057 | root-1` on native Windows Codex 0.153.4; frozen GPT-5.6 Sol / Medium
+Active-Executor-Surface: `AG | agent-governance | T057 | root-1` on native Windows Codex 0.153.4; retain only for same-task post-integration cleanup, then retire under D060
 
 ## Durable frontier
 
-- D039, D041, D042, D053, D054, D055, D056, D057, D058, D059, D060 and D061 remain controlling.
-- D061 is integrated at `develop@d9c03cf209f8fd5046c5592a42fb5eae0f202dbd` and requires fail-closed Orchestrator topic-branch targeting before every normal content mutation.
-- GitHub repository ruleset `22339910` (`Protect long-lived branches`) was Human-configured and then verified through the provider read surface on 2026-09-05.
-- The ruleset is `active`, targets `refs/heads/main` and `refs/heads/develop`, requires pull-request transport, restricts deletion, blocks non-fast-forward/force-push updates, has `bypass_actors: []`, and the connected actor reports `current_user_can_bypass: never`.
-- `develop` now reports `protected: true`; detailed semantics remain sourced from the ruleset resource.
-- D062 is authored on `docs/d062-repository-branch-protection-bootstrap` for integration: it makes verified server-side long-lived-branch protection a reusable Consumer writable-readiness bootstrap invariant.
-- `docs/REPOSITORY-SAFETY-CONTROLS-LEDGER.md` records the source-product effective control as `RSC001 / ACTIVE`.
-- `docs/LONG-LIVED-BRANCH-PROTECTION-RUNBOOK.md` is the source-product/provider-adapter runbook.
-- `governance-skill/assets/REPOSITORY-BRANCH-PROTECTION.md` is the portable Consumer bootstrap guidance intended to ship in the distribution; Consumer Skill/contract/package guidance now routes to and requires that invariant without pretending the deterministic CLI already administers remote rulesets.
-- Core protocol remains `1.15.0`; D062 is repository/Consumer bootstrap safety policy and does not change Governance Core protocol semantics in this change set.
-- OP067 and OP068 remain accepted `DONE`.
-- T057 was launched from `develop@20ed0e64dd6c98f38be42cd3cc28fcc220d06c5e` and remains frozen: one provider-backed parent, exactly one real child, root GPT-5.6 Sol / Medium, requested child GPT-5.6 Terra / Low, `:read-only`, no compensating second provider-backed attempt.
-- R009 remains `COMPLETE / EVALUATING` under T057.
-- R008 and R007 remain `COMPLETE / DEFERRED` pending qualified measurement and explicit D057 transitions.
-- R010 remains `COMPLETE / DEFERRED`.
-- R011 remains `COMPLETE / DECIDED` through D058.
-- R012 remains `COMPLETE / DEFERRED`; semantic delegation policy must be reconsidered immediately after T057 convergence.
-- R013 remains `COMPLETE / DECIDED` through D060; one exact Task/Operational Contract owns one Human-visible coordinator root lifecycle.
+- D039, D041, D042, D053, D054, D055, D056, D057, D058, D059, D060, D061 and D062 remain controlling.
+- Core protocol remains `1.15.0`.
+- Repository hard guard remains GitHub ruleset `22339910` / `Protect long-lived branches`: active, targets `main` + `develop`, requires PR transport, restricts deletion, blocks non-fast-forward, no bypass actors, connected actor bypass `never`.
+- T057 evidence was integrated through PR `#296` at `947c5ed1edcff86603a4c3e8d3cf9bf96eabdfc6`.
+- T057 submitted executor HEAD is `4dd957aaf76235376ace709bf5117378c89e46aa`; frozen launch base is `20ed0e64dd6c98f38be42cd3cc28fcc220d06c5e`.
+- The T057 branch changed only the two authorized JSON evidence files.
+- `docs/reviews/T057-R1.md` accepts T057 with `QUALIFIED_READ_ONLY_CHILD_SURFACE`.
+- D063 (`docs/decisions/D063-qualified-codex-read-only-child-measurement-surface.md`) adopts the bounded, version-sensitive Codex read-only child measurement substrate.
+- R008 is `COMPLETE / DECIDED -> D063`.
+- R009 is `COMPLETE / DECIDED -> D063`.
+- R007 remains `COMPLETE / DEFERRED`; its measurement-substrate blocker is cleared, but a corrected successor evaluation still needs the T054 P2 confound removed, a first-attempt-qualified mapping, D063 measurement semantics, and an explicit D057 transition before execution.
+- R010 remains `COMPLETE / DEFERRED`; no global GPT-6 Astra launch-profile migration is adopted.
+- R011 remains `COMPLETE / DECIDED -> D058`.
+- R012 remains `COMPLETE / DEFERRED`; now that T057 has converged, semantic delegation policy is the immediate policy-decision gate before the next normal non-experimental implementation task.
+- R013 remains `COMPLETE / DECIDED -> D060`.
+- D062 source-product branch protection/bootstrap material is integrated through PR `#295`; its remote topic branch still requires evidence-safe retirement.
 
-## D060 — task-scoped coordinator continuity
+## T057 accepted qualification
+
+Task:
+
+`docs/tasks/T057-codex-read-only-child-requalification-v2.md`
+
+Review:
+
+`docs/reviews/T057-R1.md`
+
+Accepted outcome:
 
 ```text
-new Task/Operational Contract -> NEW / root-1
-same contract lifecycle        -> CONTINUE same root
-contract closes                -> retire root
-next contract                  -> NEW / root-1
+QUALIFIED_READ_ONLY_CHILD_SURFACE
 ```
 
-`root-2+` is same-task failover only. Fresh review/exploration inside one task should use internal fresh children/contexts, not another Human-visible coordinator.
+Accepted host/control facts:
 
-T057 already conforms as `AG | agent-governance | T057 | root-1`. Do not restart or alter it because later policy changed.
+```text
+Codex CLI/App Server/native schema: 0.153.4
+root: GPT-5.6 Sol / Medium
+coordinator: AG | agent-governance | T057 | root-1
+provider-backed attempts: 1
+thread/loaded/list: data array<string>
+parent activePermissionProfile.id: :read-only
+child activePermissionProfile.id: :read-only
+parent residency through reattachment: PASS
+child requested/resolved: gpt-5.6-terra / low
+backend-served profile verified: false
+reroute observed: false
+exact child total tokens: 22536
+exact child durationMs: 4516
+tracked/global mutation: none outside authorized evidence artifacts
+```
 
-## D061 + provider hard guard
+The configured/resolved child profile is qualified evidence of configured thread state only. Absence of reroute is not backend identity proof.
 
-D061 process-layer sequence:
+## D063 — qualified measurement substrate
+
+D063 adopts R008/R009 after T057.
+
+Future child-routing evaluations may rely on the surface only after installed native version/capability revalidation and only when exact-child identity, read-only profile provenance, parent residency, exact non-estimated usage, exact duration and reroute evidence are captured.
+
+D063 does not:
+
+- adopt child-routing policy;
+- change D055;
+- prove backend-served per-turn model identity;
+- authorize cost/savings claims;
+- eliminate the need for a corrected R007 evaluation design.
+
+## D060 — same-task coordinator closure
+
+T057 used one task-scoped Human-visible coordinator root exactly as required:
+
+```text
+AG | agent-governance | T057 | root-1
+```
+
+Do not open a new T057 root merely for post-integration cleanup. If the existing root remains recoverable, cleanup is `CONTINUE` on that same coordinator. Retire the root after T057 branch/worktree closure is complete.
+
+## R012 post-T057 decision gate
+
+R012 research conclusion remains:
+
+```text
+pure optional worker delegation is too weak for a true Executor Coordinator
+exact global worker choreography is too prescriptive
+preferred direction = semantic delegation obligation
+```
+
+The next normative decision must resolve whether Agent Governance will require the coordinator to delegate when material semantic triggers are present while leaving concrete worker decomposition/count/sequencing/mechanics to the Executor.
+
+Do not conflate this with R007 compute routing.
+
+## Repository/branch hygiene
+
+D061 remains mandatory for every Orchestrator Markdown write:
 
 ```text
 refresh develop
 -> create topic branch
--> verify exact branch exists at intended base SHA
+-> verify exact topic branch/base
 -> mutate only with explicit branch=<verified-topic>
--> verify develop did not move because of the mutation
+-> verify develop unchanged by mutation
 -> review diff
 -> PR to develop
 ```
 
-Provider hard guard now independently applies:
+The provider hard guard independently rejects routine direct writes to `main`/`develop`.
 
-```text
-GitHub ruleset 22339910
-name: Protect long-lived branches
-enforcement: active
-targets:
-  refs/heads/main
-  refs/heads/develop
-rules:
-  deletion
-  non_fast_forward
-  pull_request
-required approvals: 0
-bypass actors: none
-connected actor bypass: never
-```
+Outstanding closure items after this convergence change is integrated:
 
-The three historical accidental direct-`develop` authoring commits remain preserved rather than hidden:
+- T057 execution branch/worktree via TASK T057 canonical cleanup flow;
+- PR #295 branch `docs/d062-repository-branch-protection-bootstrap` if still present;
+- this T057 convergence documentation branch after its PR is merged.
 
-```text
-2a2f34baa5e90724c46555c876aabe68309a8b99  R012 placeholder
-59c44d88e202c24928fd4908470bd91099703023  R013 placeholder
-7a116b92c706801c9259ce152096609adb465563  D061 placeholder
-```
-
-The expected safety model is defense in depth:
-
-```text
-D061 process guard prevents an unsafe request
-+
-D062/provider guard rejects it if the process guard fails
-```
-
-## D062 — future repository bootstrap safety
-
-Decision:
-
-`docs/decisions/D062-repository-long-lived-branch-protection-bootstrap.md`
-
-Source-product ledger:
-
-`docs/REPOSITORY-SAFETY-CONTROLS-LEDGER.md`
-
-Runbook:
-
-`docs/LONG-LIVED-BRANCH-PROTECTION-RUNBOOK.md`
-
-Portable Consumer asset:
-
-`governance-skill/assets/REPOSITORY-BRANCH-PROTECTION.md`
-
-Adopted minimum writable-readiness semantics for providers with enforceable branch protection:
-
-```text
-normal long-lived-branch changes require PR/MR transport
-deletions restricted
-force/non-fast-forward updates blocked
-normal agentic writer has no routine bypass
-control active/enforced
-effective provider-side state verified
-durable project receipt recorded
-```
-
-Do not assume every project uses `main` + `develop`. Discover actual long-lived branches and preserve stronger compatible project-native controls.
-
-If the agent cannot administer repository settings, Consumer bootstrap returns `REQUIRE_HUMAN`, provides the bounded provider action, and verifies the effective state after the Human/repository administrator applies it. Read-only discovery may continue; normal writable readiness may not.
-
-The current deterministic Consumer CLI does not itself gain remote ruleset administration through this Markdown change. Do not claim it does.
-
-## T057 active execution
-
-Task Contract:
-
-`docs/tasks/T057-codex-read-only-child-requalification-v2.md`
-
-T057 remains an observability qualification, not a delegation or repository-protection experiment. Do not add workers, restart it, change its root profile, or treat later Markdown-only governance changes as a launch-base defect.
-
-When T057 returns terminal fields, converge exact branch/HEAD, telemetry and handoff against its frozen launch base plus current canonical `develop`.
-
-If T057 needs same-task rework and its root remains recoverable, D060 requires `CONTINUE` in `AG | agent-governance | T057 | root-1`.
-
-## R012 post-T057 gate
-
-After T057 convergence, before the next normal non-experimental implementation task, explicitly decide whether to adopt the semantic delegation obligation recommended by R012:
-
-```text
-Agent Governance defines when delegation is required and safety/evidence bounds.
-Executor coordinator chooses concrete decomposition, workers, sequencing/parallelism and mechanics.
-```
-
-Do not conflate this with R007 child compute routing.
+Do not delete ambiguous local work; use evidence-safe cleanup only.
 
 ## Next action
 
-1. Review the complete D062 topic-branch diff and integrate it through PR to `develop`; D061 must be obeyed throughout.
-2. Allow the already-running T057 root to finish unchanged.
-3. Converge T057 from GitHub evidence.
-4. Transition R009/R008 under D057 from the result.
-5. Decide R012 before the next normal non-experimental implementation task.
-6. Retire merged documentation topic branches through evidence-safe cleanup without interfering with T057.
-7. Revalidate RSC001 when the repository provider/ruleset/targets/agent bypass identity changes.
-8. Do not launch MG1-v13 concurrently.
+1. Review and integrate the T057 convergence Markdown branch through PR to `develop`.
+2. Revalidate `develop`, the T057 review/D063 registry transition and current branch inventory.
+3. `CONTINUE` `AG | agent-governance | T057 | root-1` only for canonical same-task post-integration cleanup of TASK T057; retire the root after closure.
+4. Complete evidence-safe retirement of merged documentation branches, including PR #295 and the T057 convergence branch, without touching unrelated retained/review state.
+5. Decide R012 and, if accepted, persist the semantic delegation policy before the next normal non-experimental implementation task.
+6. Keep R007 deferred until a corrected successor evaluation is explicitly specified and transitioned under D057.
+7. Do not launch MG1-v13 concurrently.
 
 ## Next chat minimum load
 
@@ -167,11 +143,11 @@ Load current `develop` identity, `AGENTS.md`, and this checkpoint.
 Then:
 
 - apply D061 before any Orchestrator repository mutation;
-- treat RSC001/provider protection as effective only while current provider verification still supports it;
-- if T057 is still running, do not modify its frozen topology;
-- if T057 returned terminal fields, load T057, its exact handoff/telemetry, R009 and the research registry;
-- after T057 convergence, load R012 before the next normal implementation launch.
+- verify D063/T057 review and R008/R009 registry state if this convergence change is integrated;
+- if T057 cleanup is not complete, use the same T057 coordinator root when recoverable;
+- load R012 before authoring the next normal implementation launch policy;
+- load R007 only if a corrected routing-evaluation design is being considered.
 
 ## Do not
 
-Do not perform normal Orchestrator content writes to `main` or `develop`. Do not omit the branch target on content mutations. Do not grant routine agent bypass merely to avoid PR flow. Do not weaken project-native stronger branch controls. Do not claim the Consumer CLI administers remote protection when it does not. Do not restart or add workers to T057. Do not use `root-2` merely for fresh context. Do not adopt R012 implicitly. Do not rewrite history to hide authoring incidents.
+Do not reopen or rerun T057. Do not overstate backend-served model identity. Do not infer savings from the single T057 synthetic turn. Do not reactivate R007 implicitly. Do not adopt R012 implicitly. Do not open `root-2` for ordinary T057 cleanup. Do not perform normal Orchestrator content writes to `main` or `develop`, omit branch targets, grant routine agent bypass, weaken stronger branch controls, or rewrite history to hide prior incidents.
