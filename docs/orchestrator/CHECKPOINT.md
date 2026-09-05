@@ -6,7 +6,7 @@ Canonical-Branch: `develop`
 Current-Work-Unit: T057 lifecycle is fully closed and its root retired; R012 is being resolved through D065 semantic delegation policy, with OP070 next to retire the remaining PR #295 documentation branch plus the D065/OP070 authoring branch  
 Chat-Closure: CONTINUE_CURRENT_CHAT  
 Active-Executor: none  
-Active-Executor-Surface: next Executor launch is independent OP070 on native Windows Codex after this Markdown change is integrated
+Active-Executor-Surface: next Executor launch is independent OP070 on native Windows Codex after PR #299 is integrated
 
 ## Durable frontier
 
@@ -24,7 +24,7 @@ Active-Executor-Surface: next Executor launch is independent OP070 on native Win
 - R008 is `COMPLETE / DECIDED -> D063`.
 - R009 is `COMPLETE / DECIDED -> D063`.
 - R007 remains `COMPLETE / DEFERRED`; D063 cleared the measurement blocker but no corrected routing evaluation/policy has yet been adopted.
-- R012 transitions in this change to `COMPLETE / DECIDED -> D065`.
+- R012 transitions in PR `#299` to `COMPLETE / DECIDED -> D065`.
 - R013 remains `COMPLETE / DECIDED -> D060`.
 - PR `#295` / branch `docs/d062-repository-branch-protection-bootstrap` remains the only known outstanding documentation-branch residue in the current frontier; its current remote head still equals merged PR #295 head `550a0fd702a07af7fd50c92c5dfd9e203899fb12`.
 
@@ -56,7 +56,7 @@ T057 is now operationally closed. Do not reopen or rerun it.
 
 ## D065 — semantic Executor delegation obligation
 
-Decision in this Markdown change:
+Decision in PR `#299`:
 
 `docs/decisions/D065-semantic-executor-delegation-obligation.md`
 
@@ -94,7 +94,7 @@ Decision-Ref: docs/decisions/D065-semantic-executor-delegation-obligation.md
 
 ## OP070 — remaining documentation branch closure
 
-Contract in this change:
+Contract in PR `#299`:
 
 `docs/operations/OP070-retire-d062-and-d065-branches.md`
 
@@ -108,8 +108,8 @@ PR #295
 
 D065 / OP070 contract-authoring branch
   branch: docs/d065-semantic-executor-delegation
-  PR: TO_BE_PERSISTED_BEFORE_MERGE
-  reviewed head: derive from the final merged PR record
+  PR: #299
+  reviewed head: derive from final merged PR #299 record
 ```
 
 OP070 is an independent Operational Contract, not attached to T057.
@@ -164,19 +164,18 @@ refresh develop
 
 This D065/OP070 authoring branch was created from verified `develop@8603dbf5c5ada7f3dc05d5f06351142db4decb32` before mutation.
 
-After this change is integrated, OP070 must retire both its exact authorized targets and restore the primary checkout to current clean `develop` without touching unrelated branches/worktrees.
+After PR #299 is integrated, OP070 must retire both its exact authorized targets and restore the primary checkout to current clean `develop` without touching unrelated branches/worktrees.
 
 ## Next action
 
-1. Review this D065 / R012 / OP070 / O215 Markdown diff.
-2. Open the PR to `develop`, persist that exact PR number into OP070 and this checkpoint before merge, then re-review final head.
-3. Integrate through protected `develop` PR path.
-4. Refresh current `develop` and merged PR/head identities.
-5. Human starts NEW `AG | agent-governance | OP070 | root-1` with GPT-5.6 Terra / Low and sends only the OP070 pointer transport.
-6. Orchestrator converges the durable OP070 receipt; on accepted `DONE`, retire the OP070 root.
-7. Do not reuse the retired T057 root.
-8. Keep R007 deferred until a corrected successor evaluation is explicitly specified and transitioned under D057.
-9. Do not launch MG1-v13 concurrently.
+1. Re-review final PR #299 head after this PR-number binding.
+2. Integrate PR #299 through protected `develop` PR path.
+3. Refresh current `develop` and merged PR #299/head identities.
+4. Human starts NEW `AG | agent-governance | OP070 | root-1` with GPT-5.6 Terra / Low and sends only the OP070 pointer transport.
+5. Orchestrator converges the durable OP070 receipt; on accepted `DONE`, retire the OP070 root.
+6. Do not reuse the retired T057 root.
+7. Keep R007 deferred until a corrected successor evaluation is explicitly specified and transitioned under D057.
+8. Do not launch MG1-v13 concurrently.
 
 ## Next chat minimum load
 
@@ -185,7 +184,7 @@ Load current `develop` identity, `AGENTS.md`, and this checkpoint.
 Then:
 
 - apply D061 before any Orchestrator write;
-- if this D065/OP070 PR is not integrated, finish its PR-number binding/review/integration first;
+- if PR #299 is not integrated, finish its final review/integration first;
 - if integrated and OP070 is pending, launch OP070 as its own NEW coordinator;
 - if OP070 is done, verify its durable receipt and branch absence before selecting the next product work unit;
 - load R007 only if a corrected routing-evaluation design is being considered.
