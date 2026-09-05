@@ -44,6 +44,7 @@ See D057 for transition semantics and required metadata for new research.
 | R008 | `docs/research/CODEX-CHILD-OBSERVABILITY-SURFACE-RESEARCH.md` | COMPLETE | DEFERRED | `docs/tasks/T055-codex-child-observability-qualification.md`; `docs/reviews/T055-R1.md`; PR `#280`; successor R009/T056/T057 | none | T055 execution was accepted with `PARTIAL_OBSERVABILITY`. Model/reasoning, exact child/turn usage and duration were observable, but 0.149.0 did not prove an unambiguous non-write child profile. R009 found a materially stronger 0.153.4+ surface. T056 confirmed the parent `:read-only` profile-ID path but its controller terminated before child reattachment. R008 remains deferred pending T057. |
 | R009 | `docs/research/CODEX-CHILD-SANDBOX-INHERITANCE-RESEARCH.md` | COMPLETE | EVALUATING | `docs/tasks/T056-codex-read-only-child-requalification.md`; `docs/reviews/T056-R1.md`; `docs/tasks/T057-codex-read-only-child-requalification-v2.md`; evidence PR `#284` | none | Official source supports parent-derived child permission inheritance and the 0.153.4 parent-owned reload fix. T056 accepted as execution with `PARTIAL_OBSERVABILITY`: version/capability gates, parent `:read-only` receipt, real-child correlation, and requested/resolved `Terra / Low` passed, but a controller misparse of `thread/loaded/list` terminated App Server before child reattachment. R009 remains EVALUATING under T057, which corrects only that harness defect and preserves all material controls. |
 | R010 | `docs/research/GPT6-ASTRA-EXECUTOR-LAUNCH-PROFILE-RESEARCH.md` | COMPLETE | DEFERRED | no empirical project evaluation yet | none | GPT-6 Astra is an official quality-first flagship and current Codex source supports it, but availability alone does not justify globally replacing Sol under D055. T056/T057 remain `GPT-5.6 Sol / Medium` to avoid a model-family confound. Global/default Astra adoption is deferred pending task-level or comparative evidence and host/account availability. |
+| R011 | `docs/research/CODEX-COORDINATOR-IDENTITY-WORKTREE-HYGIENE-RESEARCH.md` | COMPLETE | DECIDED | current source-maintenance workflow; T056/T057 local-execution lineage | `docs/decisions/D058-executor-coordinator-session-and-worktree-hygiene.md` | Codex supports explicit Human-visible thread naming, while existing branch cleanup did not fully require obsolete-worktree retirement plus primary-checkout convergence. D058 adopts deterministic coordinator chat names, exclusive writable worktrees for concurrent work units, fail-closed local-state classification, post-integration worktree retirement, and a clean/current primary checkout baseline. |
 
 ## Live research frontier
 
@@ -74,13 +75,18 @@ R006 — persistent Executor coordinator
   No global D055 persistence-session policy change
 ```
 
-Completed vendor/model research not adopted as policy:
+Completed research dispositions outside the live evaluation frontier:
 
 ```text
 R010 — GPT-6 Astra Executor launch profile
   COMPLETE / DEFERRED
   T057 remains Sol / Medium
   No global D055 Astra migration adopted
+
+R011 — Codex coordinator identity / worktree hygiene
+  COMPLETE / DECIDED
+  Decision: D058
+  Deterministic coordinator naming + exclusive writable worktrees + safe local closure are adopted source-maintenance policy
 ```
 
 T057 is not a routing pilot. Even a passing T057 result requires Orchestrator convergence and explicit D057 transitions before R007 may return to `EVALUATING`.
@@ -102,6 +108,6 @@ No material research may be relied on for a downstream Task Contract or normativ
 
 ## Provenance rule
 
-Do not rewrite a completed research artifact merely to align it with a later conclusion. Preserve the original analysis, create a successor/revision when material evidence changes, and use the registry to express supersession and current disposition.
+Do not rewrite a completed research artifact merely to align with a later conclusion. Preserve the original analysis, create a successor/revision when material evidence changes, and use the registry to express supersession and current disposition.
 
 For volatile vendor/model/pricing/regulatory facts, revalidate the source before a later decision and update the research `Last-Reviewed` metadata or create a successor research item.

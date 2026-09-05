@@ -2,6 +2,7 @@
 
 Status: ACTIVE SOURCE-MAINTAINER GUIDANCE  
 Controlling decision: `docs/decisions/D055-executor-launch-session-and-compute-profile.md`  
+Coordinator/worktree refinement: `docs/decisions/D058-executor-coordinator-session-and-worktree-hygiene.md`  
 Bootstrap authority: `docs/decisions/D042-remote-baseline-freshness-before-contract-load.md`
 
 ## Purpose
@@ -17,10 +18,21 @@ Before the prompt itself, ChatGPT presents:
 ```text
 Executor: <active concrete executor>
 Session: NEW | CONTINUE
+Coordinator-Chat: <deterministic name when the host supports named sessions; otherwise n/a>
 Model: <exact recommended model available in that executor>
 Effort: <exact recommended reasoning setting>
 Rationale: <one concise sentence>
 ```
+
+For the current Codex adapter, D058 requires:
+
+```text
+Coordinator-Chat: AG | <repo> | <work-unit> | root-<n>
+```
+
+The first coordinator for a work unit uses `root-1`. Same-work-unit `CONTINUE` keeps the same name. A required fresh root for the same work unit increments the ordinal.
+
+The coordinator name is Human navigation/continuity metadata, not Task Contract authority. The Human applies the exact name through the supported host UI/session naming surface before substantive execution.
 
 The launch card is for the Human to configure/select the Executor session. Do not duplicate it inside the prompt unless the host has no separate model/session control and the setting must be conveyed textually.
 
@@ -41,6 +53,8 @@ synchronize canonical GitHub remote
 `current` means the current canonical remote state at execution time, not a SHA remembered by ChatGPT, not a stale local `develop`, and not merely the branch currently checked out.
 
 Remote freshness must not discard local or unrepresented work. If a safe current baseline cannot be established, the Executor fails closed according to D042/RB001 rather than reset/clean/overwrite merely to satisfy the launch.
+
+D058 additionally requires the writable workspace selected for a work unit to be exclusive when concurrent writable work exists. The Executor must not solve a workspace collision by discarding another worktree's represented or unrepresented state.
 
 The prompt tells the Executor to synchronize/refresh from GitHub; **the prompt does not prescribe Git commands**. Exact Git/CLI mechanics remain Executor-owned under D054 and the applicable runbook.
 
@@ -87,9 +101,23 @@ prior context stale/contaminated/unrelated?    -> NEW
 same-task rework/follow-up with clean context? -> CONTINUE
 ```
 
+Under D058, `CONTINUE` additionally requires the same coordinator chat identity. If multiple chats could plausibly represent the work unit and the correct one cannot be identified, use `NEW` with the next root ordinal rather than guessing.
+
 A newly governing `AGENTS.md` change uses D043 conditional reload when the host can refresh it safely; otherwise use `NEW`.
 
 Session continuity never exempts D042 remote freshness. `CONTINUE` preserves useful conversation context, not stale repository state.
+
+## Worktree rule
+
+For writable work on a repository that may host parallel coordinators:
+
+```text
+one writable work unit -> one exclusive worktree -> one topic branch
+```
+
+Two writable coordinators must not share the same worktree or branch. Before mutation, establish that the selected workspace is attributable to the current work unit and not owned by another active coordinator.
+
+Post-integration worktree retirement and primary-checkout convergence follow `docs/EXECUTOR-SESSION-WORKTREE-HYGIENE.md` and the existing branch-cleanup policy.
 
 ## Effort rule
 
@@ -104,7 +132,7 @@ Do not raise effort to compensate for an incomplete specification or missing Des
 
 ## Current adapter — Codex
 
-Research baseline: 2026-08-23  
+Research baseline: 2026-08-23; naming surface revalidated 2026-09-05  
 Surface: ChatGPT desktop app -> Codex  
 Current host: native Windows source-maintenance workstation
 
@@ -117,6 +145,8 @@ OpenAI currently exposes the GPT-5.6 family in Codex with Sol, Terra and Luna ti
 | Standard AG implementation/rework | GPT-5.6 Sol | Medium | default multi-file implementation, ordinary refactor/debug/review |
 | Complex/high-risk technical work | GPT-5.6 Sol | High | concurrency, subtle fail-closed/security, hard portability, complex Git/history, difficult diagnosis |
 | Exceptional long-horizon work | GPT-5.6 Sol | XHigh/Max only when justified | only after concrete evidence that High is insufficient |
+
+Codex currently supports explicit thread/session naming. R011 records the inspected current source surface; exact naming UI/commands remain vendor-specific and may change.
 
 ### Conservative fallbacks
 
@@ -143,6 +173,7 @@ Do not force tasks into these percentages. Actual task risk and evidence control
 ```text
 Executor: Codex
 Session: NEW
+Coordinator-Chat: AG | agent-governance | TNNN | root-1
 Model: GPT-5.6 Sol
 Effort: Medium
 Rationale: first launch of a new bounded implementation task; the Task Contract carries the design and normal multi-file technical reasoning remains.
@@ -153,9 +184,10 @@ Rationale: first launch of a new bounded implementation task; the Task Contract 
 ```text
 Executor: Codex
 Session: CONTINUE
+Coordinator-Chat: AG | agent-governance | TNNN | root-1
 Model: GPT-5.6 Sol
 Effort: Medium
-Rationale: same represented Task Contract/branch and the persisted review supplies the revised authority, so retaining implementation context avoids redundant reload cost.
+Rationale: same represented Task Contract/branch and coordinator chat; the persisted review supplies the revised authority, so retaining implementation context avoids redundant reload cost.
 ```
 
 ### Read-only post-integration baseline
@@ -163,6 +195,7 @@ Rationale: same represented Task Contract/branch and the persisted review suppli
 ```text
 Executor: Codex
 Session: NEW
+Coordinator-Chat: AG | agent-governance | OPNNN | root-1
 Model: GPT-5.6 Luna
 Effort: Low
 Rationale: independent read-only verification with deterministic commands/postconditions; no implementation reasoning is required.
@@ -173,6 +206,7 @@ Rationale: independent read-only verification with deterministic commands/postco
 ```text
 Executor: Codex
 Session: NEW
+Coordinator-Chat: AG | agent-governance | TNNN | root-1
 Model: GPT-5.6 Sol
 Effort: High
 Rationale: the technical work has non-local ordering/fail-closed risk where extra reasoning materially reduces implementation/review risk.
@@ -184,10 +218,11 @@ The Orchestrator should periodically re-check official Executor documentation wh
 
 - available model tiers change;
 - effort labels/semantics change;
+- session/thread naming surfaces change;
 - a new Executor replaces the current adapter;
 - repeated AG evidence shows the current mapping is systematically over- or under-provisioned.
 
-Provider mapping changes are operating-guidance updates, not Governance Core protocol changes.
+Provider mapping and naming-surface changes are operating-guidance updates, not Governance Core protocol changes.
 
 ## Current OpenAI references
 
