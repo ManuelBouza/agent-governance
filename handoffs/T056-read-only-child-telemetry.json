@@ -1,0 +1,252 @@
+{
+  "schema_version": 1,
+  "run_id": "T056-20260905T104044Z-7F3A9C2D",
+  "task_id": "T056",
+  "task_contract_path": "docs/tasks/T056-codex-read-only-child-requalification.md",
+  "started_at_utc": "2026-09-05T10:40:44.025077Z",
+  "ended_at_utc": "2026-09-05T10:40:59.236265Z",
+  "base_develop_sha": "94d1ee12909b315851054211ddbbe4da802d786f",
+  "executor_branch": "test/t056-codex-read-only-child-requalification",
+  "executor_root_profile": {
+    "executor": "Codex",
+    "session": "NEW",
+    "model": "GPT-5.6 Sol",
+    "reasoning_effort": "Medium",
+    "human_visible_profile_fixed_for_complete_task": true,
+    "mid_task_profile_change": false
+  },
+  "d042_baseline": {
+    "canonical_remote": "https://github.com/ManuelBouza/agent-governance.git",
+    "canonical_base_branch": "develop",
+    "fetched_origin_develop_sha": "94d1ee12909b315851054211ddbbe4da802d786f",
+    "isolated_baseline_sha": "94d1ee12909b315851054211ddbbe4da802d786f",
+    "baseline_clean": true,
+    "safe_baseline_method": "Fetched origin, preserved the pre-existing checkout and worktrees, then created a new isolated worktree at current origin/develop before loading repository authority.",
+    "pre_existing_checkout": {
+      "branch": "verify/t039-t034-oracle-transition",
+      "head": "0197e1899cb0933c7345b373a5dfdbd015d078fc",
+      "unrepresented_local_work_observed": [
+        ".worktrees/"
+      ],
+      "discarded_or_overwritten": false
+    }
+  },
+  "version_preflight": {
+    "local_codex_cli_version": "0.153.4",
+    "local_codex_cli_path": "C:\\Users\\Manuel\\AppData\\Local\\Programs\\OpenAI\\Codex\\bin\\codex.exe",
+    "app_server_initialize_version": "0.153.4",
+    "app_server_initialize_user_agent": "Codex Desktop/0.153.4 (Windows 10.0.26200; x86_64) dumb (t056-read-only-child-controller; 1.0)",
+    "app_server_transport": "stdio",
+    "native_schema_generated_from_version": "0.153.4",
+    "native_schema_command": "codex app-server generate-json-schema --experimental --out <temporary-directory>",
+    "native_schema_location_class": "temporary directory outside tracked repository state",
+    "experimental_api_enabled": true,
+    "current_auth_mode_category": "chatgpt",
+    "minimum_required_version": "0.153.4",
+    "version_gate_passed": true,
+    "global_upgrade_performed": false,
+    "alternate_binary_used": false
+  },
+  "native_capability_preflight": {
+    "thread_start_permissions_profile_id_supported": {
+      "supported": true,
+      "evidence_source": "native experimental v2/ThreadStartParams.json property permissions"
+    },
+    "thread_start_active_permission_profile_response_supported": {
+      "supported": true,
+      "evidence_source": "native experimental v2/ThreadStartResponse.json property activePermissionProfile"
+    },
+    "thread_resume_active_permission_profile_response_supported": {
+      "supported": true,
+      "evidence_source": "native experimental v2/ThreadResumeResponse.json property activePermissionProfile"
+    },
+    "thread_token_usage_updated_supported": {
+      "supported": true,
+      "evidence_source": "native experimental v2/ThreadTokenUsageUpdatedNotification.json"
+    },
+    "child_relationship_discovery_supported": {
+      "supported": true,
+      "evidence_source": "native experimental ThreadListParams parentThreadId plus ThreadItem subAgentActivity/agentThreadId schemas"
+    },
+    "multi_agent_child_spawn_supported": {
+      "supported": true,
+      "evidence_source": "installed `codex features list` reports `multi_agent_v2 stable`"
+    },
+    "child_model_override_supported": {
+      "supported": true,
+      "evidence_source": "installed Multi-Agent V2 feature help plus native Thread model receipt schema"
+    },
+    "child_reasoning_override_supported": {
+      "supported": true,
+      "evidence_source": "installed Multi-Agent V2 feature help plus native Thread reasoningEffort receipt schema"
+    },
+    "all_mandatory_capabilities_present": true
+  },
+  "surface_selection": {
+    "surface": "installed Codex App Server direct JSON-RPC",
+    "temporary_controller_path": "C:\\Users\\Manuel\\AppData\\Local\\Temp\\t056_controller.py",
+    "temporary_diagnostic_capture_path": "C:\\Users\\Manuel\\AppData\\Local\\Temp\\t056-app-server-result.json",
+    "tracked_controller_or_schema_created": false,
+    "product_dependency_added": false,
+    "global_codex_configuration_changed": false,
+    "private_persistence_used_as_passing_evidence": false
+  },
+  "parent_thread": {
+    "thread_id": "01a07128-089f-70c1-ac27-6eb3f6b94bbc",
+    "requested_model": "gpt-5.6-sol",
+    "requested_reasoning": "medium",
+    "requested_permissions_id": ":read-only",
+    "legacy_sandbox_request_sent": false,
+    "active_permission_profile": {
+      "id": ":read-only",
+      "extends": null
+    },
+    "legacy_sandbox_projection": {
+      "type": "readOnly",
+      "networkAccess": false
+    },
+    "approval_policy": "never",
+    "cwd": "C:\\Manuel\\Projects\\agent-governance\\.worktrees\\t056-current",
+    "model_provider": "openai",
+    "resolved_model": "gpt-5.6-sol",
+    "resolved_reasoning": "medium",
+    "turn_id": "01a07128-0990-7122-8df4-83a277dd040b",
+    "turn_status": "completed",
+    "loaded_during_child_inspection": false,
+    "loaded_list_before_failed_reattachment_step": true,
+    "residency_failure_reason": "The controller misread thread/loaded/list data as thread objects instead of thread ID strings and terminated the App Server before child reattachment; the frozen continuous parent-residency requirement therefore cannot pass."
+  },
+  "child_thread": {
+    "thread_id": "01a07128-1f6b-7ef0-aeab-2746a95fd00e",
+    "parent_thread_id": "01a07128-089f-70c1-ac27-6eb3f6b94bbc",
+    "source": {
+      "kind": "subAgent",
+      "spawn_kind": "thread_spawn",
+      "depth": 1,
+      "agent_path": "/root/t056_read_only_child",
+      "agent_nickname": "Pascal"
+    },
+    "agent_path_or_task_name": "t056_read_only_child",
+    "requested_model": "gpt-5.6-terra",
+    "requested_reasoning": "low",
+    "requested_fork_turns": "none",
+    "requested_service_tier": "default/omitted",
+    "resolved_model_provider": "openai",
+    "resolved_model": "gpt-5.6-terra",
+    "resolved_reasoning": "low",
+    "active_permission_profile": null,
+    "legacy_sandbox_projection": null,
+    "turn_id": null,
+    "deterministic_nonce": "T056-READ-ONLY-CHILD-OK-7F3A9C2D",
+    "nonce_returned_through_parent": true,
+    "closed_or_disposed": true,
+    "disposition": "The temporary App Server process closed after the fail-closed controller error; no reattachment or second probe was attempted."
+  },
+  "relationship_evidence": {
+    "child_thread_id_non_null": true,
+    "child_differs_from_parent": true,
+    "matching_child_count": 1,
+    "sub_agent_activity_started_count": 1,
+    "sub_agent_activity_completed_count": 1,
+    "sub_agent_activity_agent_thread_id": "01a07128-1f6b-7ef0-aeab-2746a95fd00e",
+    "thread_list_parent_thread_id": "01a07128-089f-70c1-ac27-6eb3f6b94bbc",
+    "thread_list_child_thread_id": "01a07128-1f6b-7ef0-aeab-2746a95fd00e",
+    "expected_agent_path_matches": true,
+    "real_multi_agent_v2_child_verified": true,
+    "experimental_parent_thread_id_filter_used": true,
+    "deterministic_correlation_passed": true
+  },
+  "permission_evidence": {
+    "requested_parent_permission_profile": ":read-only",
+    "resolved_parent_permission_profile": {
+      "id": ":read-only",
+      "extends": null
+    },
+    "resolved_child_permission_profile": null,
+    "legacy_parent_sandbox_projection": {
+      "type": "readOnly",
+      "networkAccess": false
+    },
+    "legacy_child_sandbox_projection": null,
+    "parent_receipt_passed": true,
+    "child_receipt_captured": false,
+    "child_receipt_passed": false,
+    "contradictory_broader_projection_observed": false,
+    "receipt_stop_reason": "Child thread/resume was not reached while the actual parent remained continuously loaded; no private state was used to fill the missing supported receipt."
+  },
+  "compute_profile_evidence": {
+    "requested_child_model": "gpt-5.6-terra",
+    "requested_child_reasoning": "low",
+    "resolved_child_model_provider": "openai",
+    "resolved_child_model": "gpt-5.6-terra",
+    "resolved_child_reasoning": "low",
+    "receipt_source": "experimental thread/list parentThreadId result for the uniquely correlated child",
+    "requested_resolved_match": true,
+    "backend_served_profile_verified": false,
+    "backend_boundary_reason": "Resolved Thread state is not an authoritative per-turn backend execution receipt."
+  },
+  "usage_evidence": {
+    "thread_id": "01a07128-1f6b-7ef0-aeab-2746a95fd00e",
+    "turn_id": null,
+    "input_tokens": null,
+    "cached_input_tokens": null,
+    "cache_write_input_tokens": null,
+    "output_tokens": null,
+    "reasoning_output_tokens": null,
+    "total_tokens": null,
+    "model_context_window": null,
+    "estimated": null,
+    "server_reported_exact_child_turn_usage_captured": false,
+    "unavailable_reason": "The controller stopped before supported child thread/resume usage replay and did not estimate or inspect private persistence."
+  },
+  "duration_evidence": {
+    "turn_id": null,
+    "started_at": null,
+    "completed_at": null,
+    "duration_ms": null,
+    "exact_child_turn_duration_captured": false,
+    "parent_turn_timing_not_substituted": true,
+    "unavailable_reason": "The controller stopped before supported child reattachment returned the child Turn record."
+  },
+  "reroute_evidence": {
+    "model_rerouted_surface_supported": true,
+    "reroute_observed": null,
+    "from_model": null,
+    "to_model": null,
+    "reason": null,
+    "absence_interpreted_as_backend_identity_proof": false,
+    "unavailable_reason": "The stopped capture did not complete exact-child reroute observation."
+  },
+  "worktree_safety": {
+    "baseline_tracked_status_clean": true,
+    "post_probe_tracked_status_clean_before_evidence_write": true,
+    "tracked_mutation_by_parent_or_child_observed": false,
+    "child_write_test_attempted": false,
+    "product_code_changed": false,
+    "markdown_changed": false,
+    "dependency_changed": false,
+    "persistent_agent_catalog_created": false,
+    "global_configuration_changed": false,
+    "authorized_evidence_files": [
+      "handoffs/T056-read-only-child-telemetry.json",
+      "handoffs/T056-executor-handoff.json"
+    ]
+  },
+  "qualification_decision": "PARTIAL_OBSERVABILITY",
+  "qualification_reasons": [
+    "The installed CLI and initialized App Server are 0.153.4 and the native capability preflight passed.",
+    "The parent returned activePermissionProfile.id=:read-only and a non-contradictory readOnly legacy projection.",
+    "Exactly one real Multi-Agent V2 child was uniquely correlated and its resolved Thread state matched requested gpt-5.6-terra/low.",
+    "The App Server closed after a controller type mismatch and before supported child reattachment, breaking the mandatory continuous parent-residency condition.",
+    "The child activePermissionProfile, legacy sandbox projection, exact child-turn usage, exact child-turn duration and complete reroute receipt are unavailable and were not reconstructed from private state.",
+    "The frozen rules require fail-closed PARTIAL_OBSERVABILITY and prohibit a passing inference or compensating rerun."
+  ],
+  "unavailable_fields": [
+    "child_thread.active_permission_profile",
+    "child_thread.legacy_sandbox_projection",
+    "child_thread.turn_id",
+    "usage_evidence exact token fields",
+    "duration_evidence exact turn fields",
+    "reroute_evidence.reroute_observed"
+  ]
+}

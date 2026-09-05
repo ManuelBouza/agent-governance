@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "task_id": "T056",
+  "status": "BLOCKED",
+  "task_contract_path": "docs/tasks/T056-codex-read-only-child-requalification.md",
+  "sdd_profile": "ASSURED",
+  "branch": "test/t056-codex-read-only-child-requalification",
+  "base_branch": "develop",
+  "base_sha": "94d1ee12909b315851054211ddbbe4da802d786f",
+  "files_changed": [
+    "handoffs/T056-read-only-child-telemetry.json",
+    "handoffs/T056-executor-handoff.json"
+  ],
+  "qualification_decision": "PARTIAL_OBSERVABILITY",
+  "qualification_decision_basis": "The 0.153.4 version/capability gates, parent :read-only receipt and one-child correlation passed, but the temporary controller terminated before supported child reattachment. Continuous parent residency and the mandatory child permission, usage, duration and reroute receipts are therefore unavailable and cannot be repaired by inference.",
+  "evidence_path": "handoffs/T056-read-only-child-telemetry.json",
+  "root": {
+    "executor": "Codex",
+    "session": "NEW",
+    "model": "GPT-5.6 Sol",
+    "reasoning_effort": "Medium",
+    "profile_change_during_task": false
+  },
+  "verification": {
+    "d042_base_identity": "PASS: fetched current origin/develop and isolated 94d1ee12909b315851054211ddbbe4da802d786f without altering pre-existing local work.",
+    "version_gate": "PASS: installed CLI and initialized App Server are exactly 0.153.4; no upgrade or alternate binary was used.",
+    "native_capability_preflight": "PASS: native experimental schema/help exposes every frozen mandatory surface.",
+    "parent_permission_receipt": "PASS: request used permissions=:read-only, omitted sandbox, and returned activePermissionProfile.id=:read-only plus legacy readOnly.",
+    "real_child_topology": "PASS: exactly one t056_read_only_child was correlated by subAgentActivity and experimental parentThreadId relation evidence.",
+    "requested_vs_resolved_profile": "PASS: requested and resolved Thread values are gpt-5.6-terra/low; backend-served identity remains unverified.",
+    "parent_residency": "FAIL: the App Server closed after the controller misread thread/loaded/list string IDs and before child reattachment.",
+    "child_permission_receipt": "FAIL: no supported child activePermissionProfile receipt was captured.",
+    "child_usage": "FAIL: exact non-estimated child/turn token usage was not captured.",
+    "child_duration": "FAIL: exact child-turn timing was not captured.",
+    "reroute": "FAIL: exact-child reroute observation did not complete; no absence-based backend claim is made.",
+    "private_state_boundary": "PASS: SQLite, JSONL and rollout internals were not used to upgrade missing receipts.",
+    "worktree_probe_safety": "PASS: tracked worktree remained clean through the provider-backed probe; neither parent nor child attempted a write."
+  },
+  "requirement_trace": {
+    "AC-T056-1": "PASS",
+    "AC-T056-2": "PASS",
+    "AC-T056-3": "PASS",
+    "AC-T056-4": "PASS",
+    "AC-T056-5": "FAIL_PARENT_RESIDENCY",
+    "AC-T056-6": "FAIL_UNAVAILABLE",
+    "AC-T056-7": "PASS_CONFIGURED_THREAD_STATE_ONLY",
+    "AC-T056-8": "FAIL_UNAVAILABLE",
+    "AC-T056-9": "FAIL_UNAVAILABLE",
+    "AC-T056-10": "PASS",
+    "AC-T056-11": "PASS_PARTIAL_OBSERVABILITY"
+  },
+  "unresolved_issues": [
+    "The decisive supported child activePermissionProfile receipt is unavailable.",
+    "Continuous parent residency was broken before child reattachment.",
+    "Exact child-turn usage, duration and reroute receipts are unavailable."
+  ],
+  "safety_and_authority": {
+    "tracked_product_code_changed": false,
+    "markdown_changed": false,
+    "dependency_changed": false,
+    "global_codex_configuration_changed": false,
+    "frozen_root_profile_changed": false,
+    "persistent_agent_catalog_created": false,
+    "routing_policy_changed": false,
+    "d055_changed": false,
+    "backend_profile_overstated": false,
+    "unsupported_quantitative_claim_made": false,
+    "second_provider_probe_attempted": false,
+    "authority_leakage": false
+  }
+}
