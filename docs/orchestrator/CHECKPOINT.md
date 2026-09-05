@@ -1,181 +1,165 @@
 # Current ChatGPT Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O205  
+Checkpoint-Sequence: O206  
 Canonical-Branch: `develop`  
-Current-Work-Unit: T056 is accepted as an execution with frozen outcome `PARTIAL_OBSERVABILITY`; R009 remains `EVALUATING`; T057 is specified as the bounded successor correcting only the T056 controller loaded-thread parsing / parent-residency defect  
+Current-Work-Unit: D058 coordinator-session/worktree hygiene accepted; OP067 local hygiene must converge before T057 may launch  
 Chat-Closure: CONTINUE_CURRENT_CHAT  
 Active-Executor: none  
-Active-Executor-Surface: T057 ready for a fresh Codex root after this Markdown convergence is integrated
+Active-Executor-Surface: Codex 0.153.4 native Windows when OP067 is launched
 
 ## Durable frontier
 
-- D039, D041, D042, D053, D054, D055, D056 and D057 remain controlling. Core protocol remains `1.15.0`.
-- Canonical research ledger: `docs/RESEARCH-TRACEABILITY.md`.
-- T050 remains `ACCEPTED`; code-health/symbol-map boundary remains active.
-- T023/MG1-v12 remains closed; no MG1-v13 is authorized.
-- T054 remains accepted with `NOT_QUALIFIED`; do not rerun unchanged.
-- T055 remains accepted with `PARTIAL_OBSERVABILITY`; do not rerun unchanged.
-- R010 GPT-6 Astra research is `COMPLETE / DEFERRED`; no global D055 Astra migration is adopted.
+- D039, D041, D042, D053, D054, D055, D056, D057 and D058 control the current source-maintenance workflow.
+- Core protocol remains `1.15.0`.
+- T054 remains accepted with pilot outcome `NOT_QUALIFIED`.
+- T055 remains accepted with `PARTIAL_OBSERVABILITY` on Codex 0.149.0.
+- T056 remains accepted as an execution with `PARTIAL_OBSERVABILITY` on Codex 0.153.4; its sole causal blocker was the temporary controller `thread/loaded/list` parsing / parent-residency defect documented in `docs/reviews/T056-R1.md`.
+- T057 is specified as the bounded successor in `docs/tasks/T057-codex-read-only-child-requalification-v2.md`, but it is **not yet authorized to launch** until OP067 returns `DONE`.
+- R009 remains `COMPLETE / EVALUATING` under T057.
+- R010 remains `COMPLETE / DEFERRED`; no global GPT-6 Astra migration is adopted and T057 remains Sol / Medium.
+- R011 is `COMPLETE / DECIDED` through D058.
 
-## T056 final state
+## D058 — coordinator identity and worktree hygiene
 
-T056 is **ACCEPTED as an execution** with frozen qualification decision:
+Authoritative decision:
 
-```text
-PARTIAL_OBSERVABILITY
-```
+`docs/decisions/D058-executor-coordinator-session-and-worktree-hygiene.md`
 
-Authoritative records:
+Operating procedure:
 
-- Task Contract: `docs/tasks/T056-codex-read-only-child-requalification.md`
-- final review: `docs/reviews/T056-R1.md`
-- handoff: `handoffs/T056-executor-handoff.json`
-- telemetry: `handoffs/T056-read-only-child-telemetry.json`
-- submitted Executor HEAD: `7c5b7d1c637edcbbe2923550ab3576071d87b13e`
-- evidence PR: `#284`
-- integrated evidence commit: `855a9d1f8bc9778477718e1961a036fd6d9da952`
+`docs/EXECUTOR-SESSION-WORKTREE-HYGIENE.md`
 
-### T056 positive evidence
+Research:
 
-On installed Codex/App Server 0.153.4:
+`docs/research/CODEX-COORDINATOR-IDENTITY-WORKTREE-HYGIENE-RESEARCH.md` (`R011`)
 
-```text
-version/capability gate: PASS
-parent permissions request: :read-only
-parent activePermissionProfile.id: :read-only
-parent legacy sandbox projection: readOnly
-real child count: 1
-requested child profile: gpt-5.6-terra / low
-resolved child profile: gpt-5.6-terra / low
-tracked mutation: none
-```
+### Coordinator naming
 
-The child was uniquely correlated through real Multi-Agent V2 lifecycle evidence.
+For named-session-capable Executors, every `NEW` Human-visible coordinator gets a deterministic name.
 
-### T056 blocker
-
-The temporary controller misread `thread/loaded/list` as thread objects when the exercised 0.153.4 surface returned thread ID strings. The controller terminated App Server before owner-controlled child reattachment.
-
-Therefore these mandatory receipts were unavailable:
+Current Codex convention:
 
 ```text
-continuous parent residency
-child activePermissionProfile
-child legacy sandbox projection
-exact child-turn token usage
-exact child-turn duration
-exact-child reroute receipt
+AG | <repo> | <work-unit> | root-<n>
 ```
 
-The Executor correctly failed closed, did not launch a compensating second provider-backed attempt, did not use private persistence to fill missing evidence, and did not change global configuration.
+Same-work-unit `CONTINUE` keeps the same coordinator identity. A required fresh root for the same work unit increments the ordinal.
 
-This is a harness/sequence failure, not an observed contradiction in the 0.153.4 child permission surface.
+The name is navigation metadata only. Git, persisted contracts, branches, handoffs, reviews and checkpoints remain authority.
 
-## Research dispositions
+### Worktree isolation
 
-### R006 — persistent Executor coordinator
+Each concurrently writable work unit uses an exclusive topic branch and writable worktree. Two writable coordinators may not share either surface.
+
+Post-integration closure now includes safe retirement of obsolete task worktrees/local branches plus primary-checkout convergence.
+
+Normal Agent Governance primary-checkout terminal state:
 
 ```text
-COMPLETE / DEFERRED
+branch        = develop
+HEAD          = current origin/develop
+tracked state = clean
 ```
 
-No global D055 persistence policy change.
+Ambiguous/unique local state is preserved and blocks destructive cleanup.
 
-### R007 — adaptive subagent compute routing
+## OP067 — mandatory pre-T057 local hygiene gate
 
-```text
-COMPLETE / DEFERRED
-```
+Contract:
 
-No corrected routing pilot is authorized yet.
+`docs/operations/OP067-normalize-local-worktrees-and-primary-checkout.md`
 
-### R008 — child observability surface
+Receipt anchor:
 
-```text
-COMPLETE / DEFERRED
-```
+GitHub issue `#286`.
 
-Remains deferred until the child read-only receipt surface qualifies.
+Purpose:
 
-### R009 — child sandbox inheritance / receipt
+- audit the accessible primary checkout, registered worktrees and relevant local/remote topic branches;
+- classify non-primary state as `ACTIVE`, `RETAIN`, `REVIEW`, or `DELETE`;
+- retire only evidence-safe `DELETE` state;
+- preserve ambiguous/unrepresented state;
+- prune stale worktree administrative records;
+- leave the primary checkout clean at current `origin/develop`;
+- establish `T057_WORKSPACE_READY=true` before T057 launch.
 
-```text
-Research-State: COMPLETE
-Decision-State: EVALUATING
-Evaluation refs:
-  docs/tasks/T056-codex-read-only-child-requalification.md
-  docs/reviews/T056-R1.md
-  docs/tasks/T057-codex-read-only-child-requalification-v2.md
-Decision-Ref: none
-```
+OP067 does not modify tracked product files.
 
-R009 remains live because T056 did not observe a contradictory child receipt; it failed before the decisive child reattachment measurement.
-
-### R010 — GPT-6 Astra launch profile
-
-```text
-COMPLETE / DEFERRED
-```
-
-Astra availability does not alter T057's frozen root. T057 remains GPT-5.6 Sol / Medium.
-
-## T057 executable identity
-
-Task Contract:
-
-`docs/tasks/T057-codex-read-only-child-requalification-v2.md`
-
-T057 preserves all material T056 controls and corrects only the temporary controller defect.
-
-Frozen launch profile:
+### OP067 launch profile
 
 ```text
 Executor: Codex
 Session: NEW
+Coordinator-Chat: AG | agent-governance | OP067 | root-1
 Model: GPT-5.6 Sol
-Effort: Medium
-Expected evidence branch: test/t057-codex-read-only-child-requalification-v2
+Effort: High
 ```
 
-T057 requires the controller to resolve the installed native `thread/loaded/list` response shape before provider-backed work, treat loaded threads according to that schema, keep the same App Server process alive through child reattachment, and prove parent residency immediately before reattachment.
+Rationale: the operation is bounded but can delete worktrees/refs and must distinguish represented history from unique local work; D055 reserves High for this class of repository-history/fail-closed risk.
 
-T057 authorizes exactly one provider-backed parent/child attempt. No compensating second attempt inside T057.
+## T057 launch after OP067
 
-Frozen decisions:
+Only after OP067 returns `DONE` with `T057_WORKSPACE_READY=true`:
 
 ```text
-QUALIFIED_READ_ONLY_CHILD_SURFACE
-PARTIAL_OBSERVABILITY
-BLOCKED_VERSION
-BLOCKED_CAPABILITY
+Executor: Codex
+Session: NEW
+Coordinator-Chat: AG | agent-governance | T057 | root-1
+Model: GPT-5.6 Sol
+Effort: Medium
+Expected branch: test/t057-codex-read-only-child-requalification-v2
 ```
 
-Even a passing T057 does not itself reactivate R007 or modify routing policy.
+T057 must use an exclusive writable worktree. Its scientific controls remain unchanged from the already integrated Task Contract.
+
+## Research dispositions
+
+```text
+R006 COMPLETE / DEFERRED
+R007 COMPLETE / DEFERRED
+R008 COMPLETE / DEFERRED
+R009 COMPLETE / EVALUATING
+R010 COMPLETE / DEFERRED
+R011 COMPLETE / DECIDED -> D058
+```
+
+No D055 persistence policy, child-routing policy, global Astra policy, or consumer policy is changed by D058.
+
+## Operational incident during D058 authoring
+
+During this Orchestrator session, a GitHub file-create call was accidentally issued without the intended topic branch and therefore targeted default `main`. It created a one-character research-path artifact, which was immediately removed by a second direct `main` commit after detection.
+
+```text
+accidental create commit: da8b819e3cf24e05fd0abcc6b6f5af11af940ba1
+corrective delete commit: 9cacc956749ed6b7d5dc2faa1e9319df4571f9ed
+net tracked content change on main: none
+```
+
+Do **not** rewrite/force-reset `main` to erase this history. The incident is durably acknowledged here; D058 authoring itself continues only on `docs/d058-coordinator-worktree-hygiene` from the canonical `develop` base.
 
 ## Next action
 
-1. Integrate this T056 review / T057 specification branch into `develop` through PR.
-2. After integration, launch T057 with D055 profile: Codex / NEW / GPT-5.6 Sol / Medium.
-3. Send pointer-only transport to `docs/tasks/T057-codex-read-only-child-requalification-v2.md`.
-4. Executor returns only STATUS / HANDOFF / BRANCH / HEAD.
-5. Orchestrator converges T057 evidence from GitHub.
-6. If T057 returns `QUALIFIED_READ_ONLY_CHILD_SURFACE`, explicitly transition R009/R008 under D057 before considering R007 `EVALUATING` again.
-7. If T057 remains partial/blocked, persist that terminal disposition; do not infer qualification.
-8. Do not launch MG1-v13 concurrently.
+1. Complete/review/integrate the D058/R011/OP067 Markdown branch into `develop` through PR.
+2. Revalidate the resulting `develop` and current `AGENTS.md`/checkpoint.
+3. Human starts a NEW Codex coordinator for OP067 named exactly `AG | agent-governance | OP067 | root-1`, using GPT-5.6 Sol / High.
+4. Send pointer-only transport to `docs/operations/OP067-normalize-local-worktrees-and-primary-checkout.md`.
+5. Executor performs the local hygiene operation, posts the durable receipt to issue #286, and returns only the terminal fields required by OP067.
+6. Orchestrator reads issue #286 and verifies OP067 outcome.
+7. If OP067 is `DONE` and `T057_WORKSPACE_READY=true`, launch T057 in a separate NEW coordinator named `AG | agent-governance | T057 | root-1`, Sol / Medium, with its own exclusive worktree.
+8. If OP067 is blocked, do not launch T057; resolve only the named preserved blocker through durable authority.
+9. Do not launch MG1-v13 concurrently.
 
 ## Next chat minimum load
 
 Load current `develop` identity, `AGENTS.md`, and this checkpoint.
 
-If converging T057, also load:
+Then:
 
-- `docs/tasks/T057-codex-read-only-child-requalification-v2.md`
-- T057 handoff/telemetry from returned branch/HEAD
-- `docs/RESEARCH-TRACEABILITY.md`
-
-Load T056 review only if exact predecessor evidence is needed.
+- if OP067 has not run, load D058 plus `docs/operations/OP067-normalize-local-worktrees-and-primary-checkout.md`;
+- if OP067 returned terminal status, read issue #286 before any T057 launch;
+- load T057 only after OP067 qualifies the local workspace.
 
 ## Do not
 
-Do not rerun T056. Do not change T057 to GPT-6 Astra. Do not use private SQLite/JSONL as passing evidence. Do not attempt child writes. Do not infer child read-only authority from parent state alone. Do not claim configured thread model/reasoning proves backend-served identity. Do not alter D055, persistence policy, consumer policy or global routing policy. Do not reactivate R007 before a passing measurement qualification plus an explicit D057 transition.
+Do not launch T057 before OP067 `DONE`. Do not delete ambiguous worktrees/branches. Do not force-reset/clean the primary checkout to manufacture a clean state. Do not let two writable coordinators share a worktree or branch. Do not infer coordinator authority from chat title. Do not change T057's frozen model/effort/scientific variables because GPT-6 Astra exists. Do not rewrite `main` history to hide the acknowledged authoring incident.
