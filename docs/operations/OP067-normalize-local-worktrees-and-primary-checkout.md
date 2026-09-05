@@ -8,6 +8,7 @@ Controlling decision: `docs/decisions/D058-executor-coordinator-session-and-work
 Operating procedure: `docs/EXECUTOR-SESSION-WORKTREE-HYGIENE.md`  
 Existing cleanup policy: `docs/BRANCH-CLEANUP.md` and `docs/BRANCHING.md`  
 Receipt anchor: GitHub issue `#286`  
+Contract-authoring PR: `#287` (`docs/d058-coordinator-worktree-hygiene` -> `develop`)  
 Next gated task: `docs/tasks/T057-codex-read-only-child-requalification-v2.md`
 
 ## Objective
@@ -21,6 +22,21 @@ Before T057 launches, audit and normalize the accessible native-Windows local ch
 5. the environment is safe for a new exclusive T057 worktree.
 
 This is a repository operation, not product implementation. It must not modify tracked product files.
+
+## Durable target identities
+
+The operation dynamically derives local worktree/branch inventory from the accessible repository, but these durable anchors are fixed:
+
+```text
+repository: ManuelBouza/agent-governance
+canonical normal base: develop
+contract-authoring PR: #287
+contract-authoring branch: docs/d058-coordinator-worktree-hygiene
+receipt anchor: issue #286
+next gated work unit: T057
+```
+
+After PR #287 is merged, its exact GitHub-recorded PR head/base/merge evidence controls whether `docs/d058-coordinator-worktree-hygiene` is safe to retire. Do not infer squash-merge safety from ancestry.
 
 ## Human-visible coordinator
 
@@ -38,6 +54,7 @@ Before mutation:
 
 - synchronize/fetch the canonical GitHub remote under D042/RB001;
 - load current repository instructions from the refreshed `develop` containing D058 and OP067;
+- establish that the configured GitHub identity can publish a top-level comment to issue #286; if not, stop before mutation;
 - identify the primary checkout and all registered linked worktrees;
 - verify there is no concurrently executing writable Agent Governance task that would be affected by cleanup;
 - preserve all unrepresented local work.
@@ -75,7 +92,8 @@ Do not:
 - delete a branch currently checked out by a retained/active worktree;
 - remove an active coordinator's worktree;
 - infer squash-merge safety from ancestry when PR/head identity is required;
-- close or alter T057 itself.
+- close or alter T057 itself;
+- rewrite `main` to remove the acknowledged D058 authoring incident history.
 
 ## Required inventory
 
@@ -163,9 +181,9 @@ For `DONE`:
 - stale administrative worktree entries are pruned;
 - T057's expected topic branch/worktree is not pre-created by OP067 unless a supported operation mechanic requires a harmless reservation; normal preference is to let T057 create its own exclusive workspace after launch.
 
-## Durable receipt
+## Durable receipt and completion response
 
-Post one concise but sufficient comment to GitHub issue #286 containing:
+Post one final top-level comment to GitHub issue #286 with exactly this completion envelope, then return the same envelope to the interactive caller:
 
 ```text
 OP067_STATUS: DONE | BLOCKED_ACTIVE_WORK | BLOCKED_REVIEW
@@ -174,7 +192,7 @@ PRIMARY_CHECKOUT: <branch> / <head> / CLEAN|DIRTY
 WORKTREES_REMOVED: <labels or none>
 LOCAL_BRANCHES_REMOVED: <branches or none>
 REMOTE_BRANCHES_REMOVED: <branches or none>
-REMAINING_WORKTREES: <label=classification/reason>
+REMAINING_WORKTREES: <label=classification/reason or none>
 REVIEW_ITEMS: <items or none>
 T057_WORKSPACE_READY: true | false
 COORDINATOR_CHAT: AG | agent-governance | OP067 | root-1
@@ -182,7 +200,9 @@ COORDINATOR_CHAT: AG | agent-governance | OP067 | root-1
 
 Do not post sensitive absolute workstation paths when labels suffice.
 
-The issue comment is the authoritative operation receipt. Chat output is transport only.
+The issue comment is the authoritative operation receipt. The interactive copy is convenience transport only.
+
+If repository mutation completed but the final receipt cannot be published, stop further mutation and return `PARTIAL` in the interactive channel according to `docs/OPERATION-CONTRACTS.md`; do not fabricate a `DONE` receipt.
 
 ## Acceptance / routing
 
@@ -199,13 +219,3 @@ Use when a concurrent writable coordinator owns state that OP067 would need to t
 Use when unrepresented/ambiguous local state prevents evidence-safe cleanup or primary-checkout convergence.
 
 After either blocked result, do not launch T057 until the Orchestrator/Human resolves the named blocker through persisted authority.
-
-## Terminal output
-
-Return only:
-
-```text
-STATUS: DONE | BLOCKED
-RECEIPT: https://github.com/ManuelBouza/agent-governance/issues/286
-COORDINATOR: AG | agent-governance | OP067 | root-1
-```
