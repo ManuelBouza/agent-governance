@@ -1,0 +1,121 @@
+{
+  "schema_version": 1,
+  "task_id": "T055",
+  "status": "DONE",
+  "task_contract_path": "docs/tasks/T055-codex-child-observability-qualification.md",
+  "sdd_profile": "ASSURED",
+  "branch": "test/t055-codex-child-observability-qualification",
+  "base_branch": "develop",
+  "base_sha": "9522bde72476e63e88fb898d93a56a36aacdd3f1",
+  "files_changed": [
+    "handoffs/T055-child-observability-telemetry.json",
+    "handoffs/T055-executor-handoff.json"
+  ],
+  "execution_summary": "Executed the frozen T055 installed-host/App Server qualification with one real instrumented parent and exactly one Terra/Low child. Supported thread, profile, usage, duration, sandbox and reroute surfaces were measured without product, Markdown, dependency or global configuration changes.",
+  "qualification_decision": "PARTIAL_OBSERVABILITY",
+  "qualification_decision_basis": "Child identity, experimental parent correlation, resolved Terra/Low configuration, exact child-turn token usage, duration and version provenance were obtained. The supported child resume receipt reports workspaceWrite rather than an unambiguous non-write sandbox, so the mandatory sandbox gate does not pass.",
+  "evidence_path": "handoffs/T055-child-observability-telemetry.json",
+  "root": {
+    "executor": "Codex",
+    "session": "NEW",
+    "requested_model": "GPT-5.6 Sol",
+    "requested_reasoning_effort": "Medium",
+    "profile_change_during_task": false
+  },
+  "capability_summary": {
+    "real_child_spawned": true,
+    "exactly_one_matching_child": true,
+    "stable_child_discovery": false,
+    "experimental_relation_discovery": true,
+    "resolved_thread_profile_verified": true,
+    "backend_served_profile_verified": false,
+    "non_write_child_sandbox_verified": false,
+    "child_turn_usage_attributed": true,
+    "child_turn_duration_attributed": true,
+    "model_reroute_signal_supported": true,
+    "reroute_observed": false
+  },
+  "requested_profile": {
+    "model": "gpt-5.6-terra",
+    "reasoning_effort": "low",
+    "fork_turns": "none",
+    "service_tier": "default/omitted"
+  },
+  "resolved_thread_profile": {
+    "model_provider": "openai",
+    "model": "gpt-5.6-terra",
+    "reasoning_effort": "low",
+    "verified": true
+  },
+  "reroute_observed": {
+    "observed": false,
+    "from_model": null,
+    "to_model": null,
+    "reason": null
+  },
+  "backend_served_profile": {
+    "model": null,
+    "reasoning_effort": null,
+    "verified": false,
+    "reason": "Configured Thread state is not per-turn backend execution telemetry, and no stronger public receipt was exposed."
+  },
+  "verification": {
+    "d042_base_identity": "PASS: fetched origin/develop and isolated local baseline both 9522bde72476e63e88fb898d93a56a36aacdd3f1 before authority load.",
+    "version_preflight": "PASS: installed CLI and initialized App Server are 0.149.0; required fields were checked against native generated schemas before provider-backed execution.",
+    "real_child_topology": "PASS: child 01a070ef-c59e-7841-a4b4-1c4854226157 has parent 01a070ef-ad1a-75e2-93c9-062ab8c050ca and subAgent/thread_spawn source; exactly one experimental relation match.",
+    "requested_vs_resolved_profile": "PASS: requested and resolved values are gpt-5.6-terra/low; observation resume sent no model or reasoning override.",
+    "sandbox_receipt": "FAIL: supported receipt is workspaceWrite with empty writableRoots, not an unambiguous readOnly/non-write envelope.",
+    "child_usage": "PASS: supported usage notification identifies exact child thread 01a070ef-c59e-7841-a4b4-1c4854226157 and turn 01a070ef-c622-7a62-a955-013e4c915b56.",
+    "child_duration": "PASS: supported child turn duration is 3743 ms.",
+    "private_telemetry_dependency": "PASS: no JSONL, SQLite or private persistence inspection was used.",
+    "backend_receipt_boundary": "PASS: backend-served profile remains explicitly unverified.",
+    "telemetry_json": "PASS",
+    "handoff_json": "PASS",
+    "git_diff_check": "PASS",
+    "authorized_file_boundary": "PASS: exactly the two authorized T055 JSON evidence files differ from the task base."
+  },
+  "code_review": {
+    "summary": "Reviewed the evidence-only delta against the frozen Task Contract. The evidence keeps requested, resolved-thread, reroute and backend-served profile concepts separate and records the sandbox mismatch without upgrading it through inference.",
+    "findings": [
+      "The child did not inherit an observable readOnly sandbox; thread/resume reports workspaceWrite with empty writableRoots and temporary write exclusions disabled."
+    ],
+    "upstream_reentry_required": false,
+    "upstream_reentry_stage": null
+  },
+  "requirement_trace": {
+    "AC-T055-1": "PASS",
+    "AC-T055-2": "PASS",
+    "AC-T055-3": "PASS_WITH_EXPERIMENTAL_DISCOVERY",
+    "AC-T055-4": "PASS",
+    "AC-T055-5": "PASS",
+    "AC-T055-6": "FAIL",
+    "AC-T055-7": "PASS",
+    "AC-T055-8": "PASS",
+    "AC-T055-9": "PASS",
+    "AC-T055-10": "PASS",
+    "AC-T055-11": "PASS"
+  },
+  "dependencies_or_config_changes": [],
+  "unresolved_issues": [
+    "The supported child sandbox receipt is not the required non-write envelope.",
+    "Stable sourceKinds enumeration returned no matching child, so deterministic discovery required the experimental parentThreadId filter.",
+    "Backend-served model and reasoning remain unverified by the public surface."
+  ],
+  "safety_and_authority": {
+    "tracked_product_code_changed": false,
+    "markdown_changed": false,
+    "dependency_changed": false,
+    "global_codex_configuration_changed": false,
+    "persistent_agent_catalog_created": false,
+    "routing_policy_changed": false,
+    "d055_changed": false,
+    "unsupported_cost_or_savings_claim_made": false,
+    "private_raw_trace_persisted": false,
+    "authority_leakage": false
+  },
+  "chatgpt_read_path": [
+    "docs/tasks/T055-codex-child-observability-qualification.md",
+    "handoffs/T055-executor-handoff.json",
+    "handoffs/T055-child-observability-telemetry.json"
+  ]
+}
