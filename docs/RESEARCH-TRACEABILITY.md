@@ -45,6 +45,7 @@ See D057 for transition semantics and required metadata for new research.
 | R009 | `docs/research/CODEX-CHILD-SANDBOX-INHERITANCE-RESEARCH.md` | COMPLETE | EVALUATING | `docs/tasks/T056-codex-read-only-child-requalification.md`; `docs/reviews/T056-R1.md`; `docs/tasks/T057-codex-read-only-child-requalification-v2.md`; evidence PR `#284` | none | Official source supports parent-derived child permission inheritance and the 0.153.4 parent-owned reload fix. T056 accepted as execution with `PARTIAL_OBSERVABILITY`: version/capability gates, parent `:read-only` receipt, real-child correlation, and requested/resolved `Terra / Low` passed, but a controller misparse of `thread/loaded/list` terminated App Server before child reattachment. R009 remains EVALUATING under T057, which corrects only that harness defect and preserves all material controls. |
 | R010 | `docs/research/GPT6-ASTRA-EXECUTOR-LAUNCH-PROFILE-RESEARCH.md` | COMPLETE | DEFERRED | no empirical project evaluation yet | none | GPT-6 Astra is an official quality-first flagship and current Codex source supports it, but availability alone does not justify globally replacing Sol under D055. T056/T057 remain `GPT-5.6 Sol / Medium` to avoid a model-family confound. Global/default Astra adoption is deferred pending task-level or comparative evidence and host/account availability. |
 | R011 | `docs/research/CODEX-COORDINATOR-IDENTITY-WORKTREE-HYGIENE-RESEARCH.md` | COMPLETE | DECIDED | current source-maintenance workflow; T056/T057 local-execution lineage | `docs/decisions/D058-executor-coordinator-session-and-worktree-hygiene.md` | Codex supports explicit Human-visible thread naming, while existing branch cleanup did not fully require obsolete-worktree retirement plus primary-checkout convergence. D058 adopts deterministic coordinator chat names, exclusive writable worktrees for concurrent work units, fail-closed local-state classification, post-integration worktree retirement, and a clean/current primary checkout baseline. |
+| R012 | `docs/research/CODEX-COORDINATOR-DELEGATION-POLICY-RESEARCH.md` | COMPLETE | DEFERRED | R006; T053; `docs/reviews/T053-R1.md`; R007; current Codex 0.153.4 + official OpenAI multi-agent guidance | none | Pure optional delegation is insufficient if the Human-visible Executor root is intended to act as a real coordinator: current Codex may require an explicit user/`AGENTS.md`/Skill delegation request. Exact global worker choreography is too prescriptive. Recommended direction is a semantic delegation obligation (Agent Governance defines when/bounds; Executor chooses concrete decomposition/worker mechanics). Normative adoption is deferred until T057 converges so no active Task Contract is changed mid-run. |
 
 ## Live research frontier
 
@@ -55,7 +56,7 @@ R009 — Codex child sandbox inheritance / receipt
   T056: accepted execution / PARTIAL_OBSERVABILITY
   T056 positive evidence: Codex 0.153.4; parent :read-only receipt; real child; Terra/Low resolved
   T056 blocker: temporary controller misparsed thread/loaded/list and lost parent residency before child reattachment
-  Current evaluation: T057 planned
+  Current evaluation: T057 running/planned from the frozen Task Contract
   T057 scope: correct only loaded-thread parsing/residency and recapture exact child permission/usage/duration/reroute receipts
 ```
 
@@ -73,6 +74,11 @@ R007 — adaptive subagent compute routing
 R006 — persistent Executor coordinator
   COMPLETE / DEFERRED
   No global D055 persistence-session policy change
+
+R012 — coordinator delegation policy
+  COMPLETE / DEFERRED
+  Research conclusion: semantic delegation obligation is preferred over pure optional delegation or exact global worker choreography
+  Reconsider immediately after T057 terminal convergence before the next normal non-experimental implementation task
 ```
 
 Completed research dispositions outside the live evaluation frontier:
@@ -89,7 +95,7 @@ R011 — Codex coordinator identity / worktree hygiene
   Deterministic coordinator naming + exclusive writable worktrees + safe local closure are adopted source-maintenance policy
 ```
 
-T057 is not a routing pilot. Even a passing T057 result requires Orchestrator convergence and explicit D057 transitions before R007 may return to `EVALUATING`.
+T057 is not a routing or normal delegation pilot. Even a passing T057 result requires Orchestrator convergence and explicit D057 transitions before R007 may return to `EVALUATING`. R012 must not alter T057's frozen one-child topology.
 
 ## Required workflow for new research
 
