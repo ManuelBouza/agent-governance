@@ -1,133 +1,112 @@
 # Current ChatGPT Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O208  
+Checkpoint-Sequence: O211  
 Canonical-Branch: `develop`  
-Current-Work-Unit: D059 integrated; OP067 accepted DONE; OP068 must retire the D059 and OP068 merged topic branches before T057 launches  
+Current-Work-Unit: T057 is running under its frozen Task Contract; D061 branch-target write guard is being integrated after repeated Orchestrator direct-develop authoring incidents  
 Chat-Closure: CONTINUE_CURRENT_CHAT  
-Active-Executor: none  
-Active-Executor-Surface: next Executor launch is OP068 on Codex native Windows
+Active-Executor: Codex  
+Active-Executor-Surface: `AG | agent-governance | T057 | root-1` on native Windows Codex 0.153.4; frozen GPT-5.6 Sol / Medium
 
 ## Durable frontier
 
-- D039, D041, D042, D053, D054, D055, D056, D057, D058 and D059 control the current source-maintenance workflow.
+- D039, D041, D042, D053, D054, D055, D056, D057, D058, D059 and D060 remain controlling.
+- D061 adds fail-closed ChatGPT Orchestrator branch-target mutation policy after integration.
 - Core protocol remains `1.15.0`.
-- D059 is integrated in `develop` through PR #288 at commit `c7be7ad4cb52620a8f7dc2ad01f31ceec13d6e6c`.
-- OP067 is accepted `DONE`; durable receipt is issue #286 comment `5552285438` and Orchestrator acceptance comment `5552331928`.
-- OP067 established `T057_WORKSPACE_READY=true` at its execution boundary.
-- PR #288's source branch `docs/d059-operational-terminal-transport` still exists remotely after merge, so D058 / `docs/BRANCH-CLEANUP.md` operational closure is not yet complete.
-- OP068 is the bounded cleanup contract for PR #288 plus its own contract-authoring PR #290.
-- T057 remains specified in `docs/tasks/T057-codex-read-only-child-requalification-v2.md` but must wait for OP068 `DONE` so the new post-D059 branch residue is not carried into the next task.
+- OP067 and OP068 remain accepted `DONE`.
+- T057 was launched from `develop@20ed0e64dd6c98f38be42cd3cc28fcc220d06c5e` and remains frozen: one provider-backed parent, exactly one real child, root GPT-5.6 Sol / Medium, requested child GPT-5.6 Terra / Low, `:read-only`, no compensating second provider-backed attempt.
 - R009 remains `COMPLETE / EVALUATING` under T057.
-- R010 remains `COMPLETE / DEFERRED`; T057 remains GPT-5.6 Sol / Medium.
+- R008 and R007 remain `COMPLETE / DEFERRED` pending qualified measurement and explicit D057 transitions.
+- R010 remains `COMPLETE / DEFERRED`.
 - R011 remains `COMPLETE / DECIDED` through D058.
+- R012 remains `COMPLETE / DEFERRED`; delegation policy must be reconsidered immediately after T057 convergence.
+- R013 remains `COMPLETE / DECIDED` through D060; one exact Task/Operational Contract owns one Human-visible coordinator root lifecycle.
 
-## OP067 convergence
-
-OP067 worker/subagent usage was not required. D041 permits direct Executor work unless topology is made material by persisted authority.
-
-OP067's detailed interactive block was also contract-conforming under the revision that executed. D059 prospectively changed Operational Contract terminal transport; it did not retroactively make OP067 nonconforming.
-
-## D059 terminal transport
-
-Operational Contracts now separate:
+## D060 — task-scoped coordinator continuity
 
 ```text
-GitHub receipt = detailed durable evidence
-interactive output = compact convergence pointer
+new Task/Operational Contract -> NEW / root-1
+same contract lifecycle        -> CONTINUE same root
+contract closes                -> retire root
+next contract                  -> NEW / root-1
 ```
 
-Standard Operational Contract terminal output:
+`root-2+` is same-task failover only. Fresh review/exploration inside one task should use internal fresh children/contexts, not another Human-visible coordinator.
+
+T057 already conforms as `AG | agent-governance | T057 | root-1`. Do not restart or alter it because later policy changed.
+
+## D061 — Orchestrator branch-target write guard
+
+Decision:
+
+`docs/decisions/D061-orchestrator-branch-target-write-guard.md`
+
+Mandatory normal Markdown authoring sequence:
 
 ```text
-STATUS: DONE | BLOCKED | PARTIAL
-RECEIPT: <durable GitHub receipt URL>
-COORDINATOR: <Human-visible coordinator name or n/a>
+refresh develop
+-> create topic branch
+-> verify exact branch exists at intended base SHA
+-> mutate only with explicit branch=<verified-topic>
+-> verify develop did not move because of the mutation
+-> review diff
+-> PR to develop
 ```
 
-Task Contracts remain unchanged. T057 still returns only:
+Fail closed:
+
+- no content mutation before topic-branch creation + verification;
+- never omit the branch field on a normal Orchestrator content mutation;
+- never supply `main` or `develop` to a normal content mutation;
+- missing/nonexistent topic branch -> create/verify it or STOP, never retry on a long-lived branch;
+- unexpected long-lived-branch movement -> STOP and classify the incident.
+
+Repository-side enforcement is still required. Current `develop` is not protected, so GitHub will accept a mistaken direct update. Human/repository administration should add an active ruleset/protection targeting at least `develop` and `main`, requiring PR flow and denying routine bypass to the Orchestrator write actor/connection.
+
+## Direct-write incident record
+
+The following accidental Orchestrator commits were direct `develop` writes and are retained in history rather than hidden by rewriting:
 
 ```text
-STATUS: DONE | BLOCKED
-HANDOFF: handoffs/T057-executor-handoff.json
-BRANCH: <branch>
-HEAD: <pushed-head>
+2a2f34baa5e90724c46555c876aabe68309a8b99  R012 placeholder
+59c44d88e202c24928fd4908470bd91099703023  R013 placeholder
+7a116b92c706801c9259ce152096609adb465563  D061 placeholder
 ```
 
-## OP068 — required post-D059 branch closure
+The D061 incident reproduced the root cause explicitly: the mutation call supplied `branch="develop"`; because `develop` had no enforced protection, GitHub accepted it. This confirms the failure is Orchestrator target selection plus missing repository-side enforcement, not an implicit fallback bug.
 
-Contract:
+Do not rewrite history to hide these incidents.
 
-`docs/operations/OP068-retire-d059-and-op068-branches.md`
+## T057 active execution
 
-Receipt anchor:
+Task Contract:
 
-GitHub issue `#289`.
+`docs/tasks/T057-codex-read-only-child-requalification-v2.md`
 
-Contract-authoring PR:
+When T057 returns terminal fields, converge exact branch/HEAD, telemetry and handoff against its frozen launch base plus current canonical `develop`. Later Markdown-only governance changes are unrelated to T057 implementation-base validity.
 
-`#290` (`docs/op068-retire-d059-branch` -> `develop`).
+If T057 needs same-task rework and its root remains recoverable, D060 requires `CONTINUE` in `AG | agent-governance | T057 | root-1`.
 
-Authorized targets:
+## R012 post-T057 gate
 
-1. merged PR #288 source branch `docs/d059-operational-terminal-transport`;
-2. merged PR #290 source branch `docs/op068-retire-d059-branch` after PR #290 is integrated.
-
-Both deletions require exact merged-PR/head equality. OP068 may not delete unrelated OP067 retained/review branches or worktrees.
-
-### OP068 launch profile
-
-After PR #290 is merged:
+After T057 convergence, before the next normal non-experimental implementation task, explicitly decide whether to adopt the semantic delegation obligation recommended by R012:
 
 ```text
-Executor: Codex
-Session: NEW
-Coordinator-Chat: AG | agent-governance | OP068 | root-1
-Model: GPT-5.6 Terra
-Effort: Low
+Agent Governance defines when delegation is required and safety/evidence bounds.
+Executor coordinator chooses concrete decomposition, workers, sequencing/parallelism and mechanics.
 ```
 
-Rationale: this is a narrow, deterministic two-branch retirement with exact PR/head gates and no implementation reasoning; D055 intentionally uses lower compute for mechanically bounded work.
-
-Worker/subagent use is not required.
-
-## T057 launch after OP068
-
-Only after OP068 returns `DONE` and the Orchestrator verifies issue #289:
-
-```text
-Executor: Codex
-Session: NEW
-Coordinator-Chat: AG | agent-governance | T057 | root-1
-Model: GPT-5.6 Sol
-Effort: Medium
-Expected branch: test/t057-codex-read-only-child-requalification-v2
-```
-
-T057 must use an exclusive writable worktree and preserve its already-frozen scientific controls.
-
-## Research dispositions
-
-```text
-R006 COMPLETE / DEFERRED
-R007 COMPLETE / DEFERRED
-R008 COMPLETE / DEFERRED
-R009 COMPLETE / EVALUATING
-R010 COMPLETE / DEFERRED
-R011 COMPLETE / DECIDED -> D058
-```
-
-D059 and OP068 are operational-policy/closure work and do not change research dispositions.
+Do not conflate this with R007 child compute routing.
 
 ## Next action
 
-1. Review/finalize PR #290 and integrate OP068/O208 into `develop`.
-2. Revalidate current `develop`, `AGENTS.md`, and this checkpoint.
-3. Human starts NEW Codex coordinator `AG | agent-governance | OP068 | root-1` with GPT-5.6 Terra / Low.
-4. Send pointer-only transport to `docs/operations/OP068-retire-d059-and-op068-branches.md`.
-5. Executor retires only the two exact authorized merged topic branches, prunes safe accessible local state, publishes detailed receipt to issue #289, and returns only `STATUS / RECEIPT / COORDINATOR`.
-6. Orchestrator verifies issue #289 and canonical branch absence.
-7. If OP068 is `DONE`, launch T057 with its frozen Sol / Medium profile.
+1. Integrate D061 + O211 through a topic-branch PR; do not alter running T057.
+2. Human/repository admin enables GitHub protection/ruleset for `develop` and `main` requiring PRs and no routine bypass for the Orchestrator write connection.
+3. Allow T057 to finish unchanged.
+4. Converge T057 from GitHub evidence.
+5. Transition R009/R008 under D057 from the result.
+6. Decide R012 before the next normal implementation task.
+7. Retire merged documentation topic branches through evidence-safe cleanup without interfering with T057.
 8. Do not launch MG1-v13 concurrently.
 
 ## Next chat minimum load
@@ -136,10 +115,11 @@ Load current `develop` identity, `AGENTS.md`, and this checkpoint.
 
 Then:
 
-- if OP068 has not executed, load `docs/operations/OP068-retire-d059-and-op068-branches.md`;
-- if OP068 returned terminal status, read issue #289 and verify target branch absence;
-- load T057 only after OP068 closes successfully.
+- apply D061 before any Orchestrator repository mutation;
+- if T057 is still running, do not modify its frozen topology;
+- if T057 returned terminal fields, load T057, its exact handoff/telemetry, R009 and the research registry;
+- after T057 convergence, load R012 before the next normal implementation launch.
 
 ## Do not
 
-Do not rerun OP067. Do not treat OP067's full historical interactive envelope as an Executor defect. Do not launch T057 before OP068 `DONE`. Do not delete unrelated retained/review local state. Do not let two writable coordinators share a worktree or branch. Do not change T057's frozen model/effort/scientific variables. Do not reactivate R007 before a passing measurement qualification plus an explicit D057 transition.
+Do not perform normal Orchestrator content writes to `main` or `develop`. Do not omit the branch target on content mutations. Do not retry a missing topic branch by targeting a long-lived branch. Do not restart or add workers to T057. Do not use `root-2` merely for fresh context. Do not adopt R012 implicitly. Do not rewrite history to hide authoring incidents.
