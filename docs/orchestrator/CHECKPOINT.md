@@ -1,12 +1,12 @@
 # Current ChatGPT Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O202  
+Checkpoint-Sequence: O203  
 Canonical-Branch: `develop`  
-Current-Work-Unit: R008 Codex child-observability research is complete and under T055 evaluation; T055 child observability qualification is specified but not yet executed  
+Current-Work-Unit: T055 child-observability qualification is accepted/integrated with formal outcome `PARTIAL_OBSERVABILITY`; R008 is `DEFERRED`; R007 remains `DEFERRED`; no routing successor is authorized  
 Chat-Closure: CONTINUE_CURRENT_CHAT  
-Active-Executor: Codex  
-Active-Executor-Surface: fresh T055 qualification root after this Markdown branch is integrated
+Active-Executor: none  
+Active-Executor-Surface: none
 
 ## Durable frontier
 
@@ -18,65 +18,110 @@ Active-Executor-Surface: fresh T055 qualification root after this Markdown branc
 - D055 remains unchanged as the global Human-facing Executor launch-profile policy.
 - T054 remains accepted as an execution with frozen pilot outcome `NOT_QUALIFIED`; do not rerun it unchanged.
 
-## R008 — Codex child observability surface
+## T055 final state
+
+T055 is **ACCEPTED as an execution** with frozen qualification decision **`PARTIAL_OBSERVABILITY`**.
+
+Authoritative records:
+
+- Task Contract: `docs/tasks/T055-codex-child-observability-qualification.md`;
+- final review: `docs/reviews/T055-R1.md`;
+- executor handoff: `handoffs/T055-executor-handoff.json`;
+- telemetry: `handoffs/T055-child-observability-telemetry.json`;
+- submitted Executor HEAD: `71cd53d4a83a300d6f741aade627a7ee2cc99a67`;
+- evidence PR: `#280`;
+- integrated evidence commit: `55758864fa68a953637e0203d52a6d994ed8e045`.
+
+### Installed host
 
 ```text
-Research: docs/research/CODEX-CHILD-OBSERVABILITY-SURFACE-RESEARCH.md
-Research-State: COMPLETE
-Decision-State: EVALUATING
-Evaluation: docs/tasks/T055-codex-child-observability-qualification.md
-Decision-Ref: none
+Codex CLI:      0.149.0
+App Server:     0.149.0
+Transport:      stdio / JSON-RPC 2.0
+Authentication: chatgpt category
+Python SDK:     not used
 ```
 
-R008 refreshed the current Codex surface on 2026-09-05 using public OpenAI documentation and the official `openai/codex` repository.
+The installed host was older than R008's 0.153.4 reference. T055 did not globally upgrade it. Native generated 0.149.0 schemas/help exposed the fields used by the qualification.
 
-Characterized identities:
+### T055 positive observability evidence
+
+One real multi-agent child was spawned and uniquely correlated to its instrumented parent.
+
+Requested child profile:
 
 ```text
-openai/codex current main:
-  ddf04ad26789d040f9ef6a96736f76602e35a6cc
-
-latest stable Codex release:
-  0.153.4
-  release commit: 3d2ee51ca2d5db578f328aa75e20aa22c0197c9a
-  published: 2026-09-04
+model:            gpt-5.6-terra
+reasoning effort: low
+fork_turns:       none
 ```
 
-### R008 finding
-
-Current Codex App Server / stable Python SDK expose a materially stronger measurement surface than the direct parent-facing collaboration return used by T054.
-
-Supported/relevant current surfaces include:
-
-- child `Thread` records with `parentThreadId`, `modelProvider`, configured/persisted `model`, configured/persisted `reasoningEffort`, source, role/nickname and CLI version;
-- `thread/list` over subagent source kinds;
-- experimental direct relationship filters `parentThreadId` / `ancestorThreadId`;
-- thread start/resume sandbox responses;
-- `thread/tokenUsage/updated` with exact `threadId`, `turnId` and token breakdown;
-- child turn timestamps/duration;
-- public stable Python SDK `TurnResult.usage` for SDK-run turns;
-- `model/rerouted` event as an exception/reroute signal.
-
-Important claim boundary:
+Supported child thread state, read without model/reasoning overrides, reported:
 
 ```text
-Thread.model / Thread.reasoningEffort
-  = configured/persisted thread profile
-  != per-turn provider execution receipt
+model provider:   openai
+model:            gpt-5.6-terra
+reasoning effort: low
 ```
 
-Therefore future telemetry must distinguish:
+Therefore requested-vs-resolved profile observation passed. This remains configured/persisted thread state, not provider-served per-turn identity.
+
+Stable `sourceKinds` enumeration did not return the matching direct child. Deterministic parent/child correlation required the documented experimental `thread/list parentThreadId` filter. This experimental dependency is acceptable only as an explicitly version-pinned qualification dependency; it is not the reason T055 remained partial.
+
+Supported `thread/tokenUsage/updated` telemetry was attributable to the exact child thread and turn:
 
 ```text
-requested_profile
-resolved_thread_profile
-reroute_observed
-backend_served_profile
+total tokens:            22577
+input tokens:            22562
+cached input tokens:     0
+cache-write tokens:      0
+output tokens:           15
+reasoning output tokens: 0
+model context window:    258400
+estimated:               false
 ```
 
-R008 does not establish an authoritative per-turn provider-served model/reasoning receipt. That stronger field remains unverified unless a live public host exposes one.
+Supported child-turn duration was `3743 ms`.
 
-The direct parent-facing MultiAgentV2 activity record remains insufficient by itself. The improvement is the separate supported child-thread/App-Server query and usage surface.
+The installed schema exposed `model/rerouted`; no reroute was observed. No authoritative backend-served model/reasoning receipt was exposed, and T055 correctly left that identity unverified.
+
+### T055 blocker — child sandbox receipt
+
+The instrumented parent had a supported `readOnly` sandbox receipt.
+
+The real child had the supported receipt:
+
+```text
+workspaceWrite
+writableRoots: []
+networkAccess: false
+excludeTmpdirEnvVar: false
+excludeSlashTmp: false
+```
+
+Direct per-spawn sandbox override was not supported by the exercised spawn surface.
+
+AC-T055-6 therefore failed. Empty writable roots are not sufficient to infer the contract's required non-write envelope because the supported receipt remains `workspaceWrite` and temporary write surfaces are not excluded.
+
+This single missing mandatory measurement/safety gate forces `PARTIAL_OBSERVABILITY` under the frozen Task Contract.
+
+### Acceptance-criteria result
+
+```text
+AC-T055-1   PASS
+AC-T055-2   PASS
+AC-T055-3   PASS_WITH_EXPERIMENTAL_DISCOVERY
+AC-T055-4   PASS
+AC-T055-5   PASS
+AC-T055-6   FAIL
+AC-T055-7   PASS
+AC-T055-8   PASS
+AC-T055-9   PASS
+AC-T055-10  PASS
+AC-T055-11  PASS
+```
+
+The Executor branch changed only the two authorized non-Markdown evidence files. No product code, Markdown, repository dependency, Governance Core, D055, routing policy, global Codex configuration or persistent agent catalog changed.
 
 ## Research dispositions
 
@@ -88,7 +133,7 @@ Decision-State: DEFERRED
 Decision-Ref: none
 ```
 
-T053 remains positive qualitative context-locality evidence; no global D055 persistence-session change is adopted.
+No global D055 persistence-session change is adopted.
 
 ### R007 — adaptive subagent compute routing
 
@@ -99,109 +144,41 @@ Evaluation: T054 accepted / NOT_QUALIFIED
 Decision-Ref: none
 ```
 
-R008 does **not** reactivate R007. A corrected routing evaluation may be specified only after T055 qualifies the measurement substrate and the Orchestrator persists a new R007 transition.
+T055 does not reactivate R007. A corrected routing pilot remains unauthorized because the measurement/safety substrate did not fully qualify.
 
-### R008 — child observability
+### R008 — Codex child observability surface
 
 ```text
 Research-State: COMPLETE
-Decision-State: EVALUATING
-Evaluation: T055 planned
+Decision-State: DEFERRED
+Evaluation: T055 accepted / PARTIAL_OBSERVABILITY
 Decision-Ref: none
 ```
 
-The research conclusion is sufficient to authorize a bounded live observability qualification, not a routing pilot or policy change.
+T055 confirmed that supported child profile state, child/turn token usage and duration are materially better than T054's parent-facing surface. However, the required non-write child sandbox receipt was not available on the exercised installed 0.149.0 host.
 
-## T055 executable identity
-
-Task Contract: `docs/tasks/T055-codex-child-observability-qualification.md`.
-
-T055 is a read-only host/App-Server observability qualification. It does not compare CONTROL/ADAPTIVE quality and makes no savings claim.
-
-Human-visible launch profile after this specification branch is integrated:
-
-```text
-Executor: Codex
-Session: NEW
-Model: GPT-5.6 Sol
-Effort: Medium
-Expected evidence branch: test/t055-codex-child-observability-qualification
-```
-
-Rationale: bounded protocol/host qualification requiring reliable version, App Server/SDK, thread-correlation and evidence work. Medium remains the proportionate default.
-
-### T055 live qualification target
-
-T055 creates one disposable App-Server/SDK-managed read-only parent and requires one real multi-agent child:
-
-```text
-parent:
-  GPT-5.6 Sol / Medium
-  read-only
-
-child:
-  task: t055_observability_child
-  requested model: GPT-5.6 Terra or documented current equivalent
-  requested reasoning: Low
-  fork_turns: none
-  deterministic bounded nonce task
-```
-
-The qualification then must correlate that exact child to:
-
-- child thread ID + parent relationship;
-- resolved/configured child model/reasoning from supported thread state;
-- non-write child sandbox receipt;
-- child-attributable `thread/tokenUsage/updated` token breakdown;
-- child-attributable duration;
-- exact installed Codex/App Server/SDK version provenance;
-- reroute signal if observable;
-- backend-served profile receipt only if a genuinely stronger public receipt exists.
-
-Internal SQLite/JSONL inspection may be diagnostic only and cannot upgrade a qualification result.
-
-The Executor may use an isolated temporary SDK environment outside the repository if needed, but MUST NOT change repository dependencies or globally upgrade Codex merely to make the task pass.
-
-### T055 frozen decisions
-
-Exactly one:
-
-```text
-QUALIFIED_STABLE_SURFACE
-QUALIFIED_WITH_EXPERIMENTAL_DISCOVERY
-PARTIAL_OBSERVABILITY
-BLOCKED_CAPABILITY
-```
-
-Passing qualification requires a real spawned child, supported child relationship/profile/sandbox receipts, child-thread/turn-attributable non-estimated token usage, duration and complete version provenance.
-
-Provider-served per-turn model/reasoning identity is not required for T055 qualification, but it must remain explicitly unverified unless a stronger public receipt is actually obtained.
-
-Persist only:
-
-- `handoffs/T055-child-observability-telemetry.json`;
-- `handoffs/T055-executor-handoff.json`.
-
-No product code, Markdown, persistent `.codex/agents/` catalog, product dependency, D055, routing policy or Governance Core mutation is authorized.
+Reconsider R008 only when a supported installed Codex surface can demonstrate an unambiguous non-write sandbox receipt for a real spawned child without private persistence, product dependency changes or global configuration mutation. Experimental relationship discovery may remain acceptable if explicit and version-pinned and all other gates pass.
 
 ## Next action
 
-1. Integrate this R008/T055 Markdown specification branch into `develop`.
-2. Human starts a **NEW** Codex root for T055.
-3. Show D055 launch profile: Codex / NEW / GPT-5.6 Sol / Medium.
-4. Send pointer-only transport to current `docs/tasks/T055-codex-child-observability-qualification.md` on canonical `develop`.
-5. Executor runs T055 exactly as frozen and returns only terminal handoff fields.
-6. Orchestrator converges T055 evidence from GitHub.
-7. Under D057, transition R008 from `EVALUATING` to an explicit durable disposition.
-8. Only if T055 qualifies the measurement surface may the Orchestrator consider returning R007 to `EVALUATING` and specifying a corrected routing successor. Do not do so implicitly.
-9. Do not launch MG1-v13 concurrently.
+1. Do not rerun T055 unchanged on the same installed Codex 0.149.0 surface.
+2. Do not reactivate R007 and do not specify a corrected routing pilot yet.
+3. If adaptive-routing work is to continue, ChatGPT Orchestrator should open a new D057-tracked research item (`R009`) focused narrowly on **current Codex child sandbox inheritance/override semantics**.
+4. R009 should use current official OpenAI documentation and the official `openai/codex` repository to determine whether a materially newer supported stable/current surface than the exercised 0.149.0 host can:
+   - cause a real collaboration child to retain/receive an unambiguous non-write/read-only sandbox;
+   - expose that child sandbox through a supported receipt;
+   - support direct per-spawn sandbox control or a documented safe inheritance mechanism;
+   - do so without global configuration mutation or private persistence scraping.
+5. Only if R009 finds a materially changed supported surface should the Orchestrator specify a narrow successor observability qualification (new Task Contract, not a T055 rerun) pinned to that surface.
+6. Only after that qualification passes may R007 return to `EVALUATING` and a corrected adaptive-routing Task Contract be specified.
+7. Do not launch MG1-v13 concurrently.
 
 ## Next chat minimum load
 
 Load current `develop` identity, `AGENTS.md`, and this checkpoint.
 
-Then follow `Next action`. Load R008/T055 only as directly referenced by that action. Load T054 review only if exact predecessor limitations are needed.
+Then follow `Next action`. Load `docs/reviews/T055-R1.md` and R008 only if exact predecessor evidence is needed. Load no additional project history unless a concrete conflict requires it.
 
 ## Do not
 
-Do not rerun T054 unchanged. Do not claim that configured `Thread.model` / `reasoningEffort` prove the backend-served model for every response. Do not estimate child tokens. Do not use private SQLite/JSONL as a passing telemetry dependency. Do not globally upgrade Codex to make T055 pass. Do not add repository SDK dependencies for T055. Do not change D055, persistence policy, consumer policy or global child-routing policy. Do not reactivate R007 without a persisted D057 transition after T055 convergence. Do not rerun MG1-v12 or launch V13.
+Do not treat T055 `PARTIAL_OBSERVABILITY` as a failed execution; the execution is accepted and the qualification result is partial. Do not infer `readOnly` from empty `writableRoots`. Do not claim configured `Thread.model` / `reasoningEffort` prove backend-served identity. Do not estimate child tokens. Do not use private SQLite/JSONL to upgrade the result. Do not globally upgrade Codex merely to make the experiment pass. Do not change D055, persistence policy, consumer policy or global child-routing policy. Do not reactivate R007 without a persisted D057 transition after a passing measurement qualification. Do not rerun MG1-v12 or launch V13.
