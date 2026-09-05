@@ -1,177 +1,125 @@
 # Current ChatGPT Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O197  
+Checkpoint-Sequence: O198  
 Canonical-Branch: `develop`  
-Current-Work-Unit: T053 Phase 1 is accepted; Phase 2 is authorized only as a same-root `CONTINUE` on the represented T053 branch  
+Current-Work-Unit: T053 is accepted and integrated; T054 adaptive subagent compute routing pilot is authorized after this checkpoint/task branch is integrated  
 Chat-Closure: CONTINUE_CURRENT_CHAT  
 Active-Executor: Codex  
-Active-Executor-Surface: persistent T053 coordinator root
+Active-Executor-Surface: fresh T054 calibration root
 
 ## Durable frontier
 
-- D041, D042, D053, D054, D055 and D056 remain controlling. Core protocol remains `1.15.0`.
+- D039, D041, D042, D053, D054, D055 and D056 remain controlling. Core protocol remains `1.15.0`.
 - T050 is `ACCEPTED`; code-health/symbol-map boundary remains active.
-- T023/MG1-v12 is closed as valid `BLOCKED / NO QUALIFYING SINGLE-FAMILY REFERENCE`; review `docs/reviews/T023-R11.md`. No MG1-v13 is authorized; MG1 remains in Orchestrator Explore/Specify.
-- Persistent-coordinator research: `docs/research/CODEX-PERSISTENT-EXECUTOR-COORDINATOR-RESEARCH.md`.
-- Adaptive child-compute research: `docs/research/ADAPTIVE-SUBAGENT-COMPUTE-ROUTING-RESEARCH.md`. Current Codex supports task-specific child model/reasoning selection plus bounded context-fork controls; the research is prospective only and does not modify T053 Phase 2 or D055.
-- T053 Task Contract: `docs/tasks/T053-codex-persistent-executor-coordinator-pilot.md`.
-- T053 planning PR `#268`, merge `a6af47bedc843a6f1d7f834a32894fdc7539181c`.
-- Phase-1 review: `docs/reviews/T053-P1.md`.
-- Phase-1 review PR `#270`, merge `6b9f370c00bb57cc5a7cbbec0313a5d1eea9f68d`.
-- D055 remains unchanged by the pilot and by the adaptive child-compute research.
+- T023/MG1-v12 remains closed as valid `BLOCKED / NO QUALIFYING SINGLE-FAMILY REFERENCE`; review `docs/reviews/T023-R11.md`. No MG1-v13 is authorized.
+- Adaptive child-compute research: `docs/research/ADAPTIVE-SUBAGENT-COMPUTE-ROUTING-RESEARCH.md`.
+- D055 remains unchanged. Root launch guidance and child compute routing remain separate layers.
 
-## T053 Phase-1 accepted state
+## T053 final state
 
-Submitted identity:
+T053 is **ACCEPTED**.
 
-```text
-Branch: refactor/t053-repository-context-coordinator-pilot
-Canonical Phase-1 base: b7f195d904ae38466cefb884036688899dbf6dcd
-Implementation HEAD: 4b5622cf10e8d699d21616d4dd9f91cc20270ff4
-Submitted Phase-1 HEAD: a0f8ce900bb28980e98e5d22ae37421d68798741
-Handoff: handoffs/T053-phase1.json
-Telemetry: handoffs/T053-pilot-telemetry.json
-```
+Authoritative records:
 
-Phase 1 is `ACCEPTED / PHASE 1 CHECKPOINT`, not final T053 acceptance. The partial implementation remains only on the represented Executor branch; it has not been merged to `develop`.
+- Task Contract: `docs/tasks/T053-codex-persistent-executor-coordinator-pilot.md`;
+- Phase-1 review: `docs/reviews/T053-P1.md`;
+- final review: `docs/reviews/T053-R1.md`;
+- final handoff: `handoffs/T053-executor-handoff.json`;
+- telemetry: `handoffs/T053-pilot-telemetry.json`;
+- submitted Executor HEAD: `fc972e0075463f17e820ea41ac1074b3394145b6`;
+- implementation PR: `#273`;
+- integrated technical commit: `9a7e4de08b7b3bece5883bd33d0a4aa2fa247c97`.
 
-Accepted technical slice:
-
-- extracted tracked-file inventory/read primitives;
-- extracted physical report construction and canonical report identity;
-- stable `tools/repository_context.py` facade preserved;
-- source-path-derived private package namespace protects same-process multi-worktree isolation;
-- focused repository-context characterization: `56` pre-refactor -> `59` PASS post-refactor;
-- Ruff check/format, code-health, dependency-cycle characterization and `git diff --check`: PASS.
-
-Current temporary LOC:
+Accepted technical result:
 
 ```text
-tools/repository_context.py              915
-tests/test_repository_context.py        1536
-tools/_repository_context/common.py       13
-tools/_repository_context/tracked_files.py 39
-tools/_repository_context/measurement.py 218
-tests/test_repository_context_extraction.py 123
+tools/repository_context.py              1117 -> 232 LOC
+tests/test_repository_context.py        1540 -> 233 LOC
+full pytest                              491 PASS
+focused repository-context/code-health    65 PASS
+Ruff / format / code-health / symbol map / cycle checks / diff-check PASS
 ```
 
-The `915`/`1536` facades are temporary Phase-1 state, not accepted final ratchets. Final T053 targets remain each facade/test file `<=500` plus cohesive bounded extracted modules.
+All extracted runtime and focused test modules are below `500` LOC; old `1117`/`1540` ratchets are replaced by final `232`/`233` values. No Executor-authored Markdown or Governance Core change occurred.
 
-## Phase-1 coordinator evidence
+### T053 coordinator conclusion
 
-Phase 1 launched one Human-visible Codex root as `NEW` and satisfied D042 against exact canonical base before authority loading/delegation.
+Persistent-root coordination is supported for further controlled evaluation:
 
-Operational evidence:
+- original root continued `NEW -> CONTINUE` across the Orchestrator barrier;
+- D042/current Git authority passed in both phases;
+- one-writer invariant held and branch/worktree incidents were `0`;
+- Phase-1 children were not reused;
+- retained concise Phase-1 summaries avoided rereading the `915`-line Phase-1 facade, `1536`-line test module, child transcripts and raw logs before fresh Phase-2 exploration;
+- final technical quality improved materially.
 
-- time to first useful technical action: `39.776s` as observed by Executor;
-- 2 fresh read-only Explorer children initially;
-- 1 fresh sole-writer Worker;
-- 1 fresh independent read-only Verifier found a high-severity cross-worktree module-cache isolation defect;
-- 1 fresh bounded rework Worker corrected that finding;
-- 1 fresh final independent Verifier reported PASS;
-- total child spawns: `6`;
-- maximum concurrent children: `2`;
-- maximum simultaneous write-capable actors per worktree: `1`;
-- all Phase-1 children closed;
-- stale-authority corrections: `0`;
-- branch/worktree incidents: `0`;
-- compaction events observed: `0`.
+Observability limit: the host exposed neither an immutable root fingerprint nor attributable root/child token/context metrics. T053 therefore supports a qualitative context-locality/reduced-reread claim, **not a quantitative token/cost/compute-saving claim**.
 
-Token/context metrics were not exposed by the used Codex coordination surface and are correctly persisted as `null` with availability reasons.
+The merged implementation topic branch `refactor/t053-repository-context-coordinator-pilot` was still present when final review was prepared. It is frozen at the reviewed head and remains a cleanup candidate under `docs/BRANCHING.md`; the current Orchestrator GitHub surface does not expose branch deletion.
 
-Phase 1 provides positive evidence for bounded child specialization but does **not** yet prove persistent-root value. The decisive evidence is same-root Phase-2 continuation and whether retained summaries avoid repeated orientation/large-surface rereads without bypassing D042.
+## T054 executable identity
 
-Phase-1 telemetry does not persist child model/reasoning selections. The adaptive child-compute research closes that knowledge gap prospectively; it must not be retroactively interpreted as T053 evidence.
+Task Contract: `docs/tasks/T054-adaptive-subagent-compute-routing-pilot.md`.
 
-## T053 Phase-2 executable identity
+T054 is a separate read-only matched-arm calibration. It does not modify product code or persistent-root policy.
 
-Phase 2 is authorized only after canonical availability of `docs/reviews/T053-P1.md`, now satisfied.
-
-Human-visible launch profile under unchanged D055:
+Human-visible D055 root launch profile:
 
 ```text
 Executor: Codex
-Session: CONTINUE
+Session: NEW
 Model: GPT-5.6 Sol
 Effort: High
-Task: T053 Phase 2
-Branch: refactor/t053-repository-context-coordinator-pilot
+Task: T054
+Expected evidence branch: test/t054-adaptive-subagent-compute-routing-pilot
 ```
 
-Use **the original Human-visible T053 coordinator root** from Phase 1. Do not start a new root and count it as continuation.
+Rationale: the fresh root coordinates the experiment and supplies the fixed root-equivalent CONTROL baseline; the experimental variable is child compute selection.
 
-If the original root is unavailable, report `COORDINATOR_RESUME_UNAVAILABLE` and stop for Orchestrator decision.
+### Frozen T054 experiment
 
-### Mandatory Phase-2 rehydration
+After D042 and host capability preflight, use six fresh read-only children in three matched pairs:
 
-Before relying on retained context, the same root MUST:
+```text
+P1 deterministic inventory
+  CONTROL: inherited root-equivalent Sol/High, fork_turns=none
+  ADAPTIVE: GPT-5.6 Luna / Low, fork_turns=none
 
-1. repeat D042 against current canonical Git;
-2. preserve represented branch/local work;
-3. reload current `AGENTS.md`;
-4. reload current `docs/orchestrator/CHECKPOINT.md`;
-5. reload `docs/tasks/T053-codex-persistent-executor-coordinator-pilot.md`;
-6. reload `docs/reviews/T053-P1.md`;
-7. reconcile retained assumptions against current authority;
-8. record stale assumptions corrected and same-root continuation evidence/fingerprint when safely exposed.
+P2 dependency + symbol mapping
+  CONTROL: inherited root-equivalent Sol/High, fork_turns=none
+  ADAPTIVE: GPT-5.6 Terra / Medium, fork_turns=none
 
-Phase-1 children remain closed and MUST NOT be resumed.
+P3 adversarial independent review
+  CONTROL: inherited root-equivalent Sol/High, fork_turns=none
+  ADAPTIVE: GPT-5.6 Terra / High, fork_turns=none
+```
 
-### Phase-2 work
+All children are read-only; maximum concurrently open children is `2`; no child reuse; no `.codex/agents/` catalog. Matched pair task content/tool access must remain equivalent. P1/P2 use deterministic root-computed oracles. P3 uses the frozen temporary fixed-package-name isolation defect outside tracked repository state.
 
-Use fresh bounded children under the same safety envelope:
+Required evidence:
 
-- fresh Explorer child(ren) for remaining registry/projection/snapshot/live/CLI and test-split risk;
-- one fresh Worker as sole writer;
-- fresh independent read-only Verifier/Reviewer over the complete T053 delta;
-- maximum 3 concurrently open children;
-- maximum 1 write-capable actor per mutable worktree.
+- capability preflight for model/reasoning/fork/service-tier controls and effective-profile/token observability;
+- requested **and effective** child model/reasoning/service-tier where observable;
+- `fork_turns`, timestamps/duration, token metrics where exposed;
+- first-attempt oracle result for each arm;
+- escalation/retry evidence without overwriting original failures;
+- final pilot decision exactly one of `QUALIFIED`, `QUALIFIED_QUALITY_OBSERVABILITY_LIMITED`, `NOT_QUALIFIED`, `BLOCKED_CAPABILITY`;
+- no quantitative savings claim without effective-profile/usage evidence.
 
-Complete:
+Persist only authorized non-Markdown evidence:
 
-- registry/projection/ratchet extraction;
-- snapshot/live/currentness extraction;
-- facade/CLI decomposition;
-- focused test-module split;
-- final code-health ratchets/coverage;
-- symbol-map coverage for new package;
-- dependency-cycle enforcement;
-- focused and full deterministic verification;
-- final independent technical review;
-- final telemetry and `handoffs/T053-executor-handoff.json`.
-
-Final targets and acceptance remain those in T053, including `tools/repository_context.py <=500`, `tests/test_repository_context.py <=500`, old `1117/1540` ratchets removed/lowered, and all AC-T053-5 through AC-T053-12 satisfied.
-
-## Continuity evidence required at final handoff
-
-Phase 2 telemetry must distinguish retained-root benefit from mere session reuse. Record, when observable:
-
-- same-root continuation evidence/fingerprint;
-- D042/current-authority reload result;
-- stale assumptions corrected;
-- Phase-2 bootstrap inventory;
-- repeated orientation reads before first useful Phase-2 action;
-- deliberate rereads required by changed Git authority;
-- whether retained Phase-1 summaries avoided rereading large implementation surfaces;
-- fresh child identities/roles/closed state;
-- one-writer/concurrency evidence;
-- compaction events;
-- token/context metrics if exposed, otherwise `null` with reason;
-- final verification/rework outcome.
-
-A positive future D055/portability recommendation is not automatic. Final Orchestrator convergence must decide whether persistence demonstrated useful context locality/less repeated orientation at acceptable compute and equal-or-better technical quality.
-
-Adaptive child compute routing is a separate prospective hypothesis. If T053 supports continuing the coordinator pattern, specify and evaluate that hypothesis in a distinct follow-up pilot rather than attributing it to T053.
+- `handoffs/T054-adaptive-routing-telemetry.json`;
+- `handoffs/T054-executor-handoff.json`.
 
 ## Next action
 
-1. Human returns to the **same Codex root/chat used for T053 Phase 1**.
-2. Show D055: Codex / CONTINUE / GPT-5.6 Sol / High.
-3. Send pointer-only continuation transport naming the represented branch, T053 and `docs/reviews/T053-P1.md`.
-4. Executor performs Phase 2 under the current Task Contract and returns terminal handoff fields only.
-5. Orchestrator converges final T053 evidence before any D055, adaptive child-compute, or consumer-portability change.
-6. If T053 convergence supports the coordinator pattern, use `docs/research/ADAPTIVE-SUBAGENT-COMPUTE-ROUTING-RESEARCH.md` to specify a separate controlled child-routing pilot.
+1. Integrate this O198/T054 specification branch into `develop` before Executor launch.
+2. Human starts a **NEW** Codex root for T054.
+3. Show D055: Codex / NEW / GPT-5.6 Sol / High.
+4. Send pointer-only transport to current `docs/tasks/T054-adaptive-subagent-compute-routing-pilot.md` on canonical `develop`.
+5. Executor runs T054 exactly as frozen and returns terminal handoff fields only.
+6. Orchestrator converges the evidence from GitHub before any D055, child-routing adapter, or consumer-portability policy change.
 7. Do not launch MG1-v13 concurrently.
 
 ## Next chat minimum load
@@ -180,4 +128,4 @@ Load only current `develop` identity, `AGENTS.md`, and this checkpoint; then fol
 
 ## Do not
 
-Do not treat coordinator memory as authority; do not bypass D042 on continuation; do not resume Phase-1 children; do not permit overlapping writers on one worktree; do not silently substitute a NEW root if CONTINUE is unavailable; do not build App Server/SDK persistence or a custom `.codex/agents/` catalog in T053; do not change D055 before final measured evidence; do not retrofit adaptive child compute routing into T053 Phase 2; do not merge the partial Phase-1 implementation separately; do not rerun MG1-v12 or launch V13.
+Do not treat session memory as authority; do not bypass D042; do not reuse the T053 root for T054; do not mutate tracked product code in T054; do not permit write-capable T054 children; do not leak the P3 oracle into child prompts; do not add a `.codex/agents/` catalog solely for T054; do not silently substitute Sol for a lower-tier ADAPTIVE arm and count it as successful routing; do not infer effective model/effort or tokens when the host does not expose them; do not change D055 or consumer policy before T054 convergence; do not rerun MG1-v12 or launch V13.
