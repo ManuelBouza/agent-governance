@@ -1,7 +1,7 @@
 # Source Product Operational Contracts
 
 Status: ACTIVE  
-Controlling decision: `docs/decisions/D059-operational-receipt-and-terminal-transport-separation.md`
+Controlling decisions: `docs/decisions/D059-operational-receipt-and-terminal-transport-separation.md`, `docs/decisions/D064-task-attached-operational-closure-continuity.md`
 
 ## Purpose
 
@@ -33,6 +33,26 @@ Use exactly one persisted contract type per delegated action:
 
 An Operational Contract is not a second Task Contract and does not reopen accepted implementation scope.
 
+D064 defines one narrow coordinator-lifecycle composition rule for task-attached post-acceptance closure. An Operational Contract may declare:
+
+```text
+Parent-Work-Unit: TNNN
+Coordinator-Continuity: ATTACHED_CLOSURE
+```
+
+only when the operation is solely closure of that exact Task Contract and satisfies D064 eligibility. In that case the OP remains the persisted operational authority but the Human-visible coordinator lifecycle remains the parent task lifecycle; use `CONTINUE` on the recoverable parent TNNN root.
+
+A normal/standalone OP has:
+
+```text
+Parent-Work-Unit: none
+Coordinator-Continuity: INDEPENDENT
+```
+
+and follows D060 as its own `NEW / OPNNN / root-1` work unit on first launch.
+
+An attached closure MUST NOT absorb unrelated cleanup or another task merely to preserve one session.
+
 ## Location and identity
 
 Operational Contracts live under `docs/operations/` and use stable IDs such as `OP001`.
@@ -44,6 +64,8 @@ Each Operational Contract MUST contain:
 - Operation ID;
 - Status: `DRAFT | READY | IN_PROGRESS | DONE | BLOCKED | CANCELLED`;
 - operation type;
+- `Parent-Work-Unit: TNNN | none`;
+- `Coordinator-Continuity: ATTACHED_CLOSURE | INDEPENDENT`;
 - authorized base branch/revision rule;
 - objective/result;
 - exact durable target identities required to derive the operation;
@@ -55,6 +77,14 @@ Each Operational Contract MUST contain:
 - stop/escalation conditions;
 - exact detailed durable-receipt schema;
 - a durable GitHub receipt anchor identifying the PR or issue where the executor must publish the completion receipt.
+
+For `ATTACHED_CLOSURE`, the contract MUST additionally:
+
+- identify the exact parent Task Contract;
+- state why the operation is still closure rather than a new work unit;
+- restrict targets to parent-task closure lineage plus the closure contract's own authoring branch when self-retirement is authorized;
+- record the parent coordinator name in the receipt schema;
+- preserve any parent Task Contract model/effort freeze that explicitly applies through task completion.
 
 The interactive completion response is not operation-specific. D059 fixes it to the standard compact terminal envelope defined below.
 
@@ -91,7 +121,8 @@ Rules:
 - do not repeat the detailed receipt envelope in chat;
 - operation-specific blocked reasons remain in the durable receipt while terminal `STATUS` is `BLOCKED`;
 - if receipt publication fails after mutation, return `STATUS: PARTIAL` and `RECEIPT: unavailable`;
-- `COORDINATOR` uses the D058 Human-visible coordinator identity when applicable, otherwise `n/a`.
+- `COORDINATOR` uses the D058/D064 Human-visible coordinator identity when applicable, otherwise `n/a`;
+- for `ATTACHED_CLOSURE`, `COORDINATOR` MUST be the parent TNNN coordinator, not an OPNNN name.
 
 This terminal response is navigation/transport only. It is not the detailed operation evidence surface.
 
@@ -106,7 +137,8 @@ An Operational Contract is executable only when:
 5. its durable GitHub receipt anchor is resolvable from the integrated contract;
 6. the executor synchronizes the canonical remote and establishes a safe local baseline equal to the current remote base branch containing that exact contract;
 7. if the governing integrated change modified `AGENTS.md`, ChatGPT includes the D043 reload line and the executor reloads current `AGENTS.md` from that baseline;
-8. the executor loads the Operational Contract from that current baseline.
+8. the executor loads the Operational Contract from that current baseline;
+9. for `ATTACHED_CLOSURE`, D064 eligibility is explicitly satisfied and the parent root is either safely recoverable or a D060 failover is explicitly justified.
 
 If the executor cannot establish the current remote baseline without risking local/uncommitted work, it MUST stop/escalate rather than discard work or attempt to execute the contract from stale state. D042 defines this bootstrap-freshness rule.
 
@@ -145,8 +177,10 @@ AGENTS.md changed in the governing integrated change; reload current AGENTS.md f
 
 Normal substitutions are limited to repository identity, base branch, exactly one Operational Contract path, and the conditional D043 reload line when Git history requires it. The executor chooses the concrete compatible Git/GitHub workflow used to establish freshness and publish the receipt; the prompt does not prescribe implementation methodology or task-specific commands.
 
+For an attached closure, the Human-facing launch card carries `Session: CONTINUE` and the parent task coordinator identity; the prompt itself remains the same minimal Operational Contract transport.
+
 ## Audit invariant
 
-A reviewer must be able to reconstruct from Git/GitHub, without the initiating chat and without Human copy/paste, what operation was authorized, why, which durable targets it covered, which safety rules controlled it, what detailed completion receipt the executor published, what ChatGPT independently verified, and what canonical state resulted.
+A reviewer must be able to reconstruct from Git/GitHub, without the initiating chat and without Human copy/paste, what operation was authorized, why, which durable targets it covered, which safety rules controlled it, what detailed completion receipt the executor published, what ChatGPT independently verified, which coordinator lifecycle owned the operation, and what canonical state resulted.
 
 If reconstruction requires prompt text beyond the contract pointer/bootstrap or Human-relayed executor output, the delegation is nonconforming.
