@@ -1,0 +1,119 @@
+{
+  "schema_version": 1,
+  "task_id": "T057",
+  "status": "DONE",
+  "task_contract_path": "docs/tasks/T057-codex-read-only-child-requalification-v2.md",
+  "sdd_profile": "ASSURED",
+  "branch": "test/t057-codex-read-only-child-requalification-v2",
+  "implementation_head_sha": "41383251e9786e8b2e39e2083ed4d487fac63b95",
+  "base_branch": "develop",
+  "base_sha": "20ed0e64dd6c98f38be42cd3cc28fcc220d06c5e",
+  "files_changed": [
+    "handoffs/T057-read-only-child-telemetry.json",
+    "handoffs/T057-executor-handoff.json"
+  ],
+  "implementation_summary": "Executed the frozen T057 read-only child qualification exactly once on installed Codex/App Server 0.153.4. The corrected controller consumed native thread/loaded/list string IDs, kept the same App Server process and parent loaded through exact-child reattachment, captured matching parent and child :read-only receipts, exact child usage and duration, requested/resolved Terra/Low state, and exact-child reroute absence without claiming backend-served identity.",
+  "qualification_decision": "QUALIFIED_READ_ONLY_CHILD_SURFACE",
+  "qualification_decision_basis": "Every frozen T057 gate passed: current isolated baseline and fixed Sol/Medium root; supported 0.153.4 schema/capabilities; parent and exact child activePermissionProfile.id=:read-only with non-contradictory readOnly projections; one uniquely correlated real child; continuous parent residency; Terra/Low requested/resolved state; exact server-reported same-turn usage and duration; continuously observed reroute surface with no reroute; exactly one provider-backed attempt; and no tracked/global mutation outside the two authorized evidence artifacts.",
+  "evidence_path": "handoffs/T057-read-only-child-telemetry.json",
+  "coordinator_session": {
+    "name": "AG | agent-governance | T057 | root-1",
+    "mode": "NEW",
+    "executor": "Codex",
+    "model": "GPT-5.6 Sol",
+    "reasoning_effort": "Medium",
+    "host_thread_id": null,
+    "thread_id_reason": "A supported stable identifier for the Human-visible coordinator was unavailable to the Executor."
+  },
+  "workspace": {
+    "branch": "test/t057-codex-read-only-child-requalification-v2",
+    "worktree_label": "t057-read-only-child-v2",
+    "isolation": "exclusive writable worktree and topic branch",
+    "base_branch": "develop",
+    "base_sha": "20ed0e64dd6c98f38be42cd3cc28fcc220d06c5e"
+  },
+  "verification": {
+    "commands": [
+      "git fetch --prune origin",
+      "git status --short --branch",
+      "git worktree list --porcelain",
+      "gh issue view 289 --repo ManuelBouza/agent-governance --json state,comments,url",
+      "codex --version",
+      "codex features list",
+      "codex app-server generate-json-schema --experimental --out <temporary-directory>",
+      "python .t057_controller.py",
+      "uv run --locked python -m json.tool handoffs/T057-read-only-child-telemetry.json",
+      "git diff --check",
+      "git status --short",
+      "git diff --name-only origin/develop...HEAD"
+    ],
+    "results": {
+      "d042_base_identity": "PASS: fetched current origin/develop 20ed0e64dd6c98f38be42cd3cc28fcc220d06c5e, preserved existing local work, and created an exclusive evidence worktree at that exact SHA.",
+      "op068_release_gate": "PASS: canonical issue #289 contains OP068 DONE plus Orchestrator acceptance releasing T057; both authorized retired branches are absent.",
+      "fixed_root_profile": "PASS: Codex / NEW / GPT-5.6 Sol / Medium remained fixed.",
+      "version_gate": "PASS: installed CLI, initialized App Server, and native schema version are 0.153.4; no upgrade or alternate binary was used.",
+      "native_schema_shape": "PASS: v2/ThreadLoadedListResponse.json defines data as array<string>; the controller parsed identifiers as strings before the provider-backed attempt.",
+      "native_capability_preflight": "PASS: experimental permission profile, child relationship, token usage, exact Turn timing, model/reasoning, and reroute surfaces are present.",
+      "parent_permission_receipt": "PASS: request used permissions=:read-only, omitted legacy sandbox, and returned activePermissionProfile.id=:read-only plus legacy readOnly.",
+      "real_child_topology": "PASS: exactly one t057_read_only_child was correlated by subAgentActivity and parentThreadId evidence.",
+      "parent_residency": "PASS: parent ID remained in the native loaded string-ID set immediately before child reattachment and after it; the same App Server process remained alive through capture.",
+      "child_permission_receipt": "PASS: owner-controlled reattachment sent only threadId and returned activePermissionProfile.id=:read-only plus non-contradictory legacy readOnly.",
+      "requested_vs_resolved_profile": "PASS: requested and resolved Thread values are gpt-5.6-terra/low; backend-served identity remains unverified.",
+      "child_usage": "PASS: exact non-estimated server receipt for child turn 01a071f3-364c-7f80-b936-a99d971bfc06 reports 22513 input, 0 cached input, 0 cache-write input, 23 output, 0 reasoning output, 22536 total tokens, and 258400 context window.",
+      "child_duration": "PASS: exact supported child Turn receipt reports startedAt 1788618159, completedAt 1788618164, and durationMs 4516.",
+      "reroute": "PASS: exact-child event capture remained continuous and returned zero model/rerouted notifications; this absence is not treated as backend identity proof.",
+      "first_attempt_rule": "PASS: exactly one provider-backed synthetic parent/child attempt ran and no compensating attempt occurred.",
+      "private_state_boundary": "PASS: SQLite, JSONL and rollout internals were not used to create or upgrade passing evidence.",
+      "worktree_probe_safety": "PASS: tracked worktree remained clean through the provider-backed probe; neither parent nor child attempted shell/write tools or a write probe."
+    },
+    "runtime": "Windows 10.0.26200 x86_64; Codex CLI/App Server 0.153.4; Python 3.13.14 through locked uv environment for JSON validation.",
+    "network_required": true
+  },
+  "dependencies_or_config_changes": {
+    "dependencies_changed": false,
+    "repository_config_changed": false,
+    "global_codex_config_changed": false,
+    "global_upgrade_performed": false,
+    "alternate_binary_used": false
+  },
+  "git_status": "Telemetry anchor committed cleanly at 41383251e9786e8b2e39e2083ed4d487fac63b95; only the authorized final handoff file was pending when this handoff was authored.",
+  "unresolved_issues": [],
+  "recommended_next_task": "ChatGPT Orchestrator should converge T057 from the pushed remote evidence, update R009/R008 under D057, and separately decide whether R007 may return to EVALUATING. Qualification alone does not reactivate routing policy.",
+  "chatgpt_read_path": "Read this handoff and handoffs/T057-read-only-child-telemetry.json at the reported pushed branch HEAD, verify implementation_head_sha is its ancestor, and perform D053 Converge/Accept without inferring backend-served identity.",
+  "code_review": {
+    "reviewed_head_sha": "41383251e9786e8b2e39e2083ed4d487fac63b95",
+    "summary": "Reviewed the telemetry anchor against the frozen T057 Task Contract, native 0.153.4 schema, raw supported App Server receipts, one-attempt boundary, and repository scope. The evidence satisfies every acceptance criterion and stays within the no-inference/no-write boundary.",
+    "findings": [],
+    "resolved_findings": [],
+    "upstream_reentry_required": false,
+    "upstream_reentry_stage": null
+  },
+  "requirement_trace": {
+    "AC-T057-1": "PASS: current origin/develop baseline and fixed Sol/Medium root recorded.",
+    "AC-T057-2": "PASS: CLI/App Server/schema 0.153.4 and mandatory capability surfaces confirmed before provider work.",
+    "AC-T057-3": "PASS: native schema resolved loaded-list data as string IDs; runtime receipt matched.",
+    "AC-T057-4": "PASS: parent activePermissionProfile.id=:read-only with readOnly legacy projection.",
+    "AC-T057-5": "PASS: one real child uniquely correlated; same process and parent continuously resident through reattachment.",
+    "AC-T057-6": "PASS: child activePermissionProfile.id=:read-only with readOnly legacy projection.",
+    "AC-T057-7": "PASS_CONFIGURED_THREAD_STATE_ONLY_BACKEND_UNVERIFIED: gpt-5.6-terra/low matched request; no backend claim.",
+    "AC-T057-8": "PASS: exact non-estimated usage captured for exact child and turn.",
+    "AC-T057-9": "PASS: exact durationMs and timing captured for exact child Turn.",
+    "AC-T057-10": "PASS_NO_REROUTE_OBSERVED_BACKEND_UNVERIFIED: continuous exact-child surface captured zero reroutes without overstating identity.",
+    "AC-T057-11": "PASS: no tracked/global mutation, write probe, authority leakage, or unauthorized files.",
+    "AC-T057-12": "PASS: sole frozen decision is QUALIFIED_READ_ONLY_CHILD_SURFACE."
+  },
+  "safety_and_authority": {
+    "tracked_product_code_changed": false,
+    "markdown_changed": false,
+    "dependency_changed": false,
+    "global_codex_configuration_changed": false,
+    "frozen_root_profile_changed": false,
+    "persistent_agent_catalog_created": false,
+    "routing_policy_changed": false,
+    "d055_changed": false,
+    "backend_profile_overstated": false,
+    "unsupported_quantitative_claim_made": false,
+    "second_provider_probe_attempted": false,
+    "authority_leakage": false
+  }
+}

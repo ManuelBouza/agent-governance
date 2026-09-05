@@ -1,0 +1,329 @@
+{
+  "schema_version": 1,
+  "run_id": "T057-20260905T142232Z-9B61E4A7",
+  "task_id": "T057",
+  "task_contract_path": "docs/tasks/T057-codex-read-only-child-requalification-v2.md",
+  "started_at_utc": "2026-09-05T14:22:32.938785Z",
+  "ended_at_utc": "2026-09-05T14:22:54.271689Z",
+  "base_develop_sha": "20ed0e64dd6c98f38be42cd3cc28fcc220d06c5e",
+  "executor_branch": "test/t057-codex-read-only-child-requalification-v2",
+  "executor_root_profile": {
+    "executor": "Codex",
+    "session": "NEW",
+    "coordinator_chat": "AG | agent-governance | T057 | root-1",
+    "model": "GPT-5.6 Sol",
+    "reasoning_effort": "Medium",
+    "human_visible_profile_fixed_for_complete_task": true,
+    "mid_task_profile_change": false
+  },
+  "d042_baseline": {
+    "canonical_remote": "https://github.com/ManuelBouza/agent-governance.git",
+    "canonical_base_branch": "develop",
+    "fetched_origin_develop_sha": "20ed0e64dd6c98f38be42cd3cc28fcc220d06c5e",
+    "isolated_baseline_sha": "20ed0e64dd6c98f38be42cd3cc28fcc220d06c5e",
+    "baseline_tracked_clean": true,
+    "safe_baseline_method": "Fetched and pruned origin, verified local develop equals current origin/develop, preserved all pre-existing worktrees and untracked .worktrees container state, verified OP068 accepted DONE on canonical GitHub, then created an exclusive T057 worktree and topic branch at current origin/develop.",
+    "pre_existing_checkout": {
+      "branch": "develop",
+      "head": "20ed0e64dd6c98f38be42cd3cc28fcc220d06c5e",
+      "unrepresented_local_work_observed": [
+        ".worktrees/"
+      ],
+      "discarded_or_overwritten": false
+    },
+    "pre_existing_worktrees_preserved": [
+      "t021-canonical-proof",
+      "t038-executor-baseline"
+    ],
+    "op068_gate": {
+      "status": "DONE",
+      "receipt": "https://github.com/ManuelBouza/agent-governance/issues/289#issuecomment-5552392348",
+      "orchestrator_acceptance": "https://github.com/ManuelBouza/agent-governance/issues/289#issuecomment-5552399750",
+      "released_t057": true
+    }
+  },
+  "workspace": {
+    "branch": "test/t057-codex-read-only-child-requalification-v2",
+    "worktree_label": "t057-read-only-child-v2",
+    "isolation": "exclusive writable worktree and topic branch",
+    "base_branch": "develop",
+    "base_sha": "20ed0e64dd6c98f38be42cd3cc28fcc220d06c5e"
+  },
+  "version_preflight": {
+    "local_codex_cli_version": "0.153.4",
+    "local_codex_cli_path": "C:\\Users\\Manuel\\AppData\\Local\\Programs\\OpenAI\\Codex\\bin\\codex.exe",
+    "app_server_initialize_version": "0.153.4",
+    "app_server_initialize_user_agent": "Codex Desktop/0.153.4 (Windows 10.0.26200; x86_64) dumb (t057-read-only-child-controller; 1.0)",
+    "app_server_transport": "stdio",
+    "native_schema_generated_from_version": "0.153.4",
+    "native_schema_command": "codex app-server generate-json-schema --experimental --out <temporary-directory>",
+    "native_schema_location_class": "temporary directory outside tracked repository state",
+    "thread_loaded_list_response_shape": "object with data: array<string> and nullable nextCursor",
+    "experimental_api_enabled": true,
+    "current_auth_mode_category": "chatgpt",
+    "minimum_required_version": "0.153.4",
+    "version_gate_passed": true,
+    "global_upgrade_performed": false,
+    "alternate_binary_used": false
+  },
+  "native_capability_preflight": {
+    "thread_loaded_list_string_ids_supported": {
+      "supported": true,
+      "evidence_source": "native experimental v2/ThreadLoadedListResponse.json data.items.type=string"
+    },
+    "thread_start_permissions_profile_id_supported": {
+      "supported": true,
+      "evidence_source": "native experimental v2/ThreadStartParams.json property permissions"
+    },
+    "thread_start_active_permission_profile_response_supported": {
+      "supported": true,
+      "evidence_source": "native experimental v2/ThreadStartResponse.json property activePermissionProfile"
+    },
+    "thread_resume_active_permission_profile_response_supported": {
+      "supported": true,
+      "evidence_source": "native experimental v2/ThreadResumeResponse.json property activePermissionProfile"
+    },
+    "thread_token_usage_updated_supported": {
+      "supported": true,
+      "evidence_source": "native experimental v2/ThreadTokenUsageUpdatedNotification.json"
+    },
+    "child_turn_timing_supported": {
+      "supported": true,
+      "evidence_source": "native experimental v2/ThreadTurnsListResponse.json Turn startedAt/completedAt/durationMs"
+    },
+    "child_relationship_discovery_supported": {
+      "supported": true,
+      "evidence_source": "native ThreadListParams parentThreadId plus ThreadItem subAgentActivity/agentThreadId schemas"
+    },
+    "multi_agent_child_spawn_supported": {
+      "supported": true,
+      "evidence_source": "installed codex features list reports multi_agent_v2 stable; request-scoped parent config enabled it"
+    },
+    "model_rerouted_notification_supported": {
+      "supported": true,
+      "evidence_source": "native experimental notification schema exposes model/rerouted"
+    },
+    "root_and_child_models_supported": true,
+    "all_mandatory_capabilities_present": true
+  },
+  "surface_selection": {
+    "surface": "installed Codex App Server direct JSON-RPC",
+    "temporary_controller_class": "untracked task-worktree file removed before evidence persistence",
+    "temporary_diagnostic_capture_class": "temporary directory outside tracked repository state",
+    "tracked_controller_or_schema_created": false,
+    "product_dependency_added": false,
+    "global_codex_configuration_changed": false,
+    "private_persistence_used_as_passing_evidence": false
+  },
+  "provider_probe": {
+    "authorized_attempt_limit": 1,
+    "provider_backed_attempt_count": 1,
+    "compensating_attempt_performed": false,
+    "controller_exception": null,
+    "app_server_process_alive_through_capture": true,
+    "app_server_process_closed_after_capture": true
+  },
+  "parent_thread": {
+    "thread_id": "01a071f3-1e27-71f0-b5f3-60c633e784e4",
+    "requested_model": "gpt-5.6-sol",
+    "requested_reasoning": "medium",
+    "requested_permissions_id": ":read-only",
+    "legacy_sandbox_request_sent": false,
+    "active_permission_profile": {
+      "id": ":read-only",
+      "extends": null
+    },
+    "legacy_sandbox_projection": {
+      "type": "readOnly",
+      "networkAccess": false
+    },
+    "approval_policy": "never",
+    "cwd_class": "isolated T057 evidence worktree",
+    "model_provider": "openai",
+    "resolved_model": "gpt-5.6-sol",
+    "resolved_reasoning": "medium",
+    "turn_id": "01a071f3-1f83-7e62-a5fd-0c535ac8ee0d",
+    "turn_status": "completed",
+    "nonce_returned": "T057-READ-ONLY-CHILD-OK-9B61E4A7",
+    "loaded_immediately_before_child_reattachment": true,
+    "loaded_after_child_reattachment": true,
+    "continuous_residency_passed": true
+  },
+  "child_thread": {
+    "thread_id": "01a071f3-3555-7200-bd7a-ba7b6a9e514c",
+    "parent_thread_id": "01a071f3-1e27-71f0-b5f3-60c633e784e4",
+    "source": {
+      "kind": "subAgent",
+      "spawn_kind": "thread_spawn",
+      "depth": 1,
+      "agent_path": "/root/t057_read_only_child",
+      "agent_nickname": "Avicenna"
+    },
+    "agent_path_or_task_name": "t057_read_only_child",
+    "requested_model": "gpt-5.6-terra",
+    "requested_reasoning": "low",
+    "requested_fork_turns": "none",
+    "requested_service_tier": "default/omitted",
+    "resolved_model_provider": "openai",
+    "resolved_model": "gpt-5.6-terra",
+    "resolved_reasoning": "low",
+    "active_permission_profile": {
+      "id": ":read-only",
+      "extends": null
+    },
+    "legacy_sandbox_projection": {
+      "type": "readOnly",
+      "networkAccess": false
+    },
+    "turn_id": "01a071f3-364c-7f80-b936-a99d971bfc06",
+    "deterministic_nonce": "T057-READ-ONLY-CHILD-OK-9B61E4A7",
+    "nonce_returned": true,
+    "reattached_without_configuration_override": true,
+    "loaded_after_reattachment": true
+  },
+  "relationship_evidence": {
+    "child_thread_id_non_null": true,
+    "child_differs_from_parent": true,
+    "matching_child_count": 1,
+    "sub_agent_activity_started_count": 1,
+    "sub_agent_activity_completed_count": 1,
+    "sub_agent_activity_agent_thread_id": "01a071f3-3555-7200-bd7a-ba7b6a9e514c",
+    "thread_list_parent_thread_id": "01a071f3-1e27-71f0-b5f3-60c633e784e4",
+    "thread_list_child_thread_id": "01a071f3-3555-7200-bd7a-ba7b6a9e514c",
+    "expected_agent_path_matches": true,
+    "real_multi_agent_v2_child_verified": true,
+    "experimental_parent_thread_id_filter_used": true,
+    "deterministic_correlation_passed": true
+  },
+  "parent_residency_evidence": {
+    "schema_resolved_before_provider_probe": true,
+    "loaded_list_data_all_strings": true,
+    "loaded_thread_ids_immediately_before_child_reattachment": [
+      "01a071f3-1e27-71f0-b5f3-60c633e784e4",
+      "01a071f3-3555-7200-bd7a-ba7b6a9e514c"
+    ],
+    "parent_id_present_immediately_before_child_reattachment": true,
+    "same_app_server_process_used_from_spawn_through_reattachment": true,
+    "parent_id_present_after_child_reattachment": true,
+    "parent_residency_passed": true
+  },
+  "permission_evidence": {
+    "requested_parent_permission_profile": ":read-only",
+    "resolved_parent_permission_profile": {
+      "id": ":read-only",
+      "extends": null
+    },
+    "resolved_child_permission_profile": {
+      "id": ":read-only",
+      "extends": null
+    },
+    "legacy_parent_sandbox_projection": {
+      "type": "readOnly",
+      "networkAccess": false
+    },
+    "legacy_child_sandbox_projection": {
+      "type": "readOnly",
+      "networkAccess": false
+    },
+    "parent_receipt_passed": true,
+    "child_receipt_captured": true,
+    "child_receipt_passed": true,
+    "contradictory_broader_projection_observed": false
+  },
+  "compute_profile_evidence": {
+    "requested_child_model": "gpt-5.6-terra",
+    "requested_child_reasoning": "low",
+    "resolved_child_model_provider": "openai",
+    "resolved_child_model": "gpt-5.6-terra",
+    "resolved_child_reasoning": "low",
+    "receipt_sources": [
+      "experimental thread/list parentThreadId result for uniquely correlated child",
+      "owner-controlled child thread/resume response without configuration overrides"
+    ],
+    "requested_resolved_match": true,
+    "documented_replacement": null,
+    "backend_served_profile_verified": false,
+    "backend_boundary_reason": "Resolved Thread state and absence of model/rerouted are not authoritative per-turn backend execution receipts."
+  },
+  "usage_evidence": {
+    "thread_id": "01a071f3-3555-7200-bd7a-ba7b6a9e514c",
+    "turn_id": "01a071f3-364c-7f80-b936-a99d971bfc06",
+    "input_tokens": 22513,
+    "cached_input_tokens": 0,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 23,
+    "reasoning_output_tokens": 0,
+    "total_tokens": 22536,
+    "model_context_window": 258400,
+    "estimated": false,
+    "server_reported_exact_child_turn_usage_captured": true,
+    "notification_count": 2,
+    "notification_interpretation": "Two identical server snapshots for the same exact child thread and turn were observed; values are recorded once, not summed."
+  },
+  "duration_evidence": {
+    "thread_id": "01a071f3-3555-7200-bd7a-ba7b6a9e514c",
+    "turn_id": "01a071f3-364c-7f80-b936-a99d971bfc06",
+    "started_at_unix_seconds": 1788618159,
+    "completed_at_unix_seconds": 1788618164,
+    "duration_ms": 4516,
+    "source": "supported exact-child turn/completed notification cross-checked by thread/turns/list",
+    "exact_child_turn_duration_captured": true,
+    "controller_wall_clock_not_substituted": true,
+    "parent_turn_timing_not_substituted": true
+  },
+  "reroute_evidence": {
+    "model_rerouted_surface_supported": true,
+    "exact_child_event_capture_continuous": true,
+    "reroute_observed": false,
+    "from_model": null,
+    "to_model": null,
+    "reason": null,
+    "exact_child_reroute_notification_count": 0,
+    "absence_interpreted_as_backend_identity_proof": false,
+    "backend_served_profile_verified": false
+  },
+  "worktree_safety": {
+    "baseline_tracked_status_clean": true,
+    "post_probe_tracked_status_clean_before_evidence_write": true,
+    "tracked_mutation_by_parent_or_child_observed": false,
+    "child_write_test_attempted": false,
+    "parent_or_child_shell_or_write_tool_attempt_observed": false,
+    "product_code_changed": false,
+    "markdown_changed": false,
+    "dependency_changed": false,
+    "persistent_agent_catalog_created": false,
+    "global_configuration_changed": false,
+    "temporary_controller_removed_before_commit": true,
+    "authorized_evidence_files": [
+      "handoffs/T057-read-only-child-telemetry.json",
+      "handoffs/T057-executor-handoff.json"
+    ]
+  },
+  "qualification_decision": "QUALIFIED_READ_ONLY_CHILD_SURFACE",
+  "qualification_reasons": [
+    "The installed CLI and initialized App Server are 0.153.4 and every frozen native capability/version gate passed before provider-backed work.",
+    "The native schema defined thread/loaded/list as a collection of string thread IDs and the controller used that shape without guessing.",
+    "The parent returned activePermissionProfile.id=:read-only with non-contradictory readOnly legacy projection.",
+    "Exactly one real Multi-Agent V2 child was uniquely correlated, and the parent remained loaded in the same App Server process through child reattachment.",
+    "Owner-controlled child reattachment sent only threadId and returned activePermissionProfile.id=:read-only with non-contradictory readOnly legacy projection.",
+    "Requested and resolved child state matched gpt-5.6-terra/low; backend-served identity remains explicitly unverified.",
+    "Exact server-reported usage and exact supported child-turn duration were captured for the same child thread and turn.",
+    "The exact-child reroute surface was observed continuously with no reroute notification; absence was not promoted to backend identity proof.",
+    "Exactly one provider-backed attempt ran, no write probe occurred, and tracked repository state remained unchanged until the two authorized evidence files were written."
+  ],
+  "acceptance_trace": {
+    "AC-T057-1": "PASS",
+    "AC-T057-2": "PASS",
+    "AC-T057-3": "PASS",
+    "AC-T057-4": "PASS",
+    "AC-T057-5": "PASS",
+    "AC-T057-6": "PASS",
+    "AC-T057-7": "PASS_CONFIGURED_THREAD_STATE_ONLY_BACKEND_UNVERIFIED",
+    "AC-T057-8": "PASS",
+    "AC-T057-9": "PASS",
+    "AC-T057-10": "PASS_NO_REROUTE_OBSERVED_BACKEND_UNVERIFIED",
+    "AC-T057-11": "PASS",
+    "AC-T057-12": "PASS_QUALIFIED_READ_ONLY_CHILD_SURFACE"
+  },
+  "unavailable_fields": []
+}
