@@ -40,39 +40,39 @@ See D057 for transition semantics and required metadata for new research.
 | R004 | `docs/research/MG1-V8-WINDOWS-SANDBOX-ROOT-CAUSE.md` | COMPLETE | SUPERSEDED | `docs/reviews/T023-R7.md`; successor MG1 host-preflight work | none | Root-cause analysis informed later host/workspace corrections; v8 restart authority is no longer current. |
 | R005 | `docs/research/MG1-V9-WINDOWS-TEMP-ACL-ANALYSIS.md` | COMPLETE | SUPERSEDED | T023 successor-method lineage; current terminal MG1 state `docs/reviews/T023-R11.md` | none | ACL findings remain diagnostic evidence; the v9-specific remediation path has been superseded by later MG1 iterations. |
 | R006 | `docs/research/CODEX-PERSISTENT-EXECUTOR-COORDINATOR-RESEARCH.md` | COMPLETE | DEFERRED | `docs/tasks/T053-codex-persistent-executor-coordinator-pilot.md`; `docs/reviews/T053-R1.md`; `docs/reviews/T054-R1.md` | none | T053 produced positive qualitative persistence/context-locality evidence, but no attributable token/context metrics. T054 did not add causal persistence evidence. No global D055 persistence-policy change is adopted. Reconsider only with materially better persistence observability or a separate normative justification that does not depend on an unverified efficiency claim. |
-| R007 | `docs/research/ADAPTIVE-SUBAGENT-COMPUTE-ROUTING-RESEARCH.md` | COMPLETE | DEFERRED | `docs/tasks/T054-adaptive-subagent-compute-routing-pilot.md`; `docs/reviews/T054-R1.md`; PR `#277` | none | T054 execution was accepted with pilot decision `NOT_QUALIFIED`: P1 exposed a real `Luna / Low` exactness failure, P2 had a shared task/oracle-semantics confound across both arms, and P3 passed in both arms. Effective child profiles and attributable token usage were not observable. No global child-routing policy is adopted. Reconsider only after a successor evaluation removes the P2 confound, uses a first-attempt-qualified mapping, and the measurement substrate is qualified. |
-| R008 | `docs/research/CODEX-CHILD-OBSERVABILITY-SURFACE-RESEARCH.md` | COMPLETE | DEFERRED | `docs/tasks/T055-codex-child-observability-qualification.md`; `docs/reviews/T055-R1.md`; PR `#280` | none | T055 execution was accepted with `PARTIAL_OBSERVABILITY`. The installed 0.149.0 host exposed a real child relation, requested/resolved `gpt-5.6-terra / low` state, exact child-thread/turn token usage, duration and reroute support; deterministic discovery required the documented experimental `parentThreadId` filter. The mandatory sandbox gate failed because the supported child receipt reported `workspaceWrite`, not an unambiguous non-write envelope. No routing successor is authorized. Reconsider when a supported installed Codex surface can demonstrate a non-write child sandbox receipt without private persistence, product dependency changes or global configuration mutation. |
+| R007 | `docs/research/ADAPTIVE-SUBAGENT-COMPUTE-ROUTING-RESEARCH.md` | COMPLETE | DEFERRED | `docs/tasks/T054-adaptive-subagent-compute-routing-pilot.md`; `docs/reviews/T054-R1.md`; PR `#277` | none | T054 execution was accepted with pilot decision `NOT_QUALIFIED`: P1 exposed a real `Luna / Low` exactness failure, P2 had a shared task/oracle-semantics confound across both arms, and P3 passed in both arms. No global child-routing policy is adopted. Reconsider only after a successor evaluation removes the P2 confound, uses a first-attempt-qualified mapping, and the measurement substrate is qualified. |
+| R008 | `docs/research/CODEX-CHILD-OBSERVABILITY-SURFACE-RESEARCH.md` | COMPLETE | DEFERRED | `docs/tasks/T055-codex-child-observability-qualification.md`; `docs/reviews/T055-R1.md`; PR `#280`; successor R009/T056 | none | T055 execution was accepted with `PARTIAL_OBSERVABILITY`. Model/reasoning, exact child/turn usage and duration were observable, but the 0.149.0 post-run child lifecycle receipt did not prove an unambiguous non-write permission profile. R009 found a material post-0.149 parent-owned child reload fix and a stronger profile-ID receipt path. R008 remains deferred until T056 qualifies that surface. |
+| R009 | `docs/research/CODEX-CHILD-SANDBOX-INHERITANCE-RESEARCH.md` | COMPLETE | EVALUATING | `docs/tasks/T056-codex-read-only-child-requalification.md` | none | Official source shows spawned children inherit the parent permission snapshot; profile-ID selection `:read-only` plus `activePermissionProfile` is the preferred provenance path; and commit `d21794d6` / PR #40477 (2026-08-24), included in Codex 0.153.4, fixed parent-owned V2 child reload so unloaded children reattach through the actual parent and inherit its execution policy. T056 is a new version-gated requalification. The last observed installed host was 0.149.0, so execution must not start until the installed host naturally/explicitly reaches a qualifying version outside the Executor task. |
 
 ## Live research frontier
 
-There is currently no `ACTIVE` or `EVALUATING` research item.
-
-The current deferred frontier is:
-
 ```text
-R006 — persistent Executor coordinator
+R009 — Codex child sandbox inheritance / receipt
   Research-State: COMPLETE
-  Decision-State: DEFERRED
-  Evidence: T053 accepted; T054 adds no persistence-causal evidence
-  Global policy decision: none
-  Reconsideration condition: better persistence observability or separate normative justification
-
-R007 — adaptive subagent compute routing
-  Research-State: COMPLETE
-  Decision-State: DEFERRED
-  Evaluation: T054 accepted; pilot decision NOT_QUALIFIED
-  Global policy decision: none
-  Reconsideration condition: corrected successor evaluation + first-attempt-qualified mapping after the measurement substrate is qualified
-
-R008 — Codex child observability surface
-  Research-State: COMPLETE
-  Decision-State: DEFERRED
-  Evaluation: T055 accepted; qualification PARTIAL_OBSERVABILITY
-  Global policy decision: none
-  Reconsideration condition: a supported installed Codex surface can produce an unambiguous non-write child sandbox receipt; experimental relationship discovery may remain acceptable if explicit and version-pinned
+  Decision-State: EVALUATING
+  Evaluation: T056 planned
+  Current gate: installed Codex/App Server must be >= 0.153.4 and preserve the native required schema
+  Last observed host: 0.149.0 during T055
+  Executor may not globally upgrade Codex to satisfy the gate
 ```
 
-R008 does not reactivate R007. R007 can return to `EVALUATING` only through a later persisted transition after the measurement substrate qualifies and a corrected routing Task Contract is separately specified.
+Deferred dependencies remain:
+
+```text
+R008 — child observability surface
+  COMPLETE / DEFERRED
+  Reopens only if T056 qualifies the read-only child receipt on the corrected surface
+
+R007 — adaptive subagent compute routing
+  COMPLETE / DEFERRED
+  Reopens only after the full measurement substrate qualifies and a separate D057 transition is persisted
+
+R006 — persistent Executor coordinator
+  COMPLETE / DEFERRED
+  No global D055 persistence-session policy change
+```
+
+T056 is not a routing pilot. Even a passing T056 result requires Orchestrator convergence and explicit D057 transitions before R007 may return to `EVALUATING`.
 
 ## Required workflow for new research
 
