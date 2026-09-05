@@ -20,7 +20,7 @@ Agent Governance already has strong remote branch retirement and remote-baseline
 1. which Human-visible Codex coordinator chat represents a work unit and should be continued;
 2. which local worktree/checkout owns a writable work unit, and what local state must remain after integration.
 
-Current Codex supports explicit thread naming. Current Agent Governance policy already requires topic-branch retirement and inspection of local worktrees, but it does not make actual obsolete-worktree removal plus primary-checkout convergence an explicit closure postcondition.
+Codex 0.153.4, the installed source-maintenance host version at this evidence boundary, supports explicit thread naming. Current Agent Governance policy already requires topic-branch retirement and inspection of local worktrees, but it does not make actual obsolete-worktree removal plus primary-checkout convergence an explicit closure postcondition.
 
 The recommended correction is therefore additive rather than a new Git lifecycle:
 
@@ -56,23 +56,30 @@ That bootstrap rule does not by itself define end-of-task local topology. A sepa
 
 ## Codex coordinator naming evidence
 
-Official current `openai/codex` source inspected on 2026-09-05 at:
+The installed qualification host is Codex `0.153.4`. Official `openai/codex` release source at:
 
 ```text
-531f3836a1e38ea61eaaba3dccda6711eb6c0dca
+3d2ee51ca2d5db578f328aa75e20aa22c0197c9a
 ```
 
 shows:
 
 - `SlashCommand::Rename` with the user-visible description `rename the current thread`;
-- `/rename <name>` accepts inline arguments and sends the normalized name through the thread-name event path;
-- `/new <name>` can start a new session with an explicit name;
+- `Rename` is included in `supports_inline_args`;
+- `/rename <name>` normalizes the supplied name and sends it through `set_thread_name`;
+- `/new <name>` starts a new session with an explicit `name`;
 - Codex separately maintains a thread/session identity.
 
-Relevant files:
+Relevant release files:
 
 - `codex-rs/tui/src/slash_command.rs`
 - `codex-rs/tui/src/chatwidget/slash_dispatch.rs`
+
+The same behavior is present in current source inspected on 2026-09-05 at:
+
+```text
+531f3836a1e38ea61eaaba3dccda6711eb6c0dca
+```
 
 This capability is host-specific and volatile. The governance conclusion does not depend on the exact slash-command syntax: when a selected Executor exposes user-visible session naming, the Orchestrator can supply a deterministic name and the Human/host can apply it through the supported UI or command surface.
 
@@ -177,7 +184,7 @@ The primary checkout remains a baseline/maintenance surface rather than a shared
 
 ## Handoff/audit implications
 
-For future named-session-capable Executor work, durable evidence should capture enough coordinator/worktree identity to distinguish sessions without turning local UI state into authority:
+For named-session-capable Executor work, durable evidence should capture enough coordinator/worktree identity to distinguish sessions without turning local UI state into authority:
 
 ```text
 coordinator_session.name
