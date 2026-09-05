@@ -1,0 +1,241 @@
+{
+  "schema_version": 1,
+  "recorded_at_utc": "2026-09-05T09:40:41.8261028Z",
+  "task_id": "T055",
+  "task_contract_path": "docs/tasks/T055-codex-child-observability-qualification.md",
+  "canonical_develop_sha": "9522bde72476e63e88fb898d93a56a36aacdd3f1",
+  "d042_result": {
+    "status": "PASS",
+    "canonical_remote": "https://github.com/ManuelBouza/agent-governance.git",
+    "canonical_base_branch": "develop",
+    "fetched_origin_develop_sha": "9522bde72476e63e88fb898d93a56a36aacdd3f1",
+    "local_baseline_sha": "9522bde72476e63e88fb898d93a56a36aacdd3f1",
+    "baseline_clean_before_execution": true,
+    "safe_baseline_method": "Fetched origin, preserved the existing checkout and all pre-existing worktrees, and created an isolated worktree at origin/develop.",
+    "pre_existing_checkout_preserved": {
+      "branch": "verify/t039-t034-oracle-transition",
+      "head": "0197e1899cb0933c7345b373a5dfdbd015d078fc",
+      "unrepresented_state_observed": [
+        ".worktrees/",
+        "inaccessible ignored temporary pytest/exec directories reported by Git status"
+      ],
+      "discarded_or_overwritten": false
+    }
+  },
+  "executor_root_profile": {
+    "executor": "Codex",
+    "session": "NEW",
+    "requested_model": "GPT-5.6 Sol",
+    "requested_reasoning_effort": "Medium",
+    "human_visible_profile_fixed_for_complete_task": true,
+    "mid_task_profile_change": false
+  },
+  "version_preflight": {
+    "local_codex_cli_version": "0.149.0",
+    "app_server_initialize_version": "0.149.0",
+    "app_server_initialize_user_agent": "Codex Desktop/0.149.0 (Windows 10.0.26200; x86_64)",
+    "app_server_protocol_version_or_capabilities": {
+      "protocol": "JSON-RPC 2.0 with generated App Server v2 schemas",
+      "native_schema_generation": "codex app-server generate-json-schema",
+      "stable_required_fields_present": [
+        "Thread.parentThreadId",
+        "Thread.modelProvider",
+        "Thread.model",
+        "Thread.reasoningEffort",
+        "Thread.cliVersion",
+        "thread/list sourceKinds",
+        "thread/resume sandbox",
+        "thread/tokenUsage/updated",
+        "Turn.startedAt",
+        "Turn.completedAt",
+        "Turn.durationMs",
+        "model/rerouted"
+      ],
+      "experimental_relation_filter_present": "thread/list parentThreadId"
+    },
+    "python_sdk_used": false,
+    "python_sdk_version": null,
+    "python_sdk_version_unavailable_reason": "Direct App Server JSON-RPC was used; no Python SDK was installed or invoked.",
+    "python_sdk_pinned_runtime_version_if_exposed": null,
+    "python_sdk_pinned_runtime_version_unavailable_reason": "No Python SDK was used.",
+    "app_server_transport": "stdio",
+    "experimental_api_enabled": {
+      "spawn_and_measurement_connection": false,
+      "relation_observer_connection": true
+    },
+    "experimental_features_used": [
+      "per-thread multi_agent_v2 feature for the explicit child model/reasoning spawn schema",
+      "documented experimental thread/list parentThreadId relation filter after stable sourceKinds discovery returned zero matches"
+    ],
+    "current_auth_mode_category": "chatgpt",
+    "installed_version_older_than_r008_reference": true,
+    "older_version_equivalence_check": "PASS: native 0.149.0 help and generated stable/experimental schemas exposed the fields used by this qualification; no global upgrade was performed."
+  },
+  "surface_selection": {
+    "surface": "installed Codex App Server direct JSON-RPC",
+    "transport": "stdio",
+    "python_standard_library_controller": true,
+    "controller_location_class": "temporary untracked file outside the T055 evidence worktree",
+    "product_dependency_added": false,
+    "global_codex_installation_changed": false,
+    "internal_persistence_used_for_correctness": false,
+    "private_rollout_or_database_scraping_used": false
+  },
+  "instrumented_parent": {
+    "thread_id": "01a070ef-ad1a-75e2-93c9-062ab8c050ca",
+    "turn_id": "01a070ef-ae31-7470-a8bc-814b67851556",
+    "model_provider": "openai",
+    "model": "gpt-5.6-sol",
+    "reasoning_effort": "medium",
+    "sandbox_policy": {
+      "type": "readOnly",
+      "networkAccess": false
+    },
+    "approval_policy": "never",
+    "working_directory": "C:/Manuel/Projects/agent-governance/.worktrees/t055-current",
+    "app_server_cli_version": "0.149.0",
+    "turn_status": "completed",
+    "exactly_one_spawn_requested": true
+  },
+  "child_spawn_request": {
+    "task_name": "t055_observability_child",
+    "requested_profile": {
+      "model": "gpt-5.6-terra",
+      "reasoning_effort": "low",
+      "fork_turns": "none",
+      "service_tier": "default/omitted"
+    },
+    "deterministic_nonce": "T055-OBSERVABILITY-CHILD-OK",
+    "task_shape": "one minimal read-only reasoning step followed by the exact nonce",
+    "real_collaboration_spawn_required": true,
+    "parent_answering_child_task_prohibited": true,
+    "explicit_model_argument_accepted": true,
+    "explicit_reasoning_argument_accepted": true,
+    "fork_turns_argument_accepted": true
+  },
+  "child_discovery": {
+    "parent_thread_id": "01a070ef-ad1a-75e2-93c9-062ab8c050ca",
+    "child_thread_id": "01a070ef-c59e-7841-a4b4-1c4854226157",
+    "child_thread_differs_from_parent": true,
+    "returned_parent_thread_id_matches": true,
+    "source": {
+      "kind": "subAgent",
+      "spawn_kind": "thread_spawn",
+      "depth": 1,
+      "agent_path": "/root/t055_observability_child"
+    },
+    "matching_child_count": 1,
+    "stable_source_kind_enumeration_matching_count": 0,
+    "stable_source_kind_enumeration_result": "No direct-parent match was returned by the stable sourceKinds-filtered page.",
+    "experimental_parent_relation_filter_used": true,
+    "discovery_receipt_source": "App Server thread/list with capabilities.experimentalApi=true and parentThreadId filter",
+    "internal_persistence_dependency": false
+  },
+  "resolved_thread_profile": {
+    "requested_profile": {
+      "model": "gpt-5.6-terra",
+      "reasoning_effort": "low"
+    },
+    "child_model_provider": "openai",
+    "child_model": "gpt-5.6-terra",
+    "child_reasoning_effort": "low",
+    "child_agent_role": null,
+    "child_agent_nickname": "Rawls",
+    "child_cli_version": "0.149.0",
+    "receipt_source": "App Server thread/resume with only threadId and no model/reasoning override",
+    "resume_model_override_sent": false,
+    "resume_reasoning_override_sent": false,
+    "model_matches_requested": true,
+    "reasoning_matches_requested": true,
+    "resolved_thread_profile_verified": true,
+    "configured_state_not_backend_execution_receipt": true
+  },
+  "sandbox_receipt": {
+    "child_sandbox_policy": {
+      "type": "workspaceWrite",
+      "writableRoots": [],
+      "networkAccess": false,
+      "excludeTmpdirEnvVar": false,
+      "excludeSlashTmp": false
+    },
+    "child_active_permission_profile_if_exposed": null,
+    "direct_spawn_sandbox_override_supported": false,
+    "sandbox_receipt_source": "App Server thread/resume response with only threadId and no sandbox override",
+    "parent_sandbox_policy": {
+      "type": "readOnly",
+      "networkAccess": false
+    },
+    "non_write_child_sandbox_verified": false,
+    "qualification_gate_passed": false,
+    "gate_reason": "The supported child receipt reports workspaceWrite, not readOnly. Empty writableRoots does not establish the contract's required unambiguous non-write sandbox because temporary write surfaces are not excluded."
+  },
+  "child_token_usage": {
+    "usage_thread_id": "01a070ef-c59e-7841-a4b4-1c4854226157",
+    "usage_turn_id": "01a070ef-c622-7a62-a955-013e4c915b56",
+    "total_tokens": 22577,
+    "input_tokens": 22562,
+    "cached_input_tokens": 0,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 15,
+    "reasoning_output_tokens": 0,
+    "model_context_window": 258400,
+    "usage_receipt_source": "App Server thread/tokenUsage/updated replay after child thread/resume",
+    "estimated": false,
+    "thread_matches_discovered_child": true,
+    "turn_matches_discovered_child_turn": true,
+    "qualification_gate_passed": true
+  },
+  "child_duration": {
+    "child_turn_id": "01a070ef-c622-7a62-a955-013e4c915b56",
+    "child_turn_started_at": 1788601157,
+    "child_turn_completed_at": 1788601160,
+    "child_turn_duration_ms": 3743,
+    "duration_receipt_source": "App Server child thread/resume Turn record and matching turn/completed notification",
+    "synthetic_parent_wall_clock_used": false,
+    "qualification_gate_passed": true
+  },
+  "reroute_observation": {
+    "model_reroute_signal_supported": true,
+    "reroute_observed": false,
+    "reroute_from_model": null,
+    "reroute_to_model": null,
+    "reroute_reason": null,
+    "receipt_source": "No model/rerouted notification for the child turn; support established by the installed stable generated schema.",
+    "absence_interpreted_as_backend_receipt": false
+  },
+  "backend_served_profile": {
+    "backend_served_model": null,
+    "backend_served_reasoning_effort": null,
+    "backend_served_profile_verified": false,
+    "backend_served_profile_receipt_source": null,
+    "reason": "The supported Thread model/reasoning fields are configured/persisted state, not authoritative per-turn provider execution telemetry. No stronger public receipt was exposed."
+  },
+  "tracked_worktree_postcondition": {
+    "expected_changed_files": [
+      "handoffs/T055-child-observability-telemetry.json",
+      "handoffs/T055-executor-handoff.json"
+    ],
+    "exactly_expected_files_changed": true,
+    "tracked_product_code_changed": false,
+    "markdown_changed": false,
+    "dependency_files_changed": false,
+    "persistent_codex_agent_catalog_created": false,
+    "child_or_parent_repository_mutation_observed": false
+  },
+  "qualification_decision": "PARTIAL_OBSERVABILITY",
+  "qualification_reasons": [
+    "A real child was uniquely correlated to its parent through the supported experimental parentThreadId filter.",
+    "Requested gpt-5.6-terra/low and resolved Thread gpt-5.6-terra/low match exactly.",
+    "Supported token usage is attributable to the exact child thread and turn.",
+    "Supported timestamps and duration are attributable to the exact child turn.",
+    "The supported child sandbox receipt is workspaceWrite rather than the required non-write readOnly envelope, so the sandbox gate fails.",
+    "Stable sourceKinds enumeration did not discover the child; passing topology evidence required the documented experimental relation filter."
+  ],
+  "limitations": [
+    "Installed Codex/App Server 0.149.0 is older than R008's 0.153.4 reference, although native generated schemas expose the used fields.",
+    "Child discovery required capabilities.experimentalApi=true for the parentThreadId filter.",
+    "The child resume receipt did not verify a non-write sandbox.",
+    "No authoritative backend-served model or reasoning receipt is exposed.",
+    "No cost or savings conclusion is authorized or made."
+  ]
+}
