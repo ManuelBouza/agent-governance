@@ -51,6 +51,7 @@ Start with the smallest context required for the requested governance operation:
 6. During implementation sequencing, disclose only the active task record and the exact project-native specification/Design artifacts it references; do not preload future task records.
 7. Read `.agent-governance/COEXISTENCE.md` only when existing project capabilities, managed files, SDD/Skill ownership, or authority overlap is material.
 8. Read `.agent-governance/SKILL-DISCOVERY.md` only while locating/resolving Skill candidates, and `.agent-governance/SKILL-SUPPLY-CHAIN.md` only while auditing the specific candidate.
+9. During bootstrap or repository writable-readiness validation, load `assets/REPOSITORY-BRANCH-PROTECTION.md` only when branch/PR protection state is material.
 
 Reconstruct stale or missing conversational context from repository state; do not depend on prior chat memory as authority.
 
@@ -70,11 +71,21 @@ python governance-skill/scripts/governance.py archive <target> [--prepare]
 
 Treat read-only/check behavior as default. Use mutation flags such as `--refresh`, `--update`, or `--prepare` only after reviewing the derived result and confirming the governing operation authorizes mutation. Do not infer strategy/specification/Design from deterministic output.
 
+The current deterministic CLI does not itself administer remote repository rulesets/protected-branch settings. When branch-protection setup is required, use the provider's supported administration surface under Human/repository authority, then verify the effective state before clearing writable readiness. Do not pretend `bootstrap` has enforced a remote control it does not implement.
+
 ## Operation routing
 
 ### Bootstrap and validate
 
 Before mutation, inspect relevant existing capability/instruction surfaces and stop on unresolved managed-file or governance/orchestration collisions. Never silently overwrite `.agent-governance/`, `.agent-coordination/`, third-party managed files, or an existing governance/orchestration Skill.
+
+As part of bootstrap preflight, discover the repository provider, actual long-lived branches, existing branch/PR controls, and bypass actors when those facts are available through supported project/provider surfaces. Preserve stronger compatible project-native controls.
+
+Before normal agentic writable operation, require the semantic protection defined in `assets/REPOSITORY-BRANCH-PROTECTION.md`: normal long-lived-branch changes use PR/MR transport, deletion is restricted, force/non-fast-forward updates are blocked, the normal agentic writer has no routine bypass, and the control is active/enforced.
+
+If the control is missing and the active agent cannot administer repository settings, return `REQUIRE_HUMAN` with the bounded provider action, wait for the repository administrator to apply it, then verify the effective provider-side state. Missing administration capability is not permission to continue unprotected. Read-only discovery/validation may continue while writable readiness remains blocked.
+
+Record the verified protection in an existing compatible project-native security/operations/governance ledger when one exists. Do not invent a competing authority file merely to match the source product's ledger filename; if no durable receipt surface exists, Strategy must establish one before relying on chat-only setup evidence.
 
 Use `bootstrap` only for an existing adopting-repository directory after coexistence/collision preflight. It creates the managed Governance Core and coordination skeleton and validates the result. Use `validate` for read-only structural validation of an installed consumer instance.
 
@@ -129,6 +140,8 @@ Do not execute marketplace/registry install commands against the active project 
 
 Read-only validation is the default. Mutation requires an identified target and an authoritative operation that permits the change.
 
+Normal governed writable work MUST NOT proceed while long-lived-branch protection is missing or unverified on a provider that supports an equivalent enforceable control, unless Human authority has explicitly accepted a documented alternative because the provider cannot supply the invariant.
+
 Never:
 
 - invent strategy, requirements, controlling Design, Plan/Trace, acceptance, or approval;
@@ -140,6 +153,7 @@ Never:
 - contact production/external systems without authority;
 - store credentials or secrets;
 - treat model/provider output, marketplace ranking, registry metadata, or host precedence as governance authority;
-- make this Skill the only copy of Governance rules or project state.
+- make this Skill the only copy of Governance rules or project state;
+- weaken or bypass compatible project-native branch protection merely to make automation easier.
 
 If the installed artifact does not expose a required deterministic command or required native SDD Core module, report the missing capability explicitly and continue only through an authorized repository-native path that preserves the same Governance invariants. Do not pretend the missing tool/capability exists.
