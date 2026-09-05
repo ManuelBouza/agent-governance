@@ -30,6 +30,7 @@ Do not create a live `.agent-governance/` / `.agent-coordination/` consumer foot
 - Source-product Task Contract policy: `docs/TASK-CONTRACTS.md`.
 - Executor handoff policy: `docs/EXECUTOR-HANDOFFS.md`.
 - Executor launch-profile guidance: `docs/EXECUTOR-LAUNCH-PROFILES.md`.
+- Executor coordinator/worktree hygiene: `docs/decisions/D058-executor-coordinator-session-and-worktree-hygiene.md` and `docs/EXECUTOR-SESSION-WORKTREE-HYGIENE.md`.
 - ChatGPT Orchestrator checkpoint policy: `docs/ORCHESTRATOR-CHECKPOINTS.md`.
 - Current ChatGPT Orchestrator checkpoint: `docs/orchestrator/CHECKPOINT.md`.
 - Research-to-decision traceability: `docs/decisions/D057-research-decision-traceability.md` and `docs/RESEARCH-TRACEABILITY.md`.
@@ -128,6 +129,19 @@ The default is `NEW` for the first launch of a new Task Contract/work unit and `
 Model/effort selection uses the minimum sufficient compute for the remaining technical implementation/review risk: `MEDIUM` is the normal center of gravity, `LOW` is deliberate for mechanically bounded work, and `HIGH` is selective for concrete technical complexity. Highest host modes are exceptional. Increased reasoning MUST NOT substitute for missing specification/Design/Plan authority.
 
 The launch profile is separate from the Task Contract and normally separate from the transport prompt. Provider-specific mappings live in `docs/EXECUTOR-LAUNCH-PROFILES.md`; model names never become repository correctness semantics.
+
+### D058 coordinator session/worktree hygiene
+
+D058 governs Human-visible coordinator naming and local workspace isolation/closure for Executor work.
+
+- For a `NEW` launch on a named-session-capable host, ChatGPT MUST provide a deterministic `Coordinator-Chat`; current Codex convention is `AG | <repo> | <work-unit> | root-<n>`.
+- Same-work-unit `CONTINUE` keeps the same coordinator identity; a forced new root for the same work unit increments the ordinal.
+- Coordinator names are navigation metadata only; Git, persisted contracts, branches, handoffs and reviews remain authority.
+- Each concurrently writable work unit MUST have an exclusive writable worktree/topic branch; two writable coordinators MUST NOT share a worktree or branch.
+- Prelaunch local topology must be safe enough to rule out workspace collision without discarding unrepresented work.
+- Post-integration closure includes evidence-safe retirement of obsolete task worktrees/local branches and restoration of the designated primary checkout to a clean current long-lived baseline, normally local `develop == origin/develop` for source maintenance.
+- Ambiguous/unique local work is preserved and classified for review; destructive reset/clean/delete is not a hygiene mechanism.
+- `docs/EXECUTOR-SESSION-WORKTREE-HYGIENE.md` defines the operating procedure.
 
 The executor MUST NOT:
 - create or edit committed `*.md` files;
@@ -257,7 +271,6 @@ No named executor product gains special authority. Product-specific adapter conf
 - normal topic branches MUST NOT target `main`.
 - release promotion uses `develop` -> `main`; optional `release/*` and exceptional `hotfix/*` follow the branching policy.
 - branch names describe product work, never agent identity.
-
 Neither ChatGPT nor an Agente de IA Ejecutor may bypass this policy because of role or product identity.
 
 ## Product boundaries
