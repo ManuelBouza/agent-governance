@@ -1,12 +1,12 @@
 # Current ChatGPT Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O203  
+Checkpoint-Sequence: O204  
 Canonical-Branch: `develop`  
-Current-Work-Unit: T055 child-observability qualification is accepted/integrated with formal outcome `PARTIAL_OBSERVABILITY`; R008 is `DEFERRED`; R007 remains `DEFERRED`; no routing successor is authorized  
+Current-Work-Unit: R009 child sandbox inheritance research is complete and under T056 evaluation; T056 is specified but execution is version-gated because the last observed installed Codex/App Server was 0.149.0 and the required parent-owned child reload fix is in 0.153.4+  
 Chat-Closure: CONTINUE_CURRENT_CHAT  
 Active-Executor: none  
-Active-Executor-Surface: none
+Active-Executor-Surface: none until installed Codex/App Server passes the T056 version gate
 
 ## Durable frontier
 
@@ -16,112 +16,172 @@ Active-Executor-Surface: none
 - T050 remains `ACCEPTED`; code-health/symbol-map boundary remains active.
 - T023/MG1-v12 remains closed as valid `BLOCKED / NO QUALIFYING SINGLE-FAMILY REFERENCE`; no MG1-v13 is authorized.
 - D055 remains unchanged as the global Human-facing Executor launch-profile policy.
-- T054 remains accepted as an execution with frozen pilot outcome `NOT_QUALIFIED`; do not rerun it unchanged.
+- T054 remains accepted with pilot outcome `NOT_QUALIFIED`; do not rerun it unchanged.
+- T055 remains accepted with qualification outcome `PARTIAL_OBSERVABILITY`; do not rerun it unchanged on 0.149.0.
 
-## T055 final state
+## T055 final boundary
 
-T055 is **ACCEPTED as an execution** with frozen qualification decision **`PARTIAL_OBSERVABILITY`**.
+Authoritative review: `docs/reviews/T055-R1.md`.
 
-Authoritative records:
+T055 proved on installed Codex/App Server 0.149.0:
 
-- Task Contract: `docs/tasks/T055-codex-child-observability-qualification.md`;
-- final review: `docs/reviews/T055-R1.md`;
-- executor handoff: `handoffs/T055-executor-handoff.json`;
-- telemetry: `handoffs/T055-child-observability-telemetry.json`;
-- submitted Executor HEAD: `71cd53d4a83a300d6f741aade627a7ee2cc99a67`;
-- evidence PR: `#280`;
-- integrated evidence commit: `55758864fa68a953637e0203d52a6d994ed8e045`.
+- one real child and parent relationship;
+- requested/resolved `gpt-5.6-terra / low` thread profile;
+- exact non-estimated child/turn token usage;
+- exact child-turn duration;
+- reroute observability;
+- no tracked mutation.
 
-### Installed host
+It failed the mandatory child sandbox receipt gate because the post-run child lifecycle response reported legacy compatibility sandbox `workspaceWrite` rather than an unambiguous non-write receipt.
 
-```text
-Codex CLI:      0.149.0
-App Server:     0.149.0
-Transport:      stdio / JSON-RPC 2.0
-Authentication: chatgpt category
-Python SDK:     not used
-```
+That result remains `PARTIAL_OBSERVABILITY` and is not retroactively changed by R009.
 
-The installed host was older than R008's 0.153.4 reference. T055 did not globally upgrade it. Native generated 0.149.0 schemas/help exposed the fields used by the qualification.
-
-### T055 positive observability evidence
-
-One real multi-agent child was spawned and uniquely correlated to its instrumented parent.
-
-Requested child profile:
+## R009 — child sandbox inheritance / receipt research
 
 ```text
-model:            gpt-5.6-terra
-reasoning effort: low
-fork_turns:       none
+Research: docs/research/CODEX-CHILD-SANDBOX-INHERITANCE-RESEARCH.md
+Research-State: COMPLETE
+Decision-State: EVALUATING
+Evaluation: docs/tasks/T056-codex-read-only-child-requalification.md
+Decision-Ref: none
 ```
 
-Supported child thread state, read without model/reasoning overrides, reported:
+### R009 causal findings
+
+R009 inspected official OpenAI documentation/source across:
 
 ```text
-model provider:   openai
-model:            gpt-5.6-terra
-reasoning effort: low
+Codex 0.149.0 release:
+  758ef40f50c1a458425c7cfbf1eb12cbc07af0b0
+  release date: 2026-08-20
+
+Codex 0.153.4 release:
+  3d2ee51ca2d5db578f328aa75e20aa22c0197c9a
+  published: 2026-09-04
+
+current source inspected:
+  ddf04ad26789d040f9ef6a96736f76602e35a6cc
 ```
 
-Therefore requested-vs-resolved profile observation passed. This remains configured/persisted thread state, not provider-served per-turn identity.
+Key findings:
 
-Stable `sourceKinds` enumeration did not return the matching direct child. Deterministic parent/child correlation required the documented experimental `thread/list parentThreadId` filter. This experimental dependency is acceptable only as an explicitly version-pinned qualification dependency; it is not the reason T055 remained partial.
-
-Supported `thread/tokenUsage/updated` telemetry was attributable to the exact child thread and turn:
+1. **Spawn-time permission inheritance already existed in 0.149.0.** `build_agent_spawn_config` / `apply_spawn_agent_runtime_overrides` copies the live parent turn permission-profile snapshot into the child config and reapplies it after role/model layering.
+2. Direct `spawn_agent` does not expose a sandbox argument. Parent-derived permission inheritance is the intended control model.
+3. App Server prefers experimental profile-ID selection through `permissions`; `:read-only` is the reserved built-in read-only profile ID.
+4. `activePermissionProfile` is the supported lifecycle provenance field when profile identity is known. The legacy lifecycle `sandbox` field is a compatibility/display projection and must not be treated as the authoritative full profile.
+5. T055 selected the parent through legacy `sandbox=readOnly`, not `permissions=":read-only"`; therefore it did not exercise the strongest profile-provenance path.
+6. The decisive post-0.149 fix is:
 
 ```text
-total tokens:            22577
-input tokens:            22562
-cached input tokens:     0
-cache-write tokens:      0
-output tokens:           15
-reasoning output tokens: 0
-model context window:    258400
-estimated:               false
+d21794d6ba794673f2f754cc01bdb7dabc538f8c
+Reload Multi-Agent V2 children through their parent (#40477)
+2026-08-24
 ```
 
-Supported child-turn duration was `3743 ms`.
+It fixes direct cold child resume potentially rebuilding an unloaded child from caller-provided settings instead of parent authority. The new path reloads through the actual loaded parent, preserves child compute identity, and inherits the parent's execution policy.
+7. This fix is included in Codex 0.153.4. Its App Server documentation explicitly states that parent-owned V2 child `thread/resume` ignores configuration overrides and reloads an unloaded child through its actual loaded parent using parent-derived configuration.
 
-The installed schema exposed `model/rerouted`; no reroute was observed. No authoritative backend-served model/reasoning receipt was exposed, and T055 correctly left that identity unverified.
+### R009 interpretation of T055
 
-### T055 blocker — child sandbox receipt
+R009 does **not** say T055's frozen AC-T055-6 should have passed.
 
-The instrumented parent had a supported `readOnly` sandbox receipt.
+The 0.149.0 supported receipt was ambiguous/broader and T055 correctly failed closed.
 
-The real child had the supported receipt:
+R009 only narrows the causal interpretation:
 
 ```text
-workspaceWrite
-writableRoots: []
-networkAccess: false
-excludeTmpdirEnvVar: false
-excludeSlashTmp: false
+T055 proves: 0.149.0 post-run supported lifecycle evidence did not prove read-only child authority.
+T055 does not prove: the original child spawn necessarily executed with workspace-write authority.
 ```
 
-Direct per-spawn sandbox override was not supported by the exercised spawn surface.
+The known 0.149 child-reload gap plus legacy sandbox projection are sufficient reasons to require a new version-pinned qualification rather than reinterpret the old run.
 
-AC-T055-6 therefore failed. Empty writable roots are not sufficient to infer the contract's required non-write envelope because the supported receipt remains `workspaceWrite` and temporary write surfaces are not excluded.
+## T056 executable identity
 
-This single missing mandatory measurement/safety gate forces `PARTIAL_OBSERVABILITY` under the frozen Task Contract.
+Task Contract: `docs/tasks/T056-codex-read-only-child-requalification.md`.
 
-### Acceptance-criteria result
+T056 is a new narrow read-only child observability requalification, not a T055 rerun and not a routing pilot.
+
+Human-visible launch profile **after the version gate is satisfied**:
 
 ```text
-AC-T055-1   PASS
-AC-T055-2   PASS
-AC-T055-3   PASS_WITH_EXPERIMENTAL_DISCOVERY
-AC-T055-4   PASS
-AC-T055-5   PASS
-AC-T055-6   FAIL
-AC-T055-7   PASS
-AC-T055-8   PASS
-AC-T055-9   PASS
-AC-T055-10  PASS
-AC-T055-11  PASS
+Executor: Codex
+Session: NEW
+Model: GPT-5.6 Sol
+Effort: Medium
+Expected evidence branch: test/t056-codex-read-only-child-requalification
 ```
 
-The Executor branch changed only the two authorized non-Markdown evidence files. No product code, Markdown, repository dependency, Governance Core, D055, routing policy, global Codex configuration or persistent agent catalog changed.
+### Hard version gate
+
+T056 requires the **installed** Codex/App Server to be:
+
+```text
+>= 0.153.4
+```
+
+with native schema/help still exposing the required fields.
+
+The last observed installed host during T055 was:
+
+```text
+0.149.0
+```
+
+Therefore T056 is currently **not ready to launch** unless the Human independently confirms that the normal installed Codex has since reached a qualifying version.
+
+The Executor MUST NOT globally upgrade Codex, substitute a separate binary, build Codex from source, or mutate global configuration merely to satisfy the gate.
+
+If launched while installed version is below 0.153.4, T056 must stop before any provider-backed synthetic probe with `BLOCKED_VERSION`.
+
+### T056 frozen permission design
+
+The parent is created with:
+
+```text
+permissions = ":read-only"
+legacy sandbox request = omitted
+```
+
+Passing parent receipt requires:
+
+```text
+activePermissionProfile.id == ":read-only"
+```
+
+The parent remains loaded while exactly one real child is spawned and inspected.
+
+The exact child is reattached/resumed without any config override. Passing child receipt requires:
+
+```text
+activePermissionProfile.id == ":read-only"
+```
+
+and no contradictory supported legacy sandbox projection showing broader authority.
+
+T056 also reconfirms on the same version/run:
+
+- real parent/child identity;
+- requested/resolved child model/reasoning;
+- exact non-estimated child/turn token usage;
+- exact child-turn duration;
+- reroute signal;
+- no tracked mutation.
+
+The child performs only a deterministic nonce return and no write attempt.
+
+### T056 frozen decisions
+
+Exactly one:
+
+```text
+QUALIFIED_READ_ONLY_CHILD_SURFACE
+PARTIAL_OBSERVABILITY
+BLOCKED_VERSION
+BLOCKED_CAPABILITY
+```
+
+Even `QUALIFIED_READ_ONLY_CHILD_SURFACE` does not itself reactivate R007. Orchestrator convergence and explicit D057 transitions are required first.
 
 ## Research dispositions
 
@@ -130,55 +190,55 @@ The Executor branch changed only the two authorized non-Markdown evidence files.
 ```text
 Research-State: COMPLETE
 Decision-State: DEFERRED
-Decision-Ref: none
 ```
 
-No global D055 persistence-session change is adopted.
+No global D055 persistence-session change.
 
 ### R007 — adaptive subagent compute routing
 
 ```text
 Research-State: COMPLETE
 Decision-State: DEFERRED
-Evaluation: T054 accepted / NOT_QUALIFIED
-Decision-Ref: none
 ```
 
-T055 does not reactivate R007. A corrected routing pilot remains unauthorized because the measurement/safety substrate did not fully qualify.
+No corrected routing pilot is authorized yet.
 
-### R008 — Codex child observability surface
+### R008 — child observability surface
 
 ```text
 Research-State: COMPLETE
 Decision-State: DEFERRED
-Evaluation: T055 accepted / PARTIAL_OBSERVABILITY
-Decision-Ref: none
 ```
 
-T055 confirmed that supported child profile state, child/turn token usage and duration are materially better than T054's parent-facing surface. However, the required non-write child sandbox receipt was not available on the exercised installed 0.149.0 host.
+R008 remains deferred pending T056. R009 provides the successor causal/version evidence but does not itself qualify the measurement surface.
 
-Reconsider R008 only when a supported installed Codex surface can demonstrate an unambiguous non-write sandbox receipt for a real spawned child without private persistence, product dependency changes or global configuration mutation. Experimental relationship discovery may remain acceptable if explicit and version-pinned and all other gates pass.
+### R009 — child sandbox inheritance / receipt
+
+```text
+Research-State: COMPLETE
+Decision-State: EVALUATING
+Evaluation: T056 planned / version-gated
+```
 
 ## Next action
 
-1. Do not rerun T055 unchanged on the same installed Codex 0.149.0 surface.
-2. Do not reactivate R007 and do not specify a corrected routing pilot yet.
-3. If adaptive-routing work is to continue, ChatGPT Orchestrator should open a new D057-tracked research item (`R009`) focused narrowly on **current Codex child sandbox inheritance/override semantics**.
-4. R009 should use current official OpenAI documentation and the official `openai/codex` repository to determine whether a materially newer supported stable/current surface than the exercised 0.149.0 host can:
-   - cause a real collaboration child to retain/receive an unambiguous non-write/read-only sandbox;
-   - expose that child sandbox through a supported receipt;
-   - support direct per-spawn sandbox control or a documented safe inheritance mechanism;
-   - do so without global configuration mutation or private persistence scraping.
-5. Only if R009 finds a materially changed supported surface should the Orchestrator specify a narrow successor observability qualification (new Task Contract, not a T055 rerun) pinned to that surface.
-6. Only after that qualification passes may R007 return to `EVALUATING` and a corrected adaptive-routing Task Contract be specified.
-7. Do not launch MG1-v13 concurrently.
+1. Integrate the R009/T056 Markdown specification branch into `develop`.
+2. Do **not** launch T056 while the installed Codex/App Server is known to be 0.149.0.
+3. Human may update Codex through their normal installation/update channel outside the Executor task, or wait for the normal installation to advance. The Orchestrator does not prescribe a package-manager command because the installation method was not established by T055.
+4. Before launching T056, establish that the normal installed Codex reports version `>= 0.153.4`.
+5. Once that host gate is satisfied, use D055 launch profile: Codex / NEW / GPT-5.6 Sol / Medium.
+6. Send pointer-only transport to current `docs/tasks/T056-codex-read-only-child-requalification.md` on canonical `develop`.
+7. Executor runs T056 exactly and returns only terminal handoff fields.
+8. Orchestrator converges T056 evidence from GitHub and transitions R009/R008 explicitly under D057.
+9. Only after an accepted `QUALIFIED_READ_ONLY_CHILD_SURFACE` may the Orchestrator consider returning R007 to `EVALUATING` and specifying a corrected routing evaluation.
+10. Do not launch MG1-v13 concurrently.
 
 ## Next chat minimum load
 
 Load current `develop` identity, `AGENTS.md`, and this checkpoint.
 
-Then follow `Next action`. Load `docs/reviews/T055-R1.md` and R008 only if exact predecessor evidence is needed. Load no additional project history unless a concrete conflict requires it.
+Then follow `Next action`. Load R009/T056 only when the version gate is satisfied or when evaluating whether the gate changed. Load T055 review only if exact predecessor evidence is needed.
 
 ## Do not
 
-Do not treat T055 `PARTIAL_OBSERVABILITY` as a failed execution; the execution is accepted and the qualification result is partial. Do not infer `readOnly` from empty `writableRoots`. Do not claim configured `Thread.model` / `reasoningEffort` prove backend-served identity. Do not estimate child tokens. Do not use private SQLite/JSONL to upgrade the result. Do not globally upgrade Codex merely to make the experiment pass. Do not change D055, persistence policy, consumer policy or global child-routing policy. Do not reactivate R007 without a persisted D057 transition after a passing measurement qualification. Do not rerun MG1-v12 or launch V13.
+Do not rerun T055 unchanged. Do not launch T056 on a known 0.149.0 host merely to obtain `BLOCKED_VERSION`. Do not globally upgrade Codex inside the Executor task. Do not infer child read-only authority from empty writable roots. Do not treat the legacy sandbox projection as the primary profile receipt. Do not claim `Thread.model` / `reasoningEffort` prove backend-served identity. Do not use private SQLite/JSONL to upgrade a result. Do not attempt child writes as a safety probe. Do not reactivate R007 without a passing T056 plus explicit D057 transition. Do not change D055, persistence policy, consumer policy or global routing policy. Do not rerun MG1-v12 or launch V13.
