@@ -1,6 +1,6 @@
 # OP067 — Normalize Local Worktrees and Primary Checkout
 
-Status: READY  
+Status: DONE  
 Operation-ID: OP067  
 Type: source-maintenance local Git/worktree hygiene  
 Base branch: `develop`  
@@ -8,6 +8,7 @@ Controlling decision: `docs/decisions/D058-executor-coordinator-session-and-work
 Operating procedure: `docs/EXECUTOR-SESSION-WORKTREE-HYGIENE.md`  
 Existing cleanup policy: `docs/BRANCH-CLEANUP.md` and `docs/BRANCHING.md`  
 Receipt anchor: GitHub issue `#286`  
+Completion receipt: `https://github.com/ManuelBouza/agent-governance/issues/286#issuecomment-5552285438`  
 Contract-authoring PR: `#287` (`docs/d058-coordinator-worktree-hygiene` -> `develop`)  
 Next gated task: `docs/tasks/T057-codex-read-only-child-requalification-v2.md`
 
@@ -181,9 +182,9 @@ For `DONE`:
 - stale administrative worktree entries are pruned;
 - T057's expected topic branch/worktree is not pre-created by OP067 unless a supported operation mechanic requires a harmless reservation; normal preference is to let T057 create its own exclusive workspace after launch.
 
-## Durable receipt and completion response
+## Durable receipt and completion response at execution time
 
-Post one final top-level comment to GitHub issue #286 with exactly this completion envelope, then return the same envelope to the interactive caller:
+OP067 executed under the contract revision that required one final top-level comment on GitHub issue #286 with exactly this completion envelope and then required the same envelope to be returned to the interactive caller:
 
 ```text
 OP067_STATUS: DONE | BLOCKED_ACTIVE_WORK | BLOCKED_REVIEW
@@ -200,9 +201,11 @@ COORDINATOR_CHAT: AG | agent-governance | OP067 | root-1
 
 Do not post sensitive absolute workstation paths when labels suffice.
 
-The issue comment is the authoritative operation receipt. The interactive copy is convenience transport only.
+The issue comment is the authoritative operation receipt. The interactive copy was convenience transport only.
 
-If repository mutation completed but the final receipt cannot be published, stop further mutation and return `PARTIAL` in the interactive channel according to `docs/OPERATION-CONTRACTS.md`; do not fabricate a `DONE` receipt.
+If repository mutation completed but the final receipt could not be published, the contract required `PARTIAL` in the interactive channel according to the then-current `docs/OPERATION-CONTRACTS.md`; it prohibited fabricating a `DONE` receipt.
+
+D059 was accepted after OP067 completed and prospectively separates detailed durable receipts from compact interactive terminal output. It does not retroactively alter OP067's executed transport requirements.
 
 ## Acceptance / routing
 
@@ -219,3 +222,19 @@ Use when a concurrent writable coordinator owns state that OP067 would need to t
 Use when unrepresented/ambiguous local state prevents evidence-safe cleanup or primary-checkout convergence.
 
 After either blocked result, do not launch T057 until the Orchestrator/Human resolves the named blocker through persisted authority.
+
+## Closure
+
+OP067 completed successfully with the durable receipt at issue #286 comment `5552285438`.
+
+The receipt reports:
+
+```text
+OP067_STATUS: DONE
+CANONICAL_DEVELOP: 597b41d4b61dc2f2933c98ccb53d2e7020889fd5
+PRIMARY_CHECKOUT: develop / 597b41d4b61dc2f2933c98ccb53d2e7020889fd5 / CLEAN
+T057_WORKSPACE_READY: true
+COORDINATOR_CHAT: AG | agent-governance | OP067 | root-1
+```
+
+Remaining retained/review local state is preserved in the durable receipt with explicit reasons and is reported non-colliding with T057. T057 is therefore released from the OP067 workspace-hygiene gate, subject to the current Orchestrator checkpoint and Task Contract.
