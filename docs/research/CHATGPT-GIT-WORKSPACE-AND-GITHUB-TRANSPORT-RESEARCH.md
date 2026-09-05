@@ -8,7 +8,7 @@ Last-Reviewed: 2026-09-05
 Owner: ChatGPT Orchestrator  
 Scope: ChatGPT temporary-workspace Git behavior, GitHub connector transport, ChatGPT Library persistence/version behavior, cross-chat persistence, storage/retention boundaries, and their composition for source-product maintenance experiments  
 Question: Can ChatGPT combine a real local Git repository in the temporary workspace, persistent working-file or repository-snapshot storage in ChatGPT Library, and explicit GitHub connector operations into a reliable Git-oriented maintenance workflow; and which state, transport, retention, and conflict boundaries remain separate?  
-Evaluation-Refs: empirical workspace/GitHub experiment against `ManuelBouza/agent-governance` at `develop` `20ed0e64dd6c98f38be42cd3cc28fcc220d06c5e`, temporary branch `test/chatgpt-git-workflow`, remote test commit `c4a2c43a65554ed9c52a4047f954373935b06a07`; empirical Library/GitHub experiments against `ManuelBouza/test_biblioteca`, commits `d82750a45f43f45a16c498674391a7a7e15dc319`, `af02345fcfed0ebe7d4b6503af7e89cdf48b84cf`, `5d04c16e5705e308457072792e4f3c5204768864`, and `dafe8a821e09a09a6200e4c5afed447fcf03320e`; cross-chat Library snapshot round trip verified 2026-09-05  
+Evaluation-Refs: empirical workspace/GitHub experiment against `ManuelBouza/agent-governance` at `develop` `20ed0e64dd6c98f38be42cd3cc28fcc220d06c5e`, temporary branch `test/chatgpt-git-workflow`, remote test commit `c4a2c43a65554ed9c52a4047f954373935b06a07`; empirical Library/GitHub experiments against `ManuelBouza/test_biblioteca`, commits `d82750a45f43f45a16c498674391a7a7e15dc319`, `af02345fcfed0ebe7d4b6503af7e89cdf48b84cf`, `5d04c16e5705e308457072792e4f3c5204768864`, and `dafe8a821e09a09a6200e4c5afed447fcf03320e`; cross-chat Library snapshot round trip verified 2026-09-05; lifecycle/garbage-collection design in `docs/research/CHATGPT-GIT-WORKSPACE-LIBRARY-SNAPSHOT-LIFECYCLE-APPENDIX.md`  
 Decision-Ref: none  
 Supersedes: none  
 Superseded-By: none
@@ -48,6 +48,8 @@ The validated composition now includes all of the following:
 - empirical non-preservation of local commit SHA identity when equivalent content is reconstructed through the GitHub connector.
 
 The result is a usable persistence/transport pattern, not a native Git remote hosted by Library. GitHub remains canonical remote authority. Library is a persistent storage layer, and Git semantics execute only after files or repository snapshots are materialized into an executable workspace.
+
+Because Library storage is finite and no automatic oldest-file eviction was established, R014 now also includes a non-normative lifecycle appendix. Its proposed steady state retains validated snapshots for `main`, `develop` when used, and active branches; merged-branch snapshots become deletion-eligible only after positive GitHub merge evidence and successful target-snapshot refresh/verification. Closed-unmerged or ambiguous state is retained fail-closed.
 
 ## Capability model
 
@@ -555,6 +557,7 @@ Therefore Temporary Chat should not be assumed to provide the persistent snapsho
 | automatic merge/reconciliation after conflict | NOT VERIFIED | only conflict detection was tested |
 | exact arbitrary Git-object reconstruction preserving commit identity | NOT VERIFIED | connector-created equivalent commit had a different SHA |
 | large repository snapshot behavior near 512 MB | NOT VERIFIED | tested snapshots were ~11-12 KB |
+| automatic merged-branch snapshot retirement | PROPOSED / NOT YET QUALIFIED | lifecycle appendix defines fail-closed candidate mechanism |
 
 ## Synchronization semantics
 
@@ -649,13 +652,32 @@ This research still does **not** establish that:
 - large multi-file updates are transactionally atomic under every failure mode;
 - repository snapshots approaching the documented 512 MB file limit are practical or performant;
 - the workspace's own local filesystem survives arbitrary chat/runtime turnover without Library persistence;
+- the proposed merged-branch Library cleanup lifecycle has been qualified end-to-end against a real merged PR;
 - this composed workflow is adopted Agent Governance policy.
+
+## Lifecycle and garbage-collection design
+
+The concrete non-normative mechanism is documented in:
+
+`docs/research/CHATGPT-GIT-WORKSPACE-LIBRARY-SNAPSHOT-LIFECYCLE-APPENDIX.md`
+
+Its core rules are:
+
+```text
+steady state = validated main + develop (when used) + active branches
+merged branch = cleanup-eligible only after merged == true and verified target snapshot refresh
+closed-unmerged / missing-branch / ambiguous state = retain fail-closed
+canonical refresh = create + round-trip verify new snapshot before deleting old snapshot
+quota pressure = retire proven-redundant merged/superseded snapshots before any active/canonical sole copy
+```
+
+This design is derived from R014 evidence and current Library retention limits but remains unqualified for automation until a real merged-branch retirement exercise proves the deletion path and failure behavior.
 
 ## Implications for Agent Governance
 
 This remains diagnostic capability research. It does not modify D054 execution-adapter ownership, branching policy, source-maintenance workflow, or the rule that GitHub is canonical authority.
 
-The expanded evidence strengthens the feasibility case for Library as a persistent checkpoint/snapshot layer between ChatGPT sessions. It still does not create a normative requirement to use that mechanism.
+The expanded evidence strengthens the feasibility case for Library as a persistent checkpoint/snapshot layer between ChatGPT sessions. The lifecycle appendix also gives a concrete fail-closed design for quota-aware snapshot retirement. Neither creates a normative requirement to use that mechanism.
 
 `Research-State: COMPLETE` and `Decision-State: NOT_REQUIRED` remain appropriate.
 
