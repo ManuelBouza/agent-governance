@@ -101,7 +101,7 @@ This does not alter D066 semantics. It records the actual state used for this ob
 
 No target repository was modified or installed in this objective.
 
-The separate target-adoption chat must:
+The separate target-adoption chat must first verify the source D067 handoff (`develop`, current source `AGENTS.md`, O219 and the Transfer Bundle) and then:
 
 1. bind the exact target repository;
 2. inspect target current governance before mutation;
@@ -117,7 +117,7 @@ The prepared template is:
 
 `docs/transfer/source-maintenance-operating-model/TARGET-ADOPTION-BOOTSTRAP-TEMPLATE.md`
 
-The template deliberately requires target repository identity before mutation because no target repository was supplied to this source-extraction objective.
+The template deliberately requires the post-integration source `develop` identity and target repository identity before target mutation. No target repository was supplied to this source-extraction objective.
 
 ## Current operating state
 
@@ -135,20 +135,21 @@ Wait for the Human Owner to supply the exact target repository identity or an ex
 
 For target adoption:
 
-1. refresh current source `develop` and O219;
-2. bind the exact target repository in the generated D067-style bootstrap;
-3. open a NEW ChatGPT target-adoption chat;
-4. make the successor verify source bundle provenance and target canonical state;
-5. stop with `BOOTSTRAP_MISMATCH` on any material discrepancy;
-6. do not perform target installation in this source-extraction chat.
+1. refresh current source `develop`, current source `AGENTS.md` and O219;
+2. verify the Transfer Bundle at that canonical source revision;
+3. bind the exact target repository in the generated D067-style bootstrap;
+4. open a NEW ChatGPT target-adoption chat;
+5. make the successor verify source bundle provenance and target canonical state;
+6. stop with `BOOTSTRAP_MISMATCH` on any material discrepancy;
+7. do not perform target installation in this source-extraction chat.
 
 ## Next chat minimum load
 
-For the intended target-adoption successor, load:
+For the intended target-adoption successor, load in this order:
 
-1. exact target repository canonical identity;
-2. target governing instructions (`AGENTS.md` or equivalent);
-3. target checkpoint/frontier carrier if one exists;
+1. current source `develop` identity;
+2. current source `AGENTS.md`;
+3. current source `docs/orchestrator/CHECKPOINT.md` and require O219;
 4. source Transfer Bundle:
    - `README.md`
    - `PORTABLE-OPERATING-MODEL.md`
@@ -156,9 +157,12 @@ For the intended target-adoption successor, load:
    - `UNRESOLVED-GAPS.md`
    - `TARGET-ADOPTION-CHECKLIST.md`
    - `EVIDENCE-APPENDIX.md`
-5. source provenance only as needed to resolve an audit/conflict.
+5. exact target repository canonical identity;
+6. target governing instructions (`AGENTS.md` or equivalent);
+7. target checkpoint/frontier carrier if one exists;
+8. only additional source provenance needed to resolve a concrete audit/conflict.
 
-Do not require live source decision/research reads merely to operate after target-native adoption; the bundle is designed to carry the needed semantic/evidence closure.
+After target-native adoption is integrated, normal target operation must not require live source decision/research reads; the bundle is designed to carry the needed semantic/evidence closure.
 
 ## Do not
 
