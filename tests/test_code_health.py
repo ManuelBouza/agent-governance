@@ -119,20 +119,30 @@ def test_repository_configuration_and_dependency_graph_are_green(
     assert sizes["status"] == "PASS", sizes["failures"]
     assert complexity["status"] == "PASS", complexity["failures"]
     assert dependencies["status"] == "PASS", dependencies["failures"]
-    harness = next(
-        item
-        for item in sizes["modules"]
-        if item["path"] == "evals/skill_activation_topology/harness.py"
-    )
-    assert harness == {
-        "path": "evals/skill_activation_topology/harness.py",
-        "physical_loc": 212,
-        "allowed": 212,
+    measured = {item["path"]: item for item in sizes["modules"]}
+    assert measured["tools/repository_context.py"] == {
+        "path": "tools/repository_context.py",
+        "physical_loc": 232,
+        "allowed": 232,
         "policy": "no-net-growth",
     }
+    assert measured["tests/test_repository_context.py"] == {
+        "path": "tests/test_repository_context.py",
+        "physical_loc": 233,
+        "allowed": 233,
+        "policy": "no-net-growth",
+    }
+    repository_context_sources = {
+        "tools/repository_context.py",
+        *{
+            path.relative_to(repo_root).as_posix()
+            for path in (repo_root / "tools" / "_repository_context").glob("*.py")
+        },
+    }
+    assert repository_context_sources <= set(complexity["files"])
 
 
-def test_symbol_map_cli_emits_machine_readable_source_metadata(repo_root: Path) -> None:
+def test_symbol_map_cli_covers_repository_context_sources_and_symbols(repo_root: Path) -> None:
     completed = subprocess.run(
         [sys.executable, "tools/code_health.py", "map", "--root", str(repo_root)],
         cwd=repo_root,
@@ -141,14 +151,26 @@ def test_symbol_map_cli_emits_machine_readable_source_metadata(repo_root: Path) 
         text=True,
     )
     result = json.loads(completed.stdout)
-    facade = next(
-        item
-        for item in result["modules"]
-        if item["module_path"] == "evals/skill_activation_topology/harness.py"
-    )
-    assert facade["physical_loc"] == 212
-    assert {item["name"] for item in facade["definitions"]} >= {
-        "build_parser",
-        "main",
-        "run_matrix",
+    modules = {item["module_path"]: item for item in result["modules"]}
+    expected = {
+        "tools/repository_context.py",
+        *{
+            path.relative_to(repo_root).as_posix()
+            for path in (repo_root / "tools" / "_repository_context").glob("*.py")
+        },
     }
+    assert expected <= set(modules)
+    assert {item["name"] for item in modules["tools/repository_context.py"]["definitions"]} >= {
+        "_load_source_package",
+        "_resolve_map_path",
+        "main",
+    }
+    representative = {
+        "tools/_repository_context/measurement.py": "build_report",
+        "tools/_repository_context/projection.py": "compute_rcab_projection",
+        "tools/_repository_context/registry.py": "parse_registry",
+        "tools/_repository_context/snapshot.py": "validate_snapshot_integrity",
+        "tools/_repository_context/tracked_files.py": "read_tracked_file",
+    }
+    for path, symbol in representative.items():
+        assert symbol in {item["name"] for item in modules[path]["definitions"]}
