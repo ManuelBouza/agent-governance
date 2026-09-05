@@ -1,106 +1,91 @@
 # Current ChatGPT Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O206  
+Checkpoint-Sequence: O207  
 Canonical-Branch: `develop`  
-Current-Work-Unit: D058 coordinator-session/worktree hygiene accepted; OP067 local hygiene must converge before T057 may launch  
+Current-Work-Unit: OP067 completed successfully; D059 compact operational terminal transport is being integrated; T057 is next after that Markdown convergence  
 Chat-Closure: CONTINUE_CURRENT_CHAT  
 Active-Executor: none  
-Active-Executor-Surface: Codex 0.153.4 native Windows when OP067 is launched
+Active-Executor-Surface: next Executor launch is T057 on Codex 0.153.4 native Windows
 
 ## Durable frontier
 
-- D039, D041, D042, D053, D054, D055, D056, D057 and D058 control the current source-maintenance workflow.
+- D039, D041, D042, D053, D054, D055, D056, D057, D058 and D059 control the current source-maintenance workflow after D059 integration.
 - Core protocol remains `1.15.0`.
 - T054 remains accepted with pilot outcome `NOT_QUALIFIED`.
 - T055 remains accepted with `PARTIAL_OBSERVABILITY` on Codex 0.149.0.
 - T056 remains accepted as an execution with `PARTIAL_OBSERVABILITY` on Codex 0.153.4; its sole causal blocker was the temporary controller `thread/loaded/list` parsing / parent-residency defect documented in `docs/reviews/T056-R1.md`.
-- T057 is specified as the bounded successor in `docs/tasks/T057-codex-read-only-child-requalification-v2.md`, but it is **not yet authorized to launch** until OP067 returns `DONE`.
+- OP067 is `DONE`; its durable receipt is issue #286 comment `5552285438`.
+- T057 is specified in `docs/tasks/T057-codex-read-only-child-requalification-v2.md` and is released from the OP067 workspace-hygiene gate.
 - R009 remains `COMPLETE / EVALUATING` under T057.
 - R010 remains `COMPLETE / DEFERRED`; no global GPT-6 Astra migration is adopted and T057 remains Sol / Medium.
-- R011 is `COMPLETE / DECIDED` through D058.
+- R011 remains `COMPLETE / DECIDED` through D058.
 
-## D058 — coordinator identity and worktree hygiene
-
-Authoritative decision:
-
-`docs/decisions/D058-executor-coordinator-session-and-worktree-hygiene.md`
-
-Operating procedure:
-
-`docs/EXECUTOR-SESSION-WORKTREE-HYGIENE.md`
-
-Research:
-
-`docs/research/CODEX-COORDINATOR-IDENTITY-WORKTREE-HYGIENE-RESEARCH.md` (`R011`)
-
-### Coordinator naming
-
-For named-session-capable Executors, every `NEW` Human-visible coordinator gets a deterministic name.
-
-Current Codex convention:
-
-```text
-AG | <repo> | <work-unit> | root-<n>
-```
-
-Same-work-unit `CONTINUE` keeps the same coordinator identity. A required fresh root for the same work unit increments the ordinal.
-
-The name is navigation metadata only. Git, persisted contracts, branches, handoffs, reviews and checkpoints remain authority.
-
-### Worktree isolation
-
-Each concurrently writable work unit uses an exclusive topic branch and writable worktree. Two writable coordinators may not share either surface.
-
-Post-integration closure now includes safe retirement of obsolete task worktrees/local branches plus primary-checkout convergence.
-
-Normal Agent Governance primary-checkout terminal state:
-
-```text
-branch        = develop
-HEAD          = current origin/develop
-tracked state = clean
-```
-
-Ambiguous/unique local state is preserved and blocks destructive cleanup.
-
-## OP067 — mandatory pre-T057 local hygiene gate
+## OP067 — completed local hygiene gate
 
 Contract:
 
 `docs/operations/OP067-normalize-local-worktrees-and-primary-checkout.md`
 
-Receipt anchor:
+Durable receipt:
 
-GitHub issue `#286`.
+`https://github.com/ManuelBouza/agent-governance/issues/286#issuecomment-5552285438`
 
-Purpose:
-
-- audit the accessible primary checkout, registered worktrees and relevant local/remote topic branches;
-- classify non-primary state as `ACTIVE`, `RETAIN`, `REVIEW`, or `DELETE`;
-- retire only evidence-safe `DELETE` state;
-- preserve ambiguous/unrepresented state;
-- prune stale worktree administrative records;
-- leave the primary checkout clean at current `origin/develop`;
-- establish `T057_WORKSPACE_READY=true` before T057 launch.
-
-OP067 does not modify tracked product files.
-
-### OP067 launch profile
+Accepted terminal facts from the durable receipt:
 
 ```text
-Executor: Codex
-Session: NEW
-Coordinator-Chat: AG | agent-governance | OP067 | root-1
-Model: GPT-5.6 Sol
-Effort: High
+OP067_STATUS: DONE
+CANONICAL_DEVELOP: 597b41d4b61dc2f2933c98ccb53d2e7020889fd5
+PRIMARY_CHECKOUT: develop / 597b41d4b61dc2f2933c98ccb53d2e7020889fd5 / CLEAN
+T057_WORKSPACE_READY: true
+COORDINATOR_CHAT: AG | agent-governance | OP067 | root-1
 ```
 
-Rationale: the operation is bounded but can delete worktrees/refs and must distinguish represented history from unique local work; D055 reserves High for this class of repository-history/fail-closed risk.
+Remote verification found no current branch named `docs/d058-coordinator-worktree-hygiene` or `test/t056-codex-read-only-child-requalification`, consistent with the receipt's remote-retirement claims.
 
-## T057 launch after OP067
+The receipt retained two worktrees because unreadable pytest temporary directories prevented evidence-safe removal and preserved several local/archive/review refs rather than deleting ambiguous state. Those retained/review items were explicitly reported non-colliding with T057, so they do not block the next task.
 
-Only after OP067 returns `DONE` with `T057_WORKSPACE_READY=true`:
+### OP067 worker topology
+
+OP067 did not use workers/subagents. This is conforming: D041 leaves direct work versus workers/subagents to Executor process autonomy unless a Task/Operational Contract makes topology material. OP067 did not require worker usage.
+
+## D059 — operational receipt / terminal transport separation
+
+Decision:
+
+`docs/decisions/D059-operational-receipt-and-terminal-transport-separation.md`
+
+Policy:
+
+`docs/OPERATION-CONTRACTS.md`
+
+D059 corrects a transport-design defect exposed by OP067:
+
+- detailed operation evidence belongs only in the durable GitHub receipt;
+- after receipt publication, the interactive caller receives only:
+
+```text
+STATUS: DONE | BLOCKED | PARTIAL
+RECEIPT: <durable GitHub receipt URL>
+COORDINATOR: <Human-visible coordinator name or n/a>
+```
+
+OP067's full interactive receipt block was contract-conforming under the exact contract revision that executed. D059 is prospective and does not reclassify that historical output as an Executor defect.
+
+Task Contracts are unchanged. T057 already requires only:
+
+```text
+STATUS: DONE | BLOCKED
+HANDOFF: handoffs/T057-executor-handoff.json
+BRANCH: <branch>
+HEAD: <pushed-head>
+```
+
+## T057 next launch
+
+After this D059/OP067-closure Markdown change is integrated into `develop`, launch T057 exactly as already specified.
+
+Human-facing profile:
 
 ```text
 Executor: Codex
@@ -111,7 +96,9 @@ Effort: Medium
 Expected branch: test/t057-codex-read-only-child-requalification-v2
 ```
 
-T057 must use an exclusive writable worktree. Its scientific controls remain unchanged from the already integrated Task Contract.
+Rationale: this is the frozen successor evaluation; changing model/effort would introduce a new confound.
+
+T057 must create/use an exclusive writable task worktree from the current canonical `develop` and preserve all frozen scientific controls from its Task Contract.
 
 ## Research dispositions
 
@@ -124,30 +111,18 @@ R010 COMPLETE / DEFERRED
 R011 COMPLETE / DECIDED -> D058
 ```
 
-No D055 persistence policy, child-routing policy, global Astra policy, or consumer policy is changed by D058.
-
-## Operational incident during D058 authoring
-
-During this Orchestrator session, a GitHub file-create call was accidentally issued without the intended topic branch and therefore targeted default `main`. It created a one-character research-path artifact, which was immediately removed by a second direct `main` commit after detection.
-
-```text
-accidental create commit: da8b819e3cf24e05fd0abcc6b6f5af11af940ba1
-corrective delete commit: 9cacc956749ed6b7d5dc2faa1e9319df4571f9ed
-net tracked content change on main: none
-```
-
-Do **not** rewrite/force-reset `main` to erase this history. The incident is durably acknowledged here; D058 authoring itself continues only on `docs/d058-coordinator-worktree-hygiene` from the canonical `develop` base.
+D059 is an operational transport-policy correction and does not alter these research dispositions.
 
 ## Next action
 
-1. Complete/review/integrate the D058/R011/OP067 Markdown branch into `develop` through PR.
-2. Revalidate the resulting `develop` and current `AGENTS.md`/checkpoint.
-3. Human starts a NEW Codex coordinator for OP067 named exactly `AG | agent-governance | OP067 | root-1`, using GPT-5.6 Sol / High.
-4. Send pointer-only transport to `docs/operations/OP067-normalize-local-worktrees-and-primary-checkout.md`.
-5. Executor performs the local hygiene operation, posts the durable receipt to issue #286, and returns only the terminal fields required by OP067.
-6. Orchestrator reads issue #286 and verifies OP067 outcome.
-7. If OP067 is `DONE` and `T057_WORKSPACE_READY=true`, launch T057 in a separate NEW coordinator named `AG | agent-governance | T057 | root-1`, Sol / Medium, with its own exclusive worktree.
-8. If OP067 is blocked, do not launch T057; resolve only the named preserved blocker through durable authority.
+1. Review and integrate `docs/d059-operational-terminal-transport` into `develop` through PR.
+2. Revalidate current `develop`, `AGENTS.md`, and this checkpoint.
+3. Human starts a NEW Codex coordinator named exactly `AG | agent-governance | T057 | root-1` with GPT-5.6 Sol / Medium.
+4. Send pointer-only transport to `docs/tasks/T057-codex-read-only-child-requalification-v2.md`.
+5. Executor creates/uses its exclusive T057 worktree/topic branch and runs the frozen evaluation exactly once.
+6. Executor returns only `STATUS / HANDOFF / BRANCH / HEAD`.
+7. Orchestrator converges T057 from GitHub evidence and updates R009/R008 under D057 as required.
+8. Do not reactivate R007 or change routing policy without the required explicit D057 transition.
 9. Do not launch MG1-v13 concurrently.
 
 ## Next chat minimum load
@@ -156,10 +131,10 @@ Load current `develop` identity, `AGENTS.md`, and this checkpoint.
 
 Then:
 
-- if OP067 has not run, load D058 plus `docs/operations/OP067-normalize-local-worktrees-and-primary-checkout.md`;
-- if OP067 returned terminal status, read issue #286 before any T057 launch;
-- load T057 only after OP067 qualifies the local workspace.
+- if D059 is not yet integrated, inspect PR/branch `docs/d059-operational-terminal-transport`;
+- if T057 has not executed, load `docs/tasks/T057-codex-read-only-child-requalification-v2.md`;
+- if T057 returned terminal status, load its handoff/telemetry plus `docs/RESEARCH-TRACEABILITY.md` and converge under D057.
 
 ## Do not
 
-Do not launch T057 before OP067 `DONE`. Do not delete ambiguous worktrees/branches. Do not force-reset/clean the primary checkout to manufacture a clean state. Do not let two writable coordinators share a worktree or branch. Do not infer coordinator authority from chat title. Do not change T057's frozen model/effort/scientific variables because GPT-6 Astra exists. Do not rewrite `main` history to hide the acknowledged authoring incident.
+Do not rerun OP067. Do not reinterpret OP067's full interactive envelope as an Executor defect; it matched the then-integrated contract. Do not launch T057 until the D059/closure Markdown convergence is integrated. Do not let two writable coordinators share a worktree or branch. Do not change T057's frozen model/effort/scientific variables. Do not infer coordinator authority from chat title. Do not reactivate R007 before a passing measurement qualification plus an explicit D057 transition.
