@@ -1,87 +1,59 @@
 # Agent Governance Source-Maintenance Transfer Bundle
 
-Status: SOURCE-SIDE EXTRACTION COMPLETE  
-Source repository: `ManuelBouza/agent-governance`  
-Extraction baseline: `develop@0e2edbca2cb0e620db7cdb7b93945bef8985fdfd`  
-Authority posture: extracted semantics only; this bundle is not itself a target-project adoption decision
+Status: SOURCE-SIDE EXTRACTION / OFFLINE-PORTABLE
 
-## Purpose
+This bundle packages the accepted operating logic needed to reproduce the current Agent Governance source-maintenance model in another similar repository.
 
-This bundle packages the accepted operating logic needed to reproduce the current Agent Governance source-maintenance model in another similar repository without requiring the target project to depend on this source repository after adoption.
+**The target project does not need access to this source repository.** A complete offline export carries the portable semantics, evidence/gaps, adoption procedure, bootstrap, integrity receipt and selected source-reference snapshots required for audit/clarification.
 
-It is deliberately **not** a wholesale repository copy. It separates:
+Start with `OFFLINE-START-HERE.md`.
 
-1. normative portable semantics;
-2. source-product/provider adapter details that require target mapping;
-3. historical research and experimental evidence;
-4. unresolved gaps;
-5. frozen or unaccepted implementation that must not be copied.
+## Bundle layers
 
-The target project must create its own native authority, decisions, receipts and paths. Source Decision/Research identifiers remain provenance only.
+1. **Portable adoption core** — semantic model, portability manifest, gaps, checklist and offline bootstrap.
+2. **Evidence** — research/experiment synthesis supporting the controls without creating authority.
+3. **Offline source-reference snapshots** — exact source wording for provenance/audit only; never automatic target authority.
+4. **Explicit exclusions** — frozen/unaccepted implementation such as T058.
 
-## Bundle contents
+## Primary files
 
-| File | Purpose |
-| --- | --- |
-| `PORTABLE-OPERATING-MODEL.md` | Self-contained semantic operating model to evaluate for target adoption. |
-| `PORTABILITY-MANIFEST.md` | Artifact/rule classification and provenance inventory. |
-| `EVIDENCE-APPENDIX.md` | Research/experiment evidence supporting the extracted controls without promoting research to authority. |
-| `UNRESOLVED-GAPS.md` | Known limitations and explicit non-claims that must survive transfer. |
-| `TARGET-ADOPTION-CHECKLIST.md` | Fail-closed target bootstrap and REUSE/ADAPT/COEXIST/MISSING/CONFLICT adoption procedure. |
-| `TARGET-ADOPTION-BOOTSTRAP-TEMPLATE.md` | D067-style successor prompt template; target repository identity must be bound before use. |
+- `OFFLINE-START-HERE.md`
+- `PORTABLE-OPERATING-MODEL.md`
+- `PORTABILITY-MANIFEST.md`
+- `EVIDENCE-APPENDIX.md`
+- `UNRESOLVED-GAPS.md`
+- `TARGET-ADOPTION-CHECKLIST.md`
+- `TARGET-ADOPTION-BOOTSTRAP-TEMPLATE.md`
+- `OFFLINE-EXPORT-MANIFEST.md`
 
 ## Authority model
 
-The bundle distinguishes **source authority** from **target authority**.
-
 ```text
-source accepted decisions at extraction baseline
-        -> semantic extraction + classification
-        -> Transfer Bundle
-        -> target repository inspection
-        -> target-native REUSE / ADAPT / COEXIST / MISSING / CONFLICT decisions
-        -> target-native receipts / policy / operating documents
+source accepted authority
+-> semantic extraction
+-> offline Transfer Bundle
+-> target governance inspection
+-> REUSE / ADAPT / COEXIST / MISSING / CONFLICT
+-> target-native decisions/receipts/policy
+-> independent target operation
 ```
 
-The bundle does not make a source `Dxxx`, `Rxxx`, Task Contract, checkpoint, AGENTS file, branch name, model name, connector behavior or Library path authoritative in the target.
+The portable model is a candidate for adoption. Source `Dxxx`, `Rxxx`, `AGENTS.md`, branch names, model names, paths, connector behavior and Library product details remain provenance/adapter information unless the target explicitly adopts compatible semantics.
 
-Research remains evidence. Experiments remain evidence. Target adoption requires an explicit target-native decision or already-controlling compatible target policy.
+Research remains evidence. Experiments remain evidence. Preserve stronger compatible target-native controls.
 
-## Extraction principles
+## Frozen T058 boundary
 
-- GitHub is the canonical source repository authority.
-- The extraction baseline is the exact source `develop` commit recorded above.
-- Later source changes do not silently alter this bundle's provenance.
-- Effective semantics were extracted from current accepted authority, including later refinements and overlays; earlier conflicting wording was not copied as if still controlling.
-- `AGENTS.md` is not copied wholesale.
-- The target must preserve stronger compatible native controls rather than replacing them with weaker Agent Governance examples.
-- Provider-specific labels, branch names, model names, commands, file paths and connector capabilities are adapter details.
-- The source repository's Consumer Governance Core is not installed by this bundle and is outside this source-maintenance transfer objective.
-
-## Frozen implementation boundary
-
-T058 is intentionally excluded from production transfer.
+T058 remains `BLOCKED / FROZEN_BY_HUMAN` and `DO_NOT_COPY`.
 
 ```text
-source task: T058
-source branch: feat/t058-chatgpt-portable-workspace-adapter
-source remote head: 6ed319a1802cfd90d50d9dc95d969435c295a164
-source implementation/review anchor: 00134357e77f46d9cfcf82b03cedca3f386688f5
-state: BLOCKED / FROZEN_BY_HUMAN
-classification: DO_NOT_COPY
+branch: feat/t058-chatgpt-portable-workspace-adapter
+remote head: 6ed319a1802cfd90d50d9dc95d969435c295a164
+implementation/review anchor: 00134357e77f46d9cfcf82b03cedca3f386688f5
 ```
 
-The accepted workspace semantics come from current decisions and operating documents, not from the frozen helper implementation.
+Its helper/code/tests are not portable accepted production logic and are excluded from the implementation package.
 
-## Target adoption outcome
+## Offline export integrity
 
-A successful target adoption should leave the target repository able to operate independently with:
-
-- its own canonical branch and protection model;
-- its own source-maintenance policy and checkpoint/frontier carrier;
-- its own task/operation contract and handoff carriers where needed;
-- its own workspace/Library/local-Git adapter or a documented compatible fallback;
-- its own Executor coordinator/delegation configuration;
-- its own target-native decisions/receipts proving how the portable semantics were reused, adapted, coexisted, or rejected.
-
-The target should not need this source repository at runtime after those target-native artifacts are integrated.
+A distributable archive should contain `EXPORT-RECEIPT.txt` and `SHA256SUMS.txt`. The target bootstrap fails closed on a missing/corrupt/inconsistent required package component.
