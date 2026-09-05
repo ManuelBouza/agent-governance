@@ -47,6 +47,8 @@ See D057 for transition semantics and required metadata for new research.
 | R011 | `docs/research/CODEX-COORDINATOR-IDENTITY-WORKTREE-HYGIENE-RESEARCH.md` | COMPLETE | DECIDED | current source-maintenance workflow; T056/T057 local-execution lineage | `docs/decisions/D058-executor-coordinator-session-and-worktree-hygiene.md` | Codex supports explicit Human-visible thread naming, while existing branch cleanup did not fully require obsolete-worktree retirement plus primary-checkout convergence. D058 adopts deterministic coordinator chat names, exclusive writable worktrees for concurrent work units, fail-closed local-state classification, post-integration worktree retirement, and a clean/current primary checkout baseline. |
 | R012 | `docs/research/CODEX-COORDINATOR-DELEGATION-POLICY-RESEARCH.md` | COMPLETE | DECIDED | R006; T053; `docs/reviews/T053-R1.md`; R007; T057 terminal convergence; current Codex 0.153.4 + official OpenAI multi-agent guidance | `docs/decisions/D065-semantic-executor-delegation-obligation.md` | D065 adopts the semantic delegation obligation: Agent Governance defines material delegation triggers/anti-triggers plus safety/evidence bounds, while the Executor coordinator retains concrete decomposition, child count/roles, sequencing/parallelism and mechanics. Exact topology remains Task/Operational-Contract-specific only when materially authoritative. No child compute-routing policy is implied. |
 | R013 | `docs/research/CODEX-TASK-SCOPED-COORDINATOR-CONTINUITY-RESEARCH.md` | COMPLETE | DECIDED | R006; T053; `docs/reviews/T053-R1.md`; R012; current OpenAI long-running/compaction guidance | `docs/decisions/D060-task-scoped-executor-coordinator-continuity.md` | Adopt one Human-visible Executor Coordinator Root per exact Task/Operational Contract. `NEW` at work-unit start, `CONTINUE` through normal same-task phases/rework, retire at closure, and start a new root for the next work unit. `root-2+` is failover only. Root context stays compact through durable Git pointers, concise summaries and supported compaction/fresh child contexts rather than cross-task root reuse. |
+| R014 | `docs/research/CHATGPT-GIT-WORKSPACE-AND-GITHUB-TRANSPORT-RESEARCH.md` | COMPLETE | NOT_REQUIRED | workspace/GitHub experiment; `ManuelBouza/test_biblioteca` Library/GitHub round trips; full `.git` and cross-chat snapshot tests; multi-file/409 capability matrix; Library lifecycle qualification PRs `test_biblioteca#1` and `#2`; official OpenAI Library storage/retention docs checked 2026-09-05 | none | ChatGPT can combine real temporary-workspace Git semantics, persistent Library file/version storage, packaged full-repository snapshots including `.git`, cross-chat Git-history continuation, and explicit GitHub connector transport. The Library GC core is empirically qualified: a real merged branch was retired only after target snapshot round-trip validation and exact Git-tree equivalence; closed-unmerged work was retained; a corrupt candidate left the validated current snapshot untouched. Library deletion moved test artifacts to Trash rather than proving immediate physical erasure. The quota-pressure selector remains unqualified. Library is storage, not a native Git working tree/remote; synchronization and cleanup remain explicit. No workflow/policy adoption is implied. |
+| R015 | `docs/research/CHATGPT-LIBRARY-WORKTREE-SIMULATOR-RESEARCH.md` | COMPLETE | NOT_REQUIRED | R014; D058; `ManuelBouza/test_biblioteca` isolated target/topic branches; commits `c1208d6bb5f9e6cc28df7fcc4463d6144750cda9` and `1904904cde94c87bee17ab2e26d757d880f3fb07`; core lock collision tests; PR `test_biblioteca#3`; `docs/research/CHATGPT-LIBRARY-WORKTREE-SIMULATOR-LOCK-LIFECYCLE-APPENDIX.md`; `docs/research/CHATGPT-LIBRARY-WORKTREE-SIMULATOR-CROSS-CHAT-RACE-APPENDIX.md`; race winner `890244fb5c5f76971e376ffb49e5e90cc57d052c`; release `c2d99a2b701d3ca27c1b9a011e773254f23f28c2`; Library snapshots under `/git-workspaces/ManuelBouza/test_biblioteca/worktree-simulator/` | none | The cross-chat worktree simulator core plus reusable lifecycle and real two-chat contention path are empirically qualified and remain non-normative. One writable work unit maps to one topic branch, one coordination-only GitHub lock branch with expected-HEAD freshness/CAS plus a create/delete owner sentinel, one portable standalone `.git` snapshot in a unique Library namespace, and ownership/freshness receipts checked before mutation. Two logical chats changed the same file independently; wrong-owner restore was blocked; PR #3 merged Chat A into an isolated target; the target snapshot was round-trip validated and promoted before Chat A Library GC; Chat A's sentinel was then released while Chat B remained active. A reuse probe proved occupied sentinel `422`, exact-SHA release, and reacquisition. A later real cross-chat race had both chats preflight the same free HEAD; Chat A advanced the lock branch with HTTP 201, while Chat B was rejected by HTTP 409 because the branch was already at A's commit instead of the expected free HEAD, and B produced no commit. The winner was independently verified and then released. Ref-only acquisition remains evidence but is not the preferred reusable lifecycle because delete-ref was unavailable in the tested connector. Remaining gaps are crash/orphan recovery, TTL/heartbeat, closed-unmerged cross-chat resume, and branch/ref retirement mechanics. No policy adoption is implied. |
 
 ## Live research frontier
 
@@ -99,6 +101,29 @@ Completed research dispositions outside the live evaluation frontier:
 R010 — GPT-6 Astra Executor launch profile
   COMPLETE / DEFERRED
   no global D055 Astra migration adopted
+
+R014 — ChatGPT Git workspace / Library / GitHub transport
+  COMPLETE / NOT_REQUIRED
+  full Git snapshots including .git persist across chats and can continue Git history
+  explicit GitHub transport, multi-file one-commit reconstruction, and stale-base rejection are verified
+  Library lifecycle/GC core: QUALIFIED / NON_NORMATIVE
+  merged snapshot retirement after target validation: VERIFIED
+  closed-unmerged retention: VERIFIED
+  invalid candidate preserves current: VERIFIED
+  remaining GC gap: quota-pressure automatic selector
+
+R015 — ChatGPT Library worktree simulator
+  COMPLETE / NOT_REQUIRED
+  D058-style exclusive writable workspaces can be emulated across transient chat runtimes
+  distinct topic branches + portable standalone Library Git snapshots: VERIFIED
+  reusable dedicated lock-branch + sentinel mutex: VERIFIED
+  duplicate sentinel acquisition blocked: VERIFIED
+  same lock namespace release + reacquire: VERIFIED
+  post-merge target refresh + Chat A GC + lock release while Chat B remains active: VERIFIED
+  real two-chat same-free-HEAD contention: VERIFIED
+  concurrent loser rejected by stale lock-branch HEAD / HTTP 409: VERIFIED
+  native linked worktree directory portability: NOT SUPPORTED
+  remaining gaps: crash/orphan recovery, TTL/heartbeat, closed-unmerged cross-chat resume, branch/ref retirement mechanics
 ```
 
 D063 qualifies the measurement substrate only. D065 establishes delegation posture only. Neither adopts child compute routing, alters D055, establishes backend-served per-turn model identity, or authorizes savings claims. R007 remains separately deferred until a corrected evaluation is specified and explicitly transitioned.
