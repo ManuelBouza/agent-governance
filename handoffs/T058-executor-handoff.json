@@ -1,0 +1,151 @@
+{
+  "schema_version": 1,
+  "task_id": "T058",
+  "status": "BLOCKED",
+  "task_contract_path": "docs/tasks/T058-chatgpt-portable-workspace-adapter.md",
+  "sdd_profile": "ASSURED",
+  "branch": "feat/t058-chatgpt-portable-workspace-adapter",
+  "implementation_head_sha": "00134357e77f46d9cfcf82b03cedca3f386688f5",
+  "base_branch": "develop",
+  "base_sha": "2b2c1c0fa7946d8b6f65d55d6755ebe6bcddb29a",
+  "coordinator_session": {
+    "name": "AG | agent-governance | T058 | root-1",
+    "mode": "NEW",
+    "host_thread_id": null,
+    "host_thread_id_availability_reason": "The supported execution surface did not expose a stable host thread identifier."
+  },
+  "workspace": {
+    "branch": "feat/t058-chatgpt-portable-workspace-adapter",
+    "worktree_label": ".worktrees/t058-chatgpt-portable-workspace-adapter",
+    "isolation": "Exclusive writable task worktree created from exact current origin/develop after preserving the primary checkout's existing untracked .worktrees directory."
+  },
+  "files_changed": [
+    "handoffs/T058-executor-handoff.json",
+    "tests/test_chatgpt_workspace.py",
+    "tools/_chatgpt_workspace/__init__.py",
+    "tools/_chatgpt_workspace/gc.py",
+    "tools/_chatgpt_workspace/git_state.py",
+    "tools/_chatgpt_workspace/locking.py",
+    "tools/_chatgpt_workspace/models.py",
+    "tools/_chatgpt_workspace/publish.py",
+    "tools/_chatgpt_workspace/snapshot.py",
+    "tools/_chatgpt_workspace/workspace_gate.py",
+    "tools/chatgpt_workspace.py"
+  ],
+  "implementation_summary": "Implemented the complete in-scope deterministic portable-workspace validation/classification engine, importable API, structured JSON CLI, and 26 focused fail-closed tests. Terminal status is BLOCKED solely because the contract-required full repository suite has two reproducible failures already present on the exact untouched develop base; correcting those unrelated Markdown/artifact failures is outside T058 authority.",
+  "structured_status_vocabulary": [
+    "SNAPSHOT_VALID",
+    "ACQUIRE_ALLOWED",
+    "BLOCKED_STALE_LOCK_HEAD",
+    "BLOCKED_OWNER_EXISTS",
+    "BLOCKED_AMBIGUOUS_LOCK",
+    "BLOCKED_IDENTITY_MISMATCH",
+    "BLOCKED_STALE_OR_WRONG_SNAPSHOT",
+    "BLOCKED_INVALID_SNAPSHOT",
+    "BLOCKED_STALE_BASE",
+    "WRITE_ALLOWED",
+    "WRITE_BLOCKED",
+    "RELEASE_ALLOWED",
+    "RELEASED",
+    "GC_ELIGIBLE",
+    "RETAIN_ACTIVE",
+    "RETAIN_CLOSED_UNMERGED",
+    "RETAIN_AMBIGUOUS",
+    "RETAIN_INVALID_TARGET_SNAPSHOT",
+    "PUBLICATION_PLAN_READY",
+    "INVALID_INPUT"
+  ],
+  "archive_safety": {
+    "approach": "Deterministic gzip/tar creation with fixed metadata; checksum verification before extraction; rejection of absolute, drive-qualified, traversal, backslash-traversal, duplicate, prefix-collision, link, device and other non-file/non-directory members; exact repository/receipt roots; empty destination requirement; post-extraction containment verification; standalone real .git directory requirement.",
+    "candidate_displacement": "Validation only accepts an empty destination and never promotes, overwrites, resets, cleans, or displaces an existing snapshot."
+  },
+  "external_side_effects": {
+    "production_network_mutation": false,
+    "statement": "Production helper code performs no GitHub or ChatGPT Library calls, no network I/O, and no fetch, push, lock acquisition/deletion, merge, branch retirement, or Library deletion. Git subprocesses are limited to local fsck, status, rev-parse, and symbolic-ref inspection with prompts, optional locks, fsmonitor, and hooks disabled."
+  },
+  "delegation_posture": "DELEGATED",
+  "material_triggers_considered": [
+    "independent verification",
+    "bounded archive/Git edge-case inspection",
+    "root-context protection"
+  ],
+  "children_used": 1,
+  "child_purposes": [
+    "Read-only independent T058 risk/test matrix covering archive traversal and links, fail-closed missing fields, stale-lock no-retry behavior, wrong-worktree gates, release blob identity, GC ambiguity, subprocess portability, and accidental network effects."
+  ],
+  "root_local_reason": "The root retained the controlling Task Contract, exclusive branch/worktree, all mutable implementation/test ownership, child-findings synthesis, verification, review, and handoff to avoid overlapping writable ownership.",
+  "verification": {
+    "commands": [
+      "git fetch origin --prune",
+      "git merge --ff-only origin/develop",
+      "uv run --locked python -m pytest tests/test_chatgpt_workspace.py",
+      "uv run --locked ruff check .",
+      "uv run --locked ruff format --check .",
+      "uv run --locked python tools/code_health.py check",
+      "uv run --locked python -m pytest",
+      "uv run --locked python -m pytest tests/test_governance_artifact.py::test_repeated_builds_have_identical_verified_identity tests/test_reference_integrity.py::test_canonical_markdown_references_resolve[AGENTS.md] (untouched develop reproduction)",
+      "git diff --check"
+    ],
+    "results": {
+      "bootstrap": "PASS: local develop was safely fast-forwarded and verified equal to origin/develop at 2b2c1c0fa7946d8b6f65d55d6755ebe6bcddb29a; existing untracked .worktrees state was preserved.",
+      "focused_pytest": "PASS: 26 passed.",
+      "ruff_lint": "PASS: all checks passed repository-wide.",
+      "ruff_format": "PASS: 81 files already formatted.",
+      "code_health": "PASS: sizes, complexity, and dependency checks passed; all new files are below the 1000-line hard limit.",
+      "full_pytest": "BLOCKED: 515 passed, 2 failed in 187.14s.",
+      "full_pytest_failures": [
+        "tests/test_governance_artifact.py::test_repeated_builds_have_identical_verified_identity — pre-existing governance-core/REPOSITORY-BRANCH-PROTECTION.md is not represented in the generated artifact.",
+        "tests/test_reference_integrity.py::test_canonical_markdown_references_resolve[AGENTS.md] — pre-existing AGENTS.md text 'develop == origin/develop' is parsed as an unresolved path."
+      ],
+      "baseline_reproduction": "PASS as classification evidence: both full-suite failures reproduce unchanged on the untouched current develop checkout at the exact base SHA.",
+      "diff_check": "PASS.",
+      "network_independence": "PASS for T058 tests: temporary local Git repositories and synthetic observations only; no credentials, account state, or network used."
+    },
+    "runtime": "Windows; Git 2.53.0.windows.2; uv 0.11.32; CPython 3.13.14; pytest 9.1.1; Ruff 0.16.x from the locked environment.",
+    "network_required": "Only canonical Git fetch and final push require network. Implementation and deterministic verification do not."
+  },
+  "code_review": {
+    "reviewed_head_sha": "00134357e77f46d9cfcf82b03cedca3f386688f5",
+    "summary": "Reviewed the implementation against T058-R1 through T058-R7, preserved invariants, authorized scope, and the contract's archive, fail-closed, subprocess, portability, and no-network obligations. The implementation remains in authority and focused evidence is green; terminal acceptance is blocked by two unrelated current-base failures.",
+    "findings": [
+      "The exact current develop base fails two pre-existing repository tests outside T058's authorized scope, preventing AC-T058-10/full-suite completion."
+    ],
+    "resolved_findings": [
+      "Tightened optional sentinel parsing so malformed present fields cannot be coerced to absence and accidentally allow acquisition.",
+      "Required exact 64-character archive SHA-256 input rather than accepting a Git-SHA-length digest.",
+      "Made release and post-delete verification reject stale lock-HEAD observations.",
+      "Preserved specific stale/wrong-snapshot and stale-base reasons through the writable-entry gate.",
+      "Added explicit coverage for Windows backslash traversal, hardlinks/symlinks, missing .git state, matching writable entry, wrong work-unit receipt, remote-HEAD freshness precedence, and local-only Git subprocesses."
+    ],
+    "upstream_reentry_required": true,
+    "upstream_reentry_stage": "Plan & Trace"
+  },
+  "requirement_trace": {
+    "T058-R1": "tools/_chatgpt_workspace/snapshot.py, git_state.py, models.py; checksum, safe extraction, strict receipt, fsck, clean status, HEAD/tree/branch and supplied remote observations; round-trip/corrupt/unsafe/non-Git tests.",
+    "T058-R2": "tools/_chatgpt_workspace/locking.py and models.py; single-pass ACQUIRE_ALLOWED/BLOCKED_* classification with stale HEAD precedence and no retry path; acquisition tests.",
+    "T058-R3": "tools/_chatgpt_workspace/workspace_gate.py; validated receipt, expected identity, exact ACTIVE sentinel identity, lock freshness, remote HEAD freshness and optional tree equivalence; matching, wrong-owner, wrong-worktree, invalid-snapshot and stale-remote tests.",
+    "T058-R4": "tools/_chatgpt_workspace/locking.py; release requires exact current identity/state/blob and fresh observation, returns deletion blob only when allowed, and separately verifies explicit absence; release tests.",
+    "T058-R5": "tools/_chatgpt_workspace/gc.py; literal-positive-only eligibility with closed-unmerged, active, invalid-target and ambiguous retention; GC matrix tests.",
+    "T058-R6": "tools/_chatgpt_workspace/publish.py; deterministic sorted/deduplicated bounded manifest for multiple paths and local HEAD/tree without publication claim or network action; publication tests.",
+    "T058-R7": "tools/chatgpt_workspace.py and package exports; importable functions plus deterministic structured JSON CLI with non-zero safety-block/invalid-input status; CLI test.",
+    "T058-P1": "No helper output is treated as canonical or published; manifest reason explicitly states no publication occurred.",
+    "T058-P2": "No remote write path exists; no long-lived branch authorization or branch-protection behavior is implemented.",
+    "T058-P3": "No orphan recovery, TTL/heartbeat, reclamation, closed-unmerged resume, ownership transfer, branch retirement, quota selection, ref canonicalization, or ruleset behavior was implemented.",
+    "T058-P4": "All 26 T058 tests use temporary local repositories and synthetic observations with no external service, credential, or network dependency."
+  },
+  "unresolved_open_gaps": {
+    "silently_closed": false,
+    "statement": "Every D066/R014/R015 unresolved gap remains outside the API and behavior; no gap was silently implemented as solved."
+  },
+  "dependencies_or_config_changes": [],
+  "git_status": "Expected clean tracked worktree after the handoff-only commit; verified again before final push.",
+  "unresolved_issues": [
+    "AC-T058-10 and the required full-suite gate cannot pass on current develop because two unrelated failures pre-exist at the exact base SHA.",
+    "The Executor is not authorized to edit the implicated committed Markdown or unrelated governance artifact implementation/tests under T058."
+  ],
+  "recommended_next_task": "ChatGPT Orchestrator should classify and authorize correction of the two current-develop baseline failures, then direct T058 rework/continuation to rebase or merge the corrected develop state, rerun the full gate, and finalize the handoff as DONE if green.",
+  "chatgpt_read_path": [
+    "docs/tasks/T058-chatgpt-portable-workspace-adapter.md",
+    "handoffs/T058-executor-handoff.json"
+  ]
+}
