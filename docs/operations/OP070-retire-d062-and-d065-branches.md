@@ -8,8 +8,8 @@ Controlling policy: D058, D059, D060, D064, D065, `docs/OPERATION-CONTRACTS.md`,
 Target integrated PR: `#295`  
 Target branch: `docs/d062-repository-branch-protection-bootstrap`  
 Contract-authoring branch: `docs/d065-semantic-executor-delegation`  
-Contract-authoring PR: `TO_BE_PERSISTED_BEFORE_MERGE`  
-Durable receipt anchor: `TO_BE_PERSISTED_BEFORE_MERGE`
+Contract-authoring PR: `#299`  
+Durable receipt anchor: GitHub PR `#299`
 
 ## Objective
 
@@ -45,7 +45,7 @@ The branch is eligible for remote deletion only if GitHub still reports PR #295 
 
 ### Target B — OP070 / D065 contract-authoring branch
 
-After this contract is integrated, the Executor MUST read the final merged contract-authoring PR identified in the header, require base `develop` and head branch `docs/d065-semantic-executor-delegation`, derive its exact final `head_sha` from GitHub, and require the current remote branch head to equal that PR head before deletion.
+After this contract is integrated, the Executor MUST read final merged PR #299, require base `develop` and head branch `docs/d065-semantic-executor-delegation`, derive its exact final `head_sha` from GitHub, and require the current remote branch head to equal that PR head before deletion.
 
 If the branch is already absent, retirement passes. If the branch head differs from the merged PR head, stop `BLOCKED_REVIEW` and preserve it.
 
@@ -66,8 +66,8 @@ Before mutation:
 - synchronize canonical remote under D042/RB001;
 - establish a safe current local `develop == origin/develop` without discarding unrepresented work;
 - load current repository instructions and this integrated contract;
-- verify durable receipt publication capability to the configured contract-authoring PR;
-- verify PR #295 and the contract-authoring PR are merged into `develop`;
+- verify durable receipt publication capability to PR #299;
+- verify PR #295 and PR #299 are merged into `develop`;
 - verify every present remote target branch head equals the exact authorized merged-PR head;
 - inspect accessible local branches/worktrees for both target branches;
 - preserve ambiguous, dirty, unique, or unrepresented local work;
@@ -86,7 +86,7 @@ The Executor may:
 - remove safe local copies/worktrees for Target A/B after evidence-safe inspection;
 - prune stale remote-tracking refs;
 - restore the primary checkout to current clean `develop == origin/develop` through normal safe synchronization;
-- publish exactly one final durable OP070 receipt to the configured contract-authoring PR.
+- publish exactly one final durable OP070 receipt to PR #299.
 
 ## Forbidden operations
 
@@ -107,7 +107,7 @@ Do not:
 
 `DONE` requires:
 
-- PR #295 and the contract-authoring PR confirmed merged into `develop`;
+- PR #295 and PR #299 confirmed merged into `develop`;
 - Target A remote branch absent;
 - Target B remote branch absent;
 - accessible local copies/worktrees for both targets safely absent;
@@ -121,7 +121,7 @@ If remote targets are retired but an inaccessible/ambiguous local checkout remai
 
 ## Durable receipt
 
-Publish one final top-level comment to the configured contract-authoring PR using exactly:
+Publish one final top-level comment to PR #299 using exactly:
 
 ```text
 OP070_STATUS: DONE | BLOCKED_REVIEW | PARTIAL
@@ -146,7 +146,7 @@ Per D059 / `docs/OPERATION-CONTRACTS.md`, return only:
 
 ```text
 STATUS: DONE | BLOCKED | PARTIAL
-RECEIPT: <contract-authoring PR URL>
+RECEIPT: https://github.com/ManuelBouza/agent-governance/pull/299
 COORDINATOR: AG | agent-governance | OP070 | root-1
 ```
 
