@@ -39,13 +39,15 @@ See D057 for transition semantics and required metadata for new research.
 | R003 | `docs/research/MG1-V7-COST-AND-HOST-EXECUTION-ANALYSIS.md` | COMPLETE | SUPERSEDED | T023 successor-method lineage through later MG1 versions | none | Cost/host-execution findings informed subsequent MG1 method revisions; the specific v7 execution path is no longer current. |
 | R004 | `docs/research/MG1-V8-WINDOWS-SANDBOX-ROOT-CAUSE.md` | COMPLETE | SUPERSEDED | `docs/reviews/T023-R7.md`; successor MG1 host-preflight work | none | Root-cause analysis informed later host/workspace corrections; v8 restart authority is no longer current. |
 | R005 | `docs/research/MG1-V9-WINDOWS-TEMP-ACL-ANALYSIS.md` | COMPLETE | SUPERSEDED | T023 successor-method lineage; current terminal MG1 state `docs/reviews/T023-R11.md` | none | ACL findings remain diagnostic evidence; the v9-specific remediation path has been superseded by later MG1 iterations. |
-| R006 | `docs/research/CODEX-PERSISTENT-EXECUTOR-COORDINATOR-RESEARCH.md` | COMPLETE | DEFERRED | `docs/tasks/T053-codex-persistent-executor-coordinator-pilot.md`; `docs/reviews/T053-R1.md`; `docs/reviews/T054-R1.md` | none | T053 produced positive qualitative persistence/context-locality evidence, but no attributable token/context metrics. T054 did not add causal persistence evidence. No global D055 persistence-policy change is adopted. Reconsider only with materially better persistence observability or a separate normative justification that does not depend on an unverified efficiency claim. |
+| R006 | `docs/research/CODEX-PERSISTENT-EXECUTOR-COORDINATOR-RESEARCH.md` | COMPLETE | SUPERSEDED | `docs/tasks/T053-codex-persistent-executor-coordinator-pilot.md`; `docs/reviews/T053-R1.md`; R013 | `docs/decisions/D060-task-scoped-executor-coordinator-continuity.md` | T053's positive same-task continuity/context-locality evidence remains valid, but R006's broader cross-Task-Contract dossier-root recommendation is superseded. D060 adopts a narrower boundary: one Human-visible coordinator root per exact Task/Operational Contract, retired when that work unit closes. |
 | R007 | `docs/research/ADAPTIVE-SUBAGENT-COMPUTE-ROUTING-RESEARCH.md` | COMPLETE | DEFERRED | `docs/tasks/T054-adaptive-subagent-compute-routing-pilot.md`; `docs/reviews/T054-R1.md`; PR `#277` | none | T054 execution was accepted with pilot decision `NOT_QUALIFIED`: P1 exposed a real `Luna / Low` exactness failure, P2 had a shared task/oracle-semantics confound across both arms, and P3 passed in both arms. No global child-routing policy is adopted. Reconsider only after a successor evaluation removes the P2 confound, uses a first-attempt-qualified mapping, and the measurement substrate is qualified. |
 | R008 | `docs/research/CODEX-CHILD-OBSERVABILITY-SURFACE-RESEARCH.md` | COMPLETE | DEFERRED | `docs/tasks/T055-codex-child-observability-qualification.md`; `docs/reviews/T055-R1.md`; PR `#280`; successor R009/T056/T057 | none | T055 execution was accepted with `PARTIAL_OBSERVABILITY`. Model/reasoning, exact child/turn usage and duration were observable, but 0.149.0 did not prove an unambiguous non-write child profile. R009 found a materially stronger 0.153.4+ surface. T056 confirmed the parent `:read-only` profile-ID path but its controller terminated before child reattachment. R008 remains deferred pending T057. |
 | R009 | `docs/research/CODEX-CHILD-SANDBOX-INHERITANCE-RESEARCH.md` | COMPLETE | EVALUATING | `docs/tasks/T056-codex-read-only-child-requalification.md`; `docs/reviews/T056-R1.md`; `docs/tasks/T057-codex-read-only-child-requalification-v2.md`; evidence PR `#284` | none | Official source supports parent-derived child permission inheritance and the 0.153.4 parent-owned reload fix. T056 accepted as execution with `PARTIAL_OBSERVABILITY`: version/capability gates, parent `:read-only` receipt, real-child correlation, and requested/resolved `Terra / Low` passed, but a controller misparse of `thread/loaded/list` terminated App Server before child reattachment. R009 remains EVALUATING under T057, which corrects only that harness defect and preserves all material controls. |
 | R010 | `docs/research/GPT6-ASTRA-EXECUTOR-LAUNCH-PROFILE-RESEARCH.md` | COMPLETE | DEFERRED | no empirical project evaluation yet | none | GPT-6 Astra is an official quality-first flagship and current Codex source supports it, but availability alone does not justify globally replacing Sol under D055. T056/T057 remain `GPT-5.6 Sol / Medium` to avoid a model-family confound. Global/default Astra adoption is deferred pending task-level or comparative evidence and host/account availability. |
 | R011 | `docs/research/CODEX-COORDINATOR-IDENTITY-WORKTREE-HYGIENE-RESEARCH.md` | COMPLETE | DECIDED | current source-maintenance workflow; T056/T057 local-execution lineage | `docs/decisions/D058-executor-coordinator-session-and-worktree-hygiene.md` | Codex supports explicit Human-visible thread naming, while existing branch cleanup did not fully require obsolete-worktree retirement plus primary-checkout convergence. D058 adopts deterministic coordinator chat names, exclusive writable worktrees for concurrent work units, fail-closed local-state classification, post-integration worktree retirement, and a clean/current primary checkout baseline. |
-| R012 | `docs/research/CHATGPT-GIT-WORKSPACE-AND-GITHUB-TRANSPORT-RESEARCH.md` | COMPLETE | NOT_REQUIRED | empirical ChatGPT/GitHub experiment at `develop` `20ed0e64dd6c98f38be42cd3cc28fcc220d06c5e`; temporary branch `test/chatgpt-git-workflow`; remote test commit `c4a2c43a65554ed9c52a4047f954373935b06a07` | none | ChatGPT can use a real temporary local Git working tree for status/diff/staging/commits and separately use the GitHub connector for canonical remote reads/writes. Direct CLI GitHub transport was unavailable in the tested runtime; Library is a separate persistence surface, not the Git working tree. No workflow/policy adoption is implied. |
+| R012 | `docs/research/CODEX-COORDINATOR-DELEGATION-POLICY-RESEARCH.md` | COMPLETE | DEFERRED | R006; T053; `docs/reviews/T053-R1.md`; R007; current Codex 0.153.4 + official OpenAI multi-agent guidance | none | Pure optional delegation is insufficient if the Human-visible Executor root is intended to act as a real coordinator: current Codex may require an explicit user/`AGENTS.md`/Skill delegation request. Exact global worker choreography is too prescriptive. Recommended direction is a semantic delegation obligation (Agent Governance defines when/bounds; Executor chooses concrete decomposition/worker mechanics). Normative adoption is deferred until T057 converges so no active Task Contract is changed mid-run. |
+| R013 | `docs/research/CODEX-TASK-SCOPED-COORDINATOR-CONTINUITY-RESEARCH.md` | COMPLETE | DECIDED | R006; T053; `docs/reviews/T053-R1.md`; R012; current OpenAI long-running/compaction guidance | `docs/decisions/D060-task-scoped-executor-coordinator-continuity.md` | Adopt one Human-visible Executor Coordinator Root per exact Task/Operational Contract. `NEW` at work-unit start, `CONTINUE` through normal same-task phases/rework, retire at closure, and start a new root for the next work unit. `root-2+` is failover only. Root context stays compact through durable Git pointers, concise summaries and supported compaction/fresh child contexts rather than cross-task root reuse. |
+| R014 | `docs/research/CHATGPT-GIT-WORKSPACE-AND-GITHUB-TRANSPORT-RESEARCH.md` | COMPLETE | NOT_REQUIRED | workspace/GitHub experiment at `develop` `20ed0e64dd6c98f38be42cd3cc28fcc220d06c5e`, temporary branch `test/chatgpt-git-workflow`, remote test commit `c4a2c43a65554ed9c52a4047f954373935b06a07`; Library/GitHub round-trip experiments in `ManuelBouza/test_biblioteca`, commits `d82750a45f43f45a16c498674391a7a7e15dc319` and `af02345fcfed0ebe7d4b6503af7e89cdf48b84cf` | none | ChatGPT can combine real temporary-workspace Git semantics, persistent Library working-file/version storage, and explicit GitHub connector transport. The full GitHub -> Library -> modify/persist -> GitHub read-back path was empirically completed, and multiple Library versions were accumulated before one final remote update. Library is not a Git repository/remote and synchronization is explicit. A prior Library-routing failure is retained as transient runtime evidence, not a permanent capability limit. No workflow/policy adoption is implied. |
 
 ## Live research frontier
 
@@ -56,7 +58,7 @@ R009 — Codex child sandbox inheritance / receipt
   T056: accepted execution / PARTIAL_OBSERVABILITY
   T056 positive evidence: Codex 0.153.4; parent :read-only receipt; real child; Terra/Low resolved
   T056 blocker: temporary controller misparsed thread/loaded/list and lost parent residency before child reattachment
-  Current evaluation: T057 planned
+  Current evaluation: T057 running from its frozen Task Contract
   T057 scope: correct only loaded-thread parsing/residency and recapture exact child permission/usage/duration/reroute receipts
 ```
 
@@ -71,9 +73,26 @@ R007 — adaptive subagent compute routing
   COMPLETE / DEFERRED
   Reopens only after the full measurement substrate qualifies and a separate D057 transition is persisted
 
-R006 — persistent Executor coordinator
+R012 — coordinator delegation policy
   COMPLETE / DEFERRED
-  No global D055 persistence-session policy change
+  Research conclusion: semantic delegation obligation is preferred over pure optional delegation or exact global worker choreography
+  Reconsider immediately after T057 terminal convergence before the next normal non-experimental implementation task
+```
+
+Completed/decided coordinator research:
+
+```text
+R006 — persistent Executor coordinator
+  COMPLETE / SUPERSEDED
+  Same-task continuity evidence retained
+  Cross-Task dossier-root recommendation superseded by R013/D060
+
+R011 — coordinator identity / worktree hygiene
+  COMPLETE / DECIDED -> D058
+
+R013 — task-scoped coordinator continuity
+  COMPLETE / DECIDED -> D060
+  One complete Task/Operational Contract = one Human-visible root lifecycle
 ```
 
 Completed research dispositions outside the live evaluation frontier:
@@ -84,18 +103,14 @@ R010 — GPT-6 Astra Executor launch profile
   T057 remains Sol / Medium
   No global D055 Astra migration adopted
 
-R011 — Codex coordinator identity / worktree hygiene
-  COMPLETE / DECIDED
-  Decision: D058
-  Deterministic coordinator naming + exclusive writable worktrees + safe local closure are adopted source-maintenance policy
-
-R012 — ChatGPT Git workspace / GitHub transport
+R014 — ChatGPT Git workspace / Library / GitHub transport
   COMPLETE / NOT_REQUIRED
-  Real temporary local Git semantics + explicit GitHub connector transport are empirically supported
-  Library remains a separate persistence surface; no source-maintenance workflow change is adopted
+  Temporary-workspace Git semantics, persistent Library working-file versions, and explicit GitHub connector transport are separate layers
+  Full GitHub -> Library -> modification -> GitHub round trip is empirically supported through explicit operations
+  Library is not a Git repository/remote and no source-maintenance workflow change is adopted
 ```
 
-T057 is not a routing pilot. Even a passing T057 result requires Orchestrator convergence and explicit D057 transitions before R007 may return to `EVALUATING`.
+T057 is not a routing or normal delegation pilot. D060 does not alter T057's frozen one-child topology; T057 already uses one task-scoped root. Even a passing T057 result requires Orchestrator convergence and explicit D057 transitions before R007 may return to `EVALUATING`. R012 remains separately deferred until post-T057 convergence.
 
 ## Required workflow for new research
 
