@@ -1,11 +1,11 @@
 # Executor Session and Worktree Hygiene
 
 Status: ACTIVE  
-Controlling decision: `docs/decisions/D058-executor-coordinator-session-and-worktree-hygiene.md`
+Controlling decisions: `docs/decisions/D058-executor-coordinator-session-and-worktree-hygiene.md`, `docs/decisions/D060-task-scoped-executor-coordinator-continuity.md`
 
 ## Purpose
 
-Define the source-maintenance operating procedure for Human-visible Executor coordinator identity, concurrent writable worktree isolation, and safe local Git topology after integration.
+Define the source-maintenance operating procedure for Human-visible Executor coordinator identity, task-scoped session continuity, concurrent writable worktree isolation, and safe local Git topology after integration.
 
 This document refines D042/D055 and the existing branch-cleanup procedure. It does not replace Task Contracts, Operational Contracts, D054 execution-mechanics ownership, or Git/GitHub as authoritative project state.
 
@@ -26,14 +26,62 @@ AG | agent-governance | T057 | root-1
 AG | agent-governance | OP067 | root-1
 ```
 
+The `<work-unit>` is the exact persisted Task Contract or Operational Contract identity.
+
+## Task-scoped coordinator lifecycle
+
+D060 makes the Human-visible root lifecycle equal to the governed work-unit lifecycle:
+
+```text
+new Task/Operational Contract -> NEW root-1
+same contract lifecycle        -> CONTINUE same root
+contract closes                -> retire root for governance purposes
+next contract                  -> NEW root-1 for that new work unit
+```
+
+Normal same-task phases, Orchestrator barriers, persisted review/rework and additional verification do not create a new Human-visible coordinator when the current root remains safely recoverable.
+
+Fresh independent reasoning inside the same task should normally come from a bounded child/subagent or equivalent fresh internal context. It does not require a second Human-visible coordinator.
+
 ### Ordinal rule
 
 - first coordinator for the durable work unit: `root-1`;
-- same-task `CONTINUE`: keep the same name;
-- forced/new independent coordinator for the same work unit: `root-2`, then increment;
-- never recycle an old root ordinal for a different coordinator thread.
+- normal same-task `CONTINUE`: keep the exact same coordinator name/thread;
+- `root-2+`: exceptional failover only when the prior root cannot safely continue;
+- never recycle an old root ordinal for a different coordinator thread;
+- never reuse a completed task's root for a different Task/Operational Contract.
+
+Valid failover causes include unrecoverable thread/session loss, host/runtime failure, irreparable context contamination, adapter migration that prevents resume, supported session-state corruption, or explicit persisted experimental authority requiring root replacement.
+
+Independent review, exploration, testing or a desire for a cleaner context alone are not failover causes; use internal fresh contexts instead.
+
+When failover occurs, record the reason and do not leave the old and replacement Human-visible roots concurrently writable for the same task/worktree.
 
 The name is a Human navigation aid. If a host exposes a stable thread/session ID through a supported surface, preserve that ID as corroborating evidence when useful. Do not scrape private persistence merely to obtain it.
+
+## Coordinator context hygiene
+
+The root should remain compact enough to coordinate the full task without becoming a transcript archive.
+
+Retain primarily:
+
+```text
+exact authority pointer
+current phase/status
+branch/worktree identity
+relevant accepted constraints
+concise child findings
+completed actions represented in Git/evidence
+unresolved blockers/findings
+latest Orchestrator review/gate
+next action
+```
+
+Avoid retaining unnecessary raw test logs, large command output, full file dumps, full child transcripts, abandoned implementation traces and repeated copies of persisted authority.
+
+When supported, safe host-native compaction may be used. Compaction is execution state only and never substitutes for D042 freshness or Git authority.
+
+D060 does not itself require a specific child topology. R012 separately controls the pending semantic delegation-policy question.
 
 ## Launch card
 
@@ -50,7 +98,9 @@ Rationale: <concise rationale>
 
 Before substantive execution, the Human or supported host session surface applies the exact `Coordinator-Chat` name.
 
-If `CONTINUE` is recommended, the Orchestrator identifies the same coordinator name. If the matching chat cannot be identified reliably, switch to `NEW` rather than guessing.
+If `CONTINUE` is recommended, the Orchestrator identifies the same coordinator name. Under D060, same-task continuation is the normal rule when the matching root is safely recoverable.
+
+If the matching root cannot be identified/recovered, use `NEW` with the next ordinal and state explicit failover rationale rather than guessing.
 
 ## Writable workspace isolation
 
@@ -94,6 +144,8 @@ Required postcondition before writable execution:
 
 If a collision or ambiguous local state cannot be resolved safely, stop before mutation.
 
+For same-task `CONTINUE`, reuse the represented task worktree/branch when still valid rather than creating parallel mutable state merely because a new Executor turn begins.
+
 ## Worktree labels
 
 Local paths are workstation implementation details. Use a short attributable worktree label when evidence needs an identifier, for example:
@@ -109,7 +161,7 @@ Absolute personal paths are not required in canonical handoffs when a label plus
 
 A task does not remove its own review worktree when it returns `DONE`, `BLOCKED` or `PARTIAL` if that branch/worktree remains the Orchestrator review surface.
 
-For D058-governed handoffs, persist or make determinable:
+For D058/D060-governed handoffs, persist or make determinable:
 
 ```text
 coordinator_session:
@@ -117,6 +169,7 @@ coordinator_session:
   mode
   host_thread_id      # nullable if unsupported/unavailable
   thread_id_reason    # when null
+  failover_reason     # nullable; required when root ordinal > 1
 workspace:
   branch
   worktree_label
@@ -126,6 +179,8 @@ workspace:
 ```
 
 Task-specific evidence schemas may use equivalent field names.
+
+A same-task rework handoff should preserve the same coordinator identity unless a documented failover occurred.
 
 ## Post-integration cleanup
 
@@ -143,6 +198,8 @@ Semantic sequence:
 8. restore/verify the primary checkout baseline.
 
 The Executor chooses exact compatible Git commands under D054.
+
+Once the governed work unit is operationally closed, its Human-visible coordinator root is historical navigation state and MUST NOT be reused as the root for a new Task/Operational Contract.
 
 ## Orphan classification
 
@@ -191,11 +248,15 @@ Worktree: t058-example
 
 They share the repository object database and canonical remote, but not writable directories or topic branches.
 
-## Codex naming surface
+Within T057 itself, a rework turn should normally continue `T057 | root-1`; it should not create `T057 | root-2` unless root-1 has a documented failover condition.
 
-Current official Codex source inspected for R011 supports explicit thread rename/new-session naming. The exact command/UI may change and is not governance authority.
+## Codex naming/continuity surface
 
-The Orchestrator should prefer the host's normal supported rename/name control rather than embedding a title as task semantics.
+Current official Codex source inspected for R011 supports explicit thread rename/new-session naming. Current OpenAI long-running-agent guidance also supports preserving compact task-relevant state and using compaction where appropriate.
+
+Exact commands/UI/compaction surfaces may change and are not governance authority.
+
+The Orchestrator should prefer the host's supported session-name and resume controls rather than embedding runtime thread mechanics as Task Contract semantics.
 
 ## Fail-closed rules
 
@@ -205,6 +266,9 @@ Do not:
 - delete a local branch while another worktree uses it;
 - use destructive reset/clean to make the primary checkout appear current;
 - let two writable coordinators share one worktree;
+- run two Human-visible coordinator roots concurrently for the same work unit/worktree;
+- open `root-2` merely to get an independent review or cleaner context;
 - infer a `CONTINUE` target from a similar chat title when identity is uncertain;
+- reuse a completed task's root for a different Task/Operational Contract;
 - treat a chat title or local path as Task Contract authority;
 - remove the task review worktree before Orchestrator convergence/integration.
