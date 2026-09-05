@@ -1,108 +1,71 @@
 # Current ChatGPT Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O218  
+Checkpoint-Sequence: O219  
 Canonical-Branch: `develop`  
-Current-Work-Unit: D067 / D068 — objective-scoped ChatGPT lifecycle plus Library-first candidate materialization / Executor verification boundary  
+Current-Work-Unit: source-side Transfer Bundle extraction for portable source-maintenance operating model  
 Chat-Closure: WAITING_FOR_NEXT_OBJECTIVE  
 Active-Executor: none  
-Active-Executor-Surface: none; T058 is frozen BLOCKED by Human direction
+Active-Executor-Surface: none; T058 remains frozen BLOCKED by Human direction
 
 ## Durable frontier
 
-- D067 adopts one explicit/verifiable Human objective per ChatGPT Orchestrator chat plus fail-closed successor bootstrap/repair semantics.
-- D068 adopts the source-maintenance ChatGPT/Library role boundary:
-  - ChatGPT owns Explore / Specify / Design / Plan & Trace / Candidate Materialize;
-  - Executor owns Execute / Diagnose / bounded technical Repair / Verify;
-  - ChatGPT owns Converge / Accept / Integrate / Evolve.
-- D068 is source-product/ChatGPT-adapter specific and does not automatically change Governance Core/consumer SDD.
-- D061/D062 remain mandatory: protected `main`/`develop`, verified short-lived topic branch, no routine bypass/direct long-lived writes.
-- D066 remains the workspace/transport basis: local Git + optional Library persistent standalone `.git` snapshots, GitHub canonical authority, bounded/final publication checkpoints.
-- D060 still controls one Human-visible Executor Coordinator root per exact Task/Operational Contract lifecycle.
-- D065 remains controlling generally, with D068 strengthening Stage 6 into coordinator-first delegation for materially separable execution/diagnostic slices.
-- R014/R015 remain `COMPLETE / DECIDED -> D066`; original research artifacts remain historical evidence and are not rewritten.
-- R007 remains `COMPLETE / DEFERRED`.
-- R010 remains `COMPLETE / DEFERRED`.
+- The source-side Transfer Bundle is integrated under:
+  - `docs/transfer/source-maintenance-operating-model/README.md`
+  - `docs/transfer/source-maintenance-operating-model/PORTABLE-OPERATING-MODEL.md`
+  - `docs/transfer/source-maintenance-operating-model/PORTABILITY-MANIFEST.md`
+  - `docs/transfer/source-maintenance-operating-model/EVIDENCE-APPENDIX.md`
+  - `docs/transfer/source-maintenance-operating-model/UNRESOLVED-GAPS.md`
+  - `docs/transfer/source-maintenance-operating-model/TARGET-ADOPTION-CHECKLIST.md`
+  - `docs/transfer/source-maintenance-operating-model/TARGET-ADOPTION-BOOTSTRAP-TEMPLATE.md`
+- The bundle is a source-side extraction, not a target-project adoption.
+- It preserves provenance to source `develop@0e2edbca2cb0e620db7cdb7b93945bef8985fdfd` as the extraction baseline.
+- Source Decision/Research IDs remain provenance only; no source `Dxxx`/`Rxxx` becomes target authority automatically.
+- `AGENTS.md` is not copied wholesale; effective semantics are extracted and classified.
+- Every selected source artifact/rule is classified as exactly one of `PORTABLE`, `ADAPT_REQUIRED`, `SOURCE_ONLY`, `EVIDENCE_ONLY`, or `DO_NOT_COPY` in the manifest.
+- Research/experiments remain evidence, never silent authority.
+- D067/D068 remain controlling for current source maintenance:
+  - one objective per ChatGPT Orchestrator chat;
+  - ChatGPT candidate materialization under the current source adapter;
+  - Executor Execute/Diagnose/bounded Repair/Verify;
+  - ChatGPT convergence/acceptance/integration.
+- D061/D062 remain mandatory for source writes and protected long-lived branches.
+- D066 remains the accepted source workspace/transport semantics; no executable T058 helper is accepted by this extraction.
+- No retained Library snapshot was created or assumed for this extraction objective. Protected GitHub topic-branch fallback was used.
+- R007 and R010 remain deferred; no source-wide child compute/model routing migration is transferred.
 - Core protocol remains `1.15.0`.
 
-## D067 objective/chat rule
+## Transfer Bundle semantic closure
+
+The extracted portable operating model covers:
 
 ```text
-one ChatGPT chat
--> one explicit objective
--> complete/persist/reconcile objective
--> OBJECTIVE_COMPLETE
--> WAITING_FOR_NEXT_OBJECTIVE
--> when Human supplies next objective: generate bootstrap only
--> successor verifies GitHub/Library state
--> mismatch: BOOTSTRAP_MISMATCH back to predecessor
--> verified successor: predecessor RETIRED
+objective-scoped Orchestrator lifecycle
++ fail-closed successor bootstrap/mismatch
++ single-owner SDD/role boundaries
++ delta-first specification/traceability
++ semantic-oracle/test ownership
++ Executor process/operation autonomy inside authority
++ effect/target execution authorization
++ topic-branch fail-closed write guard
++ provider-side long-lived branch protection
++ task-scoped Executor coordinator continuity
++ coordinator-first semantic delegation
++ writable worktree/workspace isolation
++ local Git / persistent snapshot plane separation
++ coordination-only lock branch + expected-head CAS + sentinel
++ snapshot validation/resume/publication freshness
++ Execute/Diagnose/bounded Repair/Verify boundary
++ post-repair canonical -> persistent-store resynchronization
++ fail-closed snapshot lifecycle/GC
++ research/evidence-to-decision separation
 ```
 
-A completed predecessor chat MUST NOT execute the next material objective.
-
-The successor prompt carries expected identities, but GitHub/persisted state remains authority. A material mismatch blocks successor mutation; the successor reports expected vs observed state and the Human Owner transports that packet to the predecessor for bounded closure repair.
-
-Operating procedure:
-
-`docs/OBJECTIVE-SCOPED-CHAT-HANDOFF.md`
-
-## D068 effective source-maintenance boundary
-
-For new D068-mode source work:
-
-```text
-Human objective
--> NEW ChatGPT objective chat
--> bootstrap verification
--> Explore / Specify / Design / Plan
--> D061 topic identity
--> ChatGPT materializes complete candidate in local Git/Library
-   (Markdown + code + tests + config + fixtures + docs)
--> bounded candidate publication to GitHub topic branch
-   including exact Task Contract/authority
--> NEW/CONTINUE Codex Coordinator for exact Task Contract
--> workers execute tools/tests/lint/build/app/browser/etc. when separable
--> Executor diagnoses and repairs implementation defects inside authority
--> Executor BLOCKS on spec/design/acceptance defects
--> pushed handoff/final candidate
--> ChatGPT re-materializes corrected GitHub state into Library when retained
--> Converge / Accept
--> protected PR / integration
--> canonical Library refresh/validation/GC/lock cleanup as applicable
--> checkpoint / D067 closure
-```
-
-Codex MUST NOT execute against authority that exists only in chat/Library. The coherent Task Contract + candidate checkpoint must be remotely represented on the verified topic branch before Stage 6.
-
-Operating procedure:
-
-`docs/LIBRARY-FIRST-SOURCE-MAINTENANCE.md`
-
-## Executor coordinator rule under D068
-
-The Human-visible root is coordinator-first. It retains contract/branch/repair envelope/synthesis/handoff and delegates materially separable execution/noise-heavy slices when a compatible worker surface is available and no safety/ownership anti-trigger dominates.
-
-Examples of worker-eligible execution:
-
-- focused/full tests;
-- lint/format/static checks;
-- uv/package/build/environment diagnostics;
-- app/CLI execution;
-- Playwright/browser validation;
-- Computer Use or other host-native interactive validation when supported;
-- plugin/MCP-backed operations;
-- logs/traces;
-- independent review/diagnosis;
-- bounded repairs with explicit safe writable ownership.
-
-A single ceremonial worker is insufficient when several material separable execution slices exist and compatible workers are available.
+Target-provider labels, branch topology, model names, commands, paths, session naming, Library product mechanics and other source adapter details remain `ADAPT_REQUIRED`.
 
 ## T058 frozen state
 
-T058 is **not resumed, accepted, merged, migrated, or cleaned up** by D067/D068 adoption.
-
-Grandfathered execution state:
+T058 remains **not resumed, accepted, merged, migrated, cleaned up, or presented as production logic**.
 
 ```text
 Task: docs/tasks/T058-chatgpt-portable-workspace-adapter.md
@@ -113,69 +76,94 @@ Implementation/review anchor: 00134357e77f46d9cfcf82b03cedca3f386688f5
 Handoff: handoffs/T058-executor-handoff.json at the frozen branch/head
 Coordinator: AG | agent-governance | T058 | root-1
 Coordinator state: dormant/frozen, not retired and not active
+Transfer classification: DO_NOT_COPY
 ```
 
-Known blocker from the durable handoff:
+If T058 is ever resumed, that must be a separate explicit Human objective with an explicit decision about grandfathered versus revised current authority.
 
-- T058 focused tests passed (`26 passed`), Ruff/code-health/diff checks passed;
-- repository full suite returned `515 passed, 2 failed`;
-- both failures reproduced on untouched `develop@2b2c1c0fa7946d8b6f65d55d6755ebe6bcddb29a` and were classified outside T058 authority.
+## Source extraction Library state
 
-Do not fix those failures, resume T058, open its implementation PR, merge it, or retire its branch/worktree unless the Human Owner explicitly makes that a later objective.
+No retained predecessor Library snapshot was identified by O218, and none was invented.
 
-If T058 is ever resumed, explicitly decide whether to continue its grandfathered contract or persist a same-task revision under current D068 authority. No silent migration.
-
-## Legacy source-document precedence
-
-`AGENTS.md`, `docs/DEVELOPMENT-WORKFLOW.md`, `docs/TASK-CONTRACTS.md`, `docs/EXECUTOR-HANDOFFS.md`, and `docs/ORCHESTRATOR-CHECKPOINTS.md` contain pre-D067/D068 wording.
-
-On direct conflict for new D068-mode source-maintenance work:
+For this extraction objective:
 
 ```text
-D067 / D068
-> older conflicting source-workflow wording
+retained Library snapshot: none
+cross-chat Library lock: none
+Library GC action: none
+source canonical authority: GitHub
+authoring transport: protected topic-branch GitHub fallback
 ```
 
-Do not reinterpret old wording to undo these accepted decisions. Mechanical normalization of those documents may be done only as an explicitly authorized objective; it is not automatically inferred as the next task.
+This does not alter D066 semantics. It records the actual state used for this objective.
+
+## Target adoption boundary
+
+No target repository was modified or installed in this objective.
+
+The separate target-adoption chat must first verify the source D067 handoff (`develop`, current source `AGENTS.md`, O219 and the Transfer Bundle) and then:
+
+1. bind the exact target repository;
+2. inspect target current governance before mutation;
+3. classify overlaps as `REUSE / ADAPT / COEXIST / MISSING / CONFLICT`;
+4. preserve stronger compatible target controls;
+5. verify provider-side long-lived branch protection and writable readiness;
+6. create target-native decisions/receipts and paths;
+7. revalidate volatile provider/Executor/persistent-store capabilities;
+8. integrate through the target's protected topic-branch PR/MR flow;
+9. leave the target independently bootstrappable without source-repository dependency.
+
+The prepared template is:
+
+`docs/transfer/source-maintenance-operating-model/TARGET-ADOPTION-BOOTSTRAP-TEMPLATE.md`
+
+The template deliberately requires the post-integration source `develop` identity and target repository identity before target mutation. No target repository was supplied to this source-extraction objective.
 
 ## Current operating state
 
-The D067/D068 adoption objective is complete once its reviewed topic branch is integrated into protected `develop`.
+The source-side extraction objective is complete after its reviewed topic branch is integrated into protected `develop`.
 
-After integration this chat is parked at:
+This chat is then parked at:
 
 `WAITING_FOR_NEXT_OBJECTIVE`
 
-No backlog item is implied.
-
-If the Human Owner provides a new material objective in this completed chat, do **not** execute it here. Generate the D067 successor bootstrap containing that exact objective and the current verified repository state.
+The intended successor objective class is target-repository adoption, but the exact target repository identity is not yet represented in this checkpoint. Do not guess it.
 
 ## Next action
 
-Wait for explicit Human Owner next objective.
+Wait for the Human Owner to supply the exact target repository identity or an explicit different objective.
 
-When supplied:
+For target adoption:
 
-1. refresh current `develop` and this checkpoint;
-2. verify no unclosed discrepancy belongs to this objective;
-3. generate a D067 bootstrap prompt for a NEW ChatGPT chat;
-4. include exact next objective, expected canonical HEAD/checkpoint, retained T058 state if still relevant, and minimum controlling references;
-5. instruct successor to stop with `BOOTSTRAP_MISMATCH` on material discrepancy;
-6. do not execute the successor objective in this predecessor chat.
+1. refresh current source `develop`, current source `AGENTS.md` and O219;
+2. verify the Transfer Bundle at that canonical source revision;
+3. bind the exact target repository in the generated D067-style bootstrap;
+4. open a NEW ChatGPT target-adoption chat;
+5. make the successor verify source bundle provenance and target canonical state;
+6. stop with `BOOTSTRAP_MISMATCH` on any material discrepancy;
+7. do not perform target installation in this source-extraction chat.
 
 ## Next chat minimum load
 
-A successor objective chat SHALL load:
+For the intended target-adoption successor, load in this order:
 
-1. current `develop` identity;
-2. current `AGENTS.md`;
-3. this checkpoint;
-4. `docs/decisions/D067-objective-scoped-orchestrator-chat-lifecycle.md`;
-5. `docs/decisions/D068-library-first-candidate-materialization-executor-verification-boundary.md`;
-6. only additional references required by its exact objective.
+1. current source `develop` identity;
+2. current source `AGENTS.md`;
+3. current source `docs/orchestrator/CHECKPOINT.md` and require O219;
+4. source Transfer Bundle:
+   - `README.md`
+   - `PORTABLE-OPERATING-MODEL.md`
+   - `PORTABILITY-MANIFEST.md`
+   - `UNRESOLVED-GAPS.md`
+   - `TARGET-ADOPTION-CHECKLIST.md`
+   - `EVIDENCE-APPENDIX.md`
+5. exact target repository canonical identity;
+6. target governing instructions (`AGENTS.md` or equivalent);
+7. target checkpoint/frontier carrier if one exists;
+8. only additional source provenance needed to resolve a concrete audit/conflict.
 
-When D068 Library mode is required, also load `docs/LIBRARY-FIRST-SOURCE-MAINTENANCE.md` and validate the exact retained Library state before writable resume.
+After target-native adoption is integrated, normal target operation must not require live source decision/research reads; the bundle is designed to carry the needed semantic/evidence closure.
 
 ## Do not
 
-Do not resume or integrate T058. Do not fix its baseline failures. Do not infer R007/R010/MG1 or documentation normalization as next work. Do not start a new material objective in this chat after D067/D068 integration. Do not let Codex execute against chat-only/Library-only authority. Do not weaken D061/D062/D066 fail-closed controls. Do not treat a stale Library candidate as accepted after Executor repairs.
+Do not resume/integrate/clean up T058. Do not copy its implementation. Do not install the Transfer Bundle into an unspecified target. Do not copy source `AGENTS.md` wholesale. Do not promote research to authority. Do not infer a target branch topology, provider, model mapping, Library capability or child routing policy. Do not weaken target-native stronger controls. Do not bypass protected topic-branch flow.
