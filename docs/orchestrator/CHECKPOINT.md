@@ -1,202 +1,181 @@
 # Current ChatGPT Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O217  
+Checkpoint-Sequence: O218  
 Canonical-Branch: `develop`  
-Current-Work-Unit: D066 / T058 — materialize the R014/R015-qualified ChatGPT local-Git + Library portable workspace transport  
-Chat-Closure: CONTINUE_CURRENT_CHAT  
+Current-Work-Unit: D067 / D068 — objective-scoped ChatGPT lifecycle plus Library-first candidate materialization / Executor verification boundary  
+Chat-Closure: WAITING_FOR_NEXT_OBJECTIVE  
 Active-Executor: none  
-Active-Executor-Surface: launch T058 only after this planning/decision change is integrated into `develop`
+Active-Executor-Surface: none; T058 is frozen BLOCKED by Human direction
 
 ## Durable frontier
 
-- D039, D041, D042, D053, D054, D055, D056, D057, D058, D059, D060, D061, D062, D063, D064 and D065 remain controlling.
+- D067 adopts one explicit/verifiable Human objective per ChatGPT Orchestrator chat plus fail-closed successor bootstrap/repair semantics.
+- D068 adopts the source-maintenance ChatGPT/Library role boundary:
+  - ChatGPT owns Explore / Specify / Design / Plan & Trace / Candidate Materialize;
+  - Executor owns Execute / Diagnose / bounded technical Repair / Verify;
+  - ChatGPT owns Converge / Accept / Integrate / Evolve.
+- D068 is source-product/ChatGPT-adapter specific and does not automatically change Governance Core/consumer SDD.
+- D061/D062 remain mandatory: protected `main`/`develop`, verified short-lived topic branch, no routine bypass/direct long-lived writes.
+- D066 remains the workspace/transport basis: local Git + optional Library persistent standalone `.git` snapshots, GitHub canonical authority, bounded/final publication checkpoints.
+- D060 still controls one Human-visible Executor Coordinator root per exact Task/Operational Contract lifecycle.
+- D065 remains controlling generally, with D068 strengthening Stage 6 into coordinator-first delegation for materially separable execution/diagnostic slices.
+- R014/R015 remain `COMPLETE / DECIDED -> D066`; original research artifacts remain historical evidence and are not rewritten.
+- R007 remains `COMPLETE / DEFERRED`.
+- R010 remains `COMPLETE / DEFERRED`.
 - Core protocol remains `1.15.0`.
-- GitHub hard guard ruleset `22339910` remains active for `main` + `develop`; normal agentic writers have no routine bypass.
-- T057/OP069 and OP070 are closed; their Human-visible roots are retired and MUST NOT be reused.
-- R007 remains `COMPLETE / DEFERRED`; no adaptive child compute-routing policy is adopted.
-- R010 remains `COMPLETE / DEFERRED`; no global GPT-6 Astra root migration is adopted.
-- PR `#291` integrated the completed R014/R015 research only, without policy adoption, at `develop@538e88b44370d3d0003c66c9d616f9c0e41d8453`.
-- The five R014/R015 research/appendix artifacts remain historical evidence and MUST NOT be rewritten to match later policy.
-- This planning change adopts only the empirically qualified subset through D066 and explicitly preserves the unresolved gaps.
 
-## R014 / R015 disposition in this change
-
-Canonical research transitions after this change is integrated:
+## D067 objective/chat rule
 
 ```text
-R014 — ChatGPT Git workspace / Library / GitHub transport
-  Research-State: COMPLETE
-  Decision-State: DECIDED
-  Decision-Ref: docs/decisions/D066-chatgpt-portable-git-workspace-transport.md
-
-R015 — ChatGPT Library worktree simulator
-  Research-State: COMPLETE
-  Decision-State: DECIDED
-  Decision-Ref: docs/decisions/D066-chatgpt-portable-git-workspace-transport.md
+one ChatGPT chat
+-> one explicit objective
+-> complete/persist/reconcile objective
+-> OBJECTIVE_COMPLETE
+-> WAITING_FOR_NEXT_OBJECTIVE
+-> when Human supplies next objective: generate bootstrap only
+-> successor verifies GitHub/Library state
+-> mismatch: BOOTSTRAP_MISMATCH back to predecessor
+-> verified successor: predecessor RETIRED
 ```
 
-D066 adopts:
+A completed predecessor chat MUST NOT execute the next material objective.
+
+The successor prompt carries expected identities, but GitHub/persisted state remains authority. A material mismatch blocks successor mutation; the successor reports expected vs observed state and the Human Owner transports that packet to the predecessor for bounded closure repair.
+
+Operating procedure:
+
+`docs/OBJECTIVE-SCOPED-CHAT-HANDOFF.md`
+
+## D068 effective source-maintenance boundary
+
+For new D068-mode source work:
 
 ```text
-GitHub
-  = canonical repository / branch / PR authority
-
-local temporary Git
-  = iterative authoring/diff/commit surface
-
-ChatGPT Library
-  = optional persistent validated standalone .git snapshots
-
-coordination-only GitHub lock branch
-  + expected-HEAD CAS
-  + owner sentinel
-  = portable cross-chat writable ownership authority
+Human objective
+-> NEW ChatGPT objective chat
+-> bootstrap verification
+-> Explore / Specify / Design / Plan
+-> D061 topic identity
+-> ChatGPT materializes complete candidate in local Git/Library
+   (Markdown + code + tests + config + fixtures + docs)
+-> bounded candidate publication to GitHub topic branch
+   including exact Task Contract/authority
+-> NEW/CONTINUE Codex Coordinator for exact Task Contract
+-> workers execute tools/tests/lint/build/app/browser/etc. when separable
+-> Executor diagnoses and repairs implementation defects inside authority
+-> Executor BLOCKS on spec/design/acceptance defects
+-> pushed handoff/final candidate
+-> ChatGPT re-materializes corrected GitHub state into Library when retained
+-> Converge / Accept
+-> protected PR / integration
+-> canonical Library refresh/validation/GC/lock cleanup as applicable
+-> checkpoint / D067 closure
 ```
 
-The intended transport optimization is:
+Codex MUST NOT execute against authority that exists only in chat/Library. The coherent Task Contract + candidate checkpoint must be remotely represented on the verified topic branch before Stage 6.
+
+Operating procedure:
+
+`docs/LIBRARY-FIRST-SOURCE-MAINTENANCE.md`
+
+## Executor coordinator rule under D068
+
+The Human-visible root is coordinator-first. It retains contract/branch/repair envelope/synthesis/handoff and delegates materially separable execution/noise-heavy slices when a compatible worker surface is available and no safety/ownership anti-trigger dominates.
+
+Examples of worker-eligible execution:
+
+- focused/full tests;
+- lint/format/static checks;
+- uv/package/build/environment diagnostics;
+- app/CLI execution;
+- Playwright/browser validation;
+- Computer Use or other host-native interactive validation when supported;
+- plugin/MCP-backed operations;
+- logs/traces;
+- independent review/diagnosis;
+- bounded repairs with explicit safe writable ownership.
+
+A single ceremonial worker is insufficient when several material separable execution slices exist and compatible workers are available.
+
+## T058 frozen state
+
+T058 is **not resumed, accepted, merged, migrated, or cleaned up** by D067/D068 adoption.
+
+Grandfathered execution state:
 
 ```text
-verified topic branch
--> many local edits / local Git operations
--> optional Library snapshots for cross-chat durability
--> one bounded/final freshness-gated GitHub publication
--> PR / review / integration
+Task: docs/tasks/T058-chatgpt-portable-workspace-adapter.md
+Status: BLOCKED / FROZEN_BY_HUMAN
+Branch: feat/t058-chatgpt-portable-workspace-adapter
+Remote HEAD: 6ed319a1802cfd90d50d9dc95d969435c295a164
+Implementation/review anchor: 00134357e77f46d9cfcf82b03cedca3f386688f5
+Handoff: handoffs/T058-executor-handoff.json at the frozen branch/head
+Coordinator: AG | agent-governance | T058 | root-1
+Coordinator state: dormant/frozen, not retired and not active
 ```
 
-D061 is preserved: no normal direct write to `main`/`develop` is authorized.
+Known blocker from the durable handoff:
 
-## Qualified fail-closed boundaries adopted by D066
+- T058 focused tests passed (`26 passed`), Ruff/code-health/diff checks passed;
+- repository full suite returned `515 passed, 2 failed`;
+- both failures reproduced on untouched `develop@2b2c1c0fa7946d8b6f65d55d6755ebe6bcddb29a` and were classified outside T058 authority.
 
-Portable acquisition:
+Do not fix those failures, resume T058, open its implementation PR, merge it, or retire its branch/worktree unless the Human Owner explicitly makes that a later objective.
+
+If T058 is ever resumed, explicitly decide whether to continue its grandfathered contract or persist a same-task revision under current D068 authority. No silent migration.
+
+## Legacy source-document precedence
+
+`AGENTS.md`, `docs/DEVELOPMENT-WORKFLOW.md`, `docs/TASK-CONTRACTS.md`, `docs/EXECUTOR-HANDOFFS.md`, and `docs/ORCHESTRATOR-CHECKPOINTS.md` contain pre-D067/D068 wording.
+
+On direct conflict for new D068-mode source-maintenance work:
 
 ```text
-same observed free lock HEAD H
-A advances H -> H1
-B expects H but observes H1
-=> B BLOCKED_STALE_LOCK_HEAD
-=> no automatic retry into ownership
+D067 / D068
+> older conflicting source-workflow wording
 ```
 
-Portable resume requires validated snapshot + exact receipt/owner/work-unit/topic + active matching sentinel + remote topic freshness/tree compatibility before `WRITE_ALLOWED`.
+Do not reinterpret old wording to undo these accepted decisions. Mechanical normalization of those documents may be done only as an explicitly authorized objective; it is not automatically inferred as the next task.
 
-Post-merge feature snapshot GC requires positive merge/integration evidence plus a refreshed target snapshot that is round-trip validated, promoted, and revalidated before destructive feature-snapshot cleanup.
+## Current operating state
 
-`closed && !merged`, missing/ambiguous integration, corrupt candidate, or ownership ambiguity remains retained/blocked fail-closed.
+The D067/D068 adoption objective is complete once its reviewed topic branch is integrated into protected `develop`.
 
-Lock release requires exact current sentinel ownership plus exact current sentinel blob SHA, followed by verification that the sentinel is absent.
+After integration this chat is parked at:
 
-## Explicit unresolved gaps
+`WAITING_FOR_NEXT_OBJECTIVE`
 
-D066/T058 MUST NOT silently solve or claim solved:
+No backlog item is implied.
 
-- crash/orphan recovery after acquisition;
-- TTL/heartbeat;
-- abandoned-lock reclamation;
-- closed-unmerged cross-chat resume;
-- ownership transfer;
-- automatic lock/topic branch-ref retirement;
-- automatic quota-pressure GC selection;
-- unusual-ref canonicalization/scale;
-- unqualified ruleset interaction outside the verified envelope.
-
-## T058
-
-Task Contract:
-
-`docs/tasks/T058-chatgpt-portable-workspace-adapter.md`
-
-Expected implementation branch:
-
-`feat/t058-chatgpt-portable-workspace-adapter`
-
-Expected handoff:
-
-`handoffs/T058-executor-handoff.json`
-
-SDD profile: `ASSURED`  
-Test authorship: `executor-implementation`
-
-T058 implements a deterministic local helper/CLI only. The helper validates/classifies snapshots, lock observations, writable-entry gates, release, GC and publication manifests. It MUST NOT itself call GitHub or ChatGPT Library APIs or perform network mutation.
-
-Required fail-closed test classes include:
-
-- ownership mismatch;
-- stale lock HEAD with no retry transition;
-- wrong worktree/snapshot;
-- corrupt/unsafe snapshot;
-- exact-identity release;
-- post-merge GC eligibility;
-- closed-unmerged retention;
-- standalone `.git` snapshot round trip;
-- batched publication manifest.
-
-## D065 posture for T058
-
-T058 is ASSURED and has material delegation triggers: independent fail-closed verification, noisy/full-suite test execution, bounded archive/Git edge-case inspection and root-context protection.
-
-The Human-visible root must delegate at least one eligible bounded slice unless a concrete safety/capability anti-trigger dominates at runtime. The Executor chooses the concrete child count, role, decomposition and sequencing.
-
-## Repository/branch state
-
-Planning branch:
-
-`docs/d066-chatgpt-portable-workspace-adapter`
-
-Planning base verified before mutation:
-
-`develop@538e88b44370d3d0003c66c9d616f9c0e41d8453`
-
-D061 sequence applied:
-
-```text
-refresh develop
--> create topic branch from exact SHA
--> verify exact branch/base
--> mutate only branch=docs/d066-chatgpt-portable-workspace-adapter
--> review complete diff
--> PR to protected develop
-```
-
-Known non-colliding historical/administrative branch residue may still include the PR #291 research branch and the O216 checkpoint branch. Do not broaden T058 implementation into their cleanup.
+If the Human Owner provides a new material objective in this completed chat, do **not** execute it here. Generate the D067 successor bootstrap containing that exact objective and the current verified repository state.
 
 ## Next action
 
-1. Review the complete D066/runbook/T058/registry/O217 planning diff against `develop@538e88b44370d3d0003c66c9d616f9c0e41d8453`.
-2. Open the planning PR to protected `develop`.
-3. Because the Human Owner explicitly authorized immediate execution/integration of this research materialization, integrate the reviewed planning PR by normal protected PR flow without a separate confirmation.
-4. Refresh canonical `develop` and read the integrated T058 contract.
-5. Launch T058 as one NEW Human-visible Coordinator Root in an exclusive D058 writable worktree.
-6. Executor returns only `STATUS/HANDOFF/BRANCH/HEAD` after pushed evidence.
-7. Orchestrator converges T058 from GitHub; do not accept chat-only implementation evidence.
-8. If accepted, integrate the implementation through protected PR flow under the same explicit Human authorization.
-9. Perform current-spec/checkpoint evolution and evidence-safe closure after implementation acceptance/integration.
-10. Do not launch R007 or MG1-v13 concurrently.
+Wait for explicit Human Owner next objective.
 
-## T058 launch profile after planning integration
+When supplied:
 
-```text
-Executor: Codex
-Session: NEW
-Coordinator-Chat: AG | agent-governance | T058 | root-1
-Model: GPT-5.6 Sol
-Effort: Medium
-```
-
-Rationale: fail-closed Git/archive/concurrency validation is moderately complex and safety-sensitive; Sol/Medium is sufficient, while D065 delegates eligible bounded verification/testing slices instead of inflating root compute.
-
-`AGENTS.md` is intentionally unchanged by this planning change, so no D043 reload is required solely because of D066/T058 authoring.
+1. refresh current `develop` and this checkpoint;
+2. verify no unclosed discrepancy belongs to this objective;
+3. generate a D067 bootstrap prompt for a NEW ChatGPT chat;
+4. include exact next objective, expected canonical HEAD/checkpoint, retained T058 state if still relevant, and minimum controlling references;
+5. instruct successor to stop with `BOOTSTRAP_MISMATCH` on material discrepancy;
+6. do not execute the successor objective in this predecessor chat.
 
 ## Next chat minimum load
 
-Load only:
+A successor objective chat SHALL load:
 
 1. current `develop` identity;
 2. current `AGENTS.md`;
-3. this checkpoint.
+3. this checkpoint;
+4. `docs/decisions/D067-objective-scoped-orchestrator-chat-lifecycle.md`;
+5. `docs/decisions/D068-library-first-candidate-materialization-executor-verification-boundary.md`;
+6. only additional references required by its exact objective.
 
-Then follow the exact current T058 state. Load D066/T058/R014/R015 only as needed for T058 launch/convergence or a concrete conflict.
+When D068 Library mode is required, also load `docs/LIBRARY-FIRST-SOURCE-MAINTENANCE.md` and validate the exact retained Library state before writable resume.
 
 ## Do not
 
-Do not reinterpret Library as a Git remote or canonical authority. Do not weaken D061/D062. Do not retry a stale lock CAS automatically into ownership. Do not garbage-collect closed-unmerged or ambiguous work. Do not invent orphan recovery/TTL/ownership transfer/quota selection. Do not let the Executor author Markdown. Do not reuse retired T057/OP070 roots.
+Do not resume or integrate T058. Do not fix its baseline failures. Do not infer R007/R010/MG1 or documentation normalization as next work. Do not start a new material objective in this chat after D067/D068 integration. Do not let Codex execute against chat-only/Library-only authority. Do not weaken D061/D062/D066 fail-closed controls. Do not treat a stale Library candidate as accepted after Executor repairs.
