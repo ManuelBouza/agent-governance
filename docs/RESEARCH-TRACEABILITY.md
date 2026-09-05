@@ -45,12 +45,12 @@ See D057 for transition semantics and required metadata for new research.
 | R009 | `docs/research/CODEX-CHILD-SANDBOX-INHERITANCE-RESEARCH.md` | COMPLETE | DECIDED | `docs/tasks/T056-codex-read-only-child-requalification.md`; `docs/reviews/T056-R1.md`; `docs/tasks/T057-codex-read-only-child-requalification-v2.md`; `docs/reviews/T057-R1.md`; evidence PRs `#284`, `#296` | `docs/decisions/D063-qualified-codex-read-only-child-measurement-surface.md` | Official source supports parent-derived child permission inheritance and the 0.153.4 parent-owned reload fix. T057 empirically closed the remaining child provenance gate: parent and exact child both returned `activePermissionProfile.id=:read-only`, parent residency was continuous, and exact child usage/duration/reroute evidence was captured. D063 adopts the qualified surface subject to native version/capability revalidation. |
 | R010 | `docs/research/GPT6-ASTRA-EXECUTOR-LAUNCH-PROFILE-RESEARCH.md` | COMPLETE | DEFERRED | no empirical project evaluation yet | none | GPT-6 Astra is an official quality-first flagship and current Codex source supports it, but availability alone does not justify globally replacing Sol under D055. T056/T057 remained `GPT-5.6 Sol / Medium` to avoid a model-family confound. Global/default Astra adoption is deferred pending task-level or comparative evidence and host/account availability. |
 | R011 | `docs/research/CODEX-COORDINATOR-IDENTITY-WORKTREE-HYGIENE-RESEARCH.md` | COMPLETE | DECIDED | current source-maintenance workflow; T056/T057 local-execution lineage | `docs/decisions/D058-executor-coordinator-session-and-worktree-hygiene.md` | Codex supports explicit Human-visible thread naming, while existing branch cleanup did not fully require obsolete-worktree retirement plus primary-checkout convergence. D058 adopts deterministic coordinator chat names, exclusive writable worktrees for concurrent work units, fail-closed local-state classification, post-integration worktree retirement, and a clean/current primary checkout baseline. |
-| R012 | `docs/research/CODEX-COORDINATOR-DELEGATION-POLICY-RESEARCH.md` | COMPLETE | DEFERRED | R006; T053; `docs/reviews/T053-R1.md`; R007; current Codex 0.153.4 + official OpenAI multi-agent guidance | none | Pure optional delegation is insufficient if the Human-visible Executor root is intended to act as a real coordinator: current Codex may require an explicit user/`AGENTS.md`/Skill delegation request. Exact global worker choreography is too prescriptive. Recommended direction is a semantic delegation obligation (Agent Governance defines when/bounds; Executor chooses concrete decomposition/worker mechanics). T057 is now converged, so R012 is the immediate decision gate before the next normal non-experimental implementation task. |
+| R012 | `docs/research/CODEX-COORDINATOR-DELEGATION-POLICY-RESEARCH.md` | COMPLETE | DECIDED | R006; T053; `docs/reviews/T053-R1.md`; R007; T057 terminal convergence; current Codex 0.153.4 + official OpenAI multi-agent guidance | `docs/decisions/D065-semantic-executor-delegation-obligation.md` | D065 adopts the semantic delegation obligation: Agent Governance defines material delegation triggers/anti-triggers plus safety/evidence bounds, while the Executor coordinator retains concrete decomposition, child count/roles, sequencing/parallelism and mechanics. Exact topology remains Task/Operational-Contract-specific only when materially authoritative. No child compute-routing policy is implied. |
 | R013 | `docs/research/CODEX-TASK-SCOPED-COORDINATOR-CONTINUITY-RESEARCH.md` | COMPLETE | DECIDED | R006; T053; `docs/reviews/T053-R1.md`; R012; current OpenAI long-running/compaction guidance | `docs/decisions/D060-task-scoped-executor-coordinator-continuity.md` | Adopt one Human-visible Executor Coordinator Root per exact Task/Operational Contract. `NEW` at work-unit start, `CONTINUE` through normal same-task phases/rework, retire at closure, and start a new root for the next work unit. `root-2+` is failover only. Root context stays compact through durable Git pointers, concise summaries and supported compaction/fresh child contexts rather than cross-task root reuse. |
 
 ## Live research frontier
 
-The child-observability research line is now decided:
+The child-observability research line is decided:
 
 ```text
 R008 — Codex child observability surface
@@ -62,7 +62,7 @@ R009 — Codex child sandbox inheritance / receipt
   T057 closed the exact-child :read-only provenance and continuous-parent-residency gate
 ```
 
-Deferred dependencies remain:
+Deferred dependency:
 
 ```text
 R007 — adaptive subagent compute routing
@@ -71,11 +71,6 @@ R007 — adaptive subagent compute routing
   remaining gate: corrected successor evaluation with T054 P2 confound removed,
                   first-attempt-qualified mapping, D063 measurement boundary,
                   and explicit D057 transition before execution
-
-R012 — coordinator delegation policy
-  COMPLETE / DEFERRED
-  research conclusion: semantic delegation obligation is preferred over pure optional delegation or exact global worker choreography
-  current gate: decide immediately after T057 convergence before the next normal non-experimental implementation task
 ```
 
 Completed/decided coordinator research:
@@ -88,6 +83,10 @@ R006 — persistent Executor coordinator
 
 R011 — coordinator identity / worktree hygiene
   COMPLETE / DECIDED -> D058
+
+R012 — coordinator delegation policy
+  COMPLETE / DECIDED -> D065
+  semantic delegation obligation adopted; concrete orchestration remains Executor-owned
 
 R013 — task-scoped coordinator continuity
   COMPLETE / DECIDED -> D060
@@ -102,7 +101,7 @@ R010 — GPT-6 Astra Executor launch profile
   no global D055 Astra migration adopted
 ```
 
-D063 qualifies the measurement substrate only. It does not adopt child-routing policy, alter D055, establish backend-served per-turn model identity, or authorize savings claims. R007 remains separately deferred until a corrected evaluation is specified and explicitly transitioned. R012 remains the next policy-decision gate.
+D063 qualifies the measurement substrate only. D065 establishes delegation posture only. Neither adopts child compute routing, alters D055, establishes backend-served per-turn model identity, or authorizes savings claims. R007 remains separately deferred until a corrected evaluation is specified and explicitly transitioned.
 
 ## Required workflow for new research
 
