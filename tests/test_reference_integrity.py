@@ -406,6 +406,18 @@ def test_sdd_taxonomy_is_not_classified_as_a_repository_path(taxonomy: str) -> N
     assert looks_like_path(taxonomy) is False
 
 
+def test_inline_branch_alignment_comparison_is_not_classified_as_path() -> None:
+    """A complete inline equivalence expression is prose, not a path."""
+
+    assert looks_like_path("develop == origin/develop") is False
+
+
+def test_unspaced_comparison_like_token_remains_a_path_candidate() -> None:
+    """The comparison exemption requires a structurally delimited operator."""
+
+    assert looks_like_path("docs/tasks==archive.md") is True
+
+
 @pytest.mark.parametrize(
     "concrete_path",
     [
