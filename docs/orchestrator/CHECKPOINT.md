@@ -1,64 +1,50 @@
 # Current ChatGPT Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O220  
+Checkpoint-Sequence: O221  
 Canonical-Branch: `develop`  
-Current-Work-Unit: closure repair — fully offline/self-contained Transfer Bundle delivery  
-Chat-Closure: WAITING_FOR_NEXT_OBJECTIVE  
+Current-Work-Unit: T059 — reference-integrity baseline repair before T058 re-entry  
+Chat-Closure: ACTIVE  
 Active-Executor: none  
-Active-Executor-Surface: none; T058 remains frozen BLOCKED by Human direction
+Active-Executor-Surface: none; T059 planning integration pending
 
 ## Durable frontier
 
-- O219/PR #303 integrated the source-side Transfer Bundle.
-- Human Owner then identified a material portability defect: the generated target bootstrap still assumed the target-adoption chat could read `ManuelBouza/agent-governance`.
-- This closure repair removes that dependency.
-- The bundle now defines an OFFLINE / SELF-CONTAINED delivery mode through:
-  - `docs/transfer/source-maintenance-operating-model/OFFLINE-START-HERE.md`
-  - `docs/transfer/source-maintenance-operating-model/OFFLINE-EXPORT-MANIFEST.md`
-  - source-independent `TARGET-ADOPTION-BOOTSTRAP-TEMPLATE.md`
-- A target-adoption chat may operate from the exported package plus target repository state only.
-- Source access is optional provenance revalidation, never a target-bootstrap prerequisite.
-- The offline package must include portable core files, evidence/gaps, selected exact source-reference snapshots, `EXPORT-RECEIPT.txt`, and `SHA256SUMS.txt`.
-- Source-reference material remains provenance/evidence, not target authority.
-- T058 remains `BLOCKED / FROZEN_BY_HUMAN`, branch `feat/t058-chatgpt-portable-workspace-adapter`, HEAD `6ed319a1802cfd90d50d9dc95d969435c295a164`, implementation/review anchor `00134357e77f46d9cfcf82b03cedca3f386688f5`, classification `DO_NOT_COPY`.
-- No target repository has been modified.
-
-## Portable operating-model closure
-
-The exported package carries, without live source lookup:
-
-- objective-scoped Orchestrator lifecycle and mismatch semantics;
-- SDD/single-owner role boundaries and delta-first specification;
-- semantic oracle/test ownership;
-- Executor process autonomy and operation resolution;
-- effect/target execution authorization and runbook separation;
-- branch-target fail-closed controls and server-side branch protection;
-- task-scoped Executor coordinator continuity and semantic delegation;
-- writable workspace/worktree isolation;
-- local Git / persistent snapshot / canonical provider separation;
-- cross-chat lock branch + expected-head CAS + owner sentinel;
-- snapshot validation, freshness, publication, resynchronization and GC;
-- Execute/Diagnose/bounded Repair/Verify authority boundary;
-- research/evidence-to-decision separation;
-- unresolved gaps and explicit non-claims.
+- O220 closed the fully offline/self-contained Transfer Bundle delivery and left the source-maintenance frontier waiting for a Human objective.
+- Human Owner explicitly authorized continuation of the previously stopped T058 work on 2026-09-06.
+- T058's persisted Executor handoff remains `BLOCKED` on branch `feat/t058-chatgpt-portable-workspace-adapter`, branch HEAD `6ed319a1802cfd90d50d9dc95d969435c295a164`, implementation/review anchor `00134357e77f46d9cfcf82b03cedca3f386688f5`.
+- The T058 implementation reported 26 focused tests passing; its prior terminal block was the repository-wide quality gate on the then-current `develop` baseline.
+- Of the two prior baseline failures, the former governance-artifact failure is no longer represented by current `develop`.
+- One baseline defect remains material: `tests/_helpers.py::looks_like_path()` misclassifies the valid D058 comparison expression ``develop == origin/develop`` in `AGENTS.md` as a repository path, causing the canonical Markdown reference-integrity test to fail.
+- Orchestrator classified this as a deterministic harness defect rather than a reason to rewrite valid governance prose.
+- T059 is the controlling repair Task Contract: `docs/tasks/T059-reference-integrity-baseline-repair.md`.
+- T059 planning branch: `docs/t059-reference-integrity-baseline-repair`, created from `develop` HEAD `0feb43f2b367c3df351dcc55a42fd48658a0fba6`.
+- T058 is no longer Human-frozen, but its existing implementation remains `DO_NOT_COPY` / non-integrable until T059 restores the baseline and the Orchestrator performs explicit T058 re-entry/revalidation against updated `develop`.
 
 ## Next action
 
-Wait for an explicit Human Owner next objective.
+1. Review and integrate the T059 planning branch into `develop` through PR.
+2. Launch a fresh Executor work unit for T059 from the exact integrated `develop` revision containing the Task Contract.
+3. Require focused reference-integrity verification plus the full repository quality gate.
+4. If T059 converges green, re-enter T058 against current `develop`; do not assume the old T058 branch is directly reusable or integrable.
 
-For target adoption, the Human may take the generated offline archive into the other project. The successor chat should read `OFFLINE-START-HERE.md` and the package-local bootstrap, then inspect the target repository. It must not require access to this source repository.
+## T059 minimum load
 
-## Next chat minimum load for target adoption
+1. current `develop`;
+2. `AGENTS.md`;
+3. `docs/orchestrator/CHECKPOINT.md`;
+4. `docs/tasks/T059-reference-integrity-baseline-repair.md`;
+5. `tests/_helpers.py`;
+6. `tests/test_reference_integrity.py`.
 
-1. the complete exported Transfer Bundle available locally/in the target project;
-2. `OFFLINE-START-HERE.md`;
-3. package `EXPORT-RECEIPT.txt` + `SHA256SUMS.txt`;
-4. portable operating model, manifest, gaps, checklist and evidence appendix;
-5. target canonical repository identity;
-6. target governing instructions and current frontier/state carrier;
-7. source-reference material only if needed to resolve a concrete ambiguity/audit question.
+## T058 re-entry minimum load after T059
+
+1. current integrated `develop` and exact HEAD;
+2. `docs/tasks/T058-chatgpt-portable-workspace-adapter.md`;
+3. `handoffs/T058-executor-handoff.json` from branch `feat/t058-chatgpt-portable-workspace-adapter`;
+4. compare current `develop` against T058 implementation/review anchor and branch HEAD;
+5. controlling D066 portable-workspace semantics only where a concrete revalidation question requires them.
 
 ## Do not
 
-Do not require the target project to access `ManuelBouza/agent-governance`. Do not resume/integrate/clean up T058. Do not copy its implementation. Do not copy source `AGENTS.md` wholesale. Do not promote research to target authority. Do not infer target branch topology/provider/model/Library behavior. Do not weaken stronger compatible target controls.
+Do not modify, copy, merge, clean up, or otherwise consume T058 implementation while T059/baseline verification is unresolved. Do not weaken `tests/test_reference_integrity.py` to ignore arbitrary slash-containing prose. Do not rewrite `AGENTS.md` merely to satisfy the classifier. Do not add dependencies for T059. Do not write directly to `develop` or `main`.
