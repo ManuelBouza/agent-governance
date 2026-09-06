@@ -5,7 +5,7 @@ from __future__ import annotations
 from pathlib import Path, PurePosixPath
 
 from .git_state import inspect_repository
-from .models import Decision, Status, require_sha, require_text
+from .models import PROTECTED_BRANCHES, Decision, Status, require_sha, require_text
 
 
 def _normalize_changed_path(value: object) -> str:
@@ -33,6 +33,8 @@ def build_publication_plan(
     topic_branch = require_text(topic_branch, "topic_branch")
     expected_remote_head = require_sha(expected_remote_head, "expected_remote_head")
     state = inspect_repository(repository_path)
+    if topic_branch in PROTECTED_BRANCHES:
+        return Decision(Status.BLOCKED_IDENTITY_MISMATCH, "protected branch is not a topic branch")
     if state.branch != topic_branch:
         return Decision(Status.BLOCKED_IDENTITY_MISMATCH, "local topic branch does not match")
     paths = sorted({_normalize_changed_path(path) for path in changed_paths})

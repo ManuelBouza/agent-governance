@@ -43,6 +43,7 @@ class Decision:
 
 
 _SHA_RE = re.compile(r"(?:[0-9a-f]{40}|[0-9a-f]{64})\Z")
+PROTECTED_BRANCHES = frozenset({"develop", "main"})
 
 
 def require_text(value: object, field_name: str) -> str:

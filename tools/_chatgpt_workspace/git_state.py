@@ -21,15 +21,23 @@ class GitState:
 
 
 def _git(repository: Path, *args: str) -> str:
-    env = os.environ.copy()
-    env.update({"GIT_OPTIONAL_LOCKS": "0", "GIT_TERMINAL_PROMPT": "0"})
+    env = {key: value for key, value in os.environ.items() if not key.upper().startswith("GIT_")}
+    env.update(
+        {
+            "GIT_NO_LAZY_FETCH": "1",
+            "GIT_OPTIONAL_LOCKS": "0",
+            "GIT_TERMINAL_PROMPT": "0",
+        }
+    )
     command = [
         "git",
         "-c",
         "core.fsmonitor=false",
         "-c",
         "core.hooksPath=NUL" if os.name == "nt" else "core.hooksPath=/dev/null",
-        "-C",
+        "--git-dir",
+        str(repository / ".git"),
+        "--work-tree",
         str(repository),
         *args,
     ]
@@ -55,6 +63,12 @@ def _git(repository: Path, *args: str) -> str:
 def inspect_repository(repository: Path) -> GitState:
     if not repository.is_dir() or not (repository / ".git").is_dir():
         raise GitInspectionError("snapshot is not a standalone Git repository")
+    alternates = repository / ".git" / "objects" / "info" / "alternates"
+    try:
+        if alternates.exists() and alternates.read_bytes().strip():
+            raise GitInspectionError("snapshot depends on an external Git object directory")
+    except OSError as error:
+        raise GitInspectionError(f"cannot inspect Git object alternates: {error}") from error
     _git(repository, "fsck", "--full")
     status = _git(repository, "status", "--porcelain", "--untracked-files=all")
     head = _git(repository, "rev-parse", "--verify", "HEAD")

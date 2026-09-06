@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from .models import Decision, Identity, LockObservation, Receipt, Status
+from .models import PROTECTED_BRANCHES, Decision, Identity, LockObservation, Receipt, Status
 
 
 def classify_write_entry(
@@ -13,6 +13,7 @@ def classify_write_entry(
     observed_remote_head: str | None,
     observed_remote_tree: str | None = None,
     require_tree_equivalence: bool = False,
+    expected_target_branch: str = "develop",
 ) -> Decision:
     if snapshot.status is not Status.SNAPSHOT_VALID:
         reasons = {
@@ -30,6 +31,12 @@ def classify_write_entry(
             Status.WRITE_BLOCKED, Status.BLOCKED_INVALID_SNAPSHOT.value, {"error": str(error)}
         )
     if receipt.identity() != expected_identity:
+        return Decision(Status.WRITE_BLOCKED, Status.BLOCKED_IDENTITY_MISMATCH.value)
+    if (
+        receipt.target_branch != expected_target_branch
+        or receipt.topic_branch in PROTECTED_BRANCHES
+        or receipt.topic_branch == receipt.target_branch
+    ):
         return Decision(Status.WRITE_BLOCKED, Status.BLOCKED_IDENTITY_MISMATCH.value)
     if lock_observation.expected_lock_head != lock_observation.observed_lock_head:
         return Decision(Status.WRITE_BLOCKED, Status.BLOCKED_STALE_LOCK_HEAD.value)

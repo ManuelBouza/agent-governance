@@ -30,6 +30,7 @@ from _chatgpt_workspace import (  # noqa: E402
     validate_snapshot,
     verify_release,
 )
+from _chatgpt_workspace.git_state import GitInspectionError  # noqa: E402
 
 SHA_A = "a" * 40
 SHA_B = "b" * 40
@@ -245,6 +246,11 @@ def test_acquisition_matching_absence_allowed_but_existing_owner_blocks() -> Non
     assert classify_acquisition(lock()).status is Status.BLOCKED_OWNER_EXISTS
 
 
+def test_unknown_sentinel_state_is_ambiguous() -> None:
+    observation = LockObservation(**{**lock().__dict__, "state": "UNKNOWN"})
+    assert classify_acquisition(observation).status is Status.BLOCKED_AMBIGUOUS_LOCK
+
+
 def test_stale_lock_head_wins_without_retry_or_transition() -> None:
     result = classify_acquisition(lock(present=False, observed=SHA_B))
     assert result.status is Status.BLOCKED_STALE_LOCK_HEAD
@@ -260,6 +266,68 @@ def test_wrong_owner_blocks_write_entry(tmp_path: Path) -> None:
     )
     assert result.status is Status.WRITE_BLOCKED
     assert result.reason == Status.BLOCKED_IDENTITY_MISMATCH.value
+
+
+def test_target_branch_mismatch_blocks_snapshot(tmp_path: Path) -> None:
+    root, head, tree = repository(tmp_path)
+    wrong = Receipt(**{**receipt(head, tree).as_dict(), "target_branch": "main"})
+    archive = tmp_path / "wrong-target.tar.gz"
+    checksum = create_snapshot(root, wrong, archive)
+    result = validate_snapshot(
+        archive,
+        tmp_path / "out",
+        expected_archive_sha256=checksum,
+        expected_identity=IDENTITY,
+        expected_remote_head=head,
+        expected_remote_tree=tree,
+    )
+    assert result.status is Status.BLOCKED_IDENTITY_MISMATCH
+
+
+@pytest.mark.parametrize("protected_branch", ["develop", "main"])
+def test_protected_branch_never_qualifies_for_write_or_publication(
+    tmp_path: Path, protected_branch: str
+) -> None:
+    root, head, tree = repository(tmp_path)
+    git(root, "branch", "-m", protected_branch)
+    protected_identity = Identity(
+        IDENTITY.repository, IDENTITY.owner, IDENTITY.work_unit, protected_branch
+    )
+    protected_receipt = Receipt(
+        **{
+            **receipt(head, tree).as_dict(),
+            "topic_branch": protected_branch,
+        }
+    )
+    snapshot = Decision(
+        Status.SNAPSHOT_VALID,
+        "synthetic protected-branch snapshot",
+        {"receipt": protected_receipt.as_dict()},
+    )
+    protected_lock = LockObservation(
+        **{
+            **lock().__dict__,
+            "topic_branch": protected_branch,
+        }
+    )
+    write = classify_write_entry(
+        snapshot,
+        expected_identity=protected_identity,
+        lock_observation=protected_lock,
+        observed_remote_head=head,
+    )
+    assert write.status is Status.WRITE_BLOCKED
+    assert write.reason == Status.BLOCKED_IDENTITY_MISMATCH.value
+
+    publication = build_publication_plan(
+        root,
+        repository=IDENTITY.repository,
+        work_unit=IDENTITY.work_unit,
+        topic_branch=protected_branch,
+        expected_remote_head=head,
+        changed_paths=["one.txt"],
+    )
+    assert publication.status is Status.BLOCKED_IDENTITY_MISMATCH
 
 
 def test_stale_remote_head_blocks_even_when_tree_matches(tmp_path: Path) -> None:
@@ -341,12 +409,15 @@ def test_git_inspection_invokes_only_local_read_commands(
 ) -> None:
     root, head, _ = repository(tmp_path)
     original_run = subprocess.run
-    observed: list[list[str]] = []
+    observed: list[tuple[list[str], dict[str, str]]] = []
 
     def recording_run(command: list[str], **kwargs: object) -> subprocess.CompletedProcess[str]:
-        observed.append(command)
+        observed.append((command, kwargs["env"]))  # type: ignore[arg-type]
         return original_run(command, **kwargs)
 
+    monkeypatch.setenv("GIT_DIR", str(tmp_path / "redirected.git"))
+    monkeypatch.setenv("GIT_WORK_TREE", str(tmp_path / "redirected-worktree"))
+    monkeypatch.setenv("GIT_ALTERNATE_OBJECT_DIRECTORIES", str(tmp_path / "objects"))
     monkeypatch.setattr(subprocess, "run", recording_run)
     plan = build_publication_plan(
         root,
@@ -357,11 +428,30 @@ def test_git_inspection_invokes_only_local_read_commands(
         changed_paths=["one.txt"],
     )
     assert plan.status is Status.PUBLICATION_PLAN_READY
-    joined = [" ".join(command) for command in observed]
+    joined = [" ".join(command) for command, _ in observed]
     assert all(
         not any(word in command for word in (" fetch ", " push ", " remote ")) for command in joined
     )
+    assert all(environment["GIT_NO_LAZY_FETCH"] == "1" for _, environment in observed)
+    assert all("GIT_DIR" not in environment for _, environment in observed)
+    assert all("GIT_WORK_TREE" not in environment for _, environment in observed)
+    assert all("GIT_ALTERNATE_OBJECT_DIRECTORIES" not in environment for _, environment in observed)
     assert len(observed) == 5
+
+
+def test_git_inspection_rejects_external_object_alternates(tmp_path: Path) -> None:
+    root, head, _ = repository(tmp_path)
+    alternates = root / ".git" / "objects" / "info" / "alternates"
+    alternates.write_text(str(tmp_path / "external-objects"), encoding="utf-8")
+    with pytest.raises(GitInspectionError, match="external Git object directory"):
+        build_publication_plan(
+            root,
+            repository=IDENTITY.repository,
+            work_unit=IDENTITY.work_unit,
+            topic_branch=IDENTITY.topic_branch,
+            expected_remote_head=head,
+            changed_paths=["one.txt"],
+        )
 
 
 def test_cli_safety_block_is_structured_and_nonzero(

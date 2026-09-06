@@ -57,6 +57,7 @@ def _classify(command: str, value: Mapping[str, Any]) -> Decision:
             expected_identity=Identity.from_mapping(value["expected_identity"]),
             expected_remote_head=value["expected_remote_head"],
             expected_remote_tree=value["expected_remote_tree"],
+            expected_target_branch=value.get("expected_target_branch", "develop"),
             require_clean=_optional_bool(value, "require_clean", True),
             require_remote_tree_equivalence=_optional_bool(
                 value, "require_remote_tree_equivalence", False
@@ -70,6 +71,7 @@ def _classify(command: str, value: Mapping[str, Any]) -> Decision:
             observed_remote_head=value.get("observed_remote_head"),
             observed_remote_tree=value.get("observed_remote_tree"),
             require_tree_equivalence=_optional_bool(value, "require_tree_equivalence", False),
+            expected_target_branch=value.get("expected_target_branch", "develop"),
         )
     if command == "release":
         return classify_release(

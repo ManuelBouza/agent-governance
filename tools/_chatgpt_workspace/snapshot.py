@@ -12,7 +12,15 @@ from collections.abc import Mapping
 from pathlib import Path, PurePosixPath
 
 from .git_state import GitInspectionError, inspect_repository
-from .models import Decision, Identity, Receipt, Status, require_sha
+from .models import (
+    PROTECTED_BRANCHES,
+    Decision,
+    Identity,
+    Receipt,
+    Status,
+    require_sha,
+    require_text,
+)
 
 
 def archive_sha256(archive: Path) -> str:
@@ -142,6 +150,7 @@ def validate_snapshot(
     expected_identity: Identity,
     expected_remote_head: str,
     expected_remote_tree: str,
+    expected_target_branch: str = "develop",
     require_clean: bool = True,
     require_remote_tree_equivalence: bool = False,
 ) -> Decision:
@@ -152,6 +161,7 @@ def validate_snapshot(
             raise ValueError("expected_archive_sha256 must be a 64-character SHA-256 digest")
         remote_head = require_sha(expected_remote_head, "expected_remote_head")
         remote_tree = require_sha(expected_remote_tree, "expected_remote_tree")
+        target_branch = require_text(expected_target_branch, "expected_target_branch")
         actual_checksum = archive_sha256(archive)
         if actual_checksum != checksum:
             return Decision(Status.BLOCKED_INVALID_SNAPSHOT, "archive checksum mismatch")
@@ -162,6 +172,15 @@ def validate_snapshot(
         receipt = Receipt.from_mapping(receipt_value)
         if _identity_mismatch(receipt, expected_identity):
             return Decision(Status.BLOCKED_IDENTITY_MISMATCH, "receipt identity does not match")
+        if (
+            receipt.target_branch != target_branch
+            or receipt.topic_branch in PROTECTED_BRANCHES
+            or receipt.topic_branch == receipt.target_branch
+        ):
+            return Decision(
+                Status.BLOCKED_IDENTITY_MISMATCH,
+                "receipt branch authority does not match",
+            )
         if receipt.remote_head_sha != remote_head or receipt.remote_tree_sha != remote_tree:
             return Decision(
                 Status.BLOCKED_STALE_OR_WRONG_SNAPSHOT,

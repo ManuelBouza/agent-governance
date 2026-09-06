@@ -13,8 +13,10 @@ def classify_acquisition(observation: LockObservation) -> Decision:
             require_sha(observation.sentinel_blob_sha, "sentinel_blob_sha")
         except ValueError:
             return Decision(Status.BLOCKED_AMBIGUOUS_LOCK, "sentinel blob SHA is invalid")
-        if observation.sentinel_identity() is None or not observation.state:
+        if observation.sentinel_identity() is None:
             return Decision(Status.BLOCKED_AMBIGUOUS_LOCK, "sentinel identity is incomplete")
+        if observation.state != "ACTIVE":
+            return Decision(Status.BLOCKED_AMBIGUOUS_LOCK, "sentinel state is invalid")
         return Decision(Status.BLOCKED_OWNER_EXISTS, "lock sentinel already exists")
     sentinel_fields = (
         observation.repository,
