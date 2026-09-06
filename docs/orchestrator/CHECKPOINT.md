@@ -1,43 +1,51 @@
 # Current ChatGPT Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O221  
+Checkpoint-Sequence: O222  
 Canonical-Branch: `develop`  
-Current-Work-Unit: T059 — reference-integrity baseline repair before T058 re-entry  
+Current-Work-Unit: T060 — Governance artifact asset completeness baseline repair  
 Chat-Closure: ACTIVE  
 Active-Executor: none  
-Active-Executor-Surface: none; T059 planning integration pending
+Active-Executor-Surface: none; T060 planning integration pending
 
 ## Durable frontier
 
-- O220 closed the fully offline/self-contained Transfer Bundle delivery and left the source-maintenance frontier waiting for a Human objective.
 - Human Owner explicitly authorized continuation of the previously stopped T058 work on 2026-09-06.
-- T058's persisted Executor handoff remains `BLOCKED` on branch `feat/t058-chatgpt-portable-workspace-adapter`, branch HEAD `6ed319a1802cfd90d50d9dc95d969435c295a164`, implementation/review anchor `00134357e77f46d9cfcf82b03cedca3f386688f5`.
-- The T058 implementation reported 26 focused tests passing; its prior terminal block was the repository-wide quality gate on the then-current `develop` baseline.
-- Of the two prior baseline failures, the former governance-artifact failure is no longer represented by current `develop`.
-- One baseline defect remains material: `tests/_helpers.py::looks_like_path()` misclassifies the valid D058 comparison expression ``develop == origin/develop`` in `AGENTS.md` as a repository path, causing the canonical Markdown reference-integrity test to fail.
-- Orchestrator classified this as a deterministic harness defect rather than a reason to rewrite valid governance prose.
-- T059 is the controlling repair Task Contract: `docs/tasks/T059-reference-integrity-baseline-repair.md`.
-- T059 planning branch: `docs/t059-reference-integrity-baseline-repair`, created from `develop` HEAD `0feb43f2b367c3df351dcc55a42fd48658a0fba6`.
-- T058 is no longer Human-frozen, but its existing implementation remains `DO_NOT_COPY` / non-integrable until T059 restores the baseline and the Orchestrator performs explicit T058 re-entry/revalidation against updated `develop`.
+- T058 remains non-integrable / `DO_NOT_COPY` on branch `feat/t058-chatgpt-portable-workspace-adapter`, branch HEAD `6ed319a1802cfd90d50d9dc95d969435c295a164`, implementation/review anchor `00134357e77f46d9cfcf82b03cedca3f386688f5`.
+- T059 (`docs/tasks/T059-reference-integrity-baseline-repair.md`) corrected the reference-classifier defect on branch `fix/t059-reference-integrity-baseline-repair`; current branch HEAD `c90df168375e2159344b161c83f1e1399f2c03dc`.
+- T059 clean-worktree revalidation reports 49 focused reference-integrity tests passing plus Ruff, format, code-health, and diff checks passing.
+- T059 remains `BLOCKED` only because the full repository suite exposes one independent artifact-packaging baseline failure.
+- The surviving defect is canonical and reproducible: `governance-skill/assets/REPOSITORY-BRANCH-PROTECTION.md` is tracked source, while `src/agent_governance/artifact.py::SKILL_SOURCE_FILES` omits it, so the generated Governance Skill artifact does not match canonical source inventory.
+- T060 is the controlling baseline-repair Task Contract: `docs/tasks/T060-governance-artifact-asset-completeness.md`.
+- T060 planning branch: `docs/t060-governance-artifact-asset-completeness`, created from `develop` HEAD `b439e624dff28b6f7bb3f63114f5373cc3940345`.
 
 ## Next action
 
-1. Review and integrate the T059 planning branch into `develop` through PR.
-2. Launch a fresh Executor work unit for T059 from the exact integrated `develop` revision containing the Task Contract.
-3. Require focused reference-integrity verification plus the full repository quality gate.
-4. If T059 converges green, re-enter T058 against current `develop`; do not assume the old T058 branch is directly reusable or integrable.
+1. Review and integrate T060 planning into `develop` through PR.
+2. Launch a fresh Executor work unit for T060 from the exact integrated `develop` revision containing the Task Contract.
+3. Require focused Governance artifact verification and the complete repository quality gate from a clean remote-derived worktree.
+4. If T060 converges green, return to T059 and revalidate its existing implementation against updated `develop`; do not broaden T059 scope.
+5. If T059 then converges green, perform explicit T058 re-entry/revalidation against current `develop`; do not assume the old T058 branch is directly reusable or integrable.
 
-## T059 minimum load
+## T060 minimum load
 
 1. current `develop`;
 2. `AGENTS.md`;
 3. `docs/orchestrator/CHECKPOINT.md`;
-4. `docs/tasks/T059-reference-integrity-baseline-repair.md`;
-5. `tests/_helpers.py`;
-6. `tests/test_reference_integrity.py`.
+4. `docs/tasks/T060-governance-artifact-asset-completeness.md`;
+5. `src/agent_governance/artifact.py`;
+6. `tests/test_governance_artifact.py`;
+7. canonical source asset `governance-skill/assets/REPOSITORY-BRANCH-PROTECTION.md` as read-only specification/input.
 
-## T058 re-entry minimum load after T059
+## T059 return point after T060
+
+1. branch `fix/t059-reference-integrity-baseline-repair` and current pushed HEAD;
+2. `handoffs/T059-executor-handoff.json`;
+3. current integrated `develop` including T060;
+4. revalidate focused reference-integrity and full repository gate from a clean remote-derived worktree;
+5. no semantic redesign unless new evidence exposes a T059-specific defect.
+
+## T058 re-entry minimum load after baseline recovery
 
 1. current integrated `develop` and exact HEAD;
 2. `docs/tasks/T058-chatgpt-portable-workspace-adapter.md`;
@@ -47,4 +55,4 @@ Active-Executor-Surface: none; T059 planning integration pending
 
 ## Do not
 
-Do not modify, copy, merge, clean up, or otherwise consume T058 implementation while T059/baseline verification is unresolved. Do not weaken `tests/test_reference_integrity.py` to ignore arbitrary slash-containing prose. Do not rewrite `AGENTS.md` merely to satisfy the classifier. Do not add dependencies for T059. Do not write directly to `develop` or `main`.
+Do not modify, copy, merge, clean up, or otherwise consume T058 implementation while baseline recovery is unresolved. Do not broaden T059 to fix the independent artifact-packaging defect. Do not edit the canonical branch-protection Markdown asset merely to satisfy packaging. Do not replace the artifact builder's explicit source allowlist with generalized recursive discovery under T060. Do not write directly to `develop` or `main`.
