@@ -1,52 +1,74 @@
 {
-  "schema_version": "3.0.0",
-  "capability_source_epoch": "MG1-2026-08-25-v3",
-  "presentation_revision": "MG1-T023-PRESENTATIONS-v3",
+  "schema_version": "4.0.0",
+  "capability_source_epoch": "MG1-2026-09-06-v4",
+  "presentation_revision": "MG1-T023-PRESENTATIONS-v4",
   "presentation_manifest": "evals/skill_activation_topology/presentations/manifest.json",
   "product_id": "agent-governance",
   "distribution_identity": "single-product",
+  "historical_unscheduled_candidates": [
+    "B0",
+    "B1"
+  ],
   "candidates": {
-    "B0": {
-      "name": "unified-dispatcher-baseline",
-      "entrypoints": ["agent-governance"],
-      "ambiguous_entrypoints": ["agent-governance"],
+    "B2": {
+      "name": "positive-anchor-single-router",
+      "entrypoints": [
+        "agent-governance"
+      ],
+      "ambiguous_entrypoints": [
+        "agent-governance"
+      ],
       "capability_to_entrypoints": {
-        "consumer-lifecycle": ["agent-governance"],
-        "source-maintainer": ["agent-governance"],
-        "external-skill-trust": ["agent-governance"]
-      },
-      "portable_skill_to_skill_required": false
-    },
-    "B1": {
-      "name": "thin-single-router",
-      "entrypoints": ["agent-governance-router"],
-      "ambiguous_entrypoints": ["agent-governance-router"],
-      "capability_to_entrypoints": {
-        "consumer-lifecycle": ["agent-governance-router"],
-        "source-maintainer": ["agent-governance-router"],
-        "external-skill-trust": ["agent-governance-router"]
+        "consumer-lifecycle": [
+          "agent-governance"
+        ],
+        "source-maintainer": [
+          "agent-governance"
+        ],
+        "external-skill-trust": [
+          "agent-governance"
+        ]
       },
       "portable_skill_to_skill_required": false
     },
     "F2": {
       "name": "generated-profile-peers",
-      "entrypoints": ["consumer-governance", "source-maintainer"],
+      "entrypoints": [
+        "consumer-governance",
+        "source-maintainer"
+      ],
       "ambiguous_entrypoints": [],
       "capability_to_entrypoints": {
-        "consumer-lifecycle": ["consumer-governance"],
-        "source-maintainer": ["source-maintainer"],
-        "external-skill-trust": ["consumer-governance"]
+        "consumer-lifecycle": [
+          "consumer-governance"
+        ],
+        "source-maintainer": [
+          "source-maintainer"
+        ],
+        "external-skill-trust": [
+          "consumer-governance"
+        ]
       },
       "portable_skill_to_skill_required": false
     },
     "G3": {
       "name": "hybrid-challenger",
-      "entrypoints": ["consumer-lifecycle", "source-maintainer", "external-skill-trust"],
+      "entrypoints": [
+        "consumer-lifecycle",
+        "source-maintainer",
+        "external-skill-trust"
+      ],
       "ambiguous_entrypoints": [],
       "capability_to_entrypoints": {
-        "consumer-lifecycle": ["consumer-lifecycle"],
-        "source-maintainer": ["source-maintainer"],
-        "external-skill-trust": ["external-skill-trust"]
+        "consumer-lifecycle": [
+          "consumer-lifecycle"
+        ],
+        "source-maintainer": [
+          "source-maintainer"
+        ],
+        "external-skill-trust": [
+          "external-skill-trust"
+        ]
       },
       "portable_skill_to_skill_required": false
     }

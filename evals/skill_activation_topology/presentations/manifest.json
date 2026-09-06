@@ -1,70 +1,92 @@
 {
-  "schema_version": "2.0.0",
-  "presentation_revision": "MG1-T023-PRESENTATIONS-v3",
-  "capability_source_epoch": "MG1-2026-08-25-v3",
+  "schema_version": "3.0.0",
+  "presentation_revision": "MG1-T023-PRESENTATIONS-v4",
+  "capability_source_epoch": "MG1-2026-09-06-v4",
   "encoding": "utf-8",
-  "construction_rule": "Create isolated candidate Skill directories by byte-copying the exact v3 SKILL.md sources and shared references declared here. No rewriting, synthesis, summarization, frontmatter substitution, or semantic augmentation is permitted.",
+  "construction_rule": "B2 uses the exact T061 bytes. F2, G3, and shared references are byte-identical copies of their presentations-v3 sources. No v13 challenger/reference wording may be tuned after Freeze A.",
   "byte_accounting": {
     "activation_surface_bytes": "UTF-8 byte length of each successfully host-read candidate SKILL.md; reported per trial and candidate.",
-    "loaded_reference_bytes": "UTF-8 byte sum of unique successfully host-read candidate reference files; retained as diagnostic only and not used for v3 material selection.",
-    "observed_context_bytes": "UTF-8 byte sum of unique successfully host-read candidate SKILL.md files plus unique successfully host-read candidate reference files in the trial. This candidate-sensitive host-trace measure drives v3 context comparison.",
+    "loaded_reference_bytes": "UTF-8 byte sum of unique successfully host-read candidate reference files; retained as diagnostic only.",
+    "observed_context_bytes": "UTF-8 byte sum of unique successfully host-read candidate SKILL.md files plus unique successfully host-read candidate reference files in the trial.",
     "deduplication": "Count each materialized candidate path at most once per trial, even when the host reads it repeatedly.",
     "trace_requirement": "Only successful reads of files inside the materialized candidate Skill root count. Model self-report without an observed successful host read does not count.",
     "token_claim": "Byte counts are deterministic evidence derived from host traces and must not be described as exact tokens."
   },
   "shared_references": {
-    "consumer-lifecycle": "evals/skill_activation_topology/presentations-v3/shared/consumer-lifecycle.md",
-    "source-maintainer": "evals/skill_activation_topology/presentations-v3/shared/source-maintainer.md",
-    "external-skill-trust": "evals/skill_activation_topology/presentations-v3/shared/external-skill-trust.md"
+    "consumer-lifecycle": "evals/skill_activation_topology/presentations-v4/shared/consumer-lifecycle.md",
+    "source-maintainer": "evals/skill_activation_topology/presentations-v4/shared/source-maintainer.md",
+    "external-skill-trust": "evals/skill_activation_topology/presentations-v4/shared/external-skill-trust.md"
+  },
+  "historical_unscheduled_candidates": {
+    "B0": "presentations-v3/B0",
+    "B1": "presentations-v3/B1"
   },
   "candidates": {
-    "B0": {
+    "B2": {
       "entrypoints": {
         "agent-governance": {
-          "skill_source": "evals/skill_activation_topology/presentations-v3/B0/agent-governance/SKILL.md",
-          "capabilities": ["consumer-lifecycle", "source-maintainer", "external-skill-trust"]
+          "skill_source": "evals/skill_activation_topology/presentations-v4/B2/agent-governance/SKILL.md",
+          "capabilities": [
+            "consumer-lifecycle",
+            "source-maintainer",
+            "external-skill-trust"
+          ]
         }
       },
-      "load_order": ["consumer-lifecycle", "source-maintainer", "external-skill-trust"]
-    },
-    "B1": {
-      "entrypoints": {
-        "agent-governance-router": {
-          "skill_source": "evals/skill_activation_topology/presentations-v3/B1/agent-governance-router/SKILL.md",
-          "capabilities": ["consumer-lifecycle", "source-maintainer", "external-skill-trust"]
-        }
-      },
-      "load_order": ["consumer-lifecycle", "source-maintainer", "external-skill-trust"]
+      "load_order": [
+        "consumer-lifecycle",
+        "source-maintainer",
+        "external-skill-trust"
+      ]
     },
     "F2": {
       "entrypoints": {
         "consumer-governance": {
-          "skill_source": "evals/skill_activation_topology/presentations-v3/F2/consumer-governance/SKILL.md",
-          "capabilities": ["consumer-lifecycle", "external-skill-trust"]
+          "skill_source": "evals/skill_activation_topology/presentations-v4/F2/consumer-governance/SKILL.md",
+          "capabilities": [
+            "consumer-lifecycle",
+            "external-skill-trust"
+          ]
         },
         "source-maintainer": {
-          "skill_source": "evals/skill_activation_topology/presentations-v3/F2/source-maintainer/SKILL.md",
-          "capabilities": ["source-maintainer"]
+          "skill_source": "evals/skill_activation_topology/presentations-v4/F2/source-maintainer/SKILL.md",
+          "capabilities": [
+            "source-maintainer"
+          ]
         }
       },
-      "load_order": ["consumer-lifecycle", "source-maintainer", "external-skill-trust"]
+      "load_order": [
+        "consumer-lifecycle",
+        "source-maintainer",
+        "external-skill-trust"
+      ]
     },
     "G3": {
       "entrypoints": {
         "consumer-lifecycle": {
-          "skill_source": "evals/skill_activation_topology/presentations-v3/G3/consumer-lifecycle/SKILL.md",
-          "capabilities": ["consumer-lifecycle"]
+          "skill_source": "evals/skill_activation_topology/presentations-v4/G3/consumer-lifecycle/SKILL.md",
+          "capabilities": [
+            "consumer-lifecycle"
+          ]
         },
         "source-maintainer": {
-          "skill_source": "evals/skill_activation_topology/presentations-v3/G3/source-maintainer/SKILL.md",
-          "capabilities": ["source-maintainer"]
+          "skill_source": "evals/skill_activation_topology/presentations-v4/G3/source-maintainer/SKILL.md",
+          "capabilities": [
+            "source-maintainer"
+          ]
         },
         "external-skill-trust": {
-          "skill_source": "evals/skill_activation_topology/presentations-v3/G3/external-skill-trust/SKILL.md",
-          "capabilities": ["external-skill-trust"]
+          "skill_source": "evals/skill_activation_topology/presentations-v4/G3/external-skill-trust/SKILL.md",
+          "capabilities": [
+            "external-skill-trust"
+          ]
         }
       },
-      "load_order": ["consumer-lifecycle", "source-maintainer", "external-skill-trust"]
+      "load_order": [
+        "consumer-lifecycle",
+        "source-maintainer",
+        "external-skill-trust"
+      ]
     }
   }
 }

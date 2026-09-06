@@ -1,0 +1,28 @@
+{
+  "schema_version": "1.0.0",
+  "identity": "MG1-T061-CANDIDATE-HASHES-v1",
+  "algorithm": "sha256",
+  "presentation_revision": "MG1-T023-PRESENTATIONS-v4",
+  "capability_source_epoch": "MG1-2026-09-06-v4",
+  "files": {
+    "evals/skill_activation_topology/presentations-v4/F2/consumer-governance/SKILL.md": "c8410a3f76c7ec2d29d95df178751e996ae8d405170304c136a5d7e4f9a2f204",
+    "evals/skill_activation_topology/presentations-v4/F2/source-maintainer/SKILL.md": "b2c04992fd1162afdf2b341103a4054799c2130c627e87601f3d0627cbd0c132",
+    "evals/skill_activation_topology/presentations-v4/G3/consumer-lifecycle/SKILL.md": "16259bf24f29c4b4786f4d80c1957c1b8c343a720ba6ed16c1426e77ad1e3825",
+    "evals/skill_activation_topology/presentations-v4/G3/external-skill-trust/SKILL.md": "3a5cbf42c51a2171c4024d79fcd9f819701602933ff3ba547766650d3847a685",
+    "evals/skill_activation_topology/presentations-v4/G3/source-maintainer/SKILL.md": "b2c04992fd1162afdf2b341103a4054799c2130c627e87601f3d0627cbd0c132",
+    "evals/skill_activation_topology/presentations-v4/shared/consumer-lifecycle.md": "bbd42745f1e47c41f4643cf3d456f2f0186bc96d1f2a385768d58b9f98375b10",
+    "evals/skill_activation_topology/presentations-v4/shared/external-skill-trust.md": "a4bc7bd80a6ad7377d873f69a530b0fe4d4f481414c6a3a3eeb58a3be8d70e51",
+    "evals/skill_activation_topology/presentations-v4/shared/source-maintainer.md": "80a44c1c4cf5a2134d46be38c198d4b55d244f227e012765f5bcd15b627a657d",
+    "evals/skill_activation_topology/presentations-v4/B2/agent-governance/SKILL.md": "1edc1070fc0ea65c4fe826c67cf4da89c50456f0bc0cbce61599d1ea200dc3fe"
+  },
+  "copy_equivalence": {
+    "evals/skill_activation_topology/presentations-v4/F2/consumer-governance/SKILL.md": "evals/skill_activation_topology/presentations-v3/F2/consumer-governance/SKILL.md",
+    "evals/skill_activation_topology/presentations-v4/F2/source-maintainer/SKILL.md": "evals/skill_activation_topology/presentations-v3/F2/source-maintainer/SKILL.md",
+    "evals/skill_activation_topology/presentations-v4/G3/consumer-lifecycle/SKILL.md": "evals/skill_activation_topology/presentations-v3/G3/consumer-lifecycle/SKILL.md",
+    "evals/skill_activation_topology/presentations-v4/G3/source-maintainer/SKILL.md": "evals/skill_activation_topology/presentations-v3/G3/source-maintainer/SKILL.md",
+    "evals/skill_activation_topology/presentations-v4/G3/external-skill-trust/SKILL.md": "evals/skill_activation_topology/presentations-v3/G3/external-skill-trust/SKILL.md",
+    "evals/skill_activation_topology/presentations-v4/shared/consumer-lifecycle.md": "evals/skill_activation_topology/presentations-v3/shared/consumer-lifecycle.md",
+    "evals/skill_activation_topology/presentations-v4/shared/source-maintainer.md": "evals/skill_activation_topology/presentations-v3/shared/source-maintainer.md",
+    "evals/skill_activation_topology/presentations-v4/shared/external-skill-trust.md": "evals/skill_activation_topology/presentations-v3/shared/external-skill-trust.md"
+  }
+}
