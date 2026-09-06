@@ -72,6 +72,26 @@ Prior observations allowed in v13 score: 0
 
 If the exact `0.149.0` Codex baseline cannot be realized under the already accepted native Windows envelope, Stage 6 MUST stop before acceptance calls and return for Plan & Trace re-entry rather than silently upgrading or broadening the host surface.
 
+## Stage 5 freeze record
+
+Freeze A was authored before any exact v13 acceptance prompt and remotely verified on the v13 topic branch.
+
+- `candidate_freeze_sha`: `a454091aff7bb932372a6057e2d9804f94e66320`
+- base `develop`: `af2f68590ace167947815bb93f12cce4ac2fa5f2`
+- hash algorithm: `sha256`
+- hash manifest: `evals/skill_activation_topology/candidate-hashes-v13.json`
+- B2 `agent-governance/SKILL.md`: `1edc1070fc0ea65c4fe826c67cf4da89c50456f0bc0cbce61599d1ea200dc3fe`
+- F2 `consumer-governance/SKILL.md`: `c8410a3f76c7ec2d29d95df178751e996ae8d405170304c136a5d7e4f9a2f204`
+- F2 `source-maintainer/SKILL.md`: `b2c04992fd1162afdf2b341103a4054799c2130c627e87601f3d0627cbd0c132`
+- G3 `consumer-lifecycle/SKILL.md`: `16259bf24f29c4b4786f4d80c1957c1b8c343a720ba6ed16c1426e77ad1e3825`
+- G3 `source-maintainer/SKILL.md`: `b2c04992fd1162afdf2b341103a4054799c2130c627e87601f3d0627cbd0c132`
+- G3 `external-skill-trust/SKILL.md`: `3a5cbf42c51a2171c4024d79fcd9f819701602933ff3ba547766650d3847a685`
+- shared `consumer-lifecycle.md`: `bbd42745f1e47c41f4643cf3d456f2f0186bc96d1f2a385768d58b9f98375b10`
+- shared `source-maintainer.md`: `80a44c1c4cf5a2134d46be38c198d4b55d244f227e012765f5bcd15b627a657d`
+- shared `external-skill-trust.md`: `a4bc7bd80a6ad7377d873f69a530b0fe4d4f481414c6a3a3eeb58a3be8d70e51`
+
+The F2/G3/shared v4 copies were constructed by reusing the exact v3 Git blobs, and `verify_v13_candidate_integrity.py` independently enforces both SHA-256 identity and byte equality. Freeze B is not yet recorded in this section.
+
 ## Requirement / specification delta
 
 ### ADDED — T061-R1 positive-anchor catalog applicability
