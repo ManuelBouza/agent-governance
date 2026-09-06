@@ -31,7 +31,7 @@ Stage 7 converge / accept / integrate / evolve
 
 A coherent published topic-branch candidate is sufficient authority for D068 Stage 6; no separate planning/candidate merge into `develop` is required first. D052 semantic-oracle ownership and D054 execution mechanics remain intact.
 
-A new D068-mode refactor does not launch an Executor merely to create the Stage 5 candidate. If a pre-mutation Executor characterization checkpoint is indispensable to a particular persisted task topology, that work must be explicitly grandfathered/non-D068 or otherwise governed by already accepted authority; this document does not invent a new exception to D068.
+A new D068-mode refactor does not launch an Executor merely to create the Stage 5 candidate. If safe candidate materialization depends on fresh pre-mutation execution evidence that D068's stage order does not provide, stop and persist explicit Orchestrator authority selecting an applicable accepted execution boundary before mutation; this document does not invent a pre-Stage-5 Executor exception.
 
 Any later unqualified wording in this document that assigns first-pass RF3 source mutation to the Executor or requires planning/oracle integration into `develop` before candidate materialization retains only historical/grandfathered or explicitly non-D068 scope. Historical executed Task Contracts, baselines, handoffs, reviews, and evidence are not rewritten retroactively.
 
@@ -83,7 +83,7 @@ Before structural mutation, the accepted behavior must be represented by an audi
 
 ChatGPT owns the preserved-behavior meaning and any D052 semantic characterization/oracle assets. The baseline authority is frozen before Stage 5 candidate mutation. Existing trustworthy remote test/eval evidence may be referenced when the Task Contract makes that sufficient; a new Executor pre-mutation run is not invented merely to preserve the old topology.
 
-If the Task Contract genuinely requires new pre-mutation execution evidence that only the Executor can produce before a safe candidate can be materialized, classify and persist the required non-D068/grandfathered topology explicitly rather than silently violating D068.
+If fresh pre-mutation execution evidence is required before a safe candidate can be materialized, D068 itself does not authorize inserting Executor Stage 6 before Stage 5. Stop and persist explicit Orchestrator authority for the applicable accepted execution boundary before mutation.
 
 ### Explicit grandfathered/non-D068 `executor-implementation`
 
