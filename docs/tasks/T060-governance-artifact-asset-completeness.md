@@ -14,11 +14,13 @@
 
 ## Explore / Frame
 
-T059 corrected the reference-integrity false positive and passes its focused verification, but the full repository suite still exposes one independent baseline defect in the Governance Skill artifact builder.
+T059 corrected the reference-integrity false positive and passes its focused verification, but the full repository suite exposed one independent baseline defect in the Governance Skill artifact builder.
 
-`governance-skill/assets/REPOSITORY-BRANCH-PROTECTION.md` is a tracked canonical source asset. `src/agent_governance/artifact.py` packages Skill assets through the explicit `SKILL_SOURCE_FILES` allowlist, but that allowlist omits this asset. Consequently the generated artifact does not reproduce the canonical source inventory and `tests/test_governance_artifact.py::test_repeated_builds_have_identical_verified_identity` fails.
+`governance-skill/assets/REPOSITORY-BRANCH-PROTECTION.md` is a tracked canonical source asset. `src/agent_governance/artifact.py` packages Skill assets through the explicit `SKILL_SOURCE_FILES` allowlist, but that allowlist omitted this asset. Consequently the generated artifact did not reproduce the canonical source inventory and `tests/test_governance_artifact.py::test_repeated_builds_have_identical_verified_identity` failed.
 
-This is an artifact-packaging completeness defect. The canonical Markdown asset itself is not defective and must not be edited merely to satisfy packaging.
+T060 implementation corrected that packaging defect. Its focused artifact verification is green, but its full-suite run still contains the already-known independent T059 reference-integrity failure because T059 is not yet integrated into `develop`. Requiring a completely green full suite before T060 can integrate would create a circular dependency: T059 requires T060 in `develop` for its own clean full-suite revalidation, while T060 would simultaneously require T059 already integrated.
+
+This Plan & Trace re-entry resolves that dependency without changing T060 requirements, Design, implementation scope, or artifact semantics.
 
 ## Specify
 
@@ -77,6 +79,8 @@ Do not add dependencies, introduce a generalized package-discovery mechanism, or
 5. Run focused artifact tests.
 6. Run the complete repository quality gate.
 7. Persist Code Review & Verify evidence in the T060 handoff and push the implementation branch.
+8. Converge may accept T060 with the full-suite result not green only when the sole remaining failure is exactly the pre-existing T059 reference-integrity failure, all T060-focused/static checks are green, and no other failures are present.
+9. After T060 integration, T059 MUST be rebased/revalidated against the new `develop` and must then satisfy its own full-suite acceptance criterion before T058 re-entry.
 
 Trace:
 
@@ -113,7 +117,7 @@ Executor MUST NOT:
 - **AC-T060-2:** generated asset bytes equal canonical source bytes.
 - **AC-T060-3:** repeated-build identity/inventory test passes.
 - **AC-T060-4:** existing artifact source-boundary and identity semantics remain green.
-- **AC-T060-5:** full repository quality gate passes from a clean remote-derived worktree.
+- **AC-T060-5:** full repository quality gate passes from a clean remote-derived worktree, **or** Converge records `PASS_WITH_KNOWN_T059_BASELINE` when the sole failing test is exactly `tests/test_reference_integrity.py::test_canonical_markdown_references_resolve[AGENTS.md]`, the failure is the already-persisted T059 defect, and every other T060 verification result is green.
 - **AC-T060-6:** changed paths stay within authorized scope; no Markdown, T059, or T058 files are modified by Executor.
 
 ## Verification
@@ -133,6 +137,8 @@ Before recording the full-suite result, verification must run from a clean workt
 
 The handoff must record exact base SHA, implementation HEAD, focused/full-suite results, changed paths, confirmation of source/destination byte equality for the branch-protection asset, and confirmation that no T059/T058 files were modified.
 
+The `PASS_WITH_KNOWN_T059_BASELINE` exception is narrow: it may be used only for the exact persisted T059 reference-integrity failure. Any additional or different full-suite failure remains a blocker.
+
 ## Stop / SDD re-entry conditions
 
 Stop and report `BLOCKED` if:
@@ -140,7 +146,7 @@ Stop and report `BLOCKED` if:
 - the canonical asset cannot be packaged without changing its contents or governance semantics;
 - the correct solution requires generalized artifact discovery or a dependency/configuration change;
 - the artifact identity model would need semantic redesign;
-- another independent baseline failure remains after this repair.
+- any full-suite failure other than the exact known T059 reference-integrity failure remains after this repair.
 
 ## Expected handoff
 
