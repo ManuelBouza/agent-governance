@@ -3,7 +3,7 @@
 Status: CURRENT  
 Owner: ChatGPT Orchestrator  
 Controlling decision: `docs/decisions/D057-research-decision-traceability.md`  
-Last-Registry-Review: 2026-09-05
+Last-Registry-Review: 2026-09-06
 
 ## Purpose
 
@@ -49,6 +49,7 @@ See D057 for transition semantics and required metadata for new research.
 | R013 | `docs/research/CODEX-TASK-SCOPED-COORDINATOR-CONTINUITY-RESEARCH.md` | COMPLETE | DECIDED | R006; T053; `docs/reviews/T053-R1.md`; R012; current OpenAI long-running/compaction guidance | `docs/decisions/D060-task-scoped-executor-coordinator-continuity.md` | Adopt one Human-visible Executor Coordinator Root per exact Task/Operational Contract. `NEW` at work-unit start, `CONTINUE` through normal same-task phases/rework, retire at closure, and start a new root for the next work unit. `root-2+` is failover only. Root context stays compact through durable Git pointers, concise summaries and supported compaction/fresh child contexts rather than cross-task root reuse. |
 | R014 | `docs/research/CHATGPT-GIT-WORKSPACE-AND-GITHUB-TRANSPORT-RESEARCH.md` | COMPLETE | DECIDED | workspace/GitHub experiment; `ManuelBouza/test_biblioteca` Library/GitHub round trips; full `.git` and cross-chat snapshot tests; multi-file/409 capability matrix; Library lifecycle qualification PRs `test_biblioteca#1` and `#2`; official OpenAI Library storage/retention docs checked 2026-09-05; source research PR `#291`; T058 implementation path | `docs/decisions/D066-chatgpt-portable-git-workspace-transport.md` | D066 adopts the qualified transport/lifecycle subset for ChatGPT Orchestrator source maintenance: local Git is the iterative authoring surface, Library may persist validated standalone `.git` snapshots across chats, GitHub remains canonical, remote publication is explicit/freshness-gated and may be batched, and merged snapshot GC is allowed only after verified target refresh/promotion/revalidation. Library is not a Git remote. Closed-unmerged/ambiguous state remains retained, corrupt candidates preserve current state, and the quota-pressure automatic selector and other unqualified gaps remain outside authority. |
 | R015 | `docs/research/CHATGPT-LIBRARY-WORKTREE-SIMULATOR-RESEARCH.md` | COMPLETE | DECIDED | R014; D058; `ManuelBouza/test_biblioteca` isolation/lifecycle/race qualification; PR `test_biblioteca#3`; reusable-lock appendix; real cross-chat race appendix; source research PR `#291`; T058 implementation path | `docs/decisions/D066-chatgpt-portable-git-workspace-transport.md` | D066 adopts the qualified portable cross-chat workspace subset: one writable work unit maps to one topic branch, one coordination-only GitHub lock branch with expected-HEAD CAS plus owner sentinel, one unique standalone `.git` Library snapshot, and ownership/freshness receipts. A stale lock HEAD is a fail-closed block and never an automatic retry; release requires exact current sentinel ownership/blob identity. Crash/orphan recovery, TTL/heartbeat, automatic abandoned-lock reclamation, closed-unmerged cross-chat resume, ownership transfer, automatic branch-ref retirement, unusual-ref scaling and unqualified ruleset interactions remain explicitly unresolved. |
+| R016 | `docs/research/CHATGPT-LIBRARY-ONLY-DOCUMENT-GOVERNANCE-AND-CODEX-BRIDGE-RESEARCH.md` | COMPLETE | NOT_REQUIRED | official OpenAI Library/Codex/plugin/browser docs checked 2026-09-06; disposable Library-only overwrite/identity/duplicate-path experiment; Plugin Directory discovery | none | Library-only documentary governance is feasible only with application-level immutable content objects, hash identities and append-only promotion receipts rather than Git-like in-place mutation. The tested Library surface did not expose a usable historical version chain or a qualified CAS replacement path, and duplicate requested paths are duplicate-safe renamed instead of acting as create-if-absent mutexes; therefore strict Library-only multi-chat locking is not qualified. No native first-party Codex Library mount/source was documented or discovered. Manual Library download to a Codex local folder is supported composition, and Codex desktop browser access to authenticated Library web + download is a plausible bridge that still requires direct qualification. No policy adoption is implied. |
 
 ## Live research frontier
 
@@ -115,9 +116,19 @@ R015 — ChatGPT Library worktree simulator
   stale-head loser remains blocked; no automatic retry into ownership
   exact-SHA sentinel release and post-merge feature snapshot GC adopted within the qualified boundary
   crash/orphan recovery, TTL/heartbeat, closed-unmerged cross-chat resume, ownership transfer and automatic branch-ref retirement remain unresolved
+
+R016 — Library-only documentary governance / Codex bridge
+  COMPLETE / NOT_REQUIRED
+  Library may be a canonical documentary artifact store when GitHub is intentionally excluded and ChatGPT Library itself is an approved storage location
+  immutable content objects + SHA-256 receipts + append-only promotions are the bounded design candidate
+  in-place overwrite is not an audit/history mechanism; native Library CAS/mutex is not qualified
+  strict multi-chat canonical writes require single-writer discipline, fork detection, or an approved separate coordination authority
+  Codex native Library source/mount: NOT DOCUMENTED / NOT DISCOVERED
+  manual local bridge: SUPPORTED COMPOSITION
+  Codex browser -> authenticated Library web -> download: PLAUSIBLE / NEEDS EMPIRICAL QUALIFICATION
 ```
 
-D063 qualifies the child measurement substrate only. D065 establishes delegation posture only. D066 establishes the ChatGPT Orchestrator portable Git workspace/transport boundary only. None of them adopts adaptive child compute routing, alters D055, establishes backend-served per-turn model identity, or authorizes savings claims. R007 remains separately deferred until a corrected evaluation is specified and explicitly transitioned.
+D063 qualifies the child measurement substrate only. D065 establishes delegation posture only. D066 establishes the ChatGPT Orchestrator portable Git workspace/transport boundary only. None of them adopts adaptive child compute routing, alters D055, establishes backend-served per-turn model identity, authorizes savings claims, or adopts a Library-only documentary adapter. R007 remains separately deferred until a corrected evaluation is specified and explicitly transitioned.
 
 ## Required workflow for new research
 
