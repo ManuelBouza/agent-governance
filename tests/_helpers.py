@@ -69,6 +69,7 @@ URL_SCHEMES: tuple[str, ...] = ("http://", "https://", "mailto:")
 
 MARKDOWN_LINK_RE = re.compile(r"\[(?:[^\]]*)\]\(([^)]+)\)")
 BACKTICK_PATH_RE = re.compile(r"`([^`\n]+)`")
+INLINE_COMPARISON_RE = re.compile(r"\S+\s+(?:==|!=|<=|>=)\s+\S+")
 
 SDD_TAXONOMY_SEQUENCES: frozenset[tuple[str, ...]] = frozenset(
     {
@@ -204,6 +205,8 @@ def looks_like_path(token: str) -> bool:
     if "://" in token:
         return False
     if token.startswith("#"):
+        return False
+    if INLINE_COMPARISON_RE.fullmatch(token):
         return False
     slash_separated_terms = tuple(part.strip() for part in token.split("/"))
     if slash_separated_terms in SDD_TAXONOMY_SEQUENCES:

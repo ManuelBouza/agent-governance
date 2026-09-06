@@ -115,6 +115,7 @@ def test_repeated_builds_have_identical_verified_identity(tmp_path: Path, repo_r
         "assets/CAPABILITIES.template.json",
         "assets/EXCHANGE.template.jsonl",
         "assets/MISSION.template.md",
+        "assets/REPOSITORY-BRANCH-PROTECTION.md",
         "assets/RUNBOOK-RECIPE.template.json",
         "assets/RUNBOOK.template.md",
         "assets/SKILL-APPROVAL.template.json",
@@ -133,6 +134,9 @@ def test_repeated_builds_have_identical_verified_identity(tmp_path: Path, repo_r
         and path.name != "governance-artifact-identity.schema.json"
     }
     assert generated_skill_files == expected_skill_files
+    assert (artifacts[0] / "assets" / "REPOSITORY-BRANCH-PROTECTION.md").read_bytes() == (
+        repo_root / "governance-skill" / "assets" / "REPOSITORY-BRANCH-PROTECTION.md"
+    ).read_bytes()
     assert not (artifacts[0] / "STATUS.md").exists()
     for entry in files:
         path = artifacts[0] / entry["path"]
