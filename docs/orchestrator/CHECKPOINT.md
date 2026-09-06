@@ -1,7 +1,7 @@
 # Current ChatGPT Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O233
+Checkpoint-Sequence: O234
 Canonical-Branch: `develop`  
 Current-Work-Unit: D068 documentation normalization — OBJECTIVE_COMPLETE
 Chat-Closure: WAITING_FOR_NEXT_OBJECTIVE
@@ -12,7 +12,10 @@ Active-Executor-Surface: none
 
 - The Markdown-only D068 documentation normalization objective is complete.
 - PR #320 (`docs: normalize source-maintenance guidance for D068`) was accepted and squash-merged into `develop` as `3220dc0398267826038405604cc5a10103b67298`.
-- Current source-maintenance Markdown now reflects the D068 prospective boundary for D068-mode work: ChatGPT Orchestrator owns Stages 1-5 including complete candidate materialization; the Agente de IA Ejecutor owns Stage 6 execution, diagnosis, bounded technical repair and verification; ChatGPT Orchestrator owns Stage 7 convergence, acceptance, integration and evolution.
+- PR #321 persisted checkpoint O233 and the Human Owner's successor interaction requirement separating Bootstrap from Task execution.
+- Final semantic review found one unintended expansion in `docs/REFACTORING-WORKFLOW.md`: wording that would have required classifying fresh pre-mutation evidence cases as `non-D068/grandfathered`.
+- PR #322 removes that invented classification requirement. D068 itself does not authorize inserting Executor Stage 6 before Stage 5; when safe Stage 5 materialization requires fresh pre-mutation execution evidence, work must stop and explicit Orchestrator authority must select an applicable already-accepted execution boundary before mutation.
+- Current source-maintenance Markdown reflects the D068 prospective boundary for D068-mode work: ChatGPT Orchestrator owns Stages 1-5 including complete candidate materialization; the Agente de IA Ejecutor owns Stage 6 execution, diagnosis, bounded technical repair and verification; ChatGPT Orchestrator owns Stage 7 convergence, acceptance, integration and evolution.
 - A coherent published topic-branch candidate is sufficient authority for D068 Executor verification; a separate planning/candidate merge into `develop` is not required first.
 - D052 semantic-oracle ownership, D054 execution-mechanics ownership, D060 coordinator continuity, D061/D062 branch protection/freshness rules and D065 delegation obligations remain intact.
 - Governance Core and consumer-project SDD semantics were not changed by this normalization.
@@ -20,7 +23,7 @@ Active-Executor-Surface: none
 - T058 remains closed: accepted/integrated by PR #313 and operationally closed through OP071 / PR #315; its previous Coordinator root is retired for unrelated work. Do not reopen or redesign T058.
 - D066 remains `INTENTIONAL_GAP`; orphan recovery, TTL/heartbeat, ownership transfer, closed-unmerged resume, automatic retirement / GC selection, unusual-ref canonicalization and unqualified ruleset behavior remain explicitly unresolved.
 - No executable Task Contract was created or reserved; `T061` does not exist as a result of this objective. No Executor was launched for the Markdown-only normalization.
-- The completed normalization was executed through the protected GitHub fallback surface rather than the D066 Library working plane. This does not change D068 applicability for future objectives.
+- The normalization itself used the protected GitHub fallback surface rather than the D066 Library working plane. This does not change D068 applicability for future objectives.
 
 ## Successor interaction requirement
 
@@ -29,7 +32,7 @@ For the next source-maintenance objective, the Human Owner requires the interact
 1. **Bootstrap** — load and validate only the canonical state required to start safely. Do not perform substantive objective work during this action.
 2. **Task execution** — begin only after Bootstrap has been explicitly validated, then execute the assigned objective under the authority loaded during Bootstrap.
 
-This separation is a successor-startup requirement carried by this checkpoint for the next objective. It is not a retroactive reinterpretation of prior work and does not by itself change Governance Core or consumer-project semantics.
+This requirement is durable successor-startup authority carried by this checkpoint. It is not a retroactive reinterpretation of prior work and does not by itself change Governance Core or consumer-project semantics.
 
 ## Next Chat Minimum Load
 
@@ -37,7 +40,7 @@ When the Human Owner supplies the next objective, the successor starts with Acti
 
 1. Read current `develop` identity from GitHub.
 2. Read current `AGENTS.md` from that same `develop`.
-3. Read `docs/orchestrator/CHECKPOINT.md` and verify `Checkpoint-Sequence: O233`.
+3. Read `docs/orchestrator/CHECKPOINT.md` and verify `Checkpoint-Sequence: O234`.
 4. Load only the direct controlling references required by the newly supplied objective.
 5. Verify any referenced branch/PR/handoff/Library identity before mutation.
 6. Explicitly report whether Bootstrap is valid before starting Action 2 — Task execution.
@@ -55,7 +58,7 @@ No new material objective is selected yet.
 
 ## Completion condition
 
-Satisfied. Current source-maintenance Markdown no longer contradicts D068 on Stage 5/6 ownership or D068-mode publication sequencing; T058 lifecycle truth is current; historical authority remains intact; all named D066 gaps remain explicit; no executable Task Contract or behavior was invented; PR #320 is integrated into `develop`; and this checkpoint records the resulting frontier.
+Satisfied after PR #322 integration. Current source-maintenance Markdown no longer contradicts D068 on Stage 5/6 ownership or D068-mode publication sequencing; no new non-D068/grandfathered classification rule is invented; T058 lifecycle truth is current; historical authority remains intact; all named D066 gaps remain explicit; no executable Task Contract or behavior was invented; and this checkpoint records the resulting frontier.
 
 ## Do not
 
