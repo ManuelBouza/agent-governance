@@ -1,41 +1,41 @@
 # Current ChatGPT Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O221  
+Checkpoint-Sequence: O224  
 Canonical-Branch: `develop`  
-Current-Work-Unit: T059 — reference-integrity baseline repair before T058 re-entry  
+Current-Work-Unit: T059 revalidation after T060 baseline repair  
 Chat-Closure: ACTIVE  
 Active-Executor: none  
-Active-Executor-Surface: none; T059 planning integration pending
+Active-Executor-Surface: T059 continuation pending on current `develop`
 
 ## Durable frontier
 
-- O220 closed the fully offline/self-contained Transfer Bundle delivery and left the source-maintenance frontier waiting for a Human objective.
 - Human Owner explicitly authorized continuation of the previously stopped T058 work on 2026-09-06.
-- T058's persisted Executor handoff remains `BLOCKED` on branch `feat/t058-chatgpt-portable-workspace-adapter`, branch HEAD `6ed319a1802cfd90d50d9dc95d969435c295a164`, implementation/review anchor `00134357e77f46d9cfcf82b03cedca3f386688f5`.
-- The T058 implementation reported 26 focused tests passing; its prior terminal block was the repository-wide quality gate on the then-current `develop` baseline.
-- Of the two prior baseline failures, the former governance-artifact failure is no longer represented by current `develop`.
-- One baseline defect remains material: `tests/_helpers.py::looks_like_path()` misclassifies the valid D058 comparison expression ``develop == origin/develop`` in `AGENTS.md` as a repository path, causing the canonical Markdown reference-integrity test to fail.
-- Orchestrator classified this as a deterministic harness defect rather than a reason to rewrite valid governance prose.
-- T059 is the controlling repair Task Contract: `docs/tasks/T059-reference-integrity-baseline-repair.md`.
-- T059 planning branch: `docs/t059-reference-integrity-baseline-repair`, created from `develop` HEAD `0feb43f2b367c3df351dcc55a42fd48658a0fba6`.
-- T058 is no longer Human-frozen, but its existing implementation remains `DO_NOT_COPY` / non-integrable until T059 restores the baseline and the Orchestrator performs explicit T058 re-entry/revalidation against updated `develop`.
+- T058 remains non-integrable / `DO_NOT_COPY` on branch `feat/t058-chatgpt-portable-workspace-adapter`, branch HEAD `6ed319a1802cfd90d50d9dc95d969435c295a164`, implementation/review anchor `00134357e77f46d9cfcf82b03cedca3f386688f5`.
+- T059 (`docs/tasks/T059-reference-integrity-baseline-repair.md`) corrected the reference-classifier defect on branch `fix/t059-reference-integrity-baseline-repair`; current pushed HEAD `c90df168375e2159344b161c83f1e1399f2c03dc`.
+- T059 clean-worktree revalidation previously reported 49 focused reference-integrity tests passing plus Ruff, format, code-health, and diff checks passing. Its only blocker was the independent Governance artifact packaging defect.
+- T060 corrected that packaging defect. The accepted implementation added `assets/REPOSITORY-BRANCH-PROTECTION.md` to the explicit Governance Skill artifact allowlist and added byte-equality regression coverage.
+- T060 Plan & Trace re-entry was integrated by PR #307 with the narrow `PASS_WITH_KNOWN_T059_BASELINE` convergence rule for the exact known T059 failure only.
+- T060 implementation was accepted and integrated by PR #308. Current `develop` HEAD after that integration is `b6c9c075a8db0be135ff5fe48e5452469889fe0c`.
+- Baseline recovery now returns to T059. No T059 redesign is authorized unless revalidation against current `develop` exposes a T059-specific defect.
 
 ## Next action
 
-1. Review and integrate the T059 planning branch into `develop` through PR.
-2. Launch a fresh Executor work unit for T059 from the exact integrated `develop` revision containing the Task Contract.
-3. Require focused reference-integrity verification plus the full repository quality gate.
-4. If T059 converges green, re-enter T058 against current `develop`; do not assume the old T058 branch is directly reusable or integrable.
+1. Continue T059 on branch `fix/t059-reference-integrity-baseline-repair`.
+2. Safely incorporate current canonical `develop` (`b6c9c075a8db0be135ff5fe48e5452469889fe0c`) into the T059 branch without discarding represented or unrepresented work.
+3. Re-run the T059 focused reference-integrity tests and the complete repository quality gate from a clean remote-derived worktree.
+4. Update `handoffs/T059-executor-handoff.json`, commit, and push.
+5. If T059 converges green, integrate it into `develop` through PR.
+6. Only then perform explicit T058 re-entry/revalidation against the new `develop`.
 
-## T059 minimum load
+## T059 continuation minimum load
 
-1. current `develop`;
+1. current `develop` and exact HEAD `b6c9c075a8db0be135ff5fe48e5452469889fe0c`;
 2. `AGENTS.md`;
 3. `docs/orchestrator/CHECKPOINT.md`;
 4. `docs/tasks/T059-reference-integrity-baseline-repair.md`;
-5. `tests/_helpers.py`;
-6. `tests/test_reference_integrity.py`.
+5. branch `fix/t059-reference-integrity-baseline-repair` and handoff;
+6. `tests/_helpers.py` and `tests/test_reference_integrity.py`.
 
 ## T058 re-entry minimum load after T059
 
@@ -47,4 +47,4 @@ Active-Executor-Surface: none; T059 planning integration pending
 
 ## Do not
 
-Do not modify, copy, merge, clean up, or otherwise consume T058 implementation while T059/baseline verification is unresolved. Do not weaken `tests/test_reference_integrity.py` to ignore arbitrary slash-containing prose. Do not rewrite `AGENTS.md` merely to satisfy the classifier. Do not add dependencies for T059. Do not write directly to `develop` or `main`.
+Do not modify, copy, merge, clean up, or otherwise consume T058 implementation while T059 is unresolved. Do not broaden T059 to change artifact packaging or governance semantics. Do not discard local/ambiguous work while updating the T059 branch. Do not write directly to `develop` or `main`.
