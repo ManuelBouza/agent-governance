@@ -24,14 +24,14 @@
       "git diff --check"
     ],
     "results": {
-      "focused_reference_integrity": "PASS: 49 passed in 11.51s.",
+      "focused_reference_integrity": "PASS: 49 passed in 0.87s from the clean remote-only revalidation worktree.",
       "ruff_check": "PASS: All checks passed.",
       "ruff_format": "PASS: 71 files already formatted.",
       "code_health": "PASS: complexity, dependencies, and sizes all passed.",
-      "full_suite": "FAIL: 492 passed and 1 failed in 193.62s. The independent baseline failure is tests/test_governance_artifact.py::test_repeated_builds_have_identical_verified_identity; the generated governance-core artifact omits REPOSITORY-BRANCH-PROTECTION.md while the canonical source inventory includes it.",
+      "full_suite": "FAIL: 492 passed and 1 failed in 186.00s. The independent baseline failure is tests/test_governance_artifact.py::test_repeated_builds_have_identical_verified_identity; governance-skill/assets/REPOSITORY-BRANCH-PROTECTION.md is tracked in the canonical source inventory but omitted from the generated artifact assets.",
       "diff_check": "PASS: no whitespace errors."
     },
-    "environment_note": "The first sandboxed full-suite attempt was invalid because pytest could not access its system temporary directory. The recorded full-suite result is the canonical command rerun with the required temporary-directory access.",
+    "environment_note": "Revalidation used a new detached worktree reconstructed exclusively from remote branch HEAD c12bce2350553507fd4714526f0c3eb2b891d5e8. Before verification, git status --porcelain was empty and governance-core/REPOSITORY-BRANCH-PROTECTION.md was confirmed absent and untracked. The previous worktree was not reused, reset, or deleted.",
     "network_required": true
   },
   "requirement_trace": {
@@ -46,14 +46,14 @@
     "reviewed_head_sha": "b4dde6f0b11f50700c2bbcdb731525b9fa92b7ad",
     "summary": "Reviewed the implementation against T059-R1 and preserved-path/taxonomy requirements. The comparison exemption is limited to a full token containing one of four explicit comparison operators separated by whitespace, so arbitrary slash-containing strings remain path candidates.",
     "findings": [
-      "The repository-wide quality gate retains one independent baseline failure outside T059 authorized scope."
+      "The repository-wide quality gate retains one independent governance-artifact baseline failure outside T059 authorized scope."
     ],
     "resolved_findings": [],
     "upstream_reentry_required": true,
     "upstream_reentry_stage": "Explore / Frame"
   },
   "unresolved_issues": [
-    "tests/test_governance_artifact.py::test_repeated_builds_have_identical_verified_identity fails because the generated artifact inventory does not include governance-core/REPOSITORY-BRANCH-PROTECTION.md. Correcting that independent baseline defect requires changes outside T059 authorized scope."
+    "tests/test_governance_artifact.py::test_repeated_builds_have_identical_verified_identity fails because the generated artifact does not include the tracked source asset governance-skill/assets/REPOSITORY-BRANCH-PROTECTION.md. Correcting that independent baseline defect requires changes outside T059 authorized scope."
   ],
   "scope_confirmation": {
     "markdown_changed": false,
