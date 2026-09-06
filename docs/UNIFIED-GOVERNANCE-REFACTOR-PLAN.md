@@ -8,6 +8,27 @@ Controlling decisions:
 - `docs/decisions/D050-canonical-capability-source-and-evaluated-skill-topology.md`
 - `docs/decisions/D051-single-install-self-bootstrap-and-durable-project-footprint.md`
 
+## Current source-maintenance interpretation — D068
+
+This plan predates D068 and preserves its historical planning/task topology. It MUST NOT be read as current authority for assigning source-maintenance Stage 5/6 ownership or requiring a pre-verification planning merge to `develop`.
+
+For new work explicitly operating in D068 mode:
+
+```text
+Stages 1-4  Explore / Specify / Design / Plan & Trace
+            -> ChatGPT Orchestrator
+Stage 5     Complete candidate materialization
+            -> ChatGPT Orchestrator
+Stage 6     Execute / diagnose / bounded technical repair / verify
+            -> Agente de IA Ejecutor
+Stage 7     Converge / accept / integrate / evolve
+            -> ChatGPT Orchestrator
+```
+
+A coherent complete candidate plus controlling authority published on the verified topic branch is sufficient for Executor Stage 6. A separate planning/candidate merge into `develop` is not required first. D052 semantic-oracle ownership, D054 execution-mechanics ownership, D060 coordinator continuity, D061/D062 branch protection/freshness, D065 delegation obligations, and explicit D066 gaps remain intact. D068 does not change Governance Core or consumer-project SDD semantics.
+
+The task table and phase narrative below remain historical planning records. Existing executed Task Contracts, handoffs, reviews and evidence keep their original meaning; do not retroactively relabel them as D068 work. Any future re-entry into this plan must apply current accepted source-maintenance policy prospectively.
+
 ## Purpose
 
 Convert the current Consumer-Skill-plus-planned-Maintainer-Skill architecture into one canonical Agent Governance product over one normative Core, one deterministic engine and one canonical capability source, while preserving consumer behavior, source-product governance, auditability, rollback and release isolation.
@@ -89,6 +110,8 @@ These are authored by ChatGPT on short-lived `docs/*` branches and integrated th
 Every MG change follows Markdown ownership and branch policy. No executor task may compensate for a missing Markdown gate by editing committed Markdown.
 
 ## Executor Task sequence
+
+The table below is the historical program sequence defined at the stated planning baseline. D068 does not retroactively change the authorship topology of already-executed contracts; future/unexecuted work must be revalidated against current policy before launch.
 
 | Task | Class | Result | Depends on |
 |---|---|---|---|
@@ -200,9 +223,10 @@ All tasks preserve these properties unless an explicit accepted decision changes
 - bootstrap materializes durable repository-owned Governance/state and does not require manually installed supplemental Agent Governance payload after product installation;
 - source-maintenance overlays/history/state remain outside ordinary Consumer footprints;
 - source-product Markdown remains ChatGPT-owned;
-- executor work remains non-Markdown unless repository policy is explicitly changed first;
+- D068-mode source maintenance permits ChatGPT Stage 5 complete candidate materialization, including in-scope non-Markdown artifacts, while Executor ownership begins at Stage 6 execution/diagnosis/bounded repair/verification;
 - `develop` remains the normal integration branch and `main` remains stable/release;
-- Task Contracts are integrated into `develop` before executor launch;
+- D068-mode Task Contracts/candidates are published coherently on the verified topic branch before Executor Stage 6; a separate planning/candidate merge to `develop` is not required first;
+- explicit grandfathered/non-D068 tasks retain their persisted historical publication/ownership topology;
 - generated distribution output is reproducible and non-authoritative;
 - generated entrypoints belong to one Agent Governance distribution version and are not independently versioned by default;
 - portable operation does not depend on Skill-to-Skill invocation;
