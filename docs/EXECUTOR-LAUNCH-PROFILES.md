@@ -19,21 +19,16 @@ Before the prompt itself, ChatGPT presents:
 ```text
 Executor: <active concrete executor>
 Session: NEW | CONTINUE
-Coordinator-Chat: <deterministic name when the host supports named sessions; otherwise n/a>
+Coordinator-ID: AG | <repo> | <work-unit> | root-<n>
+Host-Display-Title: <observed host-generated title when useful, otherwise n/a>
 Model: <exact recommended model available in that executor>
 Effort: <exact recommended reasoning setting>
 Rationale: <one concise sentence>
 ```
 
-For the current Codex adapter, D058/D060 require:
+The first coordinator for a work unit uses `root-1`. The same work unit normally keeps that exact governance `Coordinator-ID` for its entire lifecycle. `root-2+` is reserved for explicit same-task failover when the prior root cannot safely continue; it is not a routine fresh-context choice.
 
-```text
-Coordinator-Chat: AG | <repo> | <work-unit> | root-<n>
-```
-
-The first coordinator for a work unit uses `root-1`. The same work unit normally keeps that exact root for its entire lifecycle. `root-2+` is reserved for explicit same-task failover when the prior root cannot safely continue; it is not a routine fresh-context choice.
-
-The coordinator name is Human navigation/continuity metadata, not Task Contract authority. The Human applies the exact name through the supported host UI/session naming surface before substantive execution.
+`Coordinator-ID` is Human navigation/continuity metadata, not Task Contract authority. If the active host exposes a supported naming/rename control, apply the exact `Coordinator-ID` as the visible session title. If it does not, preserve the host-generated visible title separately as `Host-Display-Title`; a mismatch between the two is not itself a governance failure.
 
 The launch card is for the Human to configure/select the Executor session. Do not duplicate it inside the prompt unless the host has no separate model/session control and the setting must be conveyed textually.
 
@@ -164,7 +159,7 @@ Do not raise effort to compensate for an incomplete specification or missing Des
 
 ## Current adapter — Codex
 
-Research baseline: 2026-08-23; naming/session guidance revalidated 2026-09-05  
+Research baseline: 2026-08-23; naming/session guidance corrected 2026-09-06  
 Surface: ChatGPT desktop app -> Codex  
 Current host: native Windows source-maintenance workstation
 
@@ -178,7 +173,9 @@ OpenAI currently exposes the GPT-5.6 family in Codex with Sol, Terra and Luna ti
 | Complex/high-risk technical work | GPT-5.6 Sol | High | concurrency, subtle fail-closed/security, hard portability, complex Git/history, difficult diagnosis |
 | Exceptional long-horizon work | GPT-5.6 Sol | XHigh/Max only when justified | only after concrete evidence that High is insufficient |
 
-Codex currently supports explicit thread/session naming. R011 records the inspected current source surface; exact naming UI/commands remain vendor-specific and may change.
+The current Codex desktop surface used by Agent Governance has demonstrated host-generated conversation titles. Do not assume deterministic thread/session rename capability from the presence of a visible title. When a supported naming/rename surface is directly available in the active host version, the Human may align the visible title to the governance `Coordinator-ID`; otherwise the host-generated title remains separate adapter metadata.
+
+Current OpenAI Help documentation describes Codex chat titles in chat-history management, but deterministic naming/rename control is not a correctness dependency of Agent Governance.
 
 Current OpenAI long-running-agent guidance also recommends deliberate compaction and preservation of completed actions, active assumptions, IDs, tool outcomes, unresolved blockers and the next concrete goal. D060 adopts that principle only as context hygiene; vendor compaction is never correctness authority.
 
@@ -207,10 +204,11 @@ Do not force tasks into these percentages. Actual task risk and evidence control
 ```text
 Executor: Codex
 Session: NEW
-Coordinator-Chat: AG | agent-governance | TNNN | root-1
+Coordinator-ID: AG | agent-governance | TNNN | root-1
+Host-Display-Title: <host-generated title or n/a>
 Model: GPT-5.6 Sol
 Effort: Medium
-Rationale: first launch of a new bounded implementation task; this root remains the Human-visible coordinator through the complete TNNN lifecycle.
+Rationale: first launch of a new bounded implementation task; this governance root remains the coordinator through the complete TNNN lifecycle.
 ```
 
 ### Same-task R1 rework
@@ -218,7 +216,8 @@ Rationale: first launch of a new bounded implementation task; this root remains 
 ```text
 Executor: Codex
 Session: CONTINUE
-Coordinator-Chat: AG | agent-governance | TNNN | root-1
+Coordinator-ID: AG | agent-governance | TNNN | root-1
+Host-Display-Title: <same recoverable host conversation title>
 Model: GPT-5.6 Sol
 Effort: Medium
 Rationale: same Task Contract and recoverable coordinator root; reload the persisted review/current authority and continue without discarding useful task context.
@@ -227,7 +226,7 @@ Rationale: same Task Contract and recoverable coordinator root; reload the persi
 ### Same-task independent review
 
 ```text
-Human-visible root: CONTINUE AG | agent-governance | TNNN | root-1
+Human-visible root: CONTINUE Coordinator-ID AG | agent-governance | TNNN | root-1
 Freshness need: delegate a bounded fresh Verifier/Reviewer child when supported
 Do not open root-2 solely to obtain independent technical reasoning.
 ```
@@ -237,7 +236,8 @@ Do not open root-2 solely to obtain independent technical reasoning.
 ```text
 Executor: Codex
 Session: NEW
-Coordinator-Chat: AG | agent-governance | OPNNN | root-1
+Coordinator-ID: AG | agent-governance | OPNNN | root-1
+Host-Display-Title: <host-generated title or n/a>
 Model: GPT-5.6 Luna
 Effort: Low
 Rationale: this Operational Contract is a new governed work unit with its own coordinator lifecycle.
@@ -248,7 +248,8 @@ Rationale: this Operational Contract is a new governed work unit with its own co
 ```text
 Executor: Codex
 Session: NEW
-Coordinator-Chat: AG | agent-governance | TNNN | root-2
+Coordinator-ID: AG | agent-governance | TNNN | root-2
+Host-Display-Title: <host-generated title or n/a>
 Model: <minimum sufficient current model>
 Effort: <minimum sufficient effort>
 Rationale: root-1 is no longer recoverable/safe to continue; this is explicit same-task failover, not a fresh-review convenience.
@@ -259,7 +260,8 @@ Rationale: root-1 is no longer recoverable/safe to continue; this is explicit sa
 ```text
 Executor: Codex
 Session: NEW
-Coordinator-Chat: AG | agent-governance | TNNN | root-1
+Coordinator-ID: AG | agent-governance | TNNN | root-1
+Host-Display-Title: <host-generated title or n/a>
 Model: GPT-5.6 Sol
 Effort: High
 Rationale: new Task Contract with non-local ordering/fail-closed risk where extra reasoning materially reduces implementation/review risk.
@@ -287,3 +289,4 @@ Provider mapping and naming/compaction surface changes are operating-guidance up
 - https://developers.openai.com/codex/use-cases
 - https://help.openai.com/en/articles/20001354-gpt-56-in-chatgpt/
 - https://help.openai.com/en/articles/20001275/
+- https://help.openai.com/en/articles/20001333-how-to-archive-and-delete-codex-chats-in-the-chatgpt-app

@@ -9,14 +9,12 @@ Define the source-maintenance operating procedure for Human-visible Executor coo
 
 This document refines D042/D055 and the existing branch-cleanup procedure. It does not replace Task Contracts, Operational Contracts, D054 execution-mechanics ownership, or Git/GitHub as authoritative project state.
 
-## Coordinator chat identity
+## Coordinator identity
 
-For an Executor host that supports naming Human-visible sessions, every `NEW` coordinator launch gets an Orchestrator-assigned name.
-
-Current Codex convention:
+Every `NEW` coordinator launch gets an Orchestrator-assigned deterministic governance identity:
 
 ```text
-AG | <repo> | <work-unit> | root-<n>
+Coordinator-ID: AG | <repo> | <work-unit> | root-<n>
 ```
 
 Examples:
@@ -27,6 +25,10 @@ AG | agent-governance | OP067 | root-1
 ```
 
 The `<work-unit>` is the exact persisted Task Contract or Operational Contract identity.
+
+If the active host exposes a supported Human-visible session naming/rename control, apply the `Coordinator-ID` as the visible title. If it does not, retain the host-generated visible title as `Host-Display-Title`; a mismatch between that title and `Coordinator-ID` is not itself a governance failure.
+
+`Host-Display-Title` is navigation metadata only. Never use a similar-looking host title as sufficient evidence that a conversation is the intended coordinator.
 
 ## Task-scoped coordinator lifecycle
 
@@ -46,7 +48,7 @@ Fresh independent reasoning inside the same task should normally come from a bou
 ### Ordinal rule
 
 - first coordinator for the durable work unit: `root-1`;
-- normal same-task `CONTINUE`: keep the exact same coordinator name/thread;
+- normal same-task `CONTINUE`: keep the exact same governance Coordinator-ID and recoverable host conversation/thread;
 - `root-2+`: exceptional failover only when the prior root cannot safely continue;
 - never recycle an old root ordinal for a different coordinator thread;
 - never reuse a completed task's root for a different Task/Operational Contract.
@@ -57,7 +59,7 @@ Independent review, exploration, testing or a desire for a cleaner context alone
 
 When failover occurs, record the reason and do not leave the old and replacement Human-visible roots concurrently writable for the same task/worktree.
 
-The name is a Human navigation aid. If a host exposes a stable thread/session ID through a supported surface, preserve that ID as corroborating evidence when useful. Do not scrape private persistence merely to obtain it.
+The governance identity is a Human navigation aid. If a host exposes a stable thread/session ID through a supported surface, preserve that ID as corroborating evidence when useful. Do not scrape private persistence merely to obtain it.
 
 ## Coordinator context hygiene
 
@@ -85,22 +87,23 @@ D060 does not itself require a specific child topology. R012 separately controls
 
 ## Launch card
 
-For Codex and other named-session-capable adapters, the launch card is:
+The launch card is:
 
 ```text
 Executor: <host>
 Session: NEW | CONTINUE
-Coordinator-Chat: <deterministic name>
+Coordinator-ID: <deterministic governance identity>
+Host-Display-Title: <observed host title when useful, otherwise n/a>
 Model: <model>
 Effort: <reasoning setting>
 Rationale: <concise rationale>
 ```
 
-Before substantive execution, the Human or supported host session surface applies the exact `Coordinator-Chat` name.
+When a supported host naming control exists, apply the exact `Coordinator-ID` as the visible title. Otherwise do not ask the Human to perform an unsupported rename operation; retain the host title separately and continue using the governance identity.
 
-If `CONTINUE` is recommended, the Orchestrator identifies the same coordinator name. Under D060, same-task continuation is the normal rule when the matching root is safely recoverable.
+If `CONTINUE` is recommended, the Orchestrator identifies the same `Coordinator-ID` and the same recoverable host conversation/thread. Under D060, same-task continuation is the normal rule when that root is safely recoverable.
 
-If the matching root cannot be identified/recovered, use `NEW` with the next ordinal and state explicit failover rationale rather than guessing.
+If the matching root cannot be identified/recovered, use `NEW` with the next ordinal and state explicit failover rationale rather than guessing from a similar host-generated title.
 
 ## Writable workspace isolation
 
@@ -165,11 +168,12 @@ For D058/D060-governed handoffs, persist or make determinable:
 
 ```text
 coordinator_session:
-  name
+  name                    # governance Coordinator-ID
   mode
-  host_thread_id      # nullable if unsupported/unavailable
-  thread_id_reason    # when null
-  failover_reason     # nullable; required when root ordinal > 1
+  host_display_title      # nullable/optional adapter metadata
+  host_thread_id          # nullable if unsupported/unavailable
+  thread_id_reason        # when null
+  failover_reason         # nullable; required when root ordinal > 1
 workspace:
   branch
   worktree_label
@@ -178,9 +182,9 @@ workspace:
   base_sha
 ```
 
-Task-specific evidence schemas may use equivalent field names.
+Task-specific evidence schemas may use equivalent field names. Existing handoff schemas without `host_display_title` remain compatible; the field is corroborating adapter metadata, not a new acceptance dependency.
 
-A same-task rework handoff should preserve the same coordinator identity unless a documented failover occurred.
+A same-task rework handoff should preserve the same governance coordinator identity unless a documented failover occurred.
 
 ## Post-integration cleanup
 
@@ -237,26 +241,26 @@ A primary checkout with unrepresented changes or unique commits is not forcibly 
 Two simultaneous source-maintenance tasks may safely coexist as:
 
 ```text
-Coordinator-Chat: AG | agent-governance | T057 | root-1
+Coordinator-ID: AG | agent-governance | T057 | root-1
 Branch: test/t057-codex-read-only-child-requalification-v2
 Worktree: t057-read-only-child-v2
 
-Coordinator-Chat: AG | agent-governance | T058 | root-1
+Coordinator-ID: AG | agent-governance | T058 | root-1
 Branch: feat/t058-example
 Worktree: t058-example
 ```
 
-They share the repository object database and canonical remote, but not writable directories or topic branches.
+Their visible host titles may differ from these governance identities. They share the repository object database and canonical remote, but not writable directories or topic branches.
 
 Within T057 itself, a rework turn should normally continue `T057 | root-1`; it should not create `T057 | root-2` unless root-1 has a documented failover condition.
 
 ## Codex naming/continuity surface
 
-Current official Codex source inspected for R011 supports explicit thread rename/new-session naming. Current OpenAI long-running-agent guidance also supports preserving compact task-relevant state and using compaction where appropriate.
+The current Agent Governance Codex desktop surface has demonstrated host-generated chat titles. Do not infer from the existence of a title that the active host version exposes a supported deterministic rename/new-session naming control.
 
-Exact commands/UI/compaction surfaces may change and are not governance authority.
+Current official OpenAI Help documentation documents Codex chat titles as part of chat-history management but does not make deterministic rename control a governance dependency. Exact UI/session surfaces may change and are not governance authority.
 
-The Orchestrator should prefer the host's supported session-name and resume controls rather than embedding runtime thread mechanics as Task Contract semantics.
+The Orchestrator therefore preserves a deterministic `Coordinator-ID` independently of the visible `Host-Display-Title`, and uses supported resume/thread controls when available.
 
 ## Fail-closed rules
 
@@ -268,7 +272,8 @@ Do not:
 - let two writable coordinators share one worktree;
 - run two Human-visible coordinator roots concurrently for the same work unit/worktree;
 - open `root-2` merely to get an independent review or cleaner context;
-- infer a `CONTINUE` target from a similar chat title when identity is uncertain;
+- infer a `CONTINUE` target from a similar host title when identity is uncertain;
 - reuse a completed task's root for a different Task/Operational Contract;
-- treat a chat title or local path as Task Contract authority;
+- treat a host chat title or local path as Task Contract authority;
+- require an unsupported host rename merely to satisfy coordinator identity;
 - remove the task review worktree before Orchestrator convergence/integration.

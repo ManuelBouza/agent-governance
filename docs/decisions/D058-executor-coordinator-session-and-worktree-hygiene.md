@@ -26,9 +26,9 @@ The operational companion is:
 
 ### 1. Coordinator session identity
 
-Before every `NEW` launch on an Executor host that supports Human-visible session/thread naming, the Orchestrator SHALL provide a deterministic `Coordinator-Chat` value in the Human-facing launch card.
+Before every `NEW` launch, the Orchestrator SHALL assign a deterministic governance `Coordinator-ID` in the Human-facing launch card.
 
-For the current Codex adapter, use:
+Use:
 
 ```text
 AG | <repo> | <work-unit> | root-<n>
@@ -40,11 +40,11 @@ Example:
 AG | agent-governance | T057 | root-1
 ```
 
-The first Human-visible coordinator for a work unit is `root-1`. Same-work-unit `CONTINUE` keeps the same name. If a fresh session is required for the same work unit, increment the ordinal.
+The first Human-visible coordinator for a work unit is `root-1`. Same-work-unit `CONTINUE` keeps the same governance identity. If a fresh session is required for the same work unit, increment the ordinal.
 
-The Human/host applies that name through the supported UI/session naming surface before substantive task execution.
+If the active host exposes a supported Human-visible naming/rename surface, the Human/host SHOULD apply the deterministic `Coordinator-ID` as the visible session title. If the host does not expose such a supported control, the host-generated visible title is recorded/observed as `Host-Display-Title` and MUST NOT be treated as a governance nonconformance merely because it differs from `Coordinator-ID`.
 
-A session name is **navigation metadata only**. It never replaces the Task Contract, Operational Contract, branch, handoff, review, checkpoint, or Git state as authority.
+`Coordinator-ID` is **navigation/continuity metadata only**. It never replaces the Task Contract, Operational Contract, branch, handoff, review, checkpoint, or Git state as authority. `Host-Display-Title` is adapter/UI metadata only and is never authoritative.
 
 When a supported host surface exposes a stable thread/session ID, the Executor SHOULD persist it as corroborating evidence. If unavailable through a supported surface, record null/unavailable rather than inspecting private persistence merely to obtain it.
 
@@ -55,11 +55,12 @@ When a supported host surface exposes a stable thread/session ID, the Executor S
 ```text
 same work-unit
 same represented branch/workspace
-same coordinator chat identity
+same governance Coordinator-ID
+same recoverable host conversation/thread, when applicable
 context remains clean/current enough under D055
 ```
 
-If the Human cannot determine which existing chat satisfies that identity, use `NEW` rather than guessing.
+A host-generated display title may help navigation but is not sufficient identity evidence by itself. If the Human cannot determine which existing conversation/thread represents the required coordinator identity, use `NEW` rather than guessing.
 
 ### 3. Concurrent writable worktree isolation
 
@@ -84,20 +85,21 @@ Before mutation, a writable Executor must establish which checkout/worktree owns
 For D058-governed work that produces a durable handoff or Operational Contract receipt, the evidence SHALL identify:
 
 ```text
-coordinator_session.name
+coordinator_session.name          # governance Coordinator-ID
 coordinator_session.mode
 workspace.branch
 workspace.worktree_label
 workspace.isolation
 ```
 
-When a supported host surface exposes a stable thread/session ID, also persist:
+When observable through supported surfaces, evidence MAY additionally identify:
 
 ```text
+coordinator_session.host_display_title
 coordinator_session.host_thread_id
 ```
 
-If that ID is unavailable through a supported surface, record null/unavailable with a reason; do not inspect private persistence merely to obtain it.
+If either value is unavailable through a supported surface, record null/unavailable with a reason when the schema expects it; do not inspect private persistence merely to obtain it.
 
 A relative/local worktree label is sufficient. Absolute personal workstation paths are not required as canonical project evidence.
 
@@ -171,13 +173,18 @@ The Executor owns compatible Git/worktree commands under D054. Repository policy
 
 ## Codex adapter consequence
 
-Codex 0.153.4 supports explicit thread rename/new-session naming. The Orchestrator launch card for Codex therefore adds:
+The Codex desktop surface used by Agent Governance may display a host-generated chat title such as a task-summary phrase. Agent Governance MUST NOT assume that a supported deterministic rename/new-session naming control exists merely because a visible title exists.
+
+The Orchestrator launch card for Codex therefore uses:
 
 ```text
-Coordinator-Chat: AG | <repo> | <work-unit> | root-<n>
+Coordinator-ID: AG | <repo> | <work-unit> | root-<n>
+Host-Display-Title: <observed title when useful, otherwise n/a>
 ```
 
-This field supplements D055's Executor/Session/Model/Effort/Rationale fields.
+If a supported Codex naming control is directly available in the active host version, the deterministic `Coordinator-ID` SHOULD be applied as the visible title. Otherwise the host-generated title is accepted as adapter metadata and continuity is established through the governance Coordinator-ID plus represented work unit/branch/workspace/thread evidence.
+
+This replaces the earlier adapter assumption that Codex 0.153.4 necessarily exposed explicit thread rename/new-session naming in the active Human-visible surface.
 
 ## Current T057 consequence
 
@@ -188,14 +195,15 @@ Before T057:
 1. perform a bounded local hygiene operation against the current Windows checkout;
 2. retire only evidence-safe stale worktrees/branches and preserve ambiguous state;
 3. leave the primary checkout clean on current `develop`;
-4. then launch T057 in a fresh named coordinator chat and an exclusive task worktree.
+4. then launch T057 in a fresh coordinator conversation and an exclusive task worktree, preserving the deterministic governance Coordinator-ID regardless of host-generated display title.
 
 T057's scientific controls remain unchanged.
 
 ## Consequences
 
-- Human-visible Executor chats become attributable to durable work units.
-- Same-repository parallel coordinators can be distinguished and isolated.
+- Human-visible Executor conversations remain attributable to durable work units even when the host controls the visible title.
+- Same-repository parallel coordinators can be distinguished and isolated through governance identity plus represented workspace evidence.
+- Host display titles are explicitly separated from governance Coordinator-ID.
 - worktree isolation becomes an explicit concurrency safety boundary;
 - integrated branches no longer leave unexplained task worktrees as normal residue;
 - the primary checkout becomes a reliable bootstrap baseline after closure;
