@@ -49,7 +49,7 @@ See D057 for transition semantics and required metadata for new research.
 | R013 | `docs/research/CODEX-TASK-SCOPED-COORDINATOR-CONTINUITY-RESEARCH.md` | COMPLETE | DECIDED | R006; T053; `docs/reviews/T053-R1.md`; R012; current OpenAI long-running/compaction guidance | `docs/decisions/D060-task-scoped-executor-coordinator-continuity.md` | Adopt one Human-visible Executor Coordinator Root per exact Task/Operational Contract. `NEW` at work-unit start, `CONTINUE` through normal same-task phases/rework, retire at closure, and start a new root for the next work unit. `root-2+` is failover only. Root context stays compact through durable Git pointers, concise summaries and supported compaction/fresh child contexts rather than cross-task root reuse. |
 | R014 | `docs/research/CHATGPT-GIT-WORKSPACE-AND-GITHUB-TRANSPORT-RESEARCH.md` | COMPLETE | DECIDED | workspace/GitHub experiment; `ManuelBouza/test_biblioteca` Library/GitHub round trips; full `.git` and cross-chat snapshot tests; multi-file/409 capability matrix; Library lifecycle qualification PRs `test_biblioteca#1` and `#2`; official OpenAI Library storage/retention docs checked 2026-09-05; source research PR `#291`; T058 implementation path | `docs/decisions/D066-chatgpt-portable-git-workspace-transport.md` | D066 adopts the qualified transport/lifecycle subset for ChatGPT Orchestrator source maintenance: local Git is the iterative authoring surface, Library may persist validated standalone `.git` snapshots across chats, GitHub remains canonical, remote publication is explicit/freshness-gated and may be batched, and merged snapshot GC is allowed only after verified target refresh/promotion/revalidation. Library is not a Git remote. Closed-unmerged/ambiguous state remains retained, corrupt candidates preserve current state, and the quota-pressure automatic selector and other unqualified gaps remain outside authority. |
 | R015 | `docs/research/CHATGPT-LIBRARY-WORKTREE-SIMULATOR-RESEARCH.md` | COMPLETE | DECIDED | R014; D058; `ManuelBouza/test_biblioteca` isolation/lifecycle/race qualification; PR `test_biblioteca#3`; reusable-lock appendix; real cross-chat race appendix; source research PR `#291`; T058 implementation path | `docs/decisions/D066-chatgpt-portable-git-workspace-transport.md` | D066 adopts the qualified portable cross-chat workspace subset: one writable work unit maps to one topic branch, one coordination-only GitHub lock branch with expected-HEAD CAS plus owner sentinel, one unique standalone `.git` Library snapshot, and ownership/freshness receipts. A stale lock HEAD is a fail-closed block and never an automatic retry; release requires exact current sentinel ownership/blob identity. Crash/orphan recovery, TTL/heartbeat, automatic abandoned-lock reclamation, closed-unmerged cross-chat resume, ownership transfer, automatic branch-ref retirement, unusual-ref scaling and unqualified ruleset interactions remain explicitly unresolved. |
-| R016 | `docs/research/R016-MG1-V12-REFERENCE-FAMILY-REENTRY.md` | COMPLETE | EVALUATING | `docs/reviews/T023-R11.md`; `docs/reviews/T023-R12.md`; future fresh T023 reference-family evaluation | none | V12 establishes a catalog-activation precision defect in the B0/B1 single-reference family. R016 recommends a B1-derived Positive-Anchor Single Router with affirmative product applicability plus capability intent, and requires a fresh holdout before any new acceptance experiment. No topology is selected. |
+| R016 | `docs/research/R016-MG1-V12-REFERENCE-FAMILY-REENTRY.md` | COMPLETE | EVALUATING | `docs/reviews/T023-R11.md`; `docs/reviews/T023-R12.md`; `docs/reviews/T023-R13.md`; `docs/tasks/T061-mg1-v13-positive-anchor-reference-evaluation.md` | none | V12 establishes the B0/B1 catalog-activation precision defect. T061 now registers B2 as the positive-anchor single-reference design and fixes a candidate-before-holdout v13 evaluation plan. Decision remains EVALUATING until valid prospective evidence supports or rejects a topology. |
 
 ## Live research frontier
 
@@ -59,9 +59,10 @@ Current D050/T023 evaluation frontier:
 R016 — MG1 V12 reference-family overactivation re-entry
   COMPLETE / EVALUATING
   T023-R11: valid V12 blocker; B0/B1 non-qualifying
-  T023-R12: Explore/Specify complete; PASR prospective reference-family requirements fixed
-  next permitted stage: Orchestrator Design / Plan & Trace only
-  fresh holdout required before any new acceptance execution
+  T023-R12: Explore/Specify complete
+  T023-R13 + T061: Design / Plan & Trace complete; B2 and v13 evaluation identities fixed
+  next permitted stage: Orchestrator D068 Stage 5 candidate materialization only
+  exact v13 holdout prompts must not exist before remote candidate Freeze A
 ```
 
 The child-observability research line is decided:
@@ -140,7 +141,7 @@ For each new material investigation:
 3. add/update its registry row in the same Markdown change set;
 4. record sources/evidence and distinguish volatile facts from durable analysis;
 5. if empirical validation is required, set `Decision-State: EVALUATING` and link the exact Task Contract/eval/review;
-6. if a decision is accepted, update the registry to `DECIDED` and link the exact `Dxxx` authority;
+6. if a decision is accepted, update the registry to `DECIDED` and link the exact decision artifact;
 7. if deferred/rejected/superseded, persist that disposition and reason/reference;
 8. update `docs/orchestrator/CHECKPOINT.md` only when the item is part of the live frontier.
 
