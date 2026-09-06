@@ -46,15 +46,17 @@ See `docs/decisions/D017-two-skill-architecture.md`, `docs/decisions/D026-ecosys
 
 Development uses two agent roles plus the Human Owner:
 
-- **ChatGPT Orchestrator** — strategy, research synthesis, architecture/specification, work contracts, handoffs, review, source-maintenance checkpoints, and all committed Markdown (`*.md`).
-- **Agente de IA Ejecutor** — product-agnostic technical executor; OpenCode, Codex, Claude Code, Antigravity, or another compatible coding agent may fill the role. It owns authorized non-Markdown implementation, tests/evals, fixtures, and verification execution.
+- **ChatGPT Orchestrator** — strategy, research synthesis, architecture/specification, work contracts, handoffs, review, source-maintenance checkpoints, all committed Markdown (`*.md`), and, for D068-mode source maintenance, complete Stage 5 candidate materialization.
+- **Agente de IA Ejecutor** — product-agnostic technical executor; OpenCode, Codex, Claude Code, Antigravity, or another compatible coding agent may fill the role. For D068-mode source maintenance it owns Stage 6 execution, diagnosis, bounded technical repair, and verification of the published candidate.
 - **Human Owner** — final authority.
 
-No named executor product has special governance status.
+No named executor product has special governance status. D052 semantic-oracle ownership and D054 execution-mechanics ownership remain intact under D068, and D068 does not change Governance Core or consumer-project SDD semantics.
+
+For D068-mode source maintenance, ChatGPT publishes the complete coherent candidate and controlling authority on the verified topic branch before Executor verification. That published topic-branch checkpoint is sufficient verification authority; a separate planning/candidate merge to `develop` is not required first. Historical and grandfathered work retains its original persisted authority.
 
 ChatGPT source-maintenance sessions are designed to survive conversation turnover. The current orchestration frontier is persisted in `docs/orchestrator/CHECKPOINT.md`; a new ChatGPT chat can resume from current `develop` by loading `AGENTS.md`, that checkpoint, and only the minimum controlling files it references. Prior chat history is not required.
 
-See `AGENTS.md`, `docs/DEVELOPMENT-WORKFLOW.md`, `docs/ORCHESTRATOR-CHECKPOINTS.md`, and `docs/REFACTORING-WORKFLOW.md`.
+See `AGENTS.md`, `docs/DEVELOPMENT-WORKFLOW.md`, `docs/ORCHESTRATOR-CHECKPOINTS.md`, `docs/REFACTORING-WORKFLOW.md`, and `docs/decisions/D068-library-first-candidate-materialization-executor-verification-boundary.md`.
 
 ## Branch and release model
 
@@ -84,7 +86,7 @@ Project policies:
 
 Protocol source version: **1.9.0**.
 
-The Core architecture, binary agent-role model, two-Skill architecture, source change procedure, Python testing stack, testing-capability model, local development toolchain, ecosystem coexistence policy, ChatGPT Orchestrator checkpoint/chat-turnover mechanism, development/refactoring workflows, and dual-branch release model are established. The first deterministic harness task (`T001`) is READY but not yet executed, while both final executable Skills and the broader test/eval implementation remain under development.
+The live source-maintenance frontier is intentionally not duplicated in this README. `docs/orchestrator/CHECKPOINT.md` is the canonical current-state router for active/accepted work, controlling references, and the next permitted Orchestrator action. D068 is the accepted prospective Stage 5/6 boundary for source-maintenance objectives operating in that mode.
 
 Consumers should pin an immutable release or commit. `develop` is explicitly unreleased integration state; `main` is stable but a release/tag remains the preferred dependency identity once releases exist.
 
