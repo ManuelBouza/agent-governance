@@ -1,52 +1,62 @@
 # Current ChatGPT Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O232
+Checkpoint-Sequence: O233
 Canonical-Branch: `develop`  
-Current-Work-Unit: D068 documentation normalization — successor objective selected
-Chat-Closure: HANDOFF_READY
+Current-Work-Unit: D068 documentation normalization — OBJECTIVE_COMPLETE
+Chat-Closure: WAITING_FOR_NEXT_OBJECTIVE
 Active-Executor: none  
 Active-Executor-Surface: none
 
 ## Durable frontier
 
-- The Decision Implementation Convergence Audit is complete in `docs/DECISION-IMPLEMENTATION-CONVERGENCE-AUDIT.md` and integrated by PR #318.
-- Canonical `develop` after the audit is `08c5bbe740c9ddd19de1840365afe8a8f9cb84d0` before this handoff update.
-- The audit classified all accepted decisions `D001` through `D068` exactly once: `59 IMPLEMENTED`, `4 SUPERSEDED`, `4 PARTIAL`, `1 INTENTIONAL_GAP`, `0 NEEDS_WORK`.
-- The Human Owner selected the first recommended follow-up: **Markdown-only D068 documentation normalization**.
-- Exact normalization debt identified by the audit: `AGENTS.md`, `README.md`, `docs/DEVELOPMENT-WORKFLOW.md`, `docs/TASK-CONTRACTS.md`, `docs/EXECUTOR-HANDOFFS.md`, `docs/REFACTORING-WORKFLOW.md`, `docs/MAINTAINER-SKILL-CONTRACT.md`, `maintainer-skill/STATUS.md`, and `docs/UNIFIED-GOVERNANCE-REFACTOR-PLAN.md` retain blanket pre-D068 ownership or separate-planning-merge semantics.
-- `docs/decisions/D068-library-first-candidate-materialization-executor-verification-boundary.md` also contains stale T058 status text describing T058 as frozen/blocked; canonical evidence now records T058 accepted/integrated by PR #313 and operationally closed through OP071 / PR #315.
-- D068 remains prospective. Historical executed Task Contracts, reviews and handoffs must retain their original historical meaning and MUST NOT be rewritten as though D068 governed them retroactively.
-- D066 remains `INTENTIONAL_GAP`; orphan recovery, TTL/heartbeat, ownership transfer, closed-unmerged resume, automatic retirement/GC selection, unusual-ref canonicalization and unqualified ruleset behavior remain explicitly unresolved.
-- No executable Task Contract is warranted for this normalization. No `T061` is created or reserved. No Executor launch is required for Markdown-only normalization.
-- D044/D050/D051 topology/distribution re-entry is a later separate objective. Historical branch cleanup is also separate.
+- The Markdown-only D068 documentation normalization objective is complete.
+- PR #320 (`docs: normalize source-maintenance guidance for D068`) was accepted and squash-merged into `develop` as `3220dc0398267826038405604cc5a10103b67298`.
+- Current source-maintenance Markdown now reflects the D068 prospective boundary for D068-mode work: ChatGPT Orchestrator owns Stages 1-5 including complete candidate materialization; the Agente de IA Ejecutor owns Stage 6 execution, diagnosis, bounded technical repair and verification; ChatGPT Orchestrator owns Stage 7 convergence, acceptance, integration and evolution.
+- A coherent published topic-branch candidate is sufficient authority for D068 Executor verification; a separate planning/candidate merge into `develop` is not required first.
+- D052 semantic-oracle ownership, D054 execution-mechanics ownership, D060 coordinator continuity, D061/D062 branch protection/freshness rules and D065 delegation obligations remain intact.
+- Governance Core and consumer-project SDD semantics were not changed by this normalization.
+- Historical executed Task Contracts, handoffs, reviews and evidence retain their original authority and were not rewritten retroactively.
+- T058 remains closed: accepted/integrated by PR #313 and operationally closed through OP071 / PR #315; its previous Coordinator root is retired for unrelated work. Do not reopen or redesign T058.
+- D066 remains `INTENTIONAL_GAP`; orphan recovery, TTL/heartbeat, ownership transfer, closed-unmerged resume, automatic retirement / GC selection, unusual-ref canonicalization and unqualified ruleset behavior remain explicitly unresolved.
+- No executable Task Contract was created or reserved; `T061` does not exist as a result of this objective. No Executor was launched for the Markdown-only normalization.
+- The completed normalization was executed through the protected GitHub fallback surface rather than the D066 Library working plane. This does not change D068 applicability for future objectives.
+
+## Successor interaction requirement
+
+For the next source-maintenance objective, the Human Owner requires the interaction to be presented and executed as two clearly separated actions:
+
+1. **Bootstrap** — load and validate only the canonical state required to start safely. Do not perform substantive objective work during this action.
+2. **Task execution** — begin only after Bootstrap has been explicitly validated, then execute the assigned objective under the authority loaded during Bootstrap.
+
+This separation is a successor-startup requirement carried by this checkpoint for the next objective. It is not a retroactive reinterpretation of prior work and does not by itself change Governance Core or consumer-project semantics.
 
 ## Next Chat Minimum Load
 
-1. Current `develop` identity from GitHub.
-2. `AGENTS.md` from current `develop`.
-3. `docs/orchestrator/CHECKPOINT.md` from current `develop` and verify `Checkpoint-Sequence: O232`.
-4. `docs/DECISION-IMPLEMENTATION-CONVERGENCE-AUDIT.md`, especially D068 residuals and prioritized follow-up sequence.
-5. `docs/decisions/D068-library-first-candidate-materialization-executor-verification-boundary.md`.
-6. `docs/LIBRARY-FIRST-SOURCE-MAINTENANCE.md` as the already-current D068 workflow reference.
-7. Load the exact normalization target documents progressively; do not load unrelated project history.
+When the Human Owner supplies the next objective, the successor starts with Action 1 — Bootstrap:
+
+1. Read current `develop` identity from GitHub.
+2. Read current `AGENTS.md` from that same `develop`.
+3. Read `docs/orchestrator/CHECKPOINT.md` and verify `Checkpoint-Sequence: O233`.
+4. Load only the direct controlling references required by the newly supplied objective.
+5. Verify any referenced branch/PR/handoff/Library identity before mutation.
+6. Explicitly report whether Bootstrap is valid before starting Action 2 — Task execution.
+
+Do not reconstruct the frontier from prior chats or Project Memory.
 
 ## Next action
 
-1. Bootstrap a fresh successor ChatGPT Orchestrator chat under D067 and verify current GitHub state against this checkpoint before mutation.
-2. Create a short-lived Markdown-only topic branch from current `develop`.
-3. Normalize current source-maintenance instructions to D068 where they conflict: for D068-mode work, ChatGPT owns Stage 5 candidate materialization and the Executor owns Stage 6 execute/diagnose/repair/verify; the coherent topic-branch candidate is sufficient Executor authority and a separate preimplementation merge to `develop` is not mandatory in this mode.
-4. Preserve D053/D052/D054/D060/D065 semantics outside the scoped D068 refinement and preserve consumer/Governance Core semantics that D068 explicitly does not change.
-5. Correct D068's stale T058 paragraph to current canonical lifecycle truth without reopening or redesigning T058.
-6. Normalize only current-facing lifecycle/router wording where acceptance evidence is unambiguous; do not rewrite historical executed contracts/reviews/handoffs to new semantics.
-7. Preserve every named D066 unresolved gap explicitly.
-8. Review the complete Markdown diff for contradictory ownership/staging language, broken references and unintended semantic expansion; run applicable repository verification if the available surface supports it.
-9. Integrate through PR to `develop`, refresh this checkpoint, and close the objective under D067.
+No new material objective is selected yet.
+
+1. Remain `WAITING_FOR_NEXT_OBJECTIVE` under D067.
+2. When the Human Owner supplies the next objective, this completed chat must not execute it as a second objective. Produce a compact successor bootstrap carrying the exact objective and expected current Git identities.
+3. The successor must perform **Action 1 — Bootstrap**, declare the bootstrap valid or return `BOOTSTRAP_MISMATCH`, and only then enter **Action 2 — Task execution**.
+4. If D068/Library-first applies to that new objective, follow the then-current canonical D068/D066 source-maintenance instructions and available runtime capabilities rather than inferring workflow from this chat.
 
 ## Completion condition
 
-The objective is complete when current source-maintenance Markdown no longer contradicts D068 on Stage 5/6 ownership or D068-mode publication sequencing, D068 reports current T058 status accurately, historical authority remains historically intact, all D066 gaps remain explicit, no executable behavior/Task Contract was invented, the Markdown change is integrated into `develop`, and the checkpoint records the resulting frontier.
+Satisfied. Current source-maintenance Markdown no longer contradicts D068 on Stage 5/6 ownership or D068-mode publication sequencing; T058 lifecycle truth is current; historical authority remains intact; all named D066 gaps remain explicit; no executable Task Contract or behavior was invented; PR #320 is integrated into `develop`; and this checkpoint records the resulting frontier.
 
 ## Do not
 
-Do not create or reserve `T061`. Do not launch an Executor merely for Markdown normalization. Do not change Governance Core or consumer-project SDD semantics under D068. Do not retroactively rewrite historical Task Contracts, reviews or handoffs. Do not relax D052 semantic-oracle ownership, D054 execution-mechanics ownership, D060 coordinator continuity, D061/D062 branch safety or D065 delegation obligations. Do not silently close any D066 gap. Do not reopen T058. Do not start D050/T023 topology re-entry in this objective. Do not perform historical branch cleanup. Do not write directly to `develop` or `main`.
+Do not create or reserve `T061` without a newly authorized executable objective. Do not reopen T058. Do not silently close any D066 gap. Do not perform historical branch cleanup as a continuation of the completed normalization objective. Do not start D050/T023 topology re-entry unless the Human Owner selects it as a new objective. Do not execute a newly supplied objective in this predecessor chat after closure; generate the successor bootstrap under D067. Do not collapse Bootstrap and Task execution into one opaque action for the next objective.
