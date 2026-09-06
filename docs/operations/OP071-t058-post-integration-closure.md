@@ -15,7 +15,7 @@ Durable receipt anchor: `PENDING`
 
 ## Objective
 
-Complete the operational lifecycle of accepted T058 by retiring only the represented T058 implementation branch/worktrees, the T058 post-acceptance checkpoint branch, and this OP071 contract-authoring branch after exact merged-PR/head verification. Restore the primary checkout to current clean `develop == origin/develop`, publish the durable closure receipt, and only then permit retirement of the T058 coordinator root for governance purposes.
+Complete the operational lifecycle of accepted T058 by retiring only the represented T058 implementation branch/worktrees, the T058 post-acceptance checkpoint branch, this OP071 contract-authoring branch, and the accidental empty preparation branch created during OP071 authoring, after exact evidence checks. Restore the primary checkout to current clean `develop == origin/develop`, publish the durable closure receipt, and only then permit retirement of the T058 coordinator root for governance purposes.
 
 This operation is solely closure of already accepted T058. It creates no new implementation scope, does not reopen T058 acceptance, and does not authorize tracked repository-content changes.
 
@@ -34,8 +34,6 @@ coordinator: AG | agent-governance | T058 | root-1
 If T058 is no longer accepted/integrated as represented above, or if new implementation/review scope is required, stop `BLOCKED_REVIEW`.
 
 ## Coordinator profile
-
-This is attached closure of the same T058 lifecycle:
 
 ```text
 Executor: Codex
@@ -91,13 +89,24 @@ At execution time, read the merged OP071 PR named in this contract and require:
 
 If the current branch head differs from the merged PR `head_sha`, preserve it and stop `BLOCKED_REVIEW`.
 
+### Target D — empty OP071 preparation branch
+
+```text
+branch: docs/o228-op071-ready
+creation base: cdd1abb6a071291202b5d9770f63b6e0686b314b
+expected content delta from creation base: none
+associated PR: none
+```
+
+This branch was accidentally created during Orchestrator preparation and was never used for content mutation or execution. It may be retired only if the Executor verifies from canonical Git that its current remote head is still exactly `cdd1abb6a071291202b5d9770f63b6e0686b314b` and that any accessible local copy/worktree has no unique/unrepresented work. If it advanced, has a PR, or its intent/state is ambiguous, preserve it and return `BLOCKED_REVIEW` for Target D.
+
 ## Explicit exclusions
 
 The following are outside OP071 and MUST NOT be retired by this operation:
 
 - `docs/d058-host-title-capability-correction` / PR #312;
 - T059/T060 branches or worktrees;
-- any historical/backlog branch not derived from Targets A-C;
+- any historical/backlog branch not listed as Targets A-D;
 - `main` and `develop`;
 - any branch/worktree with ambiguous ownership or unique/unrepresented work.
 
@@ -113,7 +122,8 @@ Before mutation:
 - verify durable receipt publication capability to the OP071 PR before first mutation;
 - verify PR #313 and PR #314 are merged into `develop`;
 - verify the OP071 authoring PR is merged into `develop`;
-- verify each present target remote branch head equals its exact merged/reviewed PR head;
+- verify each present Target A-C remote branch head equals its exact merged/reviewed PR head;
+- verify Target D remains exactly at its recorded creation base with no content delta;
 - inspect accessible target local branches/worktrees for dirty, unique, ambiguous, or unrepresented state;
 - preserve every ambiguous/unique/unrepresented item;
 - do not use destructive reset/clean/delete as a means to satisfy hygiene.
@@ -124,10 +134,10 @@ The Executor may:
 
 - fetch/prune canonical remote refs;
 - inspect merged PR metadata, refs, worktrees, local branch heads, clean/dirty state, and commit uniqueness;
-- delete remote Targets A-C only after exact eligibility gates pass;
+- delete remote Targets A-D only after exact eligibility gates pass;
 - switch accessible checkouts away from retiring target branches;
 - remove evidence-safe T058 worktrees, including known labels above when still present and attributable;
-- delete evidence-safe local copies of Targets A-C;
+- delete evidence-safe local copies of Targets A-D;
 - prune stale worktree and remote-tracking metadata only after live surfaces are safely retired;
 - safely synchronize the designated primary checkout to current `develop == origin/develop` without discarding unrepresented work;
 - publish exactly one final durable OP071 receipt to the OP071 PR.
@@ -139,7 +149,7 @@ Do not:
 - modify/create/commit/push tracked repository content;
 - reopen, redesign, or rerun T058 implementation;
 - create a new T058 coordinator root merely for cleanup;
-- delete any branch/worktree outside Targets A-C;
+- delete any branch/worktree outside Targets A-D;
 - delete `main` or `develop`;
 - force-push or rewrite history;
 - reset/clean away local changes;
@@ -153,9 +163,7 @@ Do not:
 `DONE` requires:
 
 - PR #313, PR #314, and the OP071 PR confirmed merged into `develop`;
-- remote Target A absent;
-- remote Target B absent;
-- remote Target C absent;
+- remote Targets A-D absent;
 - all accessible T058-owned worktrees/local target branches safely absent;
 - no unrelated branch/worktree deleted;
 - designated primary checkout on `develop`, equal to current `origin/develop`, tracked clean;
@@ -177,11 +185,13 @@ CANONICAL_DEVELOP: <sha>
 PR313_BRANCH_REMOTE: ABSENT | PRESENT/<reason>
 PR314_BRANCH_REMOTE: ABSENT | PRESENT/<reason>
 OP071_BRANCH_REMOTE: ABSENT | PRESENT/<reason>
+O228_PREP_BRANCH_REMOTE: ABSENT | PRESENT/<reason>
 LOCAL_T058_BRANCH: ABSENT | RETAIN/<reason>
 T058_MAIN_WORKTREE: ABSENT | RETAIN/<reason>
 T058_REVALIDATION_WORKTREE: ABSENT | RETAIN/<reason>
 LOCAL_PR314_BRANCH: ABSENT | RETAIN/<reason>
 LOCAL_OP071_BRANCH: ABSENT | RETAIN/<reason>
+LOCAL_O228_PREP_BRANCH: ABSENT | RETAIN/<reason>
 PRIMARY_CHECKOUT: <branch> / <head> / CLEAN|DIRTY
 TRACKED_CONTENT_MUTATION: none | <unexpected>
 REVIEW_ITEMS: none | <items>
