@@ -325,29 +325,25 @@ Same-task follow-up remains `CONTINUE` when the root is recoverable.
 
 D066 supplies the workspace/transport primitives. D068 turns those primitives into the preferred working plane for candidate materialization when capabilities are available.
 
-D066 unresolved gaps remain unresolved. D068 does not invent orphan reclamation, TTL/heartbeat, ownership transfer, automatic branch retirement, unusual-ref canonicalization, or quota-driven GC.
+D066 unresolved gaps remain unresolved. D068 does not invent orphan recovery, TTL/heartbeat, ownership transfer, closed-unmerged resume, automatic retirement / GC selection, unusual-ref canonicalization, or unqualified ruleset behavior.
 
 ## Grandfathering and T058
 
-D068 is prospective.
+D068 is prospective. Historical executed Task Contracts, handoffs, reviews, and evidence retain the authority and meaning they had when executed; this decision does not rewrite them retroactively.
 
-T058 was launched under the prior D053/D065 boundary and returned a durable `BLOCKED` handoff on:
+T058 is no longer frozen or blocked. Its canonical lifecycle state is:
 
-```text
-branch: feat/t058-chatgpt-portable-workspace-adapter
-head:   6ed319a1802cfd90d50d9dc95d969435c295a164
-handoff: handoffs/T058-executor-handoff.json
-```
+- accepted and integrated by PR #313;
+- operationally closed through OP071 / PR #315;
+- its previous Coordinator root is retired for unrelated work.
 
-T058 remains **FROZEN / BLOCKED** by Human direction. D068 does not rewrite its original Task Contract, does not accept or merge its implementation, and does not automatically resume its Coordinator root.
-
-Any later T058 resume requires explicit Human direction plus Orchestrator classification of whether to continue the grandfathered contract or persist a deliberate same-task revision. No silent migration is allowed.
+D068 does not reopen or redesign T058. The historical T058 Task Contract, handoffs, reviews, and evidence remain historical records rather than being reinterpreted as if D068 governed them.
 
 ## Legacy-document precedence
 
-Existing source-maintenance documents still contain pre-D068 wording that assigns Stage 5 implementation broadly to the Executor and may require a separate preimplementation merge to `develop`.
+Current source-maintenance documentation is normalized prospectively to D068. Any preserved historical or grandfathered wording describing the earlier Stage 5/6 split or a planning-only merge to `develop` retains only its original historical scope.
 
-Until those documents are mechanically normalized, **D068 controls on direct conflict for new D068-mode source-maintenance work**. A future normalization must preserve this decision rather than reinterpret it.
+For new D068-mode source-maintenance work, D068 controls: ChatGPT owns Stage 5 complete candidate materialization; the Executor owns Stage 6 execution, diagnosis, bounded technical repair and verification; and a coherent published topic-branch candidate is sufficient authority for Executor verification without a separate planning/candidate merge to `develop`.
 
 No new executable task may rely on the old conflicting boundary without explicit grandfathered authority.
 
