@@ -8,30 +8,58 @@ Define the repository-specific workflow for restructuring `agent-governance` wit
 
 A change that intentionally changes behavior, protocol semantics, authority, compatibility, or acceptance outcomes is NOT a refactor and must use `docs/DEVELOPMENT-WORKFLOW.md` as a behavior-changing product change.
 
-D022 and `docs/DEVELOPMENT-WORKFLOW.md` provide the common contract/branch/handoff rules. This document adds the stricter characterization-baseline requirements needed for refactoring. D052 controls authorship when the characterization baseline itself is a semantic conformance oracle.
+D022 and `docs/DEVELOPMENT-WORKFLOW.md` provide the common contract/branch/handoff rules. This document adds the stricter characterization-baseline requirements needed for refactoring. D052 controls semantic-oracle ownership. D068 prospectively controls Stage 5/6 ownership and publication sequencing for refactors operating in D068 mode.
+
+## D068 refactor normalization
+
+For a new D068-mode refactor:
+
+```text
+RF0 / invariant authority / Plan & Trace
+    -> ChatGPT Orchestrator
+accepted preserved-behavior/oracle meaning
+    -> ChatGPT Orchestrator
+Stage 5 complete refactor candidate materialization
+    -> ChatGPT Orchestrator
+publish coherent candidate + authority on verified topic branch
+    -> GitHub topic branch
+Stage 6 execute frozen baseline / diagnose / bounded repair / verify
+    -> Agente de IA Ejecutor
+Stage 7 converge / accept / integrate / evolve
+    -> ChatGPT Orchestrator
+```
+
+A coherent published topic-branch candidate is sufficient authority for D068 Stage 6; no separate planning/candidate merge into `develop` is required first. D052 semantic-oracle ownership and D054 execution mechanics remain intact.
+
+A new D068-mode refactor does not launch an Executor merely to create the Stage 5 candidate. If a pre-mutation Executor characterization checkpoint is indispensable to a particular persisted task topology, that work must be explicitly grandfathered/non-D068 or otherwise governed by already accepted authority; this document does not invent a new exception to D068.
+
+Any later unqualified wording in this document that assigns first-pass RF3 source mutation to the Executor or requires planning/oracle integration into `develop` before candidate materialization retains only historical/grandfathered or explicitly non-D068 scope. Historical executed Task Contracts, baselines, handoffs, reviews, and evidence are not rewritten retroactively.
 
 ## Why this workflow
 
 Safe refactoring depends on small behavior-preserving transformations and a known-good verification baseline. Martin Fowler describes refactoring as a sequence of small behavior-preserving transformations; Google Engineering Practices similarly recommends separating refactorings from feature/bug changes and establishing tests before refactoring when coverage is missing.
 
-D052 changes **who may author part of the baseline**, not the requirement that the baseline be independently executable and accepted before structural mutation.
+D052 changes **who owns semantic baseline meaning**, not the requirement that the baseline be independently executable and accepted before structural mutation where the controlling refactor contract requires that gate. D068 changes who materializes the candidate and when the Executor enters for new D068-mode work.
 
 ## Refactor contract precondition
 
-Executable refactoring MUST NOT begin until ChatGPT has:
-1. classified the work as behavior-preserving;
-2. defined the invariants that must remain true;
-3. persisted the refactor Task Contract under `docs/tasks/`;
-4. selected the D052 `Test-Authorship-Mode` when characterization ownership is material;
-5. persisted/reviewed any required Orchestrator-owned characterization/conformance assets under `orchestrator-conformance` or `mixed`;
-6. integrated that contract/controlling decisions/required oracle assets into `develop`;
-7. launched the executor from a `develop` revision containing the contract and required frozen baseline assets.
+For D068-mode executable refactoring, ChatGPT MUST before Stage 6:
+1. classify the work as behavior-preserving;
+2. define the invariants that must remain true;
+3. persist the refactor Task Contract under `docs/tasks/`;
+4. select the D052 `Test-Authorship-Mode` when characterization ownership is material;
+5. persist/review any required Orchestrator-owned characterization/conformance assets under `orchestrator-conformance` or `mixed`;
+6. establish the accepted preserved-behavior meaning needed before mutation;
+7. materialize the complete Stage 5 refactor candidate on a verified short-lived topic branch;
+8. publish that coherent authority/candidate checkpoint to GitHub.
 
-The executor then creates the required `refactor/<slug>` topic branch from that revision.
+The Executor then uses that exact published topic branch for Stage 6 execution, diagnosis, bounded technical repair, and verification. D061/D062 freshness/protection rules remain mandatory.
 
-Markdown-only refactors are performed by ChatGPT on a topic branch, but executable characterization/verification may still be delegated through a Task Contract. D052-designated non-Markdown conformance assets remain a narrow ChatGPT exception to normal non-Markdown Executor ownership.
+Explicit grandfathered/non-D068 refactors retain any persisted preimplementation `develop` integration gate they already require.
 
-D052 is prospective. Existing T032/T021 work is grandfathered and T022 may complete under its existing contract as stated by D052.
+Markdown-only refactors are performed by ChatGPT on a topic branch. D068 does not require an Executor merely for Markdown-only verification ceremony; executable verification is delegated only when it is genuinely applicable.
+
+D052 and D068 are prospective. Existing historical work retains its original contract meaning.
 
 ## RF0 — Classify and define invariants
 
@@ -47,61 +75,51 @@ Examples:
 
 If changed behavior is desired or discovered as necessary, stop RF and use normal PD flow.
 
-## RF1 — Characterization baseline checkpoint
+## RF1 — Characterization baseline authority
 
-Before structural mutation, the accepted behavior must be represented by a remotely auditable characterization baseline.
+Before structural mutation, the accepted behavior must be represented by an auditable characterization baseline or equivalent preserved-behavior authority sufficient for the selected SDD/refactor profile.
 
-### `executor-implementation`
+### D068 mode
 
-When the Task Contract assigns characterization authorship to the Executor, the Agente de IA Ejecutor MUST:
-1. identify existing tests/evals that characterize the behavior;
-2. add focused characterization tests/evals when material behavior is insufficiently covered;
-3. execute the relevant suite against the pre-refactor state;
-4. establish a green or explicitly isolated baseline;
-5. persist the baseline evidence at the Task Contract-specified path, normally `handoffs/TNNN-rf1-baseline.json` when a separate checkpoint is required;
-6. commit and push the baseline checkpoint to the remote refactor branch;
-7. return only a minimal `PARTIAL` pointer to ChatGPT.
+ChatGPT owns the preserved-behavior meaning and any D052 semantic characterization/oracle assets. The baseline authority is frozen before Stage 5 candidate mutation. Existing trustworthy remote test/eval evidence may be referenced when the Task Contract makes that sufficient; a new Executor pre-mutation run is not invented merely to preserve the old topology.
+
+If the Task Contract genuinely requires new pre-mutation execution evidence that only the Executor can produce before a safe candidate can be materialized, classify and persist the required non-D068/grandfathered topology explicitly rather than silently violating D068.
+
+### Explicit grandfathered/non-D068 `executor-implementation`
+
+When persisted authority assigns pre-refactor characterization authorship/execution to the Executor, the Agente de IA Ejecutor MUST follow that contract, including identifying/adding focused characterization coverage, executing the pre-refactor suite, persisting the baseline artifact, and publishing the required checkpoint before structural mutation.
 
 ### `orchestrator-conformance` / `mixed`
 
 When the refactor preserves semantics primarily defined by ChatGPT-owned normative content, ChatGPT owns the required semantic characterization/oracle assets designated by D052 and `docs/CONFORMANCE-ORACLE-CONTRACT.md`.
 
-Preferred sequence:
+For D068 mode the normalized sequence is:
 
 ```text
-ChatGPT invariant contract
-    -> required characterization/oracle assets
-    -> review/integrate into develop
-    -> Executor refactor branch from that exact baseline
-    -> Executor supplementary technical characterization as useful
-    -> Executor executes complete pre-refactor baseline
-    -> persisted RF1 evidence
-    -> ChatGPT baseline acceptance
+ChatGPT invariant contract + semantic oracle meaning
+    -> freeze accepted preserved-behavior authority
+    -> ChatGPT Stage 5 refactor candidate
+    -> publish coherent candidate checkpoint
+    -> Executor Stage 6 executes frozen baseline + supplementary technical checks
+    -> persisted verification/repair evidence
+    -> ChatGPT convergence acceptance
 ```
 
-The Executor remains responsible for execution, harness/environment mechanics, measurements/evidence and useful supplementary implementation/property/fuzz/edge-case characterization. It MUST NOT silently redefine expected outcomes, remove semantic negative controls, or change accepted baseline meaning.
+The Executor remains responsible for Stage 6 execution, harness/environment mechanics, measurements/evidence and useful supplementary technical characterization. It MUST NOT silently redefine expected outcomes, remove semantic negative controls, or change accepted baseline meaning.
 
 A suspected semantic oracle defect uses the D052 `ORACLE_DEFECT` boundary. Purely mechanical correction is allowed only when the Task Contract/durable Orchestrator revision explicitly authorizes that correction class.
 
 ### Common RF1 evidence
 
-Regardless of authorship mode, the baseline artifact must identify the task/refactor unit, branch, pushed HEAD/base, commands, results, relevant tests/evals/oracle identity, and any isolated pre-existing failures.
-
-If the existing baseline is already complete and no Executor-owned test/eval files need to change, the Task Contract may allow the same refactor branch to persist only the baseline execution evidence before RF3.
+When the controlling contract requires a persisted RF1 evidence artifact, it identifies the task/refactor unit, branch, pushed HEAD/base, commands, results, relevant tests/evals/oracle identity, and any isolated pre-existing failures.
 
 ### Baseline acceptance gate
 
-ChatGPT reviews the pushed RF1 checkpoint through GitHub together with the controlling invariant contract and any D052 oracle identity.
+ChatGPT accepts/fixes the preserved-behavior meaning before Stage 5 structural mutation. Once accepted, the baseline meaning is frozen for that refactor unit.
 
-RF3 MUST NOT begin until ChatGPT accepts the characterization baseline. Once accepted, the baseline meaning is frozen for that refactor unit.
+The Executor cannot weaken, remove, or reinterpret the accepted baseline during Stage 6 unless ChatGPT explicitly authorizes a semantic correction through re-entry.
 
-ChatGPT may persist an explicit baseline-acceptance/review note or Task Contract/oracle lifecycle metadata. The executor cannot weaken, remove, or reinterpret the accepted baseline after RF3 starts unless ChatGPT explicitly authorizes a correction.
-
-If baseline verification is failing:
-- resolve the failure as separate work; or
-- explicitly isolate a known unrelated failure before RF3.
-
-Never hide a defect inside the refactor.
+If baseline semantics are ambiguous or known failing behavior cannot be isolated safely, resolve that as separate work or classify the objective outside D068/refactor mode rather than hiding a defect inside the refactor.
 
 ## RF2 — Atomic refactor contract
 
@@ -120,42 +138,49 @@ Do not mix feature work, bug fixes, protocol behavior changes, dependency upgrad
 
 If decomposition changes materially after execution starts, ChatGPT persists an explicit Task Contract revision before work continues.
 
-## RF3 — Apply refactor
+## RF3 — Apply refactor candidate
 
-### Executable/configuration/test infrastructure refactor
+### D068 executable/configuration/test-infrastructure refactor
 
-The Agente de IA Ejecutor performs the authorized non-Markdown refactor after RF1 acceptance, except that it does not semantically modify ChatGPT-owned D052 oracle assets without persisted authorization.
+ChatGPT Orchestrator materializes the complete authorized non-Markdown refactor candidate during Stage 5, including source/config/test changes required by the approved refactor Design/Plan. D052 semantic-oracle meaning remains separately protected.
+
+The Executor does not recreate that candidate. During Stage 6 it may make bounded technical repairs only when they preserve the approved refactor semantics/Design and frozen behavior baseline.
+
+### Explicit grandfathered/non-D068 executable refactor
+
+Where a historical or persisted contract explicitly assigns first-pass source mutation to the Executor, preserve that authority for that work only. Do not generalize it to new D068-mode tasks.
 
 ### Markdown/instruction refactor
 
-ChatGPT performs the committed Markdown refactor. The Agente de IA Ejecutor may execute the frozen deterministic/eval verification when delegated.
+ChatGPT performs the committed Markdown refactor. The Agente de IA Ejecutor may execute frozen deterministic/eval verification when genuinely delegated as Stage 6 work.
 
 No named executor product has special authority.
 
 ## RF4 — Verify and persist final handoff
 
-After each atomic refactor unit, the executor runs:
+For D068-mode executable refactors, the Executor runs against the published Stage 5 candidate:
 - the frozen RF1 characterization/regression baseline, including any Orchestrator-owned D052 conformance assets;
 - any additional non-contract-changing checks required by the Task Contract;
-- useful Executor-owned supplementary technical checks added during implementation when applicable.
+- useful supplementary technical checks;
+- affected verification again after any bounded technical repair.
 
 Required result: the same behavior contract remains satisfied.
 
 Failure routing:
-- implementation regression -> executor fixes within the frozen contract;
-- genuine baseline/test/oracle defect -> stop and return to ChatGPT before changing baseline meaning;
+- technical implementation regression -> Executor may repair within the frozen contract and rerun affected verification;
+- genuine baseline/test/oracle semantic defect -> stop and return to ChatGPT before changing baseline meaning;
 - ambiguity over intended behavior -> stop and return to ChatGPT;
 - discovered need for changed behavior -> terminate RF and return to PD0.
 
-After verification, the executor persists the final `handoffs/TNNN-executor-handoff.json`, commits its authorized implementation/technical-test/handoff changes, and pushes the final refactor branch according to `docs/EXECUTOR-HANDOFFS.md`.
+After verification, the Executor persists the final `handoffs/TNNN-executor-handoff.json`, commits its authorized Stage 6 repair/test/handoff changes, and pushes the final refactor branch according to `docs/EXECUTOR-HANDOFFS.md`.
 
 Never change the baseline merely because the new implementation prefers different behavior.
 
-For higher-risk refactors ChatGPT MAY request rerun by a fresh executor session or a second compatible executor product. This remains the same logical executor role.
+For higher-risk refactors ChatGPT MAY request rerun by a fresh Executor session or a second compatible Executor product. This remains the same logical Executor role.
 
 ## RF5 — Orchestrator remote structural review
 
-ChatGPT reviews the pushed branch, accepted baseline/oracle, final executor handoff, and actual diff.
+ChatGPT reviews the pushed branch, accepted baseline/oracle, final Executor handoff, and actual diff.
 
 Check at minimum:
 - behavior remained stable;
@@ -164,7 +189,7 @@ Check at minimum:
 - duplication/indirection did not merely move;
 - public compatibility did not change accidentally;
 - complexity/coupling improved or stayed controlled;
-- Markdown/D052-oracle/Executor write boundaries were respected;
+- D068/D052/Markdown/Executor ownership boundaries were respected;
 - verification is green or all exceptions are explicitly understood;
 - branch/PR target complies with `docs/BRANCHING.md`.
 
@@ -172,7 +197,7 @@ Green tests alone are not acceptance authority.
 
 ## RF6 — PR and integrate
 
-Only after RF5 acceptance does ChatGPT normally create/review the PR from `refactor/<slug>` to `develop`.
+Only after RF5 acceptance does ChatGPT normally create/review the PR from the refactor topic branch to `develop`.
 
 Prefer squash merge for one coherent refactor unit. Each accepted unit must leave the repository working and reversible.
 
@@ -185,12 +210,14 @@ Because much of Governance Core is Markdown, structural wording moves can alter 
 For Core Markdown:
 - ChatGPT owns every wording/structure edit;
 - semantic invariants are explicit before editing;
-- under D052, ChatGPT also owns designated semantic conformance/characterization cases when those cases encode the accepted meaning being preserved;
+- under D052, ChatGPT also owns designated semantic conformance/characterization meaning when those cases encode the accepted meaning being preserved;
 - deterministic reference/layout checks and focused agent evals are used where appropriate;
-- the Executor independently executes delegated executable verification and may add supplementary technical/adversarial coverage;
+- the Executor independently executes delegated executable verification and may add supplementary technical/adversarial coverage inside Stage 6 authority;
 - moving normative rules must preserve authority, routing, direct references, and progressive-loading behavior;
 - if wording changes interpretation, classify it as a protocol change rather than refactor.
 
+D068 does not change Governance Core or consumer-project SDD semantics merely because the source repository uses this maintenance workflow.
+
 ## Core invariant
 
-Refactor safety comes from a ChatGPT-owned invariant contract plus a remotely auditable pre-change characterization baseline whose semantic meaning cannot be silently moved after structural mutation begins. D052 determines authorship of the semantic oracle; the Executor remains responsible for independent execution and technical exploration.
+Refactor safety comes from a ChatGPT-owned invariant contract plus an auditable frozen preserved-behavior baseline whose semantic meaning cannot be silently moved after structural mutation begins. In D068 mode ChatGPT materializes the complete candidate, the Executor independently executes/diagnoses/bounded-repairs/verifies it, and ChatGPT retains final convergence/acceptance/integration authority.
