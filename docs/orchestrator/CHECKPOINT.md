@@ -1,35 +1,42 @@
 # Current ChatGPT Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O229  
+Checkpoint-Sequence: O230  
 Canonical-Branch: `develop`  
-Current-Work-Unit: T058 operationally closed; next source-product work unit not yet selected  
-Chat-Closure: ACTIVE  
+Current-Work-Unit: Decision Implementation Convergence Audit for D001-D068 — successor objective selected  
+Chat-Closure: HANDOFF_READY  
 Active-Executor: none  
 Active-Executor-Surface: none
 
 ## Durable frontier
 
-- T058 (`docs/tasks/T058-chatgpt-portable-workspace-adapter.md`) is accepted and integrated by PR #313.
-- Final T058 branch HEAD before integration: `75b2aa43481100827eef8a9912199e787754e95c`.
-- Final T058 verification reported 31 focused tests passing and the complete repository suite passing with 524 tests.
-- PR #314 integrated checkpoint O227 after T058 acceptance.
-- OP071 (`docs/operations/OP071-t058-post-integration-closure.md`) was integrated by PR #315 as T058 `ATTACHED_CLOSURE` authority.
-- OP071 durable receipt on PR #315 reports `DONE` with canonical develop `a175f6076558ba3618c2dc077cd57bd82a3162ed`, remote Targets A-E absent, all accessible T058 target local branches/worktrees absent, primary checkout `develop / a175f6076558ba3618c2dc077cd57bd82a3162ed / CLEAN`, no tracked-content mutation, and no review items.
-- Orchestrator independently verified the durable receipt directly from GitHub and confirmed canonical `develop` remains `a175f6076558ba3618c2dc077cd57bd82a3162ed` after OP071.
-- T058 governance Coordinator-ID `AG | agent-governance | T058 | root-1` is now eligible for retirement; do not reuse that root for another work unit.
-- Historical branch `docs/o225-t058-reentry` still exists remotely. It was not an OP071 target and therefore remains outside T058 attached-closure deletion authority. Preserve it until separately classified by explicit repository authority; do not infer deletion from its name/history alone.
-- PR #312 / `docs/d058-host-title-capability-correction` also remained explicitly outside OP071 scope.
+- T058 (`docs/tasks/T058-chatgpt-portable-workspace-adapter.md`) is accepted, integrated by PR #313, operationally closed through OP071 / PR #315, and its governance Coordinator-ID `AG | agent-governance | T058 | root-1` is retired for unrelated work.
+- O229 recorded T058 closure and left the repository waiting for the Human Owner to select the next source-product objective.
+- The Human Owner has now selected the next objective: perform a **Decision Implementation Convergence Audit** over accepted decisions `D001` through `D068`.
+- The audit objective is to classify every decision exactly once as `IMPLEMENTED`, `SUPERSEDED`, `PARTIAL`, `INTENTIONAL_GAP`, or `NEEDS_WORK`, using current `develop` as authority and tracing each classification to concrete repository evidence.
+- The audit MUST distinguish normative acceptance from implementation/materialization. The absence of a later Task Contract is not evidence that a decision is implemented.
+- Known evidence that justifies the audit includes: D068 explicitly states that pre-D068 source-maintenance documents still require mechanical normalization; D068 also preserves unresolved D066 gaps rather than closing them.
+- No `T061` exists on current `develop`. The audit is an Orchestrator Explore/Frame objective first; it must not invent implementation tasks before the decision-to-implementation matrix is established.
+- Historical branch cleanup, including `docs/o225-t058-reentry`, remains outside this audit objective unless a decision classification requires citing its existence as evidence. Do not delete historical branches under this objective.
+
+## Next Chat Minimum Load
+
+1. Current `develop` identity from GitHub.
+2. `AGENTS.md` from current `develop`.
+3. `docs/orchestrator/CHECKPOINT.md` from current `develop` and verify `Checkpoint-Sequence: O230`.
+4. Inventory `docs/decisions/` on current `develop` and confirm the accepted decision range through `D068`.
+5. Inventory `docs/tasks/` on current `develop` and confirm the current Task Contract range through `T060`.
+6. Load individual decisions and implementation evidence progressively as the audit requires; do not rely on predecessor chat history as authority.
 
 ## Next action
 
-1. Treat T058 as fully implementation-complete and operationally closed.
-2. Retire the Human-visible T058 coordinator root for governance purposes; do not continue it for unrelated work.
-3. Bootstrap the next chat/work unit from current `develop` and this checkpoint.
-4. Select the next source-product work unit from current repository authority only (task/decision/operation state on `develop`), not from prior chat memory.
-5. Before any executable launch, apply the normal SDD/D055/D058 rules and use a fresh coordinator root unless an integrated contract explicitly authorizes continuation.
-6. Classify residual historical branches such as `docs/o225-t058-reentry` only through explicit branch-cleanup authority; do not fold backlog cleanup into the next source-product task.
+1. Bootstrap a fresh successor ChatGPT Orchestrator chat under D067 and verify current GitHub state against this checkpoint before substantive work.
+2. Perform the Decision Implementation Convergence Audit for `D001`-`D068`.
+3. Produce a repository-evidence-backed classification matrix with exactly one terminal classification per decision: `IMPLEMENTED | SUPERSEDED | PARTIAL | INTENTIONAL_GAP | NEEDS_WORK`.
+4. For every non-`IMPLEMENTED` decision, identify the exact residual delta, conflicting/superseding authority when applicable, and whether follow-up should be documentation normalization, executable implementation, explicit gap retention, or no action.
+5. Synthesize the minimal prioritized follow-up work units from the matrix. Do not assume the first follow-up must be named `T061` until the audit establishes that an executable Task Contract is warranted.
+6. Persist the audit/convergence outcome and refresh this checkpoint before closing the successor objective.
 
 ## Do not
 
-Do not reopen or redesign T058 absent new concrete evidence. Do not reuse `AG | agent-governance | T058 | root-1` for another task. Do not broaden the completed OP071 authority into historical/backlog deletion. Do not delete `docs/o225-t058-reentry` or `docs/d058-host-title-capability-correction` by inference. Do not discard ambiguous/unique/unrepresented local state. Do not write directly to `develop` or `main`.
+Do not reopen or redesign T058 absent new concrete evidence. Do not reuse `AG | agent-governance | T058 | root-1`. Do not infer that all accepted decisions are implemented merely because no later Task Contract exists. Do not silently close D066 gaps. Do not treat D068's prospective precedence as equivalent to completed mechanical normalization. Do not fold historical branch cleanup into the audit. Do not discard ambiguous/unique/unrepresented local state. Do not write directly to `develop` or `main`.
