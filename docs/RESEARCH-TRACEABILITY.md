@@ -141,7 +141,7 @@ For each new material investigation:
 3. add/update its registry row in the same Markdown change set;
 4. record sources/evidence and distinguish volatile facts from durable analysis;
 5. if empirical validation is required, set `Decision-State: EVALUATING` and link the exact Task Contract/eval/review;
-6. if a decision is accepted, update the registry to `DECIDED` and link the exact decision artifact;
+6. if a decision is accepted, update the registry to `DECIDED` and link the exact `Dxxx` authority;
 7. if deferred/rejected/superseded, persist that disposition and reason/reference;
 8. update `docs/orchestrator/CHECKPOINT.md` only when the item is part of the live frontier.
 
