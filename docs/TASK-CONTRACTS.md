@@ -14,28 +14,40 @@ Under accepted D053, Task Contracts are also the normal source-product `Plan & T
 
 - ChatGPT Orchestrator authors and revises Task Contract Markdown.
 - ChatGPT owns native SDD Explore/Frame, Specify, Design, Plan & Trace, and Converge/Accept/Evolve semantics.
-- Under D052-designated `orchestrator-conformance` or `mixed` work, ChatGPT may also author the narrowly scoped non-Markdown conformance/oracle assets that directly encode approved acceptance semantics.
+- For D068-mode source maintenance, ChatGPT also owns Stage 5 complete candidate materialization.
+- Under D052-designated `orchestrator-conformance` or `mixed` work, ChatGPT owns the semantic conformance/oracle assets that directly encode approved acceptance semantics.
 - The Agente de IA Ejecutor reads Task Contracts as authoritative execution scope and MUST NOT edit them.
-- The Agente de IA Ejecutor owns only the technical `Implement` and `Code Review & Verify` stages for authorized executor-owned work.
+- For D068-mode work, the Agente de IA Ejecutor owns Stage 6 execution, diagnosis, bounded technical repair, Code Review & Verify, and verification evidence for the published candidate.
 - The Human Owner retains final authority.
 
 A chat/terminal prompt is only a pointer to a Task Contract. It is not the canonical task specification.
 
-## D053 native SDD contract invariant
+### D068 prospective source-maintenance normalization
 
-Every new or materially revised executable Task Contract receives proportionate SDD coverage using `COMPACT`, `STANDARD`, or `ASSURED`.
-
-The Task Contract must make the applicable chain durable enough to reconstruct from Git:
+For new D068-mode source-maintenance work, this document uses the following effective chain:
 
 ```text
 Human/product intent
     -> current specification carrier + requirement/spec delta
     -> Orchestrator Design
     -> Plan & Trace / Task Contract
-    -> Executor implementation
-    -> Executor Code Review & Verify evidence
-    -> Orchestrator Converge / Accept / Evolve
+    -> Orchestrator complete Stage 5 candidate
+    -> coherent candidate + authority published on verified topic branch
+    -> Executor Stage 6 execution / diagnosis / bounded repair / verification
+    -> Orchestrator Converge / Accept / Integrate / Evolve
 ```
+
+A coherent published topic-branch checkpoint containing the controlling Task Contract/Plan, applicable D052 semantic oracle assets, and complete candidate is sufficient authority for Executor verification. D068-mode work does **not** require a separate planning/candidate merge into `develop` first.
+
+Any later unqualified wording in this document that says the Executor owns D068 Stage 5 first-pass implementation, that a Task Contract/oracle must first be merged into `develop`, or that an Executor topic branch can exist only after such a merge retains only explicit historical/grandfathered or non-D068 scope. Historical executed Task Contracts, handoffs, reviews, and evidence are not rewritten retroactively.
+
+D052 semantic-oracle ownership, D054 execution-mechanics ownership, D060 coordinator continuity, D061/D062 branch protection and freshness, D065 delegation obligations, and the explicit D066 gaps remain intact. D068 does not change Governance Core or consumer-project SDD semantics.
+
+## D053 native SDD contract invariant
+
+Every new or materially revised executable Task Contract receives proportionate SDD coverage using `COMPACT`, `STANDARD`, or `ASSURED`.
+
+The Task Contract must make the applicable authority and evidence chain durable enough to reconstruct from Git. For D068-mode work the chain is the normalized sequence above; explicit grandfathered/non-D068 contracts retain their original persisted execution topology.
 
 Material requirement deltas use `ADDED / MODIFIED / REMOVED / PRESERVED`. `PRESERVED` is the normal way to make non-regression/zero-drift behavior first-class for refactors, fixes, migrations and security hardening.
 
@@ -45,20 +57,21 @@ The contract is not READY if the executor would need to invent missing normative
 
 ## Executor process autonomy invariant
 
-Task Contracts define **what must be delivered, the complete controlling Design/Plan boundary, and what evidence must exist**. They do not normally define **how the executor must organize its private implementation/review process**.
+Task Contracts define **what must be delivered, the complete controlling Design/Plan boundary, the candidate to be verified when D068 applies, and what evidence must exist**. They do not normally define **how the executor must organize its private Stage 6 process**.
 
-Under D041 as refined by D053, the Agente de IA Ejecutor may independently choose and compose any compatible executor-native methods and capabilities needed inside native SDD stages 5-6, including direct work, private/internal planning, private SDD/specification workflows, sub-agents/workers, Skills, code-graph/navigation tools, testing/review helpers, or other mechanisms.
+Under D041/D054 as refined by D068 for source maintenance, the Agente de IA Ejecutor may independently choose and compose compatible executor-native methods and capabilities needed inside its authorized execution/diagnosis/repair/verification work, including direct work, private/internal planning, private SDD/specification workflows, sub-agents/workers, Skills, code-graph/navigation tools, testing/review helpers, or other mechanisms.
 
 ```text
 Task Contract = specification + Design + Plan/Trace + scope + acceptance + evidence
-Executor       = local implementation process + technical Code Review & Verify process
+D068 candidate = complete Orchestrator-materialized Stage 5 repository state
+Executor       = Stage 6 execution + diagnosis + bounded repair + technical review/verification process
 ```
 
 Executor-private planning/SDD state is not a second authoritative Design or Plan. If an executor-side choice would materially change approved requirements, architecture/interfaces/state/data flow/trust boundaries, compatibility/migration, failure behavior, acceptance meaning or task decomposition, the executor stops and reports a re-entry condition rather than silently deciding it.
 
-D052 adds a material ownership boundary, not an executor methodology: when the Task Contract selects `orchestrator-conformance` or `mixed`, the approved conformance oracle is pre-authored by ChatGPT and the executor must execute rather than semantically redefine it. The executor remains free to choose its implementation/testing/review process and to add supplementary technical coverage.
+D052 adds a material semantic-ownership boundary, not an executor methodology: when the Task Contract selects `orchestrator-conformance` or `mixed`, the approved conformance oracle is owned by ChatGPT and the executor must execute rather than semantically redefine it. D068 permits ChatGPT to materialize candidate implementation/regression/integration tests during Stage 5; the executor may add/correct technical coverage during Stage 6 only inside approved semantics/Design.
 
-ChatGPT MUST NOT prescribe executor-specific agent types, delegation topology, private SDD routing, internal planning structure, or tool selection unless the method itself is material to an accepted safety/security/reproducibility/ownership requirement or to the requested product behavior.
+ChatGPT MUST NOT prescribe executor-specific agent types, delegation topology, private SDD routing, internal planning structure, or tool selection unless the method itself is material to an accepted safety/security/reproducibility/ownership requirement or to the requested product behavior. D065 still requires materially separable Stage 6 work to be delegated when its positive triggers hold and no anti-trigger dominates.
 
 Likewise, review MUST NOT require the executor's private orchestration trace unless a particular process artifact was explicitly part of the persisted deliverable/evidence contract. Governance evaluates remote Git state, persisted handoff, Code Review & Verify evidence and required verification results.
 
@@ -66,19 +79,19 @@ Executor-native workflows remain subordinate implementation mechanisms: they may
 
 ## Test authorship mode
 
-D052 defines three test-authorship modes when ownership is material:
+D052 defines three semantic/test-ownership modes when ownership is material:
 
-- `orchestrator-conformance` — ChatGPT owns the required acceptance/conformance oracle; executor owns execution plus supplementary implementation/exploratory testing.
-- `executor-implementation` — executor owns technical test/eval implementation and execution within the ChatGPT-owned specification/Design/acceptance contract.
-- `mixed` — ChatGPT owns the semantic conformance oracle and executor owns implementation/exploratory tests and execution.
+- `orchestrator-conformance` — ChatGPT owns the required acceptance/conformance oracle; executor owns execution plus authorized technical supplementary testing/repair during Stage 6.
+- `executor-implementation` — outside D068 Stage 5 candidate authorship, the executor may own technical test/eval implementation under the controlling contract; in D068 mode ChatGPT may materialize the candidate tests and the executor may technically repair/strengthen them inside authority.
+- `mixed` — ChatGPT owns semantic conformance meaning; executor owns authorized technical execution/repair/supplementary coverage.
 
-New or materially revised Task Contracts SHOULD declare `Test-Authorship-Mode` when test ownership affects scope. Ordinary consumer/application implementation defaults conceptually to `executor-implementation`; Agent Skill/governance/policy/documentation-managed semantic products should normally use `orchestrator-conformance` or `mixed` when ChatGPT owns the correctness semantics.
+New or materially revised Task Contracts SHOULD declare `Test-Authorship-Mode` when semantic test ownership affects scope. Ordinary consumer/application implementation defaults conceptually to `executor-implementation`; Agent Skill/governance/policy/documentation-managed semantic products should normally use `orchestrator-conformance` or `mixed` when ChatGPT owns the correctness semantics.
 
-The mode does not change native SDD stage ownership or assurance-plane selection. D019/D046 still determine whether the required evidence is deterministic, property/state-machine, routing/eval, behavioral, security, portability or package/provenance evidence.
+The mode does not transfer semantic-oracle ownership or assurance-plane selection. D019/D046 still determine whether the required evidence is deterministic, property/state-machine, routing/eval, behavioral, security, portability or package/provenance evidence.
 
 ### Conformance asset rule
 
-When `orchestrator-conformance` or `mixed` applies, the Task Contract or its integrated prerequisite gate SHOULD identify the exact pre-authored conformance assets needed for acceptance. Those assets may include approved assertions, corpora, expected outcomes, semantic negative controls, thresholds, golden fixtures or graders.
+When `orchestrator-conformance` or `mixed` applies, the Task Contract SHOULD identify the exact conformance assets needed for acceptance. In D068 mode those assets may be published with the coherent topic-branch candidate rather than first merged separately to `develop`. They may include approved assertions, corpora, expected outcomes, semantic negative controls, thresholds, golden fixtures or graders.
 
 A conformance asset is an executable projection of the controlling Core/Decision/Task Contract. It is not independent authority.
 
@@ -88,30 +101,31 @@ If the executor believes an Orchestrator-owned oracle is semantically defective,
 
 ## Remote baseline freshness and repository-instruction loading
 
-Under D042, the executor MUST load the Task Contract from a local baseline that is current with the canonical remote base branch.
+Under D042/D061/D062, the executor MUST load the Task Contract and candidate from an auditable remote state with a current protected-base relationship.
+
+For D068-mode work the authoritative verification target is the coherent published topic-branch checkpoint. A stale local branch merely named `develop`, an arbitrary older topic branch, or local-only candidate state is not sufficient authority.
 
 Under D043, compatible executor hosts are expected to load applicable repository-level instructions such as `AGENTS.md` through their native session/repository bootstrap. Agent Governance therefore does not repeat an unconditional `read AGENTS.md` directive in every launch prompt.
 
 ```text
-normal launch:
+D068 normal launch:
 synchronize canonical remote
-    -> verify safe local base == current origin/<base-branch>
-    -> read Task Contract
-    -> execute
+    -> verify protected-base/topic relationship and exact published candidate HEAD
+    -> checkout/use authorized topic branch
+    -> read Task Contract from that represented state
+    -> execute/diagnose/repair/verify
 
 launch after governing AGENTS.md change:
 synchronize canonical remote
-    -> verify safe local base == current origin/<base-branch>
-    -> reload current AGENTS.md
+    -> verify authorized base/topic/candidate identity
+    -> reload current governing AGENTS.md
     -> read Task Contract
-    -> execute
+    -> execute/diagnose/repair/verify
 ```
 
-A currently checked-out older topic branch, or a stale local branch merely named `develop`, is not sufficient evidence of `current develop`.
+The executor chooses the concrete compatible Git workflow for synchronization under D054. It MUST preserve local/uncommitted work and MUST stop/escalate rather than destructively overwrite, discard or guess if the current remote identity cannot be established safely.
 
-The executor chooses the concrete compatible Git workflow for synchronization. It MUST preserve local/uncommitted work and MUST stop/escalate rather than destructively overwrite, discard or guess if the current remote baseline cannot be established safely.
-
-The conditional `AGENTS.md` reload is determined by canonical Git history. ChatGPT includes it only when the integrated change governing the delegated execution modified `AGENTS.md` and a running executor session may hold a pre-change instruction snapshot.
+The conditional `AGENTS.md` reload is determined by canonical Git history. ChatGPT includes it only when the governing change modified `AGENTS.md` and a running executor session may hold a pre-change instruction snapshot.
 
 If an executor host does not natively load repository instructions, its adapter/session bootstrap must provide equivalent loading before it is treated as a compatible Agente de IA Ejecutor. Repeating `read AGENTS.md` in every Task prompt is not the fallback mechanism.
 
@@ -155,7 +169,7 @@ The carrier may be an existing normative artifact, dedicated spec, Decision Reco
 
 `AGENTS.md` remains controlling repository policy even when its load is supplied natively by the executor host rather than repeated in the launch prompt.
 
-When D052 applies, the Task Contract SHOULD point to the exact integrated conformance/oracle assets or prerequisite gate rather than requiring the executor to reconstruct their semantics from unrelated history.
+When D052 applies, the Task Contract SHOULD point to the exact conformance/oracle assets or candidate gate rather than requiring the executor to reconstruct their semantics from unrelated history.
 
 ### Requirement / specification delta
 Represent the material affected semantics with the applicable subset:
@@ -170,14 +184,14 @@ Requirements SHOULD use stable IDs when independent traceability is materially u
 ### Controlling Design
 Persist or directly reference the complete implementation-relevant Design and material architecture/quality/security/privacy/reliability/compatibility decisions.
 
-The Design must be complete enough that the executor does not need to invent missing material architecture or acceptance semantics. Local code details that cannot change the approved Design remain implementation choices.
+The Design must be complete enough that the executor does not need to invent missing material architecture or acceptance semantics. Local code details that cannot change the approved Design remain technical repair/verification choices only when they stay inside the approved Design.
 
 ### Authorized scope
-Artifacts and behavior the executor is allowed to modify or create.
+Artifacts and behavior the executor is allowed to modify or create during its authorized stage.
 
-Authorized scope constrains externally visible repository mutation/result, not the executor's private internal organization or compatible local tooling unless the contract explicitly states otherwise for a material reason.
+For D068-mode work, the Task Contract distinguishes the complete Orchestrator-materialized Stage 5 candidate from the Executor's bounded Stage 6 repair/test/evidence authority. Authorized scope constrains externally visible repository mutation/result, not the executor's private internal organization or compatible local tooling unless the contract explicitly states otherwise for a material reason.
 
-For D052 modes, authorized scope MUST distinguish Orchestrator-owned conformance assets from executor-owned implementation/harness/supplementary-test scope.
+For D052 modes, authorized scope MUST distinguish Orchestrator-owned semantic conformance assets from executor-authorized technical repair/harness/supplementary-test scope.
 
 ### Explicit exclusions
 Things the executor must not change or expand into.
@@ -190,23 +204,23 @@ When D052 applies, semantic changes to the conformance oracle are excluded from 
 Architecture, compatibility, safety, ownership, or behavioral properties that must remain true. Material non-regression behavior should normally be represented as `PRESERVED` in the requirement delta as well.
 
 ### Acceptance criteria
-Objective conditions ChatGPT will use during `Converge / Accept / Evolve` to accept or reject the implementation.
+Objective conditions ChatGPT will use during `Converge / Accept / Evolve` to accept or reject the final candidate.
 
 ### Verification and trace requirements
 Define tests/evals/inspection/analysis/demonstration that must be created or executed and the minimum evidence expected.
 
-Material requirements must have enough mapping to answer which implementation/evidence satisfies them. A separate matrix is optional unless risk/complexity justifies it.
+Material requirements must have enough mapping to answer which candidate implementation/evidence satisfies them. A separate matrix is optional unless risk/complexity justifies it.
 
 Verification requirements define required evidence/results. They should not dictate private execution topology unless that topology is itself part of the behavior or assurance property being verified.
 
 For D052 `orchestrator-conformance`/`mixed`, verification requirements SHOULD separate:
 
-- required execution of the pre-authored conformance oracle;
-- executor-owned supplementary implementation/exploratory verification;
-- evidence required to prove both classes ran against the submitted implementation.
+- required execution of the Orchestrator-owned conformance oracle;
+- executor-authorized supplementary technical verification/repair;
+- evidence required to prove both classes ran against the submitted candidate.
 
 ### Code Review & Verify obligations
-The Task Contract SHOULD make clear any task-specific technical review obligations beyond the repository baseline. Regardless of whether a dedicated section exists, the executor must perform the D053 Code Review & Verify stage before `DONE` and provide evidence sufficient for `docs/EXECUTOR-HANDOFFS.md`.
+The Task Contract SHOULD make clear any task-specific technical review obligations beyond the repository baseline. Regardless of whether a dedicated section exists, the executor must perform the Stage 6 Code Review & Verify work before `DONE` and provide evidence sufficient for `docs/EXECUTOR-HANDOFFS.md`.
 
 ### Stop / escalation / SDD re-entry conditions
 Conditions requiring the executor to stop instead of guessing or expanding scope.
@@ -218,35 +232,47 @@ When D052 applies, suspected semantic oracle defects are stop/escalation conditi
 ### Expected handoff
 The executor MUST persist its result according to `docs/EXECUTOR-HANDOFFS.md` at the task's expected handoff path before claiming `DONE`, `BLOCKED`, or `PARTIAL`.
 
-## Contract and conformance integration gate
+## Contract, candidate, and conformance publication gate
 
-An executable Task Contract is not ready for execution merely because it exists on a planning branch.
+A D068 executable Task Contract is not ready for Stage 6 merely because it exists only in chat, Library, or an unpublished local branch.
 
-Before launching an executor:
-1. ChatGPT completes the applicable Explore/Specify/Design/Plan & Trace stages and creates/updates the Task Contract on a policy-compliant planning/topic branch;
-2. when D052 `orchestrator-conformance` or `mixed` requires a pre-authored oracle, ChatGPT creates/updates the designated conformance assets on that preimplementation gate and records their role in the Task Contract/gate;
-3. ChatGPT reviews the Task Contract, controlling Markdown/Decision/specification/Design artifacts, trace, and any Orchestrator-owned conformance assets;
-4. the planning/conformance change is merged into `develop`;
-5. the task status is `READY` only when all known prerequisite decisions are resolved and the executor will not need to invent upstream authority;
-6. the executor synchronizes the canonical remote and establishes a safe local baseline equal to the current remote base branch containing that exact contract and required conformance assets;
-7. if the governing integrated change modified `AGENTS.md`, ChatGPT includes the D043 reload line and the executor reloads current `AGENTS.md` from that baseline;
-8. only then may the executor create/use the implementation topic branch from that current baseline.
+Before launching an Executor for D068-mode work:
+1. ChatGPT completes Explore/Specify/Design/Plan & Trace and creates/updates the Task Contract on the verified topic branch;
+2. when D052 `orchestrator-conformance` or `mixed` requires a semantic oracle, ChatGPT creates/updates the designated conformance assets and records their role;
+3. ChatGPT completes Stage 5 materialization of the candidate on that topic branch;
+4. ChatGPT reviews the Task Contract, controlling Markdown/Decision/specification/Design artifacts, trace, applicable semantic oracle assets, and candidate coherence;
+5. ChatGPT publishes one coherent topic-branch checkpoint containing the authority and candidate;
+6. task readiness requires all known prerequisite decisions to be resolved and the Executor not to need to invent upstream authority;
+7. the Executor synchronizes the canonical remote and verifies the exact published topic branch/HEAD plus its protected-base freshness relationship;
+8. if the governing published change modified `AGENTS.md`, ChatGPT includes the D043 reload line and the Executor reloads the governing current `AGENTS.md` before Stage 6;
+9. only then may the Executor execute, diagnose, make bounded technical repairs, and verify that published candidate.
 
-This creates durable specification/Design/Plan/oracle before implementation history:
+D068 sequence:
 
 ```text
-specification + Design + Task Contract/trace + applicable conformance history
-        -> implementation + Code Review & Verify history
-        -> Orchestrator convergence/acceptance history
+current protected develop base
+    -> verified topic branch
+    -> specification + Design + Task Contract/trace + applicable conformance + complete candidate
+    -> coherent published candidate checkpoint
+    -> Executor Stage 6 evidence/repairs
+    -> Orchestrator convergence/acceptance/integration
 ```
 
-The executor MUST NOT begin executable work from a branch/revision that predates the controlling Task Contract or required pre-authored oracle, or from a stale local base that has not been reconciled with the canonical remote.
+A separate planning/candidate PR to `develop` before Stage 6 is not required in D068 mode.
+
+For explicit grandfathered/non-D068 work whose persisted authority requires the earlier topology, preserve that historical sequence exactly rather than rewriting it:
+
+```text
+planning/conformance -> develop -> Executor first-pass implementation -> verification
+```
+
+The executor MUST NOT begin executable work from a branch/revision that predates the controlling Task Contract or required semantic oracle, from an unpublished D068 candidate, or from a stale branch whose protected-base relationship has not been established safely.
 
 ## Freeze and revision semantics
 
 The original objective, current-spec binding, requirement/spec delta, controlling Design, scope, exclusions, invariants, Plan/Trace, acceptance criteria, verification meaning, and any D052 semantic conformance oracle are the durable request.
 
-After implementation begins:
+After Stage 6 begins:
 - the executor cannot edit the Task Contract;
 - ChatGPT must not silently rewrite original semantics to match implementation;
 - an executor cannot silently change an Orchestrator-owned expected result/threshold/classification or material Design assumption to match implementation;
@@ -257,51 +283,52 @@ A reviewer must be able to distinguish the original task/oracle/specification/De
 
 ## Lifecycle
 
-1. ChatGPT performs Explore/Frame and Specify for the change.
+For D068-mode work:
+1. ChatGPT performs Explore/Frame and Specify.
 2. ChatGPT completes controlling Design and Plan & Trace, creates the Task Contract, and selects D052 authorship mode when material.
-3. For `orchestrator-conformance`/`mixed`, ChatGPT authors the required conformance oracle before implementation when appropriate.
-4. The Task Contract and applicable conformance gate are reviewed and integrated into `develop`.
-5. ChatGPT launches the executor with the canonical minimal launch prompt defined below.
-6. The executor synchronizes the canonical remote and verifies a safe current base baseline.
-7. If the governing integrated change modified `AGENTS.md`, the executor reloads current `AGENTS.md` when explicitly instructed by the conditional D043 line.
-8. The executor creates/uses the authorized implementation topic branch.
-9. The executor chooses its private implementation process and performs only authorized non-Markdown work, respecting the approved specification/Design/Plan and any D052 conformance ownership boundary.
-10. If implementation discovers an upstream semantic/Design/Plan defect, the executor stops and reports it; material changes require persisted Orchestrator SDD re-entry before execution continues.
-11. The executor performs technical Code Review & Verify, runs required conformance plus supplementary verification, resolves in-authority defects, and persists its non-Markdown handoff under `handoffs/`.
-12. The executor commits and pushes the implementation branch, including the current handoff artifact, under D048 publication rules.
-13. The executor returns only status, handoff path, branch, and pushed HEAD.
-14. ChatGPT reads the Task Contract, specification/Design/trace, conformance baseline where applicable, handoff, and remote Git diff/evidence.
-15. ChatGPT performs Converge/Accept; rework/re-entry repeats on the same represented task branch using durable review/revision instructions.
-16. After ChatGPT acceptance, the implementation proceeds through PR to `develop`.
-17. ChatGPT evolves the accepted current specification carrier where applicable and may update lifecycle/acceptance metadata without rewriting original execution semantics.
-18. After accepted task content/handoff and acceptance records are integrated, any delegated post-integration branch retirement MUST be governed by an integrated Operational Contract under `docs/OPERATION-CONTRACTS.md` and launched only through `docs/POST-INTEGRATION-CLEANUP-PROMPT.md`.
-19. Operational task closure is complete only after required remote/local branch cleanup is verified.
+3. ChatGPT authors any required semantic conformance oracle and completes Stage 5 candidate materialization.
+4. ChatGPT publishes the coherent Task Contract/authority/oracle/candidate checkpoint to the verified topic branch.
+5. ChatGPT launches the Executor with the canonical minimal launch prompt defined below.
+6. The Executor synchronizes the canonical remote and verifies the exact authorized topic branch/HEAD and protected-base relationship.
+7. If the governing published change modified `AGENTS.md`, the Executor reloads the governing `AGENTS.md` when explicitly instructed by D043.
+8. The Executor performs Stage 6 execution, diagnosis, bounded technical repair, technical Code Review & Verify, and required verification.
+9. If Stage 6 discovers an upstream semantic/Design/Plan defect, the Executor stops and reports it; material changes require persisted Orchestrator SDD re-entry before execution continues.
+10. The Executor persists its non-Markdown handoff under `handoffs/`, commits and pushes any authorized Stage 6 repair/test/handoff changes under D048 publication rules.
+11. The Executor returns only status, handoff path, branch, and pushed HEAD.
+12. ChatGPT reads the Task Contract, specification/Design/trace, conformance baseline where applicable, handoff, and remote Git diff/evidence.
+13. ChatGPT performs Converge/Accept; rework/re-entry repeats on the same represented task branch using durable review/revision instructions.
+14. After ChatGPT acceptance, the candidate proceeds through PR to `develop`.
+15. ChatGPT evolves the accepted current specification carrier where applicable and may update lifecycle/acceptance metadata without rewriting original execution semantics.
+16. After accepted task content/handoff and acceptance records are integrated, any delegated post-integration branch retirement MUST be governed by an integrated Operational Contract under `docs/OPERATION-CONTRACTS.md` and launched only through `docs/POST-INTEGRATION-CLEANUP-PROMPT.md`.
+17. Operational task closure is complete only after required remote/local branch cleanup is verified.
+
+Explicit grandfathered/non-D068 Task Contracts retain the lifecycle they already record. This section does not retroactively migrate historical executed contracts, reviews, handoffs, or evidence.
 
 ## Canonical minimal executor launch prompt
 
-Every normal source-product executor launch MUST use the same structural contract. The launch prompt is transport/bootstrap only; it MUST NOT become a second task specification.
+Every normal source-product Executor launch MUST use the same structural contract. The launch prompt is transport/bootstrap only; it MUST NOT become a second task specification.
 
-The prompt contains these semantic parts:
+For D068 mode the prompt contains these semantic parts:
 
 1. **Role** — identify the abstract `Agente de IA Ejecutor` role and canonical repository.
-2. **Repository freshness/baseline** — require synchronization of the canonical remote and a safe local baseline current with the Task Contract base branch, normally `origin/develop`.
-3. **Conditional repository-instruction reload** — include an explicit `AGENTS.md` reload only when the governing integrated change modified `AGENTS.md`; omit it otherwise.
-4. **Authoritative task pointer** — provide exactly one controlling Task Contract path and state that the Task Contract plus its referenced repository policies are the complete execution specification.
-5. **Completion contract** — require the contract-defined Implement + Code Review & Verify evidence/handoff, commit and push, then require only the minimal status/handoff/branch/HEAD response.
+2. **Repository freshness/candidate identity** — require synchronization of the canonical remote and verification of the exact authorized topic-branch candidate plus protected-base relationship.
+3. **Conditional repository-instruction reload** — include an explicit `AGENTS.md` reload only when the governing published change modified it; omit it otherwise.
+4. **Authoritative task pointer** — provide exactly one controlling Task Contract path and state that the Task Contract, published candidate, and referenced repository policies are the complete Stage 6 execution specification.
+5. **Completion contract** — require contract-defined execution/diagnosis/bounded repair/Code Review & Verify evidence/handoff, commit and push, then require only the minimal status/handoff/branch/HEAD response.
 
-Normal canonical template:
+Normal D068 template:
 
 ```text
 Operate as the Agente de IA Ejecutor for <owner>/<repository>.
 
-Synchronize the canonical remote and ensure the local <base-branch> baseline used for bootstrap is current with origin/<base-branch>. Preserve local/uncommitted work; if a safe current baseline cannot be established, stop and report BLOCKED rather than using stale repository state.
+Synchronize the canonical remote and establish the exact published topic-branch candidate authorized by the Task Contract, including its protected-base/freshness relationship. Preserve local/uncommitted work; if the authoritative candidate cannot be established safely, stop and report BLOCKED rather than using stale repository state.
 
-Then load and execute the authoritative Task Contract:
+Then load and execute the authoritative Task Contract from that represented candidate state:
 <task-contract-path>
 
-Treat that Task Contract and its referenced repository policies as the complete execution specification. Do not infer or expand task scope from this prompt.
+Treat that Task Contract, the published candidate, and their referenced repository policies as the complete Stage 6 execution specification. Do not recreate the candidate from scratch or infer/expand task scope from this prompt.
 
-Complete the required implementation, Code Review & Verify, verification and executor handoff, commit and push all authorized work, then return only:
+Complete the required execution, diagnosis, bounded technical repair, Code Review & Verify, verification and executor handoff, commit and push all authorized Stage 6 work, then return only:
 
 STATUS: DONE | BLOCKED | PARTIAL
 HANDOFF: <path>
@@ -309,13 +336,13 @@ BRANCH: <branch>
 HEAD: <pushed-commit-sha>
 ```
 
-If and only if the governing integrated change modified `AGENTS.md`, insert this line after the remote-freshness paragraph and before the Task Contract pointer:
+If and only if the governing published change modified `AGENTS.md`, insert this line after the remote-freshness paragraph and before the Task Contract pointer:
 
 ```text
-AGENTS.md changed in the governing integrated change; reload current AGENTS.md from this baseline before loading the Task Contract.
+AGENTS.md changed in the governing published change; reload the governing current AGENTS.md before loading the Task Contract.
 ```
 
-For normal launches, substitute only repository identity, base branch and Task Contract path. The output placeholders remain the generic completion schema; the concrete handoff path/branch are resolved from the Task Contract. The executor chooses the concrete safe Git commands used to establish current remote identity. The conditional D043 reload line is included only when canonical Git history requires it.
+For normal launches, substitute only repository identity and Task Contract path; the concrete branch/HEAD/handoff identity is resolved from persisted authority and verified Git state. The output placeholders remain the generic completion schema. The Executor chooses concrete safe Git/command mechanics under D054.
 
 ### Launch-prompt non-duplication invariant
 
@@ -339,7 +366,7 @@ The launch prompt MUST NOT duplicate task semantics that belong in Git, includin
 
 Standing repository rules such as Markdown ownership remain in `AGENTS.md`/referenced policy and SHOULD NOT be re-stated task-by-task in the launch prompt.
 
-The generic D042 remote-freshness requirement is allowed in the prompt because it determines which persisted repository state is being loaded; it is not task-specific semantics. The D043 reload line is also allowed when required because it refreshes changed repository instructions rather than adding task semantics.
+The generic remote-freshness/candidate-identity requirement is allowed because it determines which persisted repository state is being loaded; it is not task-specific semantics. The D043 reload line is also allowed when required because it refreshes changed repository instructions rather than adding task semantics.
 
 If any task-specific fact is necessary to execute safely or correctly, persist it in the Task Contract, its controlling specification/Design/Plan artifacts, its D052 conformance assets, or its controlling repository policy before launch rather than extending the chat/terminal prompt.
 
@@ -348,16 +375,16 @@ If any task-specific fact is necessary to execute safely or correctly, persist i
 The prompt does not supersede or supplement missing Task Contract semantics.
 
 ```text
-normal launch prompt = role + repository + remote freshness + task pointer + completion contract
-conditional delta     = AGENTS.md reload only after AGENTS.md change
-Task Contract + referenced Git policy/specification/Design + designated D052 conformance assets = execution specification
+normal D068 launch prompt = role + repository + remote candidate freshness + task pointer + completion contract
+conditional delta          = AGENTS.md reload only after governing AGENTS.md change
+Task Contract + published candidate + referenced Git policy/specification/Design + designated D052 conformance assets = Stage 6 execution specification
 ```
 
-If the Task Contract is missing, not `READY`, not integrated into the stated base branch, materially incomplete, or missing a required D052 pre-authored oracle, do not compensate by adding instructions to the launch prompt. Repair/persist the appropriate Orchestrator-owned SDD stage/contract/gate first.
+If the Task Contract is missing, not ready, materially incomplete, absent from the coherent published candidate, or missing a required D052 semantic oracle, do not compensate by adding instructions to the launch prompt. Repair/persist/publish the appropriate Orchestrator-owned stage first.
 
-If the executor cannot find the Task Contract or required conformance assets after synchronizing and verifying the current canonical base, it MUST stop/escalate; it MUST NOT fall back to a stale topic branch or chat-carried semantics.
+If the Executor cannot find the Task Contract, candidate, or required conformance assets after synchronizing and verifying the authorized remote state, it MUST stop/escalate; it MUST NOT fall back to a stale branch or chat-carried semantics.
 
-If a launch prompt conflicts with the persisted Task Contract, D052 conformance oracle, or repository policy, the executor MUST stop/escalate rather than choosing the chat-only instruction as a new task scope. Human/ChatGPT changes to specification/Design/Plan/objective/scope/acceptance/verification/oracle semantics must be persisted through the normal SDD re-entry/Task Contract revision flow.
+If a launch prompt conflicts with the persisted Task Contract, D052 conformance oracle, published candidate authority, or repository policy, the Executor MUST stop/escalate rather than choosing the chat-only instruction as a new task scope. Human/ChatGPT changes to specification/Design/Plan/objective/scope/acceptance/verification/oracle semantics must be persisted through the normal SDD re-entry/Task Contract revision flow.
 
 ## Canonical post-integration cleanup delegation
 
@@ -392,11 +419,12 @@ Operational Contract completion schemas are defined by each integrated Operation
 ## Audit invariant
 
 A reviewer must be able to reconstruct from Git alone:
-- what was requested before implementation or operation, including applicable specification/Design/Plan/Trace;
+- what was requested before Stage 6, including applicable specification/Design/Plan/Trace;
+- the exact published D068 candidate checkpoint when D068 applies;
 - which D052 test-authorship mode/oracle applied when material;
 - any explicit SDD re-entry revisions/review directives;
-- what the executor reported it did and technically reviewed;
+- what the Executor reported it executed/repaired/technically reviewed;
 - what actually changed;
 - what the Orchestrator later accepted/rejected through convergence.
 
-Chat history and private executor orchestration traces must not be required for this reconstruction unless a persisted contract explicitly makes a process artifact part of the deliverable/evidence.
+Chat history and private Executor orchestration traces must not be required for this reconstruction unless a persisted contract explicitly makes a process artifact part of the deliverable/evidence.
