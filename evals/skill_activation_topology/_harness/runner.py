@@ -44,7 +44,11 @@ from .storage import _json_dump, _jsonl_dump
 
 def validate_execution_config(inputs: FrozenInputs, args: argparse.Namespace) -> None:
     method = inputs.oracle["trial_method"]
-    if args.model != "gpt-5.6-sol" or args.effort != "medium" or platform.system() != "Windows":
+    if (
+        args.model != "gpt-5.6-sol"
+        or args.effort != "medium"
+        or platform.system() != "Windows"
+    ):
         raise HarnessError("required live cell is native Windows / GPT-5.6 Sol / Medium")
     if _codex_version(args.codex_command) != REQUIRED_CODEX_VERSION:
         raise HarnessError(f"required Codex CLI baseline is {REQUIRED_CODEX_VERSION}")
@@ -52,9 +56,15 @@ def validate_execution_config(inputs: FrozenInputs, args: argparse.Namespace) ->
         raise HarnessError("per-attempt timeout must match the frozen oracle")
     if args.full_acceptance and (args.case or args.candidate or args.repetition):
         raise HarnessError("full acceptance cannot use trial filters")
-    if len(stage_schedule(inputs, "R")) != method["reference_stage_full_completion_base_valid_observations"]:
+    if (
+        len(stage_schedule(inputs, "R"))
+        != method["reference_stage_full_completion_base_valid_observations"]
+    ):
         raise HarnessError("reference-stage base schedule does not match the frozen oracle")
-    if len(stage_schedule(inputs, "C")) != method["challenger_stage_full_completion_base_valid_observations"]:
+    if (
+        len(stage_schedule(inputs, "C"))
+        != method["challenger_stage_full_completion_base_valid_observations"]
+    ):
         raise HarnessError("challenger-stage base schedule does not match the frozen oracle")
 
 
@@ -72,7 +82,9 @@ def _frozen_hashes() -> dict[str, str]:
     }
 
 
-def _resume_metadata(inputs: FrozenInputs, args: argparse.Namespace, output: Path) -> dict[str, Any]:
+def _resume_metadata(
+    inputs: FrozenInputs, args: argparse.Namespace, output: Path
+) -> dict[str, Any]:
     if not output.is_dir():
         raise HarnessError("resume requires an existing evidence root")
     metadata = _load_json(output / "run-metadata.json")
@@ -96,7 +108,10 @@ def _resume_metadata(inputs: FrozenInputs, args: argparse.Namespace, output: Pat
         if metadata["frozen_asset_sha256"].get(relative) != digest:
             raise HarnessError(f"resume frozen asset changed: {relative}")
     metadata.setdefault("resume_records", []).append(
-        {"resumed_at": datetime.now(UTC).isoformat(), "prior_status": metadata["status"]}
+        {
+            "resumed_at": datetime.now(UTC).isoformat(),
+            "prior_status": metadata["status"],
+        }
     )
     preflight = _load_json(output / "host-preflight.json")
     identity_mismatch = (
@@ -111,7 +126,11 @@ def _resume_metadata(inputs: FrozenInputs, args: argparse.Namespace, output: Pat
     return metadata
 
 
-def _initial_metadata(inputs: FrozenInputs, args: argparse.Namespace, workspace_parent: Path) -> dict[str, Any]:
+def _initial_metadata(
+    inputs: FrozenInputs,
+    args: argparse.Namespace,
+    workspace_parent: Path,
+) -> dict[str, Any]:
     return {
         "oracle_id": inputs.oracle["oracle_id"],
         "execution_epoch": inputs.oracle["execution_epoch"],
@@ -139,7 +158,9 @@ def _initial_metadata(inputs: FrozenInputs, args: argparse.Namespace, workspace_
         "sandbox_selection_order": ["read-only", "workspace-write"],
         "windows_backend_selection_order": list(WINDOWS_BACKEND_ORDER),
         "stimulus_rule": "exact corpus prompt, two newlines, frozen neutral suffix",
-        "stage_state": "REFERENCE_BASE_PENDING" if args.full_acceptance else "FILTERED_PENDING",
+        "stage_state": (
+            "REFERENCE_BASE_PENDING" if args.full_acceptance else "FILTERED_PENDING"
+        ),
         "status": "RUNNING",
         "started_at": datetime.now(UTC).isoformat(),
     }
@@ -160,7 +181,10 @@ def _block_deterministic_gate(output: Path, metadata: dict[str, Any]) -> int:
 
 
 def _block_preflight(
-    inputs: FrozenInputs, output: Path, metadata: dict[str, Any], preflight: dict[str, Any]
+    inputs: FrozenInputs,
+    output: Path,
+    metadata: dict[str, Any],
+    preflight: dict[str, Any],
 ) -> int:
     reason = preflight["reason"]
     metadata.update(
@@ -176,7 +200,12 @@ def _block_preflight(
     _json_dump(output / "run-metadata.json", metadata)
     _json_dump(
         output / "selection.json",
-        {"status": "BLOCKED", "selected_candidate": None, "reason": reason, "scored": False},
+        {
+            "status": "BLOCKED",
+            "selected_candidate": None,
+            "reason": reason,
+            "scored": False,
+        },
     )
     _json_dump(
         output / "completeness.json",
@@ -217,9 +246,9 @@ def _start_new_run(
     metadata["selected_backend"] = preflight["selected_backend"]
     metadata["selected_sandbox"] = preflight["selected_sandbox"]
     metadata["selected_workspace_acl_profile"] = preflight["selected_workspace_acl_profile"]
-    metadata["effective_host_profile"] = _load_json(output / "host-preflight.json")["records"][-1][
-        "effective_host_profile"
-    ]
+    metadata["effective_host_profile"] = _load_json(output / "host-preflight.json")["records"][
+        -1
+    ]["effective_host_profile"]
     return metadata, None
 
 
@@ -238,7 +267,8 @@ def _filtered_schedule(inputs: FrozenInputs, args: argparse.Namespace) -> list[T
 
 def _run_filtered(context: RunContext) -> int:
     terminal = context.stop_for_execution_state(
-        *context.execute_schedule(_filtered_schedule(context.inputs, context.args)), "FILTERED"
+        *context.execute_schedule(_filtered_schedule(context.inputs, context.args)),
+        "FILTERED",
     )
     if terminal is not None:
         return terminal
@@ -293,7 +323,11 @@ def _select_reference(
     if survivors != ["B2"]:
         raise HarnessError("unexpected v13 reference-stage survivor set")
     if not candidate_qualifies(context.inputs, metrics["B2"]):
-        certificate = qualification_futility_certificate(context.inputs, "B2", context.trials())
+        certificate = qualification_futility_certificate(
+            context.inputs,
+            "B2",
+            context.trials(),
+        )
         if certificate["terminal"] and "B2" not in context.terminal_candidates:
             context._store_certificate("B2", certificate)
         return None, _block_no_reference(context, candidates, context.trials())
@@ -380,6 +414,11 @@ def run_matrix(args: argparse.Namespace) -> int:
         return terminal
     _json_dump(output / "run-metadata.json", metadata)
     context = RunContext(
-        inputs, args, output, workspace_parent, metadata, execute_logical_observation
+        inputs,
+        args,
+        output,
+        workspace_parent,
+        metadata,
+        execute_logical_observation,
     )
     return _run_full(context) if args.full_acceptance else _run_filtered(context)

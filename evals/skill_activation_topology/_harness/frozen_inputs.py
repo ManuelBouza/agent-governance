@@ -155,7 +155,7 @@ def _validate_document_identities(inputs: FrozenInputs) -> None:
             raise HarnessError(f"oracle/{document_name} presentation revision mismatch")
 
 
-def _validate_cases(inputs: FrozenInputs, known_capabilities: set[str]) -> None:
+def _validate_case_collection(inputs: FrozenInputs) -> list[dict[str, Any]]:
     cases = inputs.corpus.get("cases")
     if (
         inputs.corpus.get("schema_version") != "8.0.0"
@@ -164,9 +164,15 @@ def _validate_cases(inputs: FrozenInputs, known_capabilities: set[str]) -> None:
         or len(cases) != 70
     ):
         raise HarnessError("harness requires the frozen 70-case MG1 v14 corpus")
-    ids = [case.get("id") for case in cases if isinstance(case, dict)]
-    if len(ids) != len(cases) or len(ids) != len(set(ids)):
+    if not all(isinstance(case, dict) for case in cases):
         raise HarnessError("corpus case identities must be unique objects")
+    ids = [case.get("id") for case in cases]
+    if len(ids) != len(set(ids)):
+        raise HarnessError("corpus case identities must be unique objects")
+    return cases
+
+
+def _validate_case_distribution(cases: list[dict[str, Any]]) -> None:
     if Counter(case.get("class") for case in cases) != Counter(EXPECTED_CLASS_COUNTS):
         raise HarnessError("corpus v8 class counts differ from the frozen T061 design")
     near_miss_axes = Counter(
@@ -174,15 +180,24 @@ def _validate_cases(inputs: FrozenInputs, known_capabilities: set[str]) -> None:
     )
     if near_miss_axes != Counter(EXPECTED_NEAR_MISS_AXES):
         raise HarnessError("corpus v8 near-miss axes are not exactly six-per-axis")
+    if sum(case["class"] in {"negative", "near-miss"} for case in cases) != 40:
+        raise HarnessError("corpus v8 false-activation denominator must be exactly 40")
+
+
+def _validate_positive_contrasts(cases: list[dict[str, Any]]) -> None:
     contrast_axes: set[str] = set()
     for case in cases:
         if str(case.get("class", "")).startswith("positive-"):
             contrast_axes.update(case.get("contrast_axes", []))
     if contrast_axes != set(EXPECTED_NEAR_MISS_AXES):
         raise HarnessError("positive cases do not contrast every frozen near-miss axis")
-    fixtures = inputs.envelope.get("fixtures", {})
-    if set(fixtures) != {"neutral", "source", "consumer"}:
-        raise HarnessError("trial-envelope fixture roles are not the frozen set")
+
+
+def _validate_case_semantics(
+    cases: list[dict[str, Any]],
+    known_capabilities: set[str],
+    fixtures: dict[str, Any],
+) -> None:
     for case in cases:
         if set(case.get("expected_capabilities", [])) - known_capabilities:
             raise HarnessError(f"{case['id']}: unknown expected capability")
@@ -195,8 +210,16 @@ def _validate_cases(inputs: FrozenInputs, known_capabilities: set[str]) -> None:
             raise HarnessError(f"{case['id']}: invalid fixture role")
         if case.get("class") in {"ambiguous", "negative", "near-miss"} and role != "neutral":
             raise HarnessError(f"{case['id']}: class requires a neutral fixture")
-    if sum(case["class"] in {"negative", "near-miss"} for case in cases) != 40:
-        raise HarnessError("corpus v8 false-activation denominator must be exactly 40")
+
+
+def _validate_cases(inputs: FrozenInputs, known_capabilities: set[str]) -> None:
+    cases = _validate_case_collection(inputs)
+    _validate_case_distribution(cases)
+    _validate_positive_contrasts(cases)
+    fixtures = inputs.envelope.get("fixtures", {})
+    if set(fixtures) != {"neutral", "source", "consumer"}:
+        raise HarnessError("trial-envelope fixture roles are not the frozen set")
+    _validate_case_semantics(cases, known_capabilities, fixtures)
 
 
 def _validate_presentations(

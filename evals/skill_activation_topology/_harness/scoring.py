@@ -198,10 +198,14 @@ def select_from_cost_bounded_metrics(
     else:
         f2, g3 = metrics_by_candidate["F2"], metrics_by_candidate["G3"]
         if abs(f2["activation_f1"] - g3["activation_f1"]) > 0.005:
-            selected = max(material, key=lambda name: metrics_by_candidate[name]["activation_f1"])
+            selected = max(
+                material,
+                key=lambda name: metrics_by_candidate[name]["activation_f1"],
+            )
         elif abs(f2["false_activation_rate"] - g3["false_activation_rate"]) > 0.01:
             selected = min(
-                material, key=lambda name: metrics_by_candidate[name]["false_activation_rate"]
+                material,
+                key=lambda name: metrics_by_candidate[name]["false_activation_rate"],
             )
         else:
             f2_load = f2["median_observed_context_bytes"]
@@ -237,7 +241,10 @@ def apply_selection_rule(
 ) -> dict[str, Any]:
     if set(metrics_by_candidate) != set(inputs.oracle["candidate_ids"]):
         raise HarnessError("final v13 selection requires complete B2/F2/G3 metrics")
-    reference_result = select_single_family_reference(inputs, {"B2": metrics_by_candidate["B2"]})
+    reference_result = select_single_family_reference(
+        inputs,
+        {"B2": metrics_by_candidate["B2"]},
+    )
     if reference_result["status"] == "BLOCKED":
         return {
             "status": "BLOCKED",

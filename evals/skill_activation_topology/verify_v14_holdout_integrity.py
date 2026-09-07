@@ -62,7 +62,9 @@ def load(path: Path) -> dict:
 
 def git_bytes(revision: str, relative: str) -> bytes:
     return subprocess.check_output(
-        ["git", "show", f"{revision}:{relative}"], cwd=ROOT, stderr=subprocess.STDOUT
+        ["git", "show", f"{revision}:{relative}"],
+        cwd=ROOT,
+        stderr=subprocess.STDOUT,
     )
 
 
@@ -97,7 +99,10 @@ def main() -> int:
     assert oracle["execution_epoch"] == "MG1-T023-EXECUTION-v14"
     assert oracle["corpus_id"] == corpus["corpus_id"]
     assert oracle["candidate_freeze_sha"] == FREEZE_C
-    assert oracle["candidate_hash_manifest"] == "evals/skill_activation_topology/candidate-hashes-v14.json"
+    assert (
+        oracle["candidate_hash_manifest"]
+        == "evals/skill_activation_topology/candidate-hashes-v14.json"
+    )
     assert oracle["presentation_revision"] == "MG1-T023-PRESENTATIONS-v5"
     assert oracle["topology_revision"] == "MG1-T023-TOPOLOGIES-v4"
     assert oracle["candidate_ids"] == ["B2", "F2", "G3"]
@@ -161,15 +166,20 @@ def main() -> int:
     }
     assert oracle["stage6_gate"]["provider_model_calls_during_stage5"] == 0
 
-    print(json.dumps({
-        "status": "PASS",
-        "candidate_freeze_sha": FREEZE_C,
-        "corpus_id": corpus["corpus_id"],
-        "oracle_id": oracle["oracle_id"],
-        "case_count": len(cases),
-        "far_denominator": 40,
-        "historical_prompt_reuse": 0,
-    }, sort_keys=True))
+    print(
+        json.dumps(
+            {
+                "status": "PASS",
+                "candidate_freeze_sha": FREEZE_C,
+                "corpus_id": corpus["corpus_id"],
+                "oracle_id": oracle["oracle_id"],
+                "case_count": len(cases),
+                "far_denominator": 40,
+                "historical_prompt_reuse": 0,
+            },
+            sort_keys=True,
+        )
+    )
     return 0
 
 

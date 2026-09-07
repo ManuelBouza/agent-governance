@@ -146,7 +146,8 @@ def build_deterministic_evidence(inputs: FrozenInputs) -> dict[str, Any]:
 
 def _validated_prior_attempts(output: Path, spec: TrialSpec) -> list[dict[str, Any]]:
     prior = [
-        _load_json(path) for path in sorted((output / "attempts").glob(f"{spec.key}--a*.json"))
+        _load_json(path)
+        for path in sorted((output / "attempts").glob(f"{spec.key}--a*.json"))
     ]
     if [item["attempt"] for item in prior] != list(range(1, len(prior) + 1)):
         raise HarnessError(f"{spec.key}: invalid persisted attempt sequence")
@@ -206,7 +207,10 @@ def execute_logical_observation(
             raise
         except AttemptFailure as exc:
             record.update(
-                status="FAILED", failure_class=exc.failure_class, error=str(exc), raw=exc.raw
+                status="FAILED",
+                failure_class=exc.failure_class,
+                error=str(exc),
+                raw=exc.raw,
             )
             if exc.failure_class == "HOST_SURFACE_DRIFT":
                 terminal_drift = HostSurfaceDrift(str(exc), exc.raw)
@@ -220,11 +224,16 @@ def execute_logical_observation(
             raise terminal_drift
         if record["status"] == "VALID":
             return structured, raw
-        print(f"failed attempt {attempt}/{limit} {spec.key}: {record['failure_class']}", flush=True)
+        print(
+            f"failed attempt {attempt}/{limit} {spec.key}: {record['failure_class']}",
+            flush=True,
+        )
     return None
 
 
-def _validate_resumed_command(spec: TrialSpec, command: Any, model: str, effort: str) -> list[str]:
+def _validate_resumed_command(
+    spec: TrialSpec, command: Any, model: str, effort: str
+) -> list[str]:
     if not isinstance(command, list):
         raise HarnessError(f"{spec.key}: resumed command evidence is malformed")
     try:
@@ -258,7 +267,10 @@ def _validate_resumed_command(spec: TrialSpec, command: Any, model: str, effort:
 
 
 def _validate_resumed_isolation(
-    inputs: FrozenInputs, spec: TrialSpec, isolation: dict[str, Any], workspace: Path
+    inputs: FrozenInputs,
+    spec: TrialSpec,
+    isolation: dict[str, Any],
+    workspace: Path,
 ) -> None:
     canonical = REPO_ROOT.resolve(strict=True)
     root_folded = str(workspace).casefold()

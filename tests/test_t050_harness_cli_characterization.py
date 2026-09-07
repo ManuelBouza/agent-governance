@@ -1,4 +1,4 @@
-"""RF1 characterization for the stable T050 harness CLI facade under MG1 v13."""
+"""RF1 characterization for the stable T050 harness CLI facade under MG1 v14."""
 
 from __future__ import annotations
 
@@ -62,7 +62,7 @@ def test_validate_cli_success_output_and_exit(harness, capsys) -> None:
     assert harness.main(["validate"]) == 0
     assert json.loads(capsys.readouterr().out) == {
         "status": "PASS",
-        "oracle_id": "MG1-T023-TOPOLOGY-ORACLE-v13",
+        "oracle_id": "MG1-T023-TOPOLOGY-ORACLE-v14",
         "cases": 70,
         "candidates": ["B2", "F2", "G3"],
         "scheduled_trials": 420,

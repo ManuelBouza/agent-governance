@@ -34,7 +34,11 @@ from .models import (
 )
 from .observability import _observed_skill_reads, _validate_model_result
 from .scheduling import _trial_prompt, all_possible_trials
-from .scoring import candidate_qualifies, compute_candidate_metrics, select_from_cost_bounded_metrics
+from .scoring import (
+    candidate_qualifies,
+    compute_candidate_metrics,
+    select_from_cost_bounded_metrics,
+)
 from .storage import _json_dump
 
 
@@ -180,7 +184,9 @@ def _validate_trial_evidence(
 
 
 def _complete_candidate(inputs: FrozenInputs, candidate: str, trials: list[dict[str, Any]]) -> bool:
-    return len(finalized_candidate_aggregates(inputs, candidate, trials)) == len(inputs.corpus["cases"])
+    return len(finalized_candidate_aggregates(inputs, candidate, trials)) == len(
+        inputs.corpus["cases"]
+    )
 
 
 def _terminal_certificate(
@@ -195,12 +201,8 @@ def _terminal_certificate(
     return certificate
 
 
-def _validate_recomputed_outputs(
-    inputs: FrozenInputs,
-    output: Path,
-    trials: list[dict[str, Any]],
-    deterministic: dict[str, Any],
-    status: str,
+def _validate_case_aggregates(
+    inputs: FrozenInputs, output: Path, trials: list[dict[str, Any]]
 ) -> None:
     aggregates = [
         item
@@ -210,31 +212,34 @@ def _validate_recomputed_outputs(
     if aggregates != load_trials(output / "case-aggregates.jsonl"):
         raise HarnessError("persisted v13 case aggregates are not exactly recomputable")
 
-    if status == "BLOCKED_NO_REFERENCE":
-        if any(trial["candidate_id"] in {"F2", "G3"} for trial in trials):
-            raise HarnessError("challenger evidence exists despite no qualifying B2 reference")
-        certificate = _terminal_certificate(inputs, "B2", trials, None)
-        persisted = _load_json(output / "futility-certificates" / "B2.json")
-        if not certificate["terminal"] or certificate != persisted:
-            raise HarnessError("B2 no-reference futility certificate is not recomputable")
-        selection = _load_json(output / "selection.json")
-        if selection != {
-            "status": "BLOCKED",
-            "selected_candidate": None,
-            "reason": "NO QUALIFYING SINGLE-FAMILY REFERENCE",
-            "scored": True,
-        }:
-            raise HarnessError("persisted v13 no-reference selection is invalid")
-        return
 
-    if not _complete_candidate(inputs, "B2", trials):
-        raise HarnessError("complete v13 decision requires a complete B2 reference")
-    metrics: dict[str, dict[str, Any]] = {
-        "B2": compute_candidate_metrics(inputs, "B2", trials, deterministic)
-    }
-    if not candidate_qualifies(inputs, metrics["B2"]):
-        raise HarnessError("challenger stage exists without a qualifying B2 reference")
+def _validate_no_reference_outputs(
+    inputs: FrozenInputs, output: Path, trials: list[dict[str, Any]]
+) -> None:
+    if any(trial["candidate_id"] in {"F2", "G3"} for trial in trials):
+        raise HarnessError("challenger evidence exists despite no qualifying B2 reference")
+    certificate = _terminal_certificate(inputs, "B2", trials, None)
+    persisted = _load_json(output / "futility-certificates" / "B2.json")
+    if not certificate["terminal"] or certificate != persisted:
+        raise HarnessError("B2 no-reference futility certificate is not recomputable")
+    selection = _load_json(output / "selection.json")
+    if selection != {
+        "status": "BLOCKED",
+        "selected_candidate": None,
+        "reason": "NO QUALIFYING SINGLE-FAMILY REFERENCE",
+        "scored": True,
+    }:
+        raise HarnessError("persisted v13 no-reference selection is invalid")
 
+
+def _build_challenger_metrics(
+    inputs: FrozenInputs,
+    output: Path,
+    trials: list[dict[str, Any]],
+    deterministic: dict[str, Any],
+    reference_metrics: dict[str, Any],
+) -> tuple[dict[str, dict[str, Any]], dict[str, dict[str, Any]]]:
+    metrics = {"B2": reference_metrics}
     futility: dict[str, dict[str, Any]] = {}
     for candidate in ("F2", "G3"):
         if _complete_candidate(inputs, candidate, trials):
@@ -243,12 +248,18 @@ def _validate_recomputed_outputs(
         certificate_path = output / "futility-certificates" / f"{candidate}.json"
         if not certificate_path.is_file():
             raise HarnessError(f"{candidate}: incomplete challenger lacks futility certificate")
-        certificate = _terminal_certificate(inputs, candidate, trials, metrics["B2"])
+        certificate = _terminal_certificate(inputs, candidate, trials, reference_metrics)
         persisted = _load_json(certificate_path)
         if not certificate["terminal"] or certificate != persisted:
             raise HarnessError(f"{candidate}: futility certificate is not recomputable")
         futility[candidate] = certificate
+    return metrics, futility
 
+
+def _validate_reference_outputs(
+    output: Path,
+    metrics: dict[str, dict[str, Any]],
+) -> None:
     if metrics != _load_json(output / "metrics.json"):
         raise HarnessError("persisted v13 metrics are not exactly recomputable")
     if _load_json(output / "metrics-reference.json") != {"B2": metrics["B2"]}:
@@ -259,10 +270,44 @@ def _validate_recomputed_outputs(
     ) != {"B2": True}:
         raise HarnessError("persisted v13 reference selection is invalid")
 
+
+def _validate_final_selection(
+    inputs: FrozenInputs,
+    output: Path,
+    metrics: dict[str, dict[str, Any]],
+    futility: dict[str, dict[str, Any]],
+) -> None:
     selection = select_from_cost_bounded_metrics(inputs, "B2", metrics)
     selection["futility"] = futility
     if selection != _load_json(output / "selection.json"):
         raise HarnessError("persisted v13 selection is not exactly recomputable")
+
+
+def _validate_recomputed_outputs(
+    inputs: FrozenInputs,
+    output: Path,
+    trials: list[dict[str, Any]],
+    deterministic: dict[str, Any],
+    status: str,
+) -> None:
+    _validate_case_aggregates(inputs, output, trials)
+    if status == "BLOCKED_NO_REFERENCE":
+        _validate_no_reference_outputs(inputs, output, trials)
+        return
+    if not _complete_candidate(inputs, "B2", trials):
+        raise HarnessError("complete v13 decision requires a complete B2 reference")
+    reference_metrics = compute_candidate_metrics(inputs, "B2", trials, deterministic)
+    if not candidate_qualifies(inputs, reference_metrics):
+        raise HarnessError("challenger stage exists without a qualifying B2 reference")
+    metrics, futility = _build_challenger_metrics(
+        inputs,
+        output,
+        trials,
+        deterministic,
+        reference_metrics,
+    )
+    _validate_reference_outputs(output, metrics)
+    _validate_final_selection(inputs, output, metrics, futility)
 
 
 def validate_complete_evidence(inputs: FrozenInputs, output: Path) -> None:
@@ -288,11 +333,14 @@ def validate_complete_evidence(inputs: FrozenInputs, output: Path) -> None:
     threads_seen: set[str] = set()
     for key, trial in zip(trial_keys, trials, strict=True):
         _validate_trial_evidence(
-            inputs, possible[key], trial, raw_by_key[key], workspaces, threads_seen
+            inputs,
+            possible[key],
+            trial,
+            raw_by_key[key],
+            workspaces,
+            threads_seen,
         )
-    _validate_recomputed_outputs(
-        inputs, output, trials, deterministic, metadata["status"]
-    )
+    _validate_recomputed_outputs(inputs, output, trials, deterministic, metadata["status"])
 
 
 def score_matrix(args: argparse.Namespace) -> int:
@@ -311,7 +359,9 @@ def _validate_executed_runner_provenance(metadata: dict[str, Any]) -> None:
     relative = HARNESS_PATH.relative_to(REPO_ROOT).as_posix()
     try:
         source = subprocess.check_output(
-            ["git", "show", f"{commit}:{relative}"], cwd=REPO_ROOT, stderr=subprocess.STDOUT
+            ["git", "show", f"{commit}:{relative}"],
+            cwd=REPO_ROOT,
+            stderr=subprocess.STDOUT,
         )
     except subprocess.CalledProcessError as exc:
         raise HarnessError("cannot resolve executed runner Git provenance") from exc
@@ -343,7 +393,12 @@ def verify_deterministic(args: argparse.Namespace) -> int:
     module_root = REPO_ROOT / "evals" / "skill_activation_topology" / "_harness"
     expected_hashes = {
         name: hashlib.sha256((module_root / name).read_bytes()).hexdigest()
-        for name in ("run_support.py", "aggregation.py", "scheduling.py", "scheduler_simulation.py")
+        for name in (
+            "run_support.py",
+            "aggregation.py",
+            "scheduling.py",
+            "scheduler_simulation.py",
+        )
     }
     if (
         scheduler.get("status") != "PASS"
@@ -358,25 +413,61 @@ def verify_deterministic(args: argparse.Namespace) -> int:
 
     command_groups = {
         "candidate_integrity": [
-            "uv", "run", "--locked", "python",
+            "uv",
+            "run",
+            "--locked",
+            "python",
             "evals/skill_activation_topology/verify_v13_candidate_integrity.py",
         ],
         "holdout_integrity": [
-            "uv", "run", "--locked", "python",
+            "uv",
+            "run",
+            "--locked",
+            "python",
             "evals/skill_activation_topology/verify_v13_holdout_integrity.py",
         ],
         "ruff_check": ["uv", "run", "--locked", "ruff", "check", "."],
         "ruff_format_check": ["uv", "run", "--locked", "ruff", "format", "--check", "."],
-        "code_health": ["uv", "run", "--locked", "python", "tools/code_health.py", "check", "--root", "."],
-        "symbol_map": ["uv", "run", "--locked", "python", "tools/code_health.py", "map", "--root", "."],
+        "code_health": [
+            "uv",
+            "run",
+            "--locked",
+            "python",
+            "tools/code_health.py",
+            "check",
+            "--root",
+            ".",
+        ],
+        "symbol_map": [
+            "uv",
+            "run",
+            "--locked",
+            "python",
+            "tools/code_health.py",
+            "map",
+            "--root",
+            ".",
+        ],
         "full_pytest": ["uv", "run", "--locked", "python", "-m", "pytest"],
         "profile_isolation": [
-            "uv", "run", "--locked", "python", "-m", "pytest",
-            "tests/test_profile_abstraction.py", "tests/test_source_maintainer_profile.py",
+            "uv",
+            "run",
+            "--locked",
+            "python",
+            "-m",
+            "pytest",
+            "tests/test_profile_abstraction.py",
+            "tests/test_source_maintainer_profile.py",
         ],
         "consumer_source_independence": [
-            "uv", "run", "--locked", "python", "-m", "pytest",
-            "tests/test_source_consumer_separation.py", "tests/test_consumer_v1_characterization.py",
+            "uv",
+            "run",
+            "--locked",
+            "python",
+            "-m",
+            "pytest",
+            "tests/test_source_consumer_separation.py",
+            "tests/test_consumer_v1_characterization.py",
         ],
     }
     runs: dict[str, Any] = {}
@@ -402,16 +493,26 @@ def verify_deterministic(args: argparse.Namespace) -> int:
         print(f"{name}: {'PASS' if completed.returncode == 0 else 'FAIL'}", flush=True)
 
     evidence["verification_runs"] = runs
-    evidence["full_deterministic_regression"] = "PASS" if runs["full_pytest"]["returncode"] == 0 else "FAIL"
-    evidence["profile_isolation_regression"] = "PASS" if runs["profile_isolation"]["returncode"] == 0 else "FAIL"
-    evidence["consumer_source_independence_regression"] = "PASS" if runs["consumer_source_independence"]["returncode"] == 0 else "FAIL"
+    evidence["full_deterministic_regression"] = (
+        "PASS" if runs["full_pytest"]["returncode"] == 0 else "FAIL"
+    )
+    evidence["profile_isolation_regression"] = (
+        "PASS" if runs["profile_isolation"]["returncode"] == 0 else "FAIL"
+    )
+    evidence["consumer_source_independence_regression"] = (
+        "PASS" if runs["consumer_source_independence"]["returncode"] == 0 else "FAIL"
+    )
     evidence["quality_gate"] = (
         "PASS"
         if all(
             runs[name]["returncode"] == 0
             for name in (
-                "candidate_integrity", "holdout_integrity", "ruff_check",
-                "ruff_format_check", "code_health", "symbol_map",
+                "candidate_integrity",
+                "holdout_integrity",
+                "ruff_check",
+                "ruff_format_check",
+                "code_health",
+                "symbol_map",
             )
         )
         else "FAIL"

@@ -51,13 +51,18 @@ def main() -> int:
             f"v5 copy drift: {target} != {source}"
         )
 
-    print(json.dumps({
-        "status": "PASS",
-        "identity": spec["identity"],
-        "candidate_count": len(EXPECTED_CANDIDATES),
-        "hashed_file_count": len(spec["files"]),
-        "copy_equivalence_count": len(spec["copy_equivalence"]),
-    }, sort_keys=True))
+    print(
+        json.dumps(
+            {
+                "status": "PASS",
+                "identity": spec["identity"],
+                "candidate_count": len(EXPECTED_CANDIDATES),
+                "hashed_file_count": len(spec["files"]),
+                "copy_equivalence_count": len(spec["copy_equivalence"]),
+            },
+            sort_keys=True,
+        )
+    )
     return 0
 
 

@@ -33,7 +33,10 @@ def frozen(harness):
 def test_frozen_v14_inputs_validate_and_schedule_expected_ceilings(harness, frozen) -> None:
     assert frozen.oracle["oracle_id"] == "MG1-T023-TOPOLOGY-ORACLE-v14"
     assert frozen.oracle["execution_epoch"] == "MG1-T023-EXECUTION-v14"
-    assert frozen.oracle["candidate_freeze_sha"] == "1fc38f979d67ff29649f69ae39b8d46d2523518b"
+    assert (
+        frozen.oracle["candidate_freeze_sha"]
+        == "1fc38f979d67ff29649f69ae39b8d46d2523518b"
+    )
     assert frozen.oracle["candidate_ids"] == ["B2", "F2", "G3"]
     assert frozen.oracle["presentation_revision"] == "MG1-T023-PRESENTATIONS-v5"
     assert frozen.corpus["corpus_id"] == "MG1-T023-CORPUS-v8"
@@ -64,7 +67,10 @@ def test_v14_expected_entrypoint_union_and_progressive_reference_path(harness, f
     b2 = harness.TrialSpec(case, "B2", 1)
     g3 = harness.TrialSpec(case, "G3", 1)
     assert harness.expected_entrypoints(frozen, b2) == ["agent-governance"]
-    assert harness.expected_entrypoints(frozen, g3) == ["source-maintainer", "consumer-lifecycle"]
+    assert harness.expected_entrypoints(frozen, g3) == [
+        "source-maintainer",
+        "consumer-lifecycle",
+    ]
     paths, byte_count = harness.expected_load_path(frozen, b2)
     assert paths == [
         "evals/skill_activation_topology/presentations-v5/shared/consumer-lifecycle.md",
