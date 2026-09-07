@@ -1,28 +1,37 @@
 # Current ChatGPT Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O237
+Checkpoint-Sequence: O238
 Canonical-Branch: `develop`  
-Current-Work-Unit: D069 Orchestrator next-task response closure — OBJECTIVE_COMPLETE
+Current-Work-Unit: T061 / D068 Stage 5 MG1-v13 candidate publication — OBJECTIVE_COMPLETE
 Chat-Closure: WAITING_FOR_NEXT_OBJECTIVE
 Active-Executor: none  
 Active-Executor-Surface: none
 
 ## Durable frontier
 
-- The Human Owner explicitly required every future Agent Governance Orchestrator project response to end with `Próxima Tarea` plus a short description of the next task/action.
-- `docs/decisions/D069-orchestrator-next-task-response-closure.md` is ACCEPTED and makes that closure requirement durable.
-- Under D069, `Próxima Tarea` is navigation metadata derived from canonical Git/checkpoint authority. It does not itself select, authorize or start the task it names. Waiting, blocked and re-entry states must be represented honestly rather than bypassed.
-- The D050/T023 substantive frontier from O236 is preserved unchanged. `docs/tasks/T061-mg1-v13-positive-anchor-reference-evaluation.md` carries the complete ASSURED Design / Plan & Trace and remains `READY_FOR_ORCHESTRATOR_STAGE5 / EXECUTOR_NOT_AUTHORIZED`.
-- `docs/reviews/T023-R13.md` remains `READY_FOR_STAGE5`; B2 is the prospective single-reference candidate and F2/G3 remain same-epoch challengers only after B2 qualifies.
-- New v13 identities remain fixed: capability source `MG1-2026-09-06-v4`, presentations `MG1-T023-PRESENTATIONS-v4`, corpus `MG1-T023-CORPUS-v7`, oracle `MG1-T023-TOPOLOGY-ORACLE-v13`, execution epoch `MG1-T023-EXECUTION-v13`; trial envelope v2 and the Codex/native-Windows/GPT-5.6-Sol/Medium cell are preserved.
-- Corpus v7 remains prospectively fixed at 70 cases: 18 positives, 10 negatives, 30 near-misses, 4 ambiguous, 4 cross-profile and 4 multi-intent. The false-activation denominator remains exactly 40.
-- Exact v13 holdout prompts still do not exist. T061 requires remote Freeze A of all candidate/reference bytes before the exact corpus v7/oracle v13 Freeze B may be authored.
-- Any candidate/reference-byte change after Freeze A invalidates corpus v7/oracle v13 and requires a new prospective identity set before acceptance.
-- Qualification thresholds, critical safety gates, paired 2+1 aggregation, exact futility and D050 challenger materiality/tie-break rules remain unchanged.
-- If B2 is non-qualifying/futile, F2/G3 must remain unscheduled. If B2 qualifies, F2/G3 may execute only in the same v13 corpus/oracle/host/model epoch.
-- D052 semantic-oracle ownership and D068 staging remain unchanged: ChatGPT Orchestrator owns complete Stage 5 candidate/corpus/oracle materialization; a future Executor owns only Stage 6 execution, diagnosis, bounded technical repair and verification after coherent candidate publication.
-- This D069 objective did not start Stage 5, author any exact holdout prompt, launch an Executor, issue provider/model calls, start T024, modify D066 gaps or reopen T058.
+- D069 remains controlling for Human-facing response closure: project status/work responses end with `Próxima Tarea`, derived from canonical Git state, and that footer never creates task authority.
+- The Human Owner explicitly selected and completed D068 Stage 5 for `T061`.
+- The published Stage 5 / future Stage 6 branch is `test/t023-skill-activation-topology-evals-v13`, based on `develop@af2f68590ace167947815bb93f12cce4ac2fa5f2`.
+- Candidate Freeze A is `a454091aff7bb932372a6057e2d9804f94e66320`. It froze capability-source v4, topology/presentation v4, B2 exact bytes, byte-identical F2/G3/shared copies and the candidate hash manifest before any exact v13 holdout prompt existed.
+- Freeze B is `7b990f4d60ba7ca0dfafe1b95785e007f8697c28`. It freezes the fresh 70-case corpus v7, oracle v13 and candidate-immutable v13 harness/integrity support.
+- Remote comparison Freeze A -> Freeze B contains no changed `presentations-v4/**` path and no change to `candidate-hashes-v13.json`, `topologies.json`, `presentations/manifest.json` or `docs/AGENT-GOVERNANCE-CAPABILITY-SOURCE.md`.
+- `candidate-hashes-v13.json` has the same Git blob `6d3a8025a1923dd5738f65e8aa07488cbd58e245` at Freeze A and Freeze B. Candidate/reference bytes remain frozen.
+- Corpus v7 has exactly 70 fresh cases: 18 positives, 10 negatives, 30 near-misses, 4 ambiguous, 4 cross-profile and 4 multi-intent. The false-activation denominator is exactly 40; the 30 near-misses are six cases on each of five frozen axes; exact V12 prompt reuse is forbidden and guarded.
+- Oracle v13 uses candidate set `[B2, F2, G3]`, reference stage `[B2]`, challengers `[F2, G3]`, the preserved multidimensional thresholds, paired 2+1 method, critical any-occurrence gates, exact futility and D050 materiality/tie-break semantics.
+- B2 full reference base schedule is 140 observations. If B2 is non-qualifying/futile, the result is `BLOCKED / NO QUALIFYING SINGLE-FAMILY REFERENCE` and F2/G3 remain unscheduled. If B2 qualifies, F2/G3 may execute only in the same v13 epoch.
+- T061 is `READY_FOR_STAGE6`; `docs/reviews/T023-R14.md` records Stage 5 completion. This readiness does not authorize an Executor.
+- Stage 5 issued zero provider/model calls and launched no Executor. Deterministic verification code was materialized but Stage 6 runtime gates have not yet been claimed as executed or passing.
+- No release topology is selected. T024 remains blocked. D066 gaps remain unchanged. T058 remains frozen.
+
+## Active remote artifacts
+
+- Task Contract: `docs/tasks/T061-mg1-v13-positive-anchor-reference-evaluation.md`
+- Stage 5 review: `docs/reviews/T023-R14.md`
+- Topic branch: `test/t023-skill-activation-topology-evals-v13`
+- Candidate Freeze A: `a454091aff7bb932372a6057e2d9804f94e66320`
+- Holdout/oracle Freeze B: `7b990f4d60ba7ca0dfafe1b95785e007f8697c28`
+- Future Executor handoff path: `handoffs/T061-executor-handoff.json` — not yet created because Stage 6 is not authorized.
 
 ## Successor interaction requirement
 
@@ -43,36 +52,31 @@ When the Human Owner supplies the next objective:
 
 1. Read current `develop` identity from GitHub.
 2. Read current `AGENTS.md` from that same `develop`.
-3. Read `docs/orchestrator/CHECKPOINT.md` and verify `Checkpoint-Sequence: O237`.
-4. Apply D069's `Próxima Tarea` response-closure rule from this checkpoint; load the decision itself only if interpretation or modification of that rule is required.
-5. Load only direct controlling references required by the supplied objective.
-6. If the objective continues D050/T023 into Stage 5, minimally load:
-   - `docs/tasks/T061-mg1-v13-positive-anchor-reference-evaluation.md`;
-   - `docs/reviews/T023-R13.md`;
-   - `docs/reviews/T023-R12.md`;
-   - `docs/decisions/D050-canonical-capability-source-and-evaluated-skill-topology.md`;
-   - current `docs/AGENT-GOVERNANCE-CAPABILITY-SOURCE.md`;
-   - current T023 topology/presentation/oracle/trial-envelope assets referenced by T061.
-7. Verify any referenced branch/PR/handoff/Library identity before mutation.
-8. Explicitly report whether Bootstrap is valid before starting Task execution.
+3. Read `docs/orchestrator/CHECKPOINT.md` and verify `Checkpoint-Sequence: O238`.
+4. Load `docs/tasks/T061-mg1-v13-positive-anchor-reference-evaluation.md` and `docs/reviews/T023-R14.md`.
+5. Verify the remote v13 topic branch and that Freeze B `7b990f4d60ba7ca0dfafe1b95785e007f8697c28` remains in its ancestry without candidate/reference drift.
+6. If the Human selects Stage 6, additionally load only the direct D054/D055/D058, Executor-handoff and host/eval references required to construct the launch profile and handoff.
+7. Verify the concrete Executor identity and current supported model/effort options before launch recommendations.
+8. Explicitly report whether Bootstrap is valid before starting task execution.
 
 Do not reconstruct the frontier from prior chats or Project Memory.
 
 ## Next action
 
-No new material D050/T023 objective is selected yet.
+No Stage 6 execution objective is selected yet.
 
-1. Remain `WAITING_FOR_NEXT_OBJECTIVE` under D067.
-2. If the Human Owner selects continuation of D050/T023, the next permitted substantive objective is **D068 Stage 5 candidate materialization for T061**.
-3. Stage 5 must create/freshen `test/t023-skill-activation-topology-evals-v13` from then-current protected `develop`, materialize Freeze A, publish/verify it remotely, and only then author the exact corpus v7/oracle v13 Freeze B.
-4. Stage 5 must not issue provider/model calls and must not launch an Executor.
-5. After complete coherent Stage 5 publication, a separate future objective may authorize Executor Stage 6 under T061 and the then-current D055/D058 launch requirements.
-6. Only an accepted T023 topology result may unblock T024.
+1. Remain `WAITING_FOR_NEXT_OBJECTIVE`.
+2. If the Human Owner selects continuation of D050/T023, the next permitted substantive objective is a separate **D068 Stage 6 T061 launch/execution objective**.
+3. That objective must verify the published v13 branch, create the required Executor handoff/launch profile, and authorize the Executor to execute deterministic gates first.
+4. The Executor must prove candidate/holdout integrity, full deterministic/profile/source-independence gates and provider/model calls during those deterministic gates = `0` before host preflight.
+5. The frozen native Windows / Codex CLI `0.149.0` / GPT-5.6 Sol / Medium preflight and unchanged synthetic Skill canary must pass before any acceptance prompt.
+6. Stage R executes B2 first. F2/G3 execute only after a qualifying same-epoch B2 reference.
+7. Only a later Orchestrator Stage 7 acceptance of T023 may select a release topology or unblock T024.
 
 ## Completion condition
 
-Satisfied when D069 is durably integrated and the checkpoint requires future final project responses to end with `Próxima Tarea` plus a concise canonical-next-action description, while preserving the O236/T061 substantive frontier and all existing authorization boundaries.
+Satisfied: T061 Stage 5 is coherently published with remotely verified Freeze A and Freeze B, frozen candidate/reference bytes, fresh corpus v7/oracle v13, candidate-immutable harness/integrity support, T061 Stage-Readiness `READY_FOR_STAGE6`, and no Executor/provider/model execution during Stage 5.
 
 ## Do not
 
-Do not treat `Próxima Tarea` as task authorization. Do not rerun or reinterpret V12. Do not relax `false_activation_rate <= 0.05` or any accepted multidimensional threshold. Do not reuse exact V12 prompts as v13 acceptance stimuli. Do not author exact v13 holdout prompts before remote Freeze A. Do not change B2/F2/G3/reference bytes after Freeze A while retaining corpus v7/oracle v13. Do not execute F2/G3 without a qualifying same-epoch B2 reference. Do not launch an Executor before coherent Stage 5 publication. Do not start T024. Do not modify or silently close D066 gaps. Do not reopen T058. Do not perform historical branch cleanup. Do not introduce a release topology decision before valid prospective evidence. Do not collapse Bootstrap and Task execution in the next objective.
+Do not treat `Próxima Tarea` or `READY_FOR_STAGE6` as Executor authorization. Do not rerun or reinterpret V12. Do not relax any threshold, denominator, critical gate, candidate wording, expected semantics, scheduling or materiality rule. Do not change B2/F2/G3/reference bytes while retaining corpus v7/oracle v13. Do not execute F2/G3 without a qualifying same-epoch B2 reference. Do not silently change the Codex `0.149.0` host cell. Do not start T024. Do not modify or silently close D066 gaps. Do not reopen T058. Do not perform historical branch cleanup. Do not select a release topology before valid prospective evidence.
