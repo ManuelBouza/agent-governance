@@ -1,0 +1,121 @@
+{
+  "schema_version": 1,
+  "task_id": "T061",
+  "status": "BLOCKED",
+  "task_contract_path": "docs/tasks/T061-mg1-v13-positive-anchor-reference-evaluation.md",
+  "launch_authority_paths": [
+    "docs/reviews/T023-R17.md",
+    "docs/reviews/T023-R18.md",
+    "docs/reviews/T023-R19.md",
+    "docs/reviews/T023-R20.md",
+    "docs/reviews/T023-R21.md"
+  ],
+  "sdd_profile": "ASSURED",
+  "branch": "test/t023-skill-activation-topology-evals-v14",
+  "implementation_head_sha": "a8caf6338dbae3a3ce4cefdc7965acd0d37f1557",
+  "base_branch": "develop",
+  "base_sha": "f0811365698667bae9b0ab77a9300c8c9aa988b7",
+  "candidate_freeze_sha": "1fc38f979d67ff29649f69ae39b8d46d2523518b",
+  "holdout_freeze_sha": "f8cee7c72688f0486211474d2678d018772e2a58",
+  "files_changed": [
+    "handoffs/T061-executor-handoff.json"
+  ],
+  "implementation_summary": "Stage 6 made no candidate, corpus, oracle, harness, configuration, dependency, or Markdown change. Candidate Freeze C and Holdout/oracle Freeze D integrity guards passed, but the required frozen Codex CLI 0.149.0 live cell was unavailable: the native Windows host reports codex-cli 0.153.4. Provider-free quality checks also report pre-existing Ruff lint/format and code-health failures. Per R19, execution stopped before host preflight, synthetic canary, B2, F2, G3, or any provider/model call.",
+  "terminal_disposition": {
+    "reason": "FROZEN_LIVE_CELL_UNAVAILABLE / DETERMINISTIC_QUALITY_GATE_NOT_PASSING",
+    "upstream_reentry_required": true,
+    "acceptance_prompts_issued": 0,
+    "synthetic_canary_prompts_issued": 0,
+    "provider_model_calls_issued": 0,
+    "challenger_observations_issued": 0,
+    "b2_observations_issued": 0,
+    "f2_scheduled": false,
+    "g3_scheduled": false
+  },
+  "verification": {
+    "commands": [
+      "git fetch origin --prune",
+      "git merge --ff-only origin/develop",
+      "git worktree add --track -b test/t023-skill-activation-topology-evals-v14 .worktrees/t061-mg1-v14 origin/test/t023-skill-activation-topology-evals-v14",
+      "codex --version",
+      "uv run --locked python evals/skill_activation_topology/verify_v14_candidate_integrity.py",
+      "uv run --locked python evals/skill_activation_topology/verify_v14_holdout_integrity.py",
+      "uv run --locked ruff check .",
+      "uv run --locked ruff format --check .",
+      "uv run --locked python tools/code_health.py check --root .",
+      "uv run --locked python tools/code_health.py map --root .",
+      "uv run --locked python -m pytest tests/test_profile_abstraction.py tests/test_source_maintainer_profile.py",
+      "uv run --locked python -m pytest tests/test_source_consumer_separation.py tests/test_consumer_v1_characterization.py",
+      "uv run --locked python -m pytest",
+      "uv run --locked python -c <provider-free scheduler simulation>"
+    ],
+    "results": {
+      "canonical_sync": "PASS: canonical origin was fetched; the clean tracked develop checkout was fast-forwarded from 9d6c59131ea7e92f0ec9b7fc6cf7629195dc9ad5 to origin/develop@fdd4335102eb1c8e98f2518c18b692d5285e6f5b. Registered worktrees and unrepresented local paths were preserved.",
+      "represented_branch_and_freezes": "PASS: exclusive tracking worktree starts at reviewed Stage 5 HEAD a8caf6338dbae3a3ce4cefdc7965acd0d37f1557; Freeze C 1fc38f979d67ff29649f69ae39b8d46d2523518b and Freeze D f8cee7c72688f0486211474d2678d018772e2a58 are ancestors. No rebase, merge, reset, cherry-pick, or history rewrite was performed on the scientific branch.",
+      "candidate_integrity": "PASS: MG1-T061-CANDIDATE-HASHES-v2; 3 candidates, 9 hashed files, and 8 required copy-equivalence relationships passed.",
+      "holdout_integrity": "PASS: MG1-T023-CORPUS-v8 / MG1-T023-TOPOLOGY-ORACLE-v14; 70 cases, FAR denominator 40, and zero exact historical v13/v12 prompt reuse.",
+      "scheduler_simulation": "PASS: all frozen provider-free scheduling scenarios passed; its own issued-provider count is 0.",
+      "ruff_check": "FAIL: ruff reports an unsorted import block in evals/skill_activation_topology/_harness/provenance.py.",
+      "ruff_format_check": "FAIL: ruff reports 9 unformatted files in the v14 harness/tests, including frozen-input and v14 integrity modules.",
+      "code_health": "FAIL: complexity limits fail in _validate_cases and _validate_recomputed_outputs; dependency and size checks pass.",
+      "full_pytest": "FAIL: the full locked pytest invocation reported a failure before completion; no repair was attempted because the frozen live cell is unavailable and this invocation is terminally blocked.",
+      "provider_free_boundary": "PASS: provider/model calls issued before terminal blocker = 0. No host preflight, synthetic canary, B2 Stage R, F2, or G3 call was issued.",
+      "frozen_host_cell": "FAIL: native Windows host default Codex command reports codex-cli 0.153.4, not the exactly required 0.149.0. No newer CLI was substituted."
+    },
+    "runtime": "Native Windows; CPython 3.13.14; locked uv environment; default native Codex CLI 0.153.4. The required Codex CLI 0.149.0 / GPT-5.6 Sol / Medium cell was not realizable.",
+    "network_required": "Canonical Git fetch and final Git push require network. Deterministic guards, lint, code-health, scheduler simulation, and tests issued no provider/model calls."
+  },
+  "requirement_trace": {
+    "R19-branch-freeze-identity": "PASS: represented branch, Stage 5 HEAD, Freeze C, and Freeze D identities were verified before execution.",
+    "R19-provider-free-integrity": "PARTIAL: candidate/holdout integrity and scheduler simulation passed with zero provider calls, but the full quality gate did not pass because Ruff, formatting, code-health, and full pytest reported failures.",
+    "R19-frozen-live-cell": "BLOCKED: exact native Windows Codex CLI 0.149.0 is unavailable; installed default reports 0.153.4.",
+    "R19-host-canary-b2-order": "NOT_RUN: host preflight, canary, and B2 are forbidden without deterministic PASS and the required exact host cell.",
+    "R19-challenger-scheduling": "PASS: F2 and G3 remain unscheduled; B2 was never scheduled or qualified.",
+    "R19-semantic-asset-preservation": "PASS: no Orchestrator-owned semantic asset was changed."
+  },
+  "code_review": {
+    "reviewed_head_sha": "a8caf6338dbae3a3ce4cefdc7965acd0d37f1557",
+    "summary": "The reviewed v14 candidate retains the required freeze ancestry and passes its candidate/holdout semantic integrity guards. The terminal review identifies no authorized semantic repair. The runtime cannot realize the frozen CLI cell, and the deterministic quality gate is not green; therefore live evaluation would violate R19's ordering and exact-cell requirements.",
+    "findings": [
+      "Blocking execution-environment finding: Codex CLI is 0.153.4 rather than the frozen exact 0.149.0.",
+      "Blocking deterministic-quality finding: Ruff lint/format, code-health complexity, and full pytest are not passing at the reviewed Stage 5 HEAD."
+    ],
+    "resolved_findings": [],
+    "upstream_reentry_required": true,
+    "upstream_reentry_stage": null
+  },
+  "delegation": {
+    "initial_evaluation": "Evaluated before substantial Stage 6 work. Bounded delegation would not improve verification: a child would share the same native Windows host and unavailable frozen CLI cell, while introducing avoidable coordination/evidence risk to the exclusive task worktree. No delegation was used.",
+    "final_review_evaluation": "Re-evaluated before terminal Code Review & Verify. The freeze, quality-gate, and CLI-version facts are reproducible from the represented branch and local host; no bounded delegate can make the exact cell available or repair semantic assets. Coordinator-only terminal review retained.",
+    "delegated": false,
+    "workers": []
+  },
+  "dependencies_or_config_changes": [],
+  "git_status": "Expected clean tracked worktree after the handoff-only commit; no generated acceptance evidence was created.",
+  "unresolved_issues": [
+    "The required exact Codex CLI 0.149.0 native-Windows live cell is unavailable; default Codex CLI is 0.153.4 and must not be silently substituted.",
+    "The v14 deterministic quality gate is not passing because Ruff lint/format, code-health complexity, and full pytest report failures."
+  ],
+  "scope_confirmation": {
+    "markdown_changed_by_executor": false,
+    "candidate_or_reference_bytes_modified": false,
+    "corpus_modified": false,
+    "oracle_modified": false,
+    "trial_envelope_modified": false,
+    "harness_modified": false,
+    "historical_evidence_modified": false,
+    "dependencies_changed": false,
+    "configuration_changed": false,
+    "changed_paths_within_authorized_scope": true
+  },
+  "recommended_next_task": "ChatGPT Orchestrator must re-enter to resolve the exact frozen CLI-cell availability and classify the deterministic quality failures before authorizing any further v14 Stage 6 execution.",
+  "chatgpt_read_path": [
+    "docs/tasks/T061-mg1-v13-positive-anchor-reference-evaluation.md",
+    "docs/reviews/T023-R17.md",
+    "docs/reviews/T023-R18.md",
+    "docs/reviews/T023-R19.md",
+    "docs/reviews/T023-R20.md",
+    "docs/reviews/T023-R21.md",
+    "handoffs/T061-executor-handoff.json"
+  ]
+}
