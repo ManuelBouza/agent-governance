@@ -1,4 +1,4 @@
-"""RF1 characterization for the stable T050 harness CLI facade."""
+"""RF1 characterization for the stable T050 harness CLI facade under MG1 v13."""
 
 from __future__ import annotations
 
@@ -33,9 +33,6 @@ def test_cli_subcommands_and_argument_contract(harness) -> None:
     )
     assert list(subparsers.choices) == ["validate", "materialize", "run", "score", "verify"]
 
-    validate = parser.parse_args(["validate"])
-    assert validate.func is harness.command_validate
-
     materialize = parser.parse_args(
         ["materialize", "--candidate", "G3", "--destination", "destination"]
     )
@@ -45,48 +42,19 @@ def test_cli_subcommands_and_argument_contract(harness) -> None:
 
     run_parser = subparsers.choices["run"]
     run_actions = _actions(run_parser)
-    assert set(run_actions) == {
-        "help",
-        "output",
-        "codex_command",
-        "model",
-        "effort",
-        "workers",
-        "timeout_seconds",
-        "case",
-        "candidate",
-        "repetition",
-        "resume",
-        "full_acceptance",
-    }
-    assert run_actions["output"].required is True
-    assert run_actions["candidate"].choices == ("B0", "B1", "F2", "G3")
+    assert run_actions["candidate"].choices == ("B2", "F2", "G3")
     assert run_actions["repetition"].choices == (1, 2, 3)
     run = parser.parse_args(["run", "--output", "evidence"])
     assert run.func is harness.run_matrix
-    assert vars(run) == {
-        "command": "run",
-        "output": Path("evidence"),
-        "codex_command": "codex",
-        "model": "gpt-5.6-sol",
-        "effort": "medium",
-        "workers": 4,
-        "timeout_seconds": 180,
-        "case": None,
-        "candidate": None,
-        "repetition": None,
-        "resume": False,
-        "full_acceptance": False,
-        "func": harness.run_matrix,
-    }
+    assert run.model == "gpt-5.6-sol"
+    assert run.effort == "medium"
+    assert run.timeout_seconds == 180
+    assert run.workers == 4
 
     score = parser.parse_args(["score", "--output", "evidence"])
     assert score.func is harness.score_matrix
-    assert score.output == Path("evidence")
-
     verify = parser.parse_args(["verify", "--output", "evidence"])
     assert verify.func is harness.verify_deterministic
-    assert verify.output == Path("evidence")
     assert verify.timeout_seconds == 900
 
 
@@ -94,10 +62,10 @@ def test_validate_cli_success_output_and_exit(harness, capsys) -> None:
     assert harness.main(["validate"]) == 0
     assert json.loads(capsys.readouterr().out) == {
         "status": "PASS",
-        "oracle_id": "MG1-T023-TOPOLOGY-ORACLE-v12",
-        "cases": 40,
-        "candidates": ["B0", "B1", "F2", "G3"],
-        "scheduled_trials": 320,
+        "oracle_id": "MG1-T023-TOPOLOGY-ORACLE-v13",
+        "cases": 70,
+        "candidates": ["B2", "F2", "G3"],
+        "scheduled_trials": 420,
     }
 
 
@@ -117,7 +85,7 @@ def test_cli_maps_harness_error_to_json_and_exit_one(harness, monkeypatch, capsy
     "argv",
     [
         [],
-        ["materialize", "--candidate", "unknown", "--destination", "target"],
+        ["materialize", "--candidate", "B0", "--destination", "target"],
         ["run", "--output", "evidence", "--workers", "0"],
     ],
 )

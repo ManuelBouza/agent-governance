@@ -1,4 +1,4 @@
-"""Provider-free characterization for the MG1 v12 pair-scoped scheduler."""
+"""Provider-free characterization for the MG1 v13 B2-first pair-scoped scheduler."""
 
 from __future__ import annotations
 
@@ -11,7 +11,7 @@ import pytest
 
 def load_harness(repo_root: Path):
     path = repo_root / "evals" / "skill_activation_topology" / "harness.py"
-    spec = importlib.util.spec_from_file_location("t023_v12_scheduler_harness", path)
+    spec = importlib.util.spec_from_file_location("t023_v13_scheduler_harness", path)
     assert spec is not None and spec.loader is not None
     module = importlib.util.module_from_spec(spec)
     sys.modules[spec.name] = module
@@ -48,28 +48,36 @@ def _pair_record(harness, frozen, spec):
     }
 
 
-def test_conditional_third_is_pair_scoped_with_unrelated_pairs_unscheduled(harness, frozen) -> None:
+def test_conditional_third_is_pair_scoped_for_b2(harness, frozen) -> None:
     schedule = harness.stage_schedule(frozen, "R")
     first_case = schedule[0].case
     next_case = next(spec.case for spec in schedule if spec.case["id"] != first_case["id"])
     partial = [
-        _pair_record(harness, frozen, harness.TrialSpec(first_case, "B0", repetition))
+        _pair_record(harness, frozen, harness.TrialSpec(first_case, "B2", repetition))
         for repetition in (1, 2)
     ]
-    partial.append(_pair_record(harness, frozen, harness.TrialSpec(next_case, "B0", 1)))
-    assert harness.conditional_third_specs(frozen, ["B0"], partial) == []
+    partial.append(_pair_record(harness, frozen, harness.TrialSpec(next_case, "B2", 1)))
+    assert harness.conditional_third_specs(frozen, ["B2"], partial) == []
     partial[1]["observed_context_bytes"] += 1
-    assert [spec.key for spec in harness.conditional_third_specs(frozen, ["B0"], partial)] == [
-        f"{first_case['id']}--B0--r3"
+    assert [spec.key for spec in harness.conditional_third_specs(frozen, ["B2"], partial)] == [
+        f"{first_case['id']}--B2--r3"
     ]
 
 
-def test_provider_free_scheduler_simulation_covers_v12_gate(harness, frozen) -> None:
+def test_provider_free_scheduler_simulation_covers_v13_reference_gate(harness, frozen) -> None:
     evidence = harness.run_provider_free_scheduler_simulation(frozen)
     assert evidence["status"] == "PASS"
+    assert evidence["execution_epoch"] == "MG1-T023-EXECUTION-v13"
     assert evidence["provider_model_calls_issued"] == 0
     assert evidence["scenarios"]["no_fourth_repetition"]["status"] == "PASS"
     assert evidence["scenarios"]["full_reference_adaptive_dry_run"] == {
         "status": "PASS",
-        "scheduled_observations": 160,
+        "scheduled_observations": 140,
     }
+
+
+def test_stage_shapes_enforce_b2_before_challengers(harness, frozen) -> None:
+    assert {spec.candidate_id for spec in harness.stage_schedule(frozen, "R")} == {"B2"}
+    assert {spec.candidate_id for spec in harness.stage_schedule(frozen, "C")} == {"F2", "G3"}
+    assert len(harness.stage_schedule(frozen, "R")) == 140
+    assert len(harness.stage_schedule(frozen, "C")) == 280

@@ -1,4 +1,4 @@
-"""Extracted MG1 topology harness implementation."""
+"""Command-line interface for the MG1/T023 topology harness."""
 
 from __future__ import annotations
 
@@ -12,6 +12,8 @@ from .models import HarnessError
 from .provenance import score_matrix, verify_deterministic
 from .runner import run_matrix
 from .scheduling import scheduled_trials
+
+CANDIDATE_CHOICES = ("B2", "F2", "G3")
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -59,7 +61,7 @@ def build_parser() -> argparse.ArgumentParser:
     validate.set_defaults(func=command_validate)
 
     materialize = subparsers.add_parser("materialize")
-    materialize.add_argument("--candidate", required=True, choices=("B0", "B1", "F2", "G3"))
+    materialize.add_argument("--candidate", required=True, choices=CANDIDATE_CHOICES)
     materialize.add_argument("--destination", required=True, type=Path)
     materialize.set_defaults(func=command_materialize)
 
@@ -71,7 +73,7 @@ def build_parser() -> argparse.ArgumentParser:
     run.add_argument("--workers", type=int, default=4)
     run.add_argument("--timeout-seconds", type=int, default=180)
     run.add_argument("--case", action="append")
-    run.add_argument("--candidate", action="append", choices=("B0", "B1", "F2", "G3"))
+    run.add_argument("--candidate", action="append", choices=CANDIDATE_CHOICES)
     run.add_argument("--repetition", action="append", type=int, choices=(1, 2, 3))
     run.add_argument("--resume", action="store_true")
     run.add_argument("--full-acceptance", action="store_true")

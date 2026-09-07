@@ -1,4 +1,4 @@
-"""Extracted MG1 topology harness implementation."""
+"""Shared identities and data models for the MG1/T023 topology harness."""
 
 from __future__ import annotations
 
@@ -7,31 +7,17 @@ from pathlib import Path
 from typing import Any
 
 HERE = Path(__file__).resolve().parent.parent
-
-
 REPO_ROOT = HERE.parents[1]
 
-
 HARNESS_PATH = HERE / "harness.py"
-
-
 ORACLE_PATH = HERE / "oracle.json"
-
-
 CORPUS_PATH = HERE / "corpus.json"
-
-
 TOPOLOGIES_PATH = HERE / "topologies.json"
-
-
 MANIFEST_PATH = HERE / "presentations" / "manifest.json"
-
-
 ENVELOPE_PATH = HERE / "trial-envelope.json"
-
+CANDIDATE_HASHES_PATH = HERE / "candidate-hashes-v13.json"
 
 ALLOWED_OUTCOMES = {"activate", "no-activation", "bounded-rejection", "clarify-context"}
-
 
 ACTIVATION_RELEVANT_CLASSES = {
     "positive-consumer",
@@ -42,10 +28,9 @@ ACTIVATION_RELEVANT_CLASSES = {
     "multi-intent",
 }
 
-
 NEGATIVE_CLASSES = {"negative", "near-miss"}
 
-
+# Retain the historical export name for compatibility with existing helper modules.
 V12_CLASS_ORDER = (
     "cross-profile",
     "ambiguous",
@@ -57,7 +42,6 @@ V12_CLASS_ORDER = (
     "multi-intent",
 )
 
-
 MINIMAL_DISABLED_FEATURES = (
     "apps",
     "remote_plugin",
@@ -67,27 +51,13 @@ MINIMAL_DISABLED_FEATURES = (
     "standalone_web_search",
 )
 
-
 CANARY_NONCE = "The quartz heron carries seven indigo pebbles at noon."
-
-
 BACKEND_PROBE_NONCE = "T023_WINDOWS_SANDBOX_BACKEND_READY"
-
-
 WORKSPACE_PROBE_FILENAME = "workspace-probe.txt"
-
-
 WORKSPACE_PROBE_NONCE = "T023_V12_WORKSPACE_READABLE"
-
-
 WORKSPACE_FACTORY_ID = "windows-inherited-acl-mkdir-v1"
-
-
 REQUIRED_CODEX_VERSION = "codex-cli 0.149.0"
-
-
 WINDOWS_BACKEND_ORDER = ("elevated", "unelevated")
-
 
 TRIAL_SCHEMA: dict[str, Any] = {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
@@ -114,7 +84,6 @@ TRIAL_SCHEMA: dict[str, Any] = {
         "response_summary",
     ],
 }
-
 
 CANARY_SCHEMA: dict[str, Any] = {
     "$schema": "https://json-schema.org/draft/2020-12/schema",

@@ -1,4 +1,4 @@
-"""Provider-free characterization of the MG1 v12 adaptive scheduler."""
+"""Provider-free characterization of the MG1/T023 v13 adaptive scheduler."""
 
 from __future__ import annotations
 
@@ -75,7 +75,7 @@ def _simulation_context(
 
 def _run_pairs(context: RunContext, cases: list[dict[str, Any]], error: str) -> None:
     for case in cases:
-        if context._candidate_case("R", case, "B0", None) is not None:
+        if context._candidate_case("R", case, "B2", None) is not None:
             raise HarnessError(error)
 
 
@@ -84,7 +84,7 @@ def _agreeing_scenario(
 ) -> list[str]:
     context, calls = _simulation_context(inputs, root / "agree")
     _run_pairs(context, ordered[:2], "scheduler simulation agreeing path stopped unexpectedly")
-    expected = [f"{case['id']}--B0--r{rep}" for case in ordered[:2] for rep in (1, 2)]
+    expected = [f"{case['id']}--B2--r{rep}" for case in ordered[:2] for rep in (1, 2)]
     if calls != expected:
         raise HarnessError("scheduler simulation agreeing path did not advance pair-scoped")
     return calls
@@ -96,22 +96,22 @@ def _conditional_scenario(
     first_id = ordered[0]["id"]
 
     def disagree(record: dict[str, Any], spec: TrialSpec) -> None:
-        if (spec.case["id"], spec.candidate_id, spec.repetition) == (first_id, "B0", 2):
+        if (spec.case["id"], spec.candidate_id, spec.repetition) == (first_id, "B2", 2):
             record["observed_context_bytes"] += 1
 
     context, calls = _simulation_context(inputs, root / "third", disagree)
     _run_pairs(context, ordered[:2], "scheduler simulation conditional-third path stopped")
     expected = [
-        f"{first_id}--B0--r1",
-        f"{first_id}--B0--r2",
-        f"{first_id}--B0--r3",
-        f"{ordered[1]['id']}--B0--r1",
-        f"{ordered[1]['id']}--B0--r2",
+        f"{first_id}--B2--r1",
+        f"{first_id}--B2--r2",
+        f"{first_id}--B2--r3",
+        f"{ordered[1]['id']}--B2--r1",
+        f"{ordered[1]['id']}--B2--r2",
     ]
     if calls != expected:
         raise HarnessError("scheduler simulation did not schedule exactly one pair-scoped third")
     try:
-        context.execute(TrialSpec(ordered[0], "B0", 4))
+        context.execute(TrialSpec(ordered[0], "B2", 4))
     except HarnessError:
         return calls
     raise HarnessError("scheduler simulation accepted forbidden fourth repetition")
@@ -126,8 +126,10 @@ def _critical_scenario(
 
     context, calls = _simulation_context(inputs, root / "critical", critical)
     _run_pairs(context, ordered[:1], "scheduler simulation critical path execution failure")
-    if calls != [f"{ordered[0]['id']}--B0--r1"] or "B0" not in (context.terminal_candidates or {}):
-        raise HarnessError("scheduler simulation did not terminate critical candidate immediately")
+    if calls != [f"{ordered[0]['id']}--B2--r1"] or "B2" not in (
+        context.terminal_candidates or {}
+    ):
+        raise HarnessError("scheduler simulation did not terminate B2 immediately")
     return calls
 
 
@@ -135,11 +137,11 @@ def _full_reference_scenario(
     inputs: FrozenInputs, root: Path, ordered: list[dict[str, Any]]
 ) -> int:
     context, calls = _simulation_context(inputs, root / "full-reference")
-    if context.adaptive_stage("R", ["B0", "B1"]) is not None:
-        raise HarnessError("scheduler simulation full reference stage stopped unexpectedly")
-    expected = len(ordered) * 2 * 2
+    if context.adaptive_stage("R", ["B2"]) is not None:
+        raise HarnessError("scheduler simulation full B2 reference stage stopped unexpectedly")
+    expected = len(ordered) * 2
     if len(calls) != expected or context.terminal_candidates:
-        raise HarnessError("scheduler simulation did not traverse the full reference stage")
+        raise HarnessError("scheduler simulation did not traverse the full B2 reference stage")
     return len(calls)
 
 
@@ -157,12 +159,12 @@ def _tested_module_hashes() -> dict[str, str]:
 
 
 def run_provider_free_scheduler_simulation(inputs: FrozenInputs) -> dict[str, Any]:
-    """Exercise v12 adaptive scheduling with an injected non-provider adapter."""
+    """Exercise v13 adaptive scheduling with an injected non-provider adapter."""
     ordered = sorted(
         inputs.corpus["cases"],
         key=lambda case: (V12_CLASS_ORDER.index(case["class"]), case["id"]),
     )
-    with tempfile.TemporaryDirectory(prefix="t023-scheduler-v12-") as temporary:
+    with tempfile.TemporaryDirectory(prefix="t023-scheduler-v13-") as temporary:
         root = Path(temporary)
         agreeing = _agreeing_scenario(inputs, root, ordered)
         conditional = _conditional_scenario(inputs, root, ordered)

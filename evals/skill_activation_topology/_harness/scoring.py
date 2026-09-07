@@ -1,4 +1,4 @@
-"""Extracted MG1 topology harness implementation."""
+"""Metric computation and frozen D050 v13 selection rules."""
 
 from __future__ import annotations
 
@@ -24,7 +24,8 @@ def candidate_qualifies(inputs: FrozenInputs, metrics: dict[str, Any]) -> bool:
         metrics["false_activation_rate"] <= thresholds["false_activation_rate_max"],
         metrics["wrong_specialist_rate"] <= thresholds["wrong_specialist_rate_max"],
         metrics["overactivation_rate"] <= thresholds["overactivation_rate_max"],
-        metrics["semantic_outcome_accuracy"] >= thresholds["semantic_outcome_accuracy_overall_min"],
+        metrics["semantic_outcome_accuracy"]
+        >= thresholds["semantic_outcome_accuracy_overall_min"],
     )
     mandatory = inputs.oracle["mandatory_non_regression"]
     mandatory_checks = (
@@ -55,8 +56,6 @@ def compute_candidate_metrics(
     tp = fp = fn = 0
     false_activation = wrong_specialist = overactivation = semantic_correct = 0
     negative_trials = 0
-    cross_profile_violations = ambiguous_broadenings = 0
-    cross_ambiguous_correct = cross_ambiguous_total = 0
     observed_context_bytes: list[int] = []
     loaded_reference_bytes: list[int] = []
     for trial in aggregates:
@@ -72,8 +71,7 @@ def compute_candidate_metrics(
             wrong_specialist += 1
         if actual > expected:
             overactivation += 1
-        correct = trial["semantic_outcome"] == trial["expected_semantic_outcome"]
-        semantic_correct += correct
+        semantic_correct += trial["semantic_outcome"] == trial["expected_semantic_outcome"]
         if trial["case_class"] in ACTIVATION_RELEVANT_CLASSES:
             observed_context_bytes.append(trial["observed_context_bytes"])
             loaded_reference_bytes.append(trial["loaded_reference_bytes"])
@@ -83,13 +81,16 @@ def compute_candidate_metrics(
     ]
     cross_ambiguous_total = len(critical_trials)
     cross_ambiguous_correct = sum(
-        trial["semantic_outcome"] == trial["expected_semantic_outcome"] for trial in critical_trials
+        trial["semantic_outcome"] == trial["expected_semantic_outcome"]
+        for trial in critical_trials
     )
     cross_profile_violations = sum(
-        trial["case_class"] == "cross-profile" and _critical_violation(trial) for trial in selected
+        trial["case_class"] == "cross-profile" and _critical_violation(trial)
+        for trial in selected
     )
     ambiguous_broadenings = sum(
-        trial["case_class"] == "ambiguous" and _critical_violation(trial) for trial in selected
+        trial["case_class"] == "ambiguous" and _critical_violation(trial)
+        for trial in selected
     )
 
     precision = _safe_ratio(tp, tp + fp)
@@ -152,33 +153,20 @@ def compute_candidate_metrics(
 def select_single_family_reference(
     inputs: FrozenInputs, metrics_by_candidate: dict[str, dict[str, Any]]
 ) -> dict[str, Any]:
-    if set(metrics_by_candidate) != {"B0", "B1"}:
-        raise HarnessError("reference selection requires exactly B0 and B1 metrics")
-    qualifying = {
-        candidate: candidate_qualifies(inputs, metrics_by_candidate[candidate])
-        for candidate in ("B0", "B1")
-    }
-    if not any(qualifying.values()):
+    if set(metrics_by_candidate) != {"B2"}:
+        raise HarnessError("v13 reference selection requires exactly B2 metrics")
+    qualifies = candidate_qualifies(inputs, metrics_by_candidate["B2"])
+    if not qualifies:
         return {
             "status": "BLOCKED",
             "single_family_reference": None,
-            "reason": "neither B0 nor B1 qualifies",
-            "qualifying": qualifying,
+            "reason": "B2 does not qualify",
+            "qualifying": {"B2": False},
         }
-    if all(qualifying.values()):
-        b0, b1 = metrics_by_candidate["B0"], metrics_by_candidate["B1"]
-        b1_reference = (
-            b1["activation_f1"] >= b0["activation_f1"] - 0.01
-            and b1["false_activation_rate"] <= b0["false_activation_rate"] + 0.01
-            and b1["median_observed_context_bytes"] <= 0.80 * b0["median_observed_context_bytes"]
-        )
-        reference_id = "B1" if b1_reference else "B0"
-    else:
-        reference_id = "B0" if qualifying["B0"] else "B1"
     return {
         "status": "REFERENCE_SELECTED",
-        "single_family_reference": reference_id,
-        "qualifying": qualifying,
+        "single_family_reference": "B2",
+        "qualifying": {"B2": True},
     }
 
 
@@ -187,9 +175,10 @@ def select_from_cost_bounded_metrics(
     reference_id: str,
     metrics_by_candidate: dict[str, dict[str, Any]],
 ) -> dict[str, Any]:
-    """Apply unchanged challenger materiality/tie-breaks to completed survivors."""
+    if reference_id != "B2":
+        raise HarnessError("v13 challenger comparison requires B2 as the reference")
     reference = metrics_by_candidate[reference_id]
-    material = []
+    material: list[str] = []
     for candidate in ("F2", "G3"):
         metrics = metrics_by_candidate.get(candidate)
         if metrics and (
@@ -215,10 +204,8 @@ def select_from_cost_bounded_metrics(
                 material, key=lambda name: metrics_by_candidate[name]["false_activation_rate"]
             )
         else:
-            f2_load, g3_load = (
-                f2["median_observed_context_bytes"],
-                g3["median_observed_context_bytes"],
-            )
+            f2_load = f2["median_observed_context_bytes"]
+            g3_load = g3["median_observed_context_bytes"]
             if abs(f2_load - g3_load) / max(f2_load, g3_load, 1) > 0.05:
                 selected = min(
                     material,
@@ -236,11 +223,12 @@ def select_from_cost_bounded_metrics(
         "status": "SELECTED",
         "selected_candidate": selected,
         "single_family_reference": reference_id,
-        "material_split_candidates": material,
+        "material_split_challengers": material,
         "qualifying": {
             candidate: candidate_qualifies(inputs, metrics)
             for candidate, metrics in metrics_by_candidate.items()
         },
+        "selection_rule": inputs.oracle["oracle_id"],
     }
 
 
@@ -248,74 +236,16 @@ def apply_selection_rule(
     inputs: FrozenInputs, metrics_by_candidate: dict[str, dict[str, Any]]
 ) -> dict[str, Any]:
     if set(metrics_by_candidate) != set(inputs.oracle["candidate_ids"]):
-        raise HarnessError("final selection requires complete B0/B1/F2/G3 metrics")
-    qualifying = {
-        candidate: candidate_qualifies(inputs, metrics)
-        for candidate, metrics in metrics_by_candidate.items()
-    }
-    reference_result = select_single_family_reference(
-        inputs, {candidate: metrics_by_candidate[candidate] for candidate in ("B0", "B1")}
-    )
+        raise HarnessError("final v13 selection requires complete B2/F2/G3 metrics")
+    reference_result = select_single_family_reference(inputs, {"B2": metrics_by_candidate["B2"]})
     if reference_result["status"] == "BLOCKED":
         return {
             "status": "BLOCKED",
             "selected_candidate": None,
-            "reason": reference_result["reason"],
-            "qualifying": qualifying,
+            "reason": "NO QUALIFYING SINGLE-FAMILY REFERENCE",
+            "qualifying": {
+                candidate: candidate_qualifies(inputs, metrics)
+                for candidate, metrics in metrics_by_candidate.items()
+            },
         }
-    reference_id = reference_result["single_family_reference"]
-
-    reference = metrics_by_candidate[reference_id]
-    material: list[str] = []
-    for candidate in ("F2", "G3"):
-        metrics = metrics_by_candidate[candidate]
-        if (
-            qualifying[candidate]
-            and metrics["activation_f1"] >= reference["activation_f1"] + 0.03
-            and metrics["median_observed_context_bytes"]
-            <= 0.85 * reference["median_observed_context_bytes"]
-            and metrics["false_activation_rate"] <= reference["false_activation_rate"]
-            and metrics["wrong_specialist_rate"] <= reference["wrong_specialist_rate"] + 0.01
-            and metrics["overactivation_rate"] <= reference["overactivation_rate"] + 0.01
-        ):
-            material.append(candidate)
-
-    if not material:
-        selected = reference_id
-    elif len(material) == 1:
-        selected = material[0]
-    else:
-        f2 = metrics_by_candidate["F2"]
-        g3 = metrics_by_candidate["G3"]
-        if abs(f2["activation_f1"] - g3["activation_f1"]) > 0.005:
-            selected = max(material, key=lambda name: metrics_by_candidate[name]["activation_f1"])
-        elif abs(f2["false_activation_rate"] - g3["false_activation_rate"]) > 0.01:
-            selected = min(
-                material, key=lambda name: metrics_by_candidate[name]["false_activation_rate"]
-            )
-        else:
-            f2_load = f2["median_observed_context_bytes"]
-            g3_load = g3["median_observed_context_bytes"]
-            denominator = max(f2_load, g3_load, 1)
-            if abs(f2_load - g3_load) / denominator > 0.05:
-                selected = min(
-                    material,
-                    key=lambda name: metrics_by_candidate[name]["median_observed_context_bytes"],
-                )
-            else:
-                entrypoint_counts = {
-                    name: len(inputs.topologies["candidates"][name]["entrypoints"])
-                    for name in material
-                }
-                minimum = min(entrypoint_counts.values())
-                tied = [name for name in material if entrypoint_counts[name] == minimum]
-                selected = "F2" if "F2" in tied else tied[0]
-
-    return {
-        "status": "SELECTED",
-        "selected_candidate": selected,
-        "single_family_reference": reference_id,
-        "material_split_challengers": material,
-        "qualifying": qualifying,
-        "selection_rule": inputs.oracle["oracle_id"],
-    }
+    return select_from_cost_bounded_metrics(inputs, "B2", metrics_by_candidate)
