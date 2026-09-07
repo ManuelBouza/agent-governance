@@ -4,7 +4,8 @@
 
 - Task ID: `T061`
 - Status: `READY`
-- Stage-Readiness: `READY_FOR_ORCHESTRATOR_STAGE5 / EXECUTOR_NOT_AUTHORIZED`
+- Stage-Readiness: `READY_FOR_STAGE6`
+- Executor-Authorization: `NOT_AUTHORIZED_PENDING_SEPARATE_HUMAN_LAUNCH`
 - Type: `test/eval`
 - Affects: `T023`
 - Base branch: `develop`
@@ -14,7 +15,7 @@
 - Test-Authorship-Mode: `orchestrator-conformance`
 - Re-entry origin: `docs/reviews/T023-R11.md`, `docs/reviews/T023-R12.md`, `docs/research/R016-MG1-V12-REFERENCE-FAMILY-REENTRY.md`
 
-`READY` in this contract means Design / Plan & Trace is complete and Orchestrator Stage 5 candidate materialization may begin on a future explicitly selected objective. It does **not** mean an Executor may be launched. D068 Stage 6 readiness requires the complete candidate publication gate in this contract.
+`READY_FOR_STAGE6` means D068 Stage 5 candidate materialization is complete and coherently published on the v13 topic branch. It does **not** authorize an Executor, provider/model call, or Stage 6 execution; those require a separate Human-selected launch objective under the then-current D055/D058 requirements.
 
 ## Objective
 
@@ -90,7 +91,21 @@ Freeze A was authored before any exact v13 acceptance prompt and remotely verifi
 - shared `source-maintainer.md`: `80a44c1c4cf5a2134d46be38c198d4b55d244f227e012765f5bcd15b627a657d`
 - shared `external-skill-trust.md`: `a4bc7bd80a6ad7377d873f69a530b0fe4d4f481414c6a3a3eeb58a3be8d70e51`
 
-The F2/G3/shared v4 copies were constructed by reusing the exact v3 Git blobs, and `verify_v13_candidate_integrity.py` independently enforces both SHA-256 identity and byte equality. Freeze B is not yet recorded in this section.
+The F2/G3/shared v4 copies were constructed by reusing the exact v3 Git blobs, and `verify_v13_candidate_integrity.py` independently enforces both SHA-256 identity and byte equality.
+
+Freeze B was authored only after Freeze A was remotely verified and is published on the same topic branch.
+
+- `holdout_freeze_sha`: `7b990f4d60ba7ca0dfafe1b95785e007f8697c28`
+- corpus v7 blob: `afcdf098be246ef425931db98379d4bce3b14929`
+- oracle v13 blob: `601797471d0bd5841773d44cb9112eaeda450268`
+- candidate hash manifest blob at Freeze A and Freeze B: `6d3a8025a1923dd5738f65e8aa07488cbd58e245`
+- exact corpus cases: `70`
+- false-activation denominator: `40`
+- near-miss balance: `6` cases on each of `5` frozen axes
+- exact V12 prompt reuse permitted: `0`
+- provider/model calls issued during Stage 5: `0`
+
+Remote Git comparison from Freeze A to Freeze B contains no changed `presentations-v4/**` path and no change to `candidate-hashes-v13.json`, `topologies.json`, `presentations/manifest.json`, or `docs/AGENT-GOVERNANCE-CAPABILITY-SOURCE.md`. Candidate/reference bytes are therefore unchanged across the anti-contamination boundary. `verify_v13_holdout_integrity.py` and the v13 harness independently re-check those identities before Stage 6 acceptance.
 
 ## Requirement / specification delta
 
