@@ -1,4 +1,4 @@
-"""Extracted MG1 topology harness implementation."""
+"""Execution-attempt persistence and deterministic v13 freeze evidence."""
 
 from __future__ import annotations
 
@@ -13,6 +13,7 @@ from typing import Any
 from .frozen_inputs import _load_json, _sha256
 from .materialization import _is_relative_to, _validate_fixture_evidence, materialize_candidate
 from .models import (
+    CANDIDATE_HASHES_PATH,
     CORPUS_PATH,
     ENVELOPE_PATH,
     MANIFEST_PATH,
@@ -34,55 +35,57 @@ from .storage import _json_dump
 from .trial_execution import run_trial
 
 
-def _holdout_rotation_evidence(inputs: FrozenInputs) -> dict[str, Any]:
-    relative = CORPUS_PATH.relative_to(REPO_ROOT).as_posix()
+def _git_bytes(revision: str, relative: str) -> bytes:
     try:
-        change = subprocess.check_output(
-            ["git", "log", "-1", "--format=%H", "--", relative],
+        return subprocess.check_output(
+            ["git", "show", f"{revision}:{relative}"],
             cwd=REPO_ROOT,
-            text=True,
-        ).strip()
-        prior_bytes = subprocess.check_output(
-            ["git", "show", f"{change}^:{relative}"], cwd=REPO_ROOT
+            stderr=subprocess.STDOUT,
         )
-        prior = json.loads(prior_bytes)
-    except (subprocess.CalledProcessError, json.JSONDecodeError) as exc:
-        raise HarnessError("cannot resolve the frozen corpus v5 predecessor") from exc
-    current_cases = {case["id"]: case for case in inputs.corpus["cases"]}
-    prior_cases = {case["id"]: case for case in prior.get("cases", [])}
-    shared_ids = set(current_cases) & set(prior_cases)
-    rotated = {
-        key: value
-        for key, value in current_cases.get("WX00R", {}).items()
-        if key not in {"id", "prompt"}
-    }
-    exposed = {
-        key: value
-        for key, value in prior_cases.get("WX00", {}).items()
-        if key not in {"id", "prompt"}
-    }
-    valid = (
-        len(current_cases) == len(prior_cases) == 40
-        and set(current_cases) - set(prior_cases) == {"WX00R"}
-        and set(prior_cases) - set(current_cases) == {"WX00"}
-        and all(current_cases[case_id] == prior_cases[case_id] for case_id in shared_ids)
-        and rotated == exposed
-        and current_cases["WX00R"]["prompt"] != prior_cases["WX00"]["prompt"]
-    )
-    if not valid:
-        raise HarnessError("corpus v6 is not the frozen WX00-to-WX00R rotation of corpus v5")
+    except subprocess.CalledProcessError as exc:
+        raise HarnessError(f"cannot resolve Git object {revision}:{relative}") from exc
+
+
+def _freeze_and_holdout_evidence(inputs: FrozenInputs) -> dict[str, Any]:
+    freeze = inputs.oracle["candidate_freeze_sha"]
+    hashes = _load_json(CANDIDATE_HASHES_PATH)
+    current_files: dict[str, str] = {}
+    freeze_files: dict[str, str] = {}
+    for relative, expected in hashes["files"].items():
+        current = _sha256(REPO_ROOT / relative)
+        frozen = hashlib.sha256(_git_bytes(freeze, relative)).hexdigest()
+        if current != expected or frozen != expected:
+            raise HarnessError(f"candidate/reference hash mismatch for {relative}")
+        current_files[relative] = current
+        freeze_files[relative] = frozen
+
+    corpus_relative = CORPUS_PATH.relative_to(REPO_ROOT).as_posix()
+    try:
+        prior = json.loads(_git_bytes(f"{freeze}^", corpus_relative))
+    except json.JSONDecodeError as exc:
+        raise HarnessError("cannot decode the pre-Freeze-A V12 corpus") from exc
+    prior_prompts = {case.get("prompt") for case in prior.get("cases", [])}
+    current_prompts = [case["prompt"] for case in inputs.corpus["cases"]]
+    reused = sorted(set(current_prompts) & prior_prompts)
+    if reused:
+        raise HarnessError("v13 holdout contains exact V12 prompt reuse")
+
     return {
         "status": "PASS",
-        "corpus_change_commit": change,
+        "candidate_freeze_sha": freeze,
+        "candidate_hash_manifest_sha256": _sha256(CANDIDATE_HASHES_PATH),
+        "freeze_a_candidate_sha256": freeze_files,
+        "current_candidate_sha256": current_files,
+        "candidate_bytes_unchanged_since_freeze_a": freeze_files == current_files,
         "prior_corpus_id": prior.get("corpus_id"),
-        "prior_sha256": hashlib.sha256(prior_bytes).hexdigest(),
         "current_corpus_id": inputs.corpus["corpus_id"],
-        "current_sha256": _sha256(CORPUS_PATH),
-        "unchanged_case_count": len(shared_ids),
-        "retired_case_id": "WX00",
-        "replacement_case_id": "WX00R",
-        "semantic_fields_equal": True,
-        "prompt_changed": True,
+        "prior_prompt_count": len(prior_prompts),
+        "current_prompt_count": len(current_prompts),
+        "exact_v12_prompt_reuse_count": len(reused),
+        "false_activation_denominator": sum(
+            case["class"] in {"negative", "near-miss"} for case in inputs.corpus["cases"]
+        ),
+        "provider_model_calls_issued": 0,
     }
 
 
@@ -122,10 +125,17 @@ def build_deterministic_evidence(inputs: FrozenInputs) -> dict[str, Any]:
         "execution_epoch": inputs.oracle["execution_epoch"],
         "prior_acceptance_observations_imported": 0,
         "provider_model_calls_issued_during_deterministic_gate": 0,
-        "holdout_rotation": _holdout_rotation_evidence(inputs),
+        "freeze_and_holdout": _freeze_and_holdout_evidence(inputs),
         "frozen_asset_sha256": {
             path.relative_to(REPO_ROOT).as_posix(): _sha256(path)
-            for path in (ORACLE_PATH, CORPUS_PATH, TOPOLOGIES_PATH, MANIFEST_PATH, ENVELOPE_PATH)
+            for path in (
+                ORACLE_PATH,
+                CORPUS_PATH,
+                TOPOLOGIES_PATH,
+                MANIFEST_PATH,
+                ENVELOPE_PATH,
+                CANDIDATE_HASHES_PATH,
+            )
         },
         "full_deterministic_regression": "NOT_RUN",
         "profile_isolation_regression": "NOT_RUN",
@@ -165,7 +175,7 @@ def _new_attempt_record(
 def execute_logical_observation(
     inputs: FrozenInputs, spec: TrialSpec, *, output: Path, **kwargs: Any
 ) -> tuple[dict[str, Any], dict[str, Any]] | None:
-    """Persist model attempts; explicit capacity events consume no attempt ordinal."""
+    """Persist attempts; explicit capacity events consume no model-attempt ordinal."""
     method = inputs.oracle["trial_method"]
     validate_repetition(inputs, spec)
     limit = method["max_model_attempts_per_scheduled_observation"]
@@ -201,7 +211,6 @@ def execute_logical_observation(
             if exc.failure_class == "HOST_SURFACE_DRIFT":
                 terminal_drift = HostSurfaceDrift(str(exc), exc.raw)
         except HarnessError as exc:
-            # Setup failed before the model invocation; there is no observation to score.
             record.update(status="FAILED", failure_class="ATTEMPT_SETUP_ERROR", error=str(exc))
         else:
             record.update(status="VALID", structured=structured, raw=raw)
@@ -283,7 +292,7 @@ def _validate_resumed_workspace(
         or workspace_evidence.get("cleanup_result") != "REMOVED"
     )
     if invalid:
-        raise HarnessError(f"{spec.key}: resumed v12 workspace factory evidence mismatch")
+        raise HarnessError(f"{spec.key}: resumed v13 workspace factory evidence mismatch")
 
 
 def _validate_partial(
@@ -313,9 +322,7 @@ def _validate_partial(
     ):
         raise HarnessError(f"{spec.key}: resumed materialization identity mismatch")
     command = _validate_resumed_command(spec, raw.get("command"), model, effort)
-    fixture = raw.get("fixture_materialization", {})
-    _validate_fixture_evidence(inputs, spec.case, fixture)
-    isolation = raw.get("workspace_isolation", {})
+    _validate_fixture_evidence(inputs, spec.case, raw.get("fixture_materialization", {}))
     workspace = Path(command[command.index("--cd") + 1])
-    _validate_resumed_isolation(inputs, spec, isolation, workspace)
+    _validate_resumed_isolation(inputs, spec, raw.get("workspace_isolation", {}), workspace)
     _validate_resumed_workspace(spec, raw.get("workspace", {}), workspace)

@@ -1,4 +1,4 @@
-"""Extracted MG1 topology harness implementation."""
+"""Execution orchestration for the frozen MG1/T023 v13 experiment."""
 
 from __future__ import annotations
 
@@ -9,14 +9,13 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
-from .aggregation import (
-    finalized_candidate_aggregates,
-)
+from .aggregation import finalized_candidate_aggregates, qualification_futility_certificate
 from .codex_adapter import _codex_version
 from .evidence import build_deterministic_evidence, execute_logical_observation
 from .frozen_inputs import _load_json, _sha256, load_frozen_inputs
 from .host_preflight import run_host_preflight
 from .models import (
+    CANDIDATE_HASHES_PATH,
     CORPUS_PATH,
     ENVELOPE_PATH,
     HARNESS_PATH,
@@ -39,7 +38,6 @@ from .scoring import (
     candidate_qualifies,
     compute_candidate_metrics,
     select_from_cost_bounded_metrics,
-    select_single_family_reference,
 )
 from .storage import _json_dump, _jsonl_dump
 
@@ -54,28 +52,27 @@ def validate_execution_config(inputs: FrozenInputs, args: argparse.Namespace) ->
         raise HarnessError("per-attempt timeout must match the frozen oracle")
     if args.full_acceptance and (args.case or args.candidate or args.repetition):
         raise HarnessError("full acceptance cannot use trial filters")
-    if (
-        len(stage_schedule(inputs, "R"))
-        != method["reference_stage_full_completion_base_valid_observations"]
-    ):
+    if len(stage_schedule(inputs, "R")) != method["reference_stage_full_completion_base_valid_observations"]:
         raise HarnessError("reference-stage base schedule does not match the frozen oracle")
-    if (
-        len(stage_schedule(inputs, "C"))
-        != method["challenger_stage_full_completion_base_valid_observations"]
-    ):
+    if len(stage_schedule(inputs, "C")) != method["challenger_stage_full_completion_base_valid_observations"]:
         raise HarnessError("challenger-stage base schedule does not match the frozen oracle")
 
 
 def _frozen_hashes() -> dict[str, str]:
     return {
         path.relative_to(REPO_ROOT).as_posix(): _sha256(path)
-        for path in (ORACLE_PATH, CORPUS_PATH, TOPOLOGIES_PATH, MANIFEST_PATH, ENVELOPE_PATH)
+        for path in (
+            ORACLE_PATH,
+            CORPUS_PATH,
+            TOPOLOGIES_PATH,
+            MANIFEST_PATH,
+            ENVELOPE_PATH,
+            CANDIDATE_HASHES_PATH,
+        )
     }
 
 
-def _resume_metadata(
-    inputs: FrozenInputs, args: argparse.Namespace, output: Path
-) -> dict[str, Any]:
+def _resume_metadata(inputs: FrozenInputs, args: argparse.Namespace, output: Path) -> dict[str, Any]:
     if not output.is_dir():
         raise HarnessError("resume requires an existing evidence root")
     metadata = _load_json(output / "run-metadata.json")
@@ -86,12 +83,13 @@ def _resume_metadata(
         "trial_envelope_id": inputs.oracle["trial_envelope_id"],
         "presentation_revision": inputs.oracle["presentation_revision"],
         "capability_source_epoch": inputs.oracle["capability_source_epoch"],
+        "candidate_freeze_sha": inputs.oracle["candidate_freeze_sha"],
         "model": args.model,
         "effort": args.effort,
         "timeout_seconds": args.timeout_seconds,
     }
     if any(metadata.get(key) != value for key, value in expected_identity.items()):
-        raise HarnessError("resume execution identity differs from frozen V12 run")
+        raise HarnessError("resume execution identity differs from frozen v13 run")
     if metadata.get("runner_sha256") != _sha256(HARNESS_PATH):
         raise HarnessError("resume runner identity changed")
     for relative, digest in _frozen_hashes().items():
@@ -113,9 +111,7 @@ def _resume_metadata(
     return metadata
 
 
-def _initial_metadata(
-    inputs: FrozenInputs, args: argparse.Namespace, workspace_parent: Path
-) -> dict[str, Any]:
+def _initial_metadata(inputs: FrozenInputs, args: argparse.Namespace, workspace_parent: Path) -> dict[str, Any]:
     return {
         "oracle_id": inputs.oracle["oracle_id"],
         "execution_epoch": inputs.oracle["execution_epoch"],
@@ -123,6 +119,7 @@ def _initial_metadata(
         "trial_envelope_id": inputs.oracle["trial_envelope_id"],
         "presentation_revision": inputs.oracle["presentation_revision"],
         "capability_source_epoch": inputs.oracle["capability_source_epoch"],
+        "candidate_freeze_sha": inputs.oracle["candidate_freeze_sha"],
         "host": "Codex",
         "platform": f"native Windows ({platform.platform()})",
         "model": args.model,
@@ -258,7 +255,7 @@ def _block_no_reference(
         {
             "status": "BLOCKED",
             "single_family_reference": None,
-            "reason": "both single-family candidates are FUTILE_QUALIFICATION",
+            "reason": "B2 is non-qualifying or FUTILE_QUALIFICATION",
             "futility": context.terminal_candidates,
         },
     )
@@ -289,27 +286,27 @@ def _select_reference(
     survivors: list[str],
     metrics: dict[str, dict[str, Any]],
 ) -> tuple[str | None, int | None]:
+    if candidates != ["B2"]:
+        raise HarnessError("v13 reference stage must contain exactly B2")
     if not survivors:
         return None, _block_no_reference(context, candidates, context.trials())
-    if len(survivors) == 1:
-        reference_id = survivors[0]
-        reference = {
-            "status": "REFERENCE_SELECTED",
-            "single_family_reference": reference_id,
-            "qualifying": {
-                reference_id: candidate_qualifies(context.inputs, metrics[reference_id])
-            },
-            "futility": context.terminal_candidates,
-        }
-    else:
-        reference = select_single_family_reference(context.inputs, metrics)
-        reference_id = reference["single_family_reference"]
-    if reference_id is None:
-        raise HarnessError("completed reference stage produced no valid reference")
-    context.metadata["single_family_reference"] = reference_id
+    if survivors != ["B2"]:
+        raise HarnessError("unexpected v13 reference-stage survivor set")
+    if not candidate_qualifies(context.inputs, metrics["B2"]):
+        certificate = qualification_futility_certificate(context.inputs, "B2", context.trials())
+        if certificate["terminal"] and "B2" not in context.terminal_candidates:
+            context._store_certificate("B2", certificate)
+        return None, _block_no_reference(context, candidates, context.trials())
+    reference = {
+        "status": "REFERENCE_SELECTED",
+        "single_family_reference": "B2",
+        "qualifying": {"B2": True},
+        "futility": context.terminal_candidates,
+    }
+    context.metadata["single_family_reference"] = "B2"
     _json_dump(context.output / "reference-selection.json", reference)
     _json_dump(context.output / "metrics-reference.json", metrics)
-    return reference_id, None
+    return "B2", None
 
 
 def _complete_decision(
