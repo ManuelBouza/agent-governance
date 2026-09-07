@@ -1,0 +1,108 @@
+{
+  "schema_version": 1,
+  "task_id": "T061",
+  "status": "BLOCKED",
+  "task_contract_path": "docs/tasks/T061-mg1-v13-positive-anchor-reference-evaluation.md",
+  "launch_authority_path": "docs/reviews/T023-R15.md",
+  "sdd_profile": "ASSURED",
+  "branch": "test/t023-skill-activation-topology-evals-v13",
+  "implementation_head_sha": "f893a03d17596182db209322f5357cda75ea3781",
+  "base_branch": "develop",
+  "base_sha": "af2f68590ace167947815bb93f12cce4ac2fa5f2",
+  "candidate_freeze_sha": "a454091aff7bb932372a6057e2d9804f94e66320",
+  "holdout_freeze_sha": "7b990f4d60ba7ca0dfafe1b95785e007f8697c28",
+  "files_changed": [
+    "handoffs/T061-executor-handoff.json"
+  ],
+  "implementation_summary": "Stage 6 stopped before deterministic verification, host preflight, canary, or acceptance because the frozen-input integrity gate detected that the v4 G3 source-maintainer presentation is not byte-identical to its declared v3 G3 source. No semantic asset, harness, corpus, oracle, trial envelope, historical evidence, Markdown, dependency, or configuration was changed.",
+  "terminal_disposition": {
+    "reason": "ORACLE_DEFECT / FROZEN_CANDIDATE_COPY_EQUIVALENCE_FAILURE",
+    "earliest_affected_sdd_stage": "Stage 5 — Candidate Materialize",
+    "upstream_reentry_required": true,
+    "acceptance_prompts_issued": 0,
+    "synthetic_canary_prompts_issued": 0,
+    "provider_model_calls_issued": 0,
+    "challenger_observations_issued": 0
+  },
+  "verification": {
+    "commands": [
+      "git fetch --prune origin",
+      "git merge --ff-only origin/develop",
+      "git merge-base --is-ancestor a454091aff7bb932372a6057e2d9804f94e66320 7b990f4d60ba7ca0dfafe1b95785e007f8697c28",
+      "git merge-base --is-ancestor 7b990f4d60ba7ca0dfafe1b95785e007f8697c28 origin/test/t023-skill-activation-topology-evals-v13",
+      "codex --version",
+      "npx --yes @openai/codex@0.149.0 --version",
+      "uv run --locked python evals/skill_activation_topology/harness.py run --output evals/skill_activation_topology/evidence/mg1-v13-codex-windows-gpt-5.6-sol-medium --codex-command <exact-0.149.0-executable> --model gpt-5.6-sol --effort medium --workers 4 --timeout-seconds 180 --full-acceptance",
+      "git ls-files --eol -- evals/skill_activation_topology/presentations-v3/G3/source-maintainer/SKILL.md evals/skill_activation_topology/presentations-v4/G3/source-maintainer/SKILL.md",
+      "git diff --no-index -- evals/skill_activation_topology/presentations-v3/G3/source-maintainer/SKILL.md evals/skill_activation_topology/presentations-v4/G3/source-maintainer/SKILL.md"
+    ],
+    "results": {
+      "canonical_sync": "PASS: local develop was clean of tracked changes and fast-forwarded to origin/develop@9d6c59131ea7e92f0ec9b7fc6cf7629195dc9ad5; registered worktrees and unrepresented local paths were preserved.",
+      "represented_branch": "PASS: origin/test/t023-skill-activation-topology-evals-v13 resolved to f893a03d17596182db209322f5357cda75ea3781 and an exclusive tracking worktree was created at that exact commit without rebase, merge, reset, or history rewrite.",
+      "freeze_ancestry": "PASS: Freeze A is an ancestor of Freeze B, and Freeze B is an ancestor of the represented Stage 5 HEAD.",
+      "post_freeze_b_changed_paths": "PASS: only docs/orchestrator/CHECKPOINT.md, docs/reviews/T023-R14.md, and docs/tasks/T061-mg1-v13-positive-anchor-reference-evaluation.md changed from Freeze B to the represented HEAD.",
+      "candidate_hash_manifest_blob": "PASS: 6d3a8025a1923dd5738f65e8aa07488cbd58e245 at Freeze A, Freeze B, and represented HEAD.",
+      "corpus_blob": "PASS: afcdf098be246ef425931db98379d4bce3b14929 at Freeze B.",
+      "oracle_blob": "PASS: 601797471d0bd5841773d44cb9112eaeda450268 at Freeze B.",
+      "pinned_codex_cli": "PASS: a version-specific temporary npm invocation resolved codex-cli 0.149.0; the default host Codex remained 0.153.4 and was not substituted for the frozen cell.",
+      "frozen_input_gate": "FAIL: v4 challenger/reference copy differs from v3 source: evals/skill_activation_topology/presentations-v4/G3/source-maintainer/SKILL.md.",
+      "eol_diagnosis": "PASS: both compared files are index LF, worktree LF, and attr text=auto eol=lf; the mismatch is not a Windows checkout conversion artifact.",
+      "freeze_a_blob_diagnosis": "FAIL: at Freeze A the declared v3 G3 source-maintainer blob is e00edee8b1a1bacbb47b01bad4492f8ddf954628, while the v4 G3 target blob is 13f064d186af528557d1e389e271aaa684122eb1.",
+      "freeze_a_sha256_diagnosis": "FAIL: v3 G3 source-maintainer SHA-256 is c463a3e8d2ffdfee67ca09feb720ab3f720c16be9e63deec3d1ce60addca0d81, while v4 G3 source-maintainer SHA-256 is b2c04992fd1162afdf2b341103a4054799c2130c627e87601f3d0627cbd0c132.",
+      "provider_free_boundary": "PASS: the failure occurred while loading frozen inputs, before evidence-root creation, deterministic subprocess gates, host preflight, synthetic canary, or acceptance scheduling; provider/model calls issued = 0."
+    },
+    "runtime": "Native Windows 11; Git 2.53.0.windows.2; uv 0.11.32; CPython 3.13.14; exact Codex CLI 0.149.0 resolved for the frozen cell but no model call was issued.",
+    "network_required": "Canonical Git fetch, version-specific Codex CLI resolution, and final Git push used network access. No provider/model call was issued."
+  },
+  "requirement_trace": {
+    "AC-T061-1": "BLOCKED: Freeze A exists remotely, but its committed copy-equivalence declaration is false for the G3 source-maintainer target/source pair.",
+    "AC-T061-4": "NOT_REACHED: current v4 candidate bytes match their frozen manifest, but the required challenger/reference copy relation is already invalid at Freeze A.",
+    "AC-T061-6": "NOT_RUN: the frozen-input integrity failure stopped the full deterministic gate at its prerequisite boundary.",
+    "AC-T061-7": "NOT_RUN: host preflight is forbidden after a deterministic/frozen-input gate failure.",
+    "AC-T061-8": "PASS: zero F2/G3 acceptance observations were issued.",
+    "AC-T061-9": "NOT_APPLICABLE: B2 was not executed or qualified.",
+    "AC-T061-10": "PASS: zero prior-epoch observation entered v13 scoring because scoring never began.",
+    "AC-T061-11": "PASS: Stage 6 made no semantic change to any Orchestrator-owned asset.",
+    "AC-T061-12": "BLOCKED: no live result exists; the terminal integrity defect is independently reconstructable from frozen Git objects and this handoff."
+  },
+  "code_review": {
+    "reviewed_head_sha": "f893a03d17596182db209322f5357cda75ea3781",
+    "summary": "The represented branch preserves the recorded Freeze A/Freeze B ancestry and post-Freeze-B control-only delta, but the Stage 5 candidate-integrity contract is internally violated. candidate-hashes-v13.json declares the v4 G3 source-maintainer file to be a byte copy of presentations-v3/G3/source-maintainer/SKILL.md, while the committed blobs and SHA-256 values differ. Repair would require changing a frozen semantic asset, its provenance rule, or prospective identity set, all outside Stage 6 authority.",
+    "findings": [
+      "Blocking Stage 5 materialization/oracle defect: the v4 G3 source-maintainer target contains the v3 F2 source-maintainer bytes rather than the declared v3 G3 source-maintainer bytes."
+    ],
+    "resolved_findings": [],
+    "upstream_reentry_required": true,
+    "upstream_reentry_stage": "Stage 5 — Candidate Materialize"
+  },
+  "delegation": {
+    "initial_evaluation": "Evaluated before substantial work. No eligible child surface could independently satisfy the pinned Codex 0.149.0/native-Windows/provider-isolation cell while preserving one-writer worktree safety, so no delegation was used.",
+    "final_review_evaluation": "Re-evaluated before terminal Code Review & Verify. The blocking fact is fully reproducible from immutable Git blobs and hashes, and delegation would not add an independent authorized execution surface; coordinator-only review retained.",
+    "delegated": false,
+    "workers": []
+  },
+  "dependencies_or_config_changes": [],
+  "git_status": "Expected clean tracked worktree after the handoff-only commit; to be verified before final push.",
+  "unresolved_issues": [
+    "The frozen v13 candidate set and its copy-equivalence oracle disagree for G3 source-maintainer at Freeze A. Stage 6 cannot repair or execute through this semantic integrity defect.",
+    "The Orchestrator must re-enter Stage 5 and allocate any new prospective corpus/oracle/execution identities required by the post-Freeze-B correction rule before relaunching Stage 6."
+  ],
+  "scope_confirmation": {
+    "markdown_changed_by_executor": false,
+    "candidate_or_reference_bytes_modified": false,
+    "corpus_modified": false,
+    "oracle_modified": false,
+    "trial_envelope_modified": false,
+    "harness_modified": false,
+    "historical_evidence_modified": false,
+    "dependencies_changed": false,
+    "configuration_changed": false,
+    "changed_paths_within_authorized_scope": true
+  },
+  "recommended_next_task": "ChatGPT Orchestrator should perform Stage 5 SDD re-entry for the frozen G3 source-maintainer copy-equivalence defect and issue a new prospective identity set if the semantic correction proceeds after Freeze B.",
+  "chatgpt_read_path": [
+    "docs/tasks/T061-mg1-v13-positive-anchor-reference-evaluation.md",
+    "docs/reviews/T023-R15.md",
+    "handoffs/T061-executor-handoff.json"
+  ]
+}
