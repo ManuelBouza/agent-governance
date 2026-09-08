@@ -1,4 +1,4 @@
-"""RF1 characterization for the stable T050 harness CLI facade."""
+"""Characterization for the stable T050 harness CLI facade under T023 v15."""
 
 from __future__ import annotations
 
@@ -14,7 +14,7 @@ import pytest
 @pytest.fixture(scope="module")
 def harness(repo_root: Path):
     path = repo_root / "evals" / "skill_activation_topology" / "harness.py"
-    spec = importlib.util.spec_from_file_location("t050_rf1_harness", path)
+    spec = importlib.util.spec_from_file_location("t050_v15_harness", path)
     assert spec is not None and spec.loader is not None
     module = importlib.util.module_from_spec(spec)
     sys.modules[spec.name] = module
@@ -60,7 +60,7 @@ def test_cli_subcommands_and_argument_contract(harness) -> None:
         "full_acceptance",
     }
     assert run_actions["output"].required is True
-    assert run_actions["candidate"].choices == ("B0", "B1", "F2", "G3")
+    assert run_actions["candidate"].choices == ("B2", "F2", "G3")
     assert run_actions["repetition"].choices == (1, 2, 3)
     run = parser.parse_args(["run", "--output", "evidence"])
     assert run.func is harness.run_matrix
@@ -70,7 +70,7 @@ def test_cli_subcommands_and_argument_contract(harness) -> None:
         "codex_command": "codex",
         "model": "gpt-5.6-sol",
         "effort": "medium",
-        "workers": 4,
+        "workers": 1,
         "timeout_seconds": 180,
         "case": None,
         "candidate": None,
@@ -94,10 +94,12 @@ def test_validate_cli_success_output_and_exit(harness, capsys) -> None:
     assert harness.main(["validate"]) == 0
     assert json.loads(capsys.readouterr().out) == {
         "status": "PASS",
-        "oracle_id": "MG1-T023-TOPOLOGY-ORACLE-v12",
-        "cases": 40,
-        "candidates": ["B0", "B1", "F2", "G3"],
-        "scheduled_trials": 320,
+        "oracle_id": "MG1-T023-TOPOLOGY-ORACLE-v15",
+        "strategy": "RIQ-NBC",
+        "cases": 70,
+        "candidates": ["B2", "F2", "G3"],
+        "base_scheduled_trials": 420,
+        "maximum_trial_identities": 630,
     }
 
 

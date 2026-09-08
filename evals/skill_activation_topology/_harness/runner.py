@@ -1,4 +1,4 @@
-"""Extracted MG1 topology harness implementation."""
+"""Live execution runner for the frozen T023 v15 RIQ-NBC epoch."""
 
 from __future__ import annotations
 
@@ -9,9 +9,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
-from .aggregation import (
-    finalized_candidate_aggregates,
-)
+from .aggregation import aggregate_candidate_trials, conditional_third_specs
 from .codex_adapter import _codex_version
 from .evidence import build_deterministic_evidence, execute_logical_observation
 from .frozen_inputs import _load_json, _sha256, load_frozen_inputs
@@ -34,13 +32,8 @@ from .models import (
 from .provenance import verify_deterministic
 from .run_support import RunContext
 from .scheduler_simulation import run_provider_free_scheduler_simulation
-from .scheduling import scheduled_trials, stage_schedule
-from .scoring import (
-    candidate_qualifies,
-    compute_candidate_metrics,
-    select_from_cost_bounded_metrics,
-    select_single_family_reference,
-)
+from .scheduling import all_possible_trials, scheduled_trials
+from .scoring import apply_selection_rule, compute_candidate_metrics
 from .storage import _json_dump, _jsonl_dump
 
 
@@ -54,16 +47,12 @@ def validate_execution_config(inputs: FrozenInputs, args: argparse.Namespace) ->
         raise HarnessError("per-attempt timeout must match the frozen oracle")
     if args.full_acceptance and (args.case or args.candidate or args.repetition):
         raise HarnessError("full acceptance cannot use trial filters")
-    if (
-        len(stage_schedule(inputs, "R"))
-        != method["reference_stage_full_completion_base_valid_observations"]
-    ):
-        raise HarnessError("reference-stage base schedule does not match the frozen oracle")
-    if (
-        len(stage_schedule(inputs, "C"))
-        != method["challenger_stage_full_completion_base_valid_observations"]
-    ):
-        raise HarnessError("challenger-stage base schedule does not match the frozen oracle")
+    if args.full_acceptance and args.workers != 1:
+        raise HarnessError("v15 full acceptance requires workers=1 to preserve frozen audit order")
+    if len(scheduled_trials(inputs)) != method["global_base_valid_observations"]:
+        raise HarnessError("v15 base schedule does not match the frozen 420-observation budget")
+    if len(all_possible_trials(inputs)) != method["global_max_valid_observations"]:
+        raise HarnessError("v15 maximum identity set does not match the frozen 630-observation budget")
 
 
 def _frozen_hashes() -> dict[str, str]:
@@ -91,7 +80,7 @@ def _resume_metadata(
         "timeout_seconds": args.timeout_seconds,
     }
     if any(metadata.get(key) != value for key, value in expected_identity.items()):
-        raise HarnessError("resume execution identity differs from frozen V12 run")
+        raise HarnessError("resume execution identity differs from frozen v15 run")
     if metadata.get("runner_sha256") != _sha256(HARNESS_PATH):
         raise HarnessError("resume runner identity changed")
     for relative, digest in _frozen_hashes().items():
@@ -123,6 +112,7 @@ def _initial_metadata(
         "trial_envelope_id": inputs.oracle["trial_envelope_id"],
         "presentation_revision": inputs.oracle["presentation_revision"],
         "capability_source_epoch": inputs.oracle["capability_source_epoch"],
+        "strategy": inputs.oracle["strategy"],
         "host": "Codex",
         "platform": f"native Windows ({platform.platform()})",
         "model": args.model,
@@ -142,7 +132,11 @@ def _initial_metadata(
         "sandbox_selection_order": ["read-only", "workspace-write"],
         "windows_backend_selection_order": list(WINDOWS_BACKEND_ORDER),
         "stimulus_rule": "exact corpus prompt, two newlines, frozen neutral suffix",
-        "stage_state": "REFERENCE_BASE_PENDING" if args.full_acceptance else "FILTERED_PENDING",
+        "candidate_round_robin_order": inputs.oracle["scheduling"][
+            "candidate_round_robin_order"
+        ],
+        "base_repetition_order": inputs.oracle["scheduling"]["base_repetition_order"],
+        "stage_state": "ACCEPTANCE_BASE_PENDING" if args.full_acceptance else "FILTERED_PENDING",
         "status": "RUNNING",
         "started_at": datetime.now(UTC).isoformat(),
     }
@@ -227,7 +221,11 @@ def _start_new_run(
 
 
 def _filtered_schedule(inputs: FrozenInputs, args: argparse.Namespace) -> list[TrialSpec]:
-    schedule = scheduled_trials(inputs)
+    schedule = (
+        all_possible_trials(inputs)
+        if args.repetition and 3 in set(args.repetition)
+        else scheduled_trials(inputs)
+    )
     if args.case:
         schedule = [spec for spec in schedule if spec.case["id"] in set(args.case)]
     if args.candidate:
@@ -249,92 +247,32 @@ def _run_filtered(context: RunContext) -> int:
     return 0
 
 
-def _block_no_reference(
-    context: RunContext, candidates: list[str], trials: list[dict[str, Any]]
-) -> int:
-    _json_dump(context.output / "metrics-reference.json", {})
-    _json_dump(
-        context.output / "reference-selection.json",
-        {
-            "status": "BLOCKED",
-            "single_family_reference": None,
-            "reason": "both single-family candidates are FUTILE_QUALIFICATION",
-            "futility": context.terminal_candidates,
-        },
+def _run_full(context: RunContext) -> int:
+    terminal = context.stop_for_execution_state(
+        *context.execute_schedule(scheduled_trials(context.inputs)), "ACCEPTANCE_BASE_INCOMPLETE"
     )
-    _json_dump(
-        context.output / "selection.json",
-        {
-            "status": "BLOCKED",
-            "selected_candidate": None,
-            "reason": "NO QUALIFYING SINGLE-FAMILY REFERENCE",
-            "scored": True,
-        },
+    if terminal is not None:
+        return terminal
+
+    thirds = conditional_third_specs(
+        context.inputs, context.inputs.oracle["candidate_ids"], context.trials()
     )
-    _jsonl_dump(
-        context.output / "case-aggregates.jsonl",
-        [
-            item
-            for candidate in candidates
-            for item in finalized_candidate_aggregates(context.inputs, candidate, trials)
-        ],
+    maximum = context.inputs.oracle["trial_method"]["global_max_valid_observations"]
+    if len(scheduled_trials(context.inputs)) + len(thirds) > maximum:
+        raise HarnessError("conditional thirds exceed frozen v15 observation ceiling")
+    terminal = context.stop_for_execution_state(
+        *context.execute_schedule(thirds), "CONDITIONAL_THIRD_INCOMPLETE"
     )
-    context.export_evidence("REFERENCE_FUTILE_NO_QUALIFIER", "BLOCKED_NO_REFERENCE")
-    return 1
+    if terminal is not None:
+        return terminal
 
-
-def _select_reference(
-    context: RunContext,
-    candidates: list[str],
-    survivors: list[str],
-    metrics: dict[str, dict[str, Any]],
-) -> tuple[str | None, int | None]:
-    if not survivors:
-        return None, _block_no_reference(context, candidates, context.trials())
-    if len(survivors) == 1:
-        reference_id = survivors[0]
-        reference = {
-            "status": "REFERENCE_SELECTED",
-            "single_family_reference": reference_id,
-            "qualifying": {
-                reference_id: candidate_qualifies(context.inputs, metrics[reference_id])
-            },
-            "futility": context.terminal_candidates,
-        }
-    else:
-        reference = select_single_family_reference(context.inputs, metrics)
-        reference_id = reference["single_family_reference"]
-    if reference_id is None:
-        raise HarnessError("completed reference stage produced no valid reference")
-    context.metadata["single_family_reference"] = reference_id
-    _json_dump(context.output / "reference-selection.json", reference)
-    _json_dump(context.output / "metrics-reference.json", metrics)
-    return reference_id, None
-
-
-def _complete_decision(
-    context: RunContext,
-    reference_id: str,
-    reference_metrics: dict[str, dict[str, Any]],
-    deterministic: dict[str, Any],
-) -> int:
-    candidates = context.inputs.oracle["trial_method"]["challenger_stage_candidates"]
-    stopped = context.adaptive_stage("C", candidates, reference_metrics[reference_id])
-    if stopped is not None:
-        return stopped
     trials = context.trials()
-    survivors = [
-        candidate for candidate in candidates if candidate not in context.terminal_candidates
-    ]
-    metrics = dict(reference_metrics)
-    metrics.update(
-        {
-            candidate: compute_candidate_metrics(context.inputs, candidate, trials, deterministic)
-            for candidate in survivors
-        }
-    )
-    selection = select_from_cost_bounded_metrics(context.inputs, reference_id, metrics)
-    selection["futility"] = context.terminal_candidates
+    deterministic = _load_json(context.output / "deterministic-evidence.json")
+    metrics = {
+        candidate: compute_candidate_metrics(context.inputs, candidate, trials, deterministic)
+        for candidate in context.inputs.oracle["candidate_ids"]
+    }
+    selection = apply_selection_rule(context.inputs, metrics)
     _json_dump(context.output / "metrics.json", metrics)
     _json_dump(context.output / "selection.json", selection)
     _jsonl_dump(
@@ -342,31 +280,14 @@ def _complete_decision(
         [
             item
             for candidate in context.inputs.oracle["candidate_ids"]
-            for item in finalized_candidate_aggregates(context.inputs, candidate, trials)
+            for item in aggregate_candidate_trials(context.inputs, candidate, trials)
         ],
     )
-    context.export_evidence("COST_BOUNDED_DECISION_COMPLETE", "COMPLETE")
+    if selection["status"] == "BLOCKED":
+        context.export_evidence("INVALID_B2_CONTROL", "BLOCKED")
+        return 1
+    context.export_evidence("RIQ_NBC_DECISION_COMPLETE", "COMPLETE")
     return 0
-
-
-def _run_full(context: RunContext) -> int:
-    deterministic = _load_json(context.output / "deterministic-evidence.json")
-    candidates = context.inputs.oracle["trial_method"]["reference_stage_candidates"]
-    stopped = context.adaptive_stage("R", candidates)
-    if stopped is not None:
-        return stopped
-    trials = context.trials()
-    survivors = [
-        candidate for candidate in candidates if candidate not in context.terminal_candidates
-    ]
-    metrics = {
-        candidate: compute_candidate_metrics(context.inputs, candidate, trials, deterministic)
-        for candidate in survivors
-    }
-    reference_id, terminal = _select_reference(context, candidates, survivors, metrics)
-    if terminal is not None:
-        return terminal
-    return _complete_decision(context, reference_id, metrics, deterministic)
 
 
 def run_matrix(args: argparse.Namespace) -> int:

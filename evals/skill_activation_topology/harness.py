@@ -80,6 +80,7 @@ from _harness.models import (
     TOPOLOGIES_PATH,
     TRIAL_SCHEMA,
     V12_CLASS_ORDER,
+    V15_CLASS_ORDER,
     WINDOWS_BACKEND_ORDER,
     WORKSPACE_FACTORY_ID,
     WORKSPACE_PROBE_FILENAME,
@@ -112,8 +113,10 @@ from _harness.scheduling import (
     all_possible_trials,
     expected_entrypoints,
     expected_load_path,
+    ordered_cases,
     scheduled_trials,
     stage_schedule,
+    validate_repetition,
 )
 from _harness.scoring import (
     apply_selection_rule,
