@@ -29,18 +29,12 @@ jobs:
       - name: Sync locked environment
         run: uv sync --locked
 
-      - name: Apply frozen-path formatter exclusion and format candidate
-        if: github.event.head_commit.message != 'ci: apply ruff formatting'
+      - name: Exclude immutable Freeze F guard from formatter discovery
         run: |
-          python - <<'PY'
-          from pathlib import Path
-          path = Path('pyproject.toml')
-          text = path.read_text(encoding='utf-8')
-          needle = 'extend-exclude = [\n    "**/*.md",\n    ".venv",\n]'
-          replacement = 'extend-exclude = [\n    "**/*.md",\n    ".venv",\n    "evals/skill_activation_topology/verify_v15_holdout_integrity.py",\n]'
-          assert needle in text
-          path.write_text(text.replace(needle, replacement), encoding='utf-8', newline='\n')
-          PY
+          python -c "from pathlib import Path; p=Path('pyproject.toml'); s=p.read_text(encoding='utf-8'); n='extend-exclude = [\\n    \"**/*.md\",\\n    \".venv\",\\n]'; r='extend-exclude = [\\n    \"**/*.md\",\\n    \".venv\",\\n    \"evals/skill_activation_topology/verify_v15_holdout_integrity.py\",\\n]'; assert n in s; p.write_text(s.replace(n,r),encoding='utf-8',newline='\\n')"
+
+      - name: Format non-frozen candidate mechanics
+        run: |
           uv run --locked ruff format .
           git diff --check
 
@@ -77,13 +71,12 @@ jobs:
         run: uv run --locked python -m pytest
 
       - name: Provider/model call boundary
-        run: echo 'provider_model_calls=0'
+        run: echo provider_model_calls=0
 
-      - name: Persist formatted validation candidate
-        if: github.event.head_commit.message != 'ci: apply ruff formatting'
+      - name: Persist validated formatted tree
         run: |
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
           git add -A
-          git commit -m 'ci: apply ruff formatting'
+          git commit -m 'ci: apply ruff formatting [skip ci]'
           git push origin HEAD:chore/t062-v15-harness-stage5-validation
