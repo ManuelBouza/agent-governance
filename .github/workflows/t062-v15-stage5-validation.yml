@@ -6,7 +6,7 @@ on:
       - chore/t062-v15-harness-stage5-validation
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   deterministic:
@@ -73,10 +73,36 @@ jobs:
       - name: Provider/model call boundary
         run: echo provider_model_calls=0
 
-      - name: Persist validated formatted tree
+      - name: Emit formatted tree payloads
         run: |
-          git config user.name github-actions[bot]
-          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          git add -A
-          git commit -m 'ci: apply ruff formatting [skip ci]'
-          git push origin HEAD:chore/t062-v15-harness-stage5-validation
+          python - <<'PY'
+          import base64
+          from pathlib import Path
+          for raw in Path('/tmp/t062-files.txt').read_text().splitlines() if Path('/tmp/t062-files.txt').exists() else []:
+              path = Path(raw)
+              print(f'FILE_BEGIN {raw}')
+              print(base64.b64encode(path.read_bytes()).decode('ascii'))
+              print(f'FILE_END {raw}')
+          PY
+        env:
+          UNUSED: '0'
+
+      - name: List formatted changed paths
+        run: |
+          git diff --name-only | tee /tmp/changed.txt
+          while IFS= read -r path; do
+            case "$path" in
+              .github/workflows/*) ;;
+              evals/skill_activation_topology/verify_v15_holdout_integrity.py) ;;
+              *) echo "$path" ;;
+            esac
+          done < /tmp/changed.txt > /tmp/t062-files.txt
+          python - <<'PY'
+          import base64
+          from pathlib import Path
+          for raw in Path('/tmp/t062-files.txt').read_text().splitlines():
+              path = Path(raw)
+              print(f'FILE_BEGIN {raw}')
+              print(base64.b64encode(path.read_bytes()).decode('ascii'))
+              print(f'FILE_END {raw}')
+          PY
