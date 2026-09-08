@@ -1,9 +1,6 @@
-"""Technical runner and scorer for the frozen MG1 T023 topology oracle.
+"""Technical facade for the frozen MG1 T023 topology oracle.
 
-The semantic corpus, candidate presentations, metric definitions, and thresholds
-remain owned by the checked-in JSON/Markdown oracle assets. This facade delegates
-materialization, host execution, evidence, and scoring to cohesive implementation
-modules.
+Semantic inputs remain owned by the checked-in oracle assets.
 """
 
 from __future__ import annotations
@@ -79,7 +76,6 @@ from _harness.models import (
     REQUIRED_CODEX_VERSION,
     TOPOLOGIES_PATH,
     TRIAL_SCHEMA,
-    V12_CLASS_ORDER,
     V15_CLASS_ORDER,
     WINDOWS_BACKEND_ORDER,
     WORKSPACE_FACTORY_ID,
