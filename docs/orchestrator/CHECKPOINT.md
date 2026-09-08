@@ -1,9 +1,9 @@
 # Current ChatGPT Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O252  
+Checkpoint-Sequence: O253  
 Canonical-Branch: `develop`  
-Current-Work-Unit: T023 / SDD Stage 1 — `EXPLORE_FRAME_COMPLETE_REFERENCE_INDEPENDENT_STRATEGY_SELECTED`  
+Current-Work-Unit: T023 / SDD Stage 2 — `RIQ_NBC_SPECIFY_COMPLETE_READY_FOR_DESIGN_PLAN_TRACE`  
 Chat-Closure: KEEP_CURRENT_CHAT  
 Active-Executor: none  
 Active-Executor-Surface: none  
@@ -14,93 +14,103 @@ Executor-Launch-State: NOT_AUTHORIZED
 - D069 remains controlling for final Human-facing closure with the exact section title `Próxima Tarea`.
 - D070 remains controlling for visible substantive work narration and compact completion reporting.
 - R26 remains the accepted T061 v14-r1 Stage 7 scientific convergence.
-- R27 is the current T023 SDD Stage 1 Explore / Frame authority.
-- The Human explicitly selected continuation of the T023 reference-family line on 2026-09-08 by replying `go` after O251.
-- The selected strategic direction is `CHANGE_EXPERIMENTAL_REFERENCE_SELECTION_STRATEGY / RIQ-NBC`.
-- `RIQ-NBC` means Reference-Independent Qualification with Non-Blocking Single-Family Control.
-- The next prospective design will allow scheduled topology candidates to face absolute qualification independently rather than requiring a qualifying single-family reference before F2/G3 may be observed.
-- A single-family control may remain for same-epoch comparability, but its non-qualification must not itself suppress F2/G3 execution.
-- This does not favor F2/G3 or select a topology; all scheduled candidates must independently satisfy the future pre-registered absolute quality, safety and non-regression gates.
-- If a single-family control qualifies, existing relative materiality may remain usable subject to Specify. If it does not qualify, Specify must define a new pre-registered selection rule without treating a non-qualifying control as an accepted baseline.
-- The selected strategy is a prospective experimental/reference-selection refinement and is expected to require a new persisted decision refining D050/T023 selection semantics before Design/Plan completion.
-- The accepted absolute thresholds are not weakened by this re-entry.
-- Candidate Freeze C remains `1fc38f979d67ff29649f69ae39b8d46d2523518b`.
-- Holdout/oracle Freeze D remains `f8cee7c72688f0486211474d2678d018772e2a58`.
+- R27 is the accepted T023 RIQ-NBC Explore / Frame authority.
+- D074 is the current prospective selection-policy refinement for T023.
+- R28 completes SDD Stage 2 Specify and authorizes only Orchestrator-owned Design / Plan & Trace next.
+- The selected strategy is `RIQ-NBC` — Reference-Independent Qualification with Non-Blocking Single-Family Control.
+- Fresh-epoch candidate set is exactly B2 / F2 / G3.
+- Candidate presentation bytes are held constant: exact byte reuse from the accepted v14-r1 candidate set; no wording change is authorized.
+- B0/B1 remain historical and unscheduled.
+- After common Stage 6 pre-acceptance gates, B2/F2/G3 will be independently schedulable. B2 qualification will not gate F2/G3 observation.
+- Per-candidate scientific futility may stop only that candidate; global integrity/host/oracle/evidence invalidity stops the epoch.
+- Absolute qualification gates remain unchanged: activation precision/recall/F1 >= 0.95; FAR/wrong-specialist/overactivation <= 0.05; semantic accuracy >= 0.95; zero critical cross-profile violations; zero critical ambiguous permission broadening; mandatory deterministic/profile/source/distribution/single-install non-regression.
+- If B2 qualifies, original materiality is preserved: F1 +0.03, median context <= 0.85*B2, FAR <= B2, wrong <= B2+0.01, overactivation <= B2+0.01.
+- If B2 scientifically does not qualify, B2 is ineligible but non-blocking. A split candidate must independently qualify and satisfy admissibility dominance: median context <= 0.85*B2, FAR <= B2, wrong <= B2+0.01, overactivation <= B2+0.01, zero critical violations, deterministic/non-regression PASS. The prior F1 +0.03 uplift is replaced only in this regime by qualifying-vs-nonqualifying admissibility; absolute F1 >= 0.95 remains.
+- If both eligible split candidates remain, preserve tie-break: higher F1, then lower FAR, then lower context, then fewer entrypoints, then F2 exact tie.
+- Technical/host/evidence invalidity is never treated as B2 scientific non-qualification and cannot authorize split selection.
+- Repeated-trial semantics remain paired 2+1, no r4, majority/median, any-occurrence critical gates, exact futility, max two model attempts, 180s per attempt.
+- New scientific identities are fixed:
+  - strategy `RIQ-NBC`;
+  - evaluation `MG1-T023-EVALUATION-v15`;
+  - candidate hashes `MG1-T023-CANDIDATE-HASHES-v3`;
+  - capability source `MG1-2026-09-06-v4` preserved;
+  - topology metadata `MG1-T023-TOPOLOGIES-v4` preserved;
+  - presentation `MG1-T023-PRESENTATIONS-v5` preserved exact bytes;
+  - corpus `MG1-T023-CORPUS-v9`;
+  - oracle `MG1-T023-TOPOLOGY-ORACLE-v15`;
+  - execution `MG1-T023-EXECUTION-v15`;
+  - trial envelope `MG1-T023-TRIAL-ENVELOPE-v3`;
+  - Candidate Freeze E assigned at Stage 5;
+  - Holdout/oracle Freeze F assigned only after remote Freeze E verification.
+- Fresh holdout preserves 70 cases / FAR denominator 40 / five balanced near-miss axes unless Design discovers a pre-observation statistical defect requiring re-entry.
+- Exact v15 prompts must have zero exact overlap with all prior exposed T023/MG1 acceptance corpora available in Git, at minimum v12/v13/v14.
+- Zero prior observations enter v15 acceptance scoring.
+- Same live cell remains Codex / native Windows / GPT-5.6 Sol / Medium / exact Codex CLI 0.149.0.
+- Provider/model acceptance calls through Stage 5 remain exactly 0 by policy.
+- D052 semantic-oracle ownership remains Orchestrator-owned; future Stage 6 execution/diagnosis/repair/verify remains Executor-owned only after separate Human launch.
+- No new executable Task Contract exists yet.
+- No candidate materialization, fresh holdout, Executor launch or provider/model call is currently authorized.
 - Terminal v14-r1 scientific evidence remains immutable at `test/t023-skill-activation-topology-evals-v14-r1@67884f52912aeb51821d8f7e8ae7753c40b608fc`.
-- Fresh revalidation confirmed Freeze C / Freeze D remain in terminal ancestry and the terminal branch head has not moved.
-- R27 records a new design-evidence observation from v14-r1: on negative cases C14N01 and C14N04, the model's final structured disposition was `no-activation`, but the host had already read `.agents/skills/agent-governance/SKILL.md`. The observed false-activation pressure therefore occurs at the pre-body selection/load boundary, not as a body-level capability grant defect.
-- PASR/B2 already embodied the V12-driven positive-anchor metadata strategy. No distinct new single-router mechanism is currently justified; a wording-only B3 is not the selected next direction.
-- No v14 observation may enter future acceptance scoring. Exact v14 prompts are exposed design evidence and must not be reused as fresh acceptance stimuli.
-- No new Task Contract exists yet for the RIQ-NBC epoch.
-- No candidate, corpus, oracle, execution epoch or provider-backed evaluation has been authorized for the RIQ-NBC line.
-- No Executor is authorized.
-- T024 remains unauthorized because T023 has not selected a release topology.
+- Candidate Freeze C `1fc38f979d67ff29649f69ae39b8d46d2523518b` and Holdout Freeze D `f8cee7c72688f0486211474d2678d018772e2a58` remain historical and immutable.
+- T024 remains unauthorized.
 - D066 gaps remain unchanged.
 - T058 remains frozen.
-- D073 generic rollout remains a separate Markdown-only objective and MUST NOT be mixed into T023 unless explicitly selected.
+- D073 generic rollout remains separate.
 
-## Current Stage 1 authority
+## Current Specify authority
 
-Current Explore / Frame review:
+Decision:
+
+`docs/decisions/D074-reference-independent-topology-qualification.md`
+
+Specify review:
+
+`docs/reviews/T023-R28.md`
+
+Explore / Frame review:
 
 `docs/reviews/T023-R27.md`
 
-Parent convergence:
+Parent scientific convergence:
 
 `docs/reviews/T023-R26.md`
 
-Controlling topology decision:
+## Prospective selection regimes
 
-`docs/decisions/D050-canonical-capability-source-and-evaluated-skill-topology.md`
+### B2 qualifies
 
-Selected strategy:
-
-```text
-RIQ-NBC
-Reference-Independent Qualification with Non-Blocking Single-Family Control
-```
-
-Stage 1 principles:
-
-1. independent absolute qualification for each scheduled topology candidate;
-2. single-family control must not gate challenger observation;
-3. no automatic split preference;
-4. relative materiality only where a qualifying control makes it coherent;
-5. new pre-registered rule required if control is non-qualifying and multiple candidates qualify;
-6. fresh acceptance epoch with zero v14 observations imported into scoring;
-7. no threshold weakening;
-8. no provider-backed execution before a later separate Stage 6 launch.
-
-## Immutable scientific evidence
-
-Historical terminal branch:
-
-`test/t023-skill-activation-topology-evals-v14-r1`
-
-Terminal HEAD:
-
-`67884f52912aeb51821d8f7e8ae7753c40b608fc`
-
-Candidate Freeze C:
-
-`1fc38f979d67ff29649f69ae39b8d46d2523518b`
-
-Holdout/oracle Freeze D:
-
-`f8cee7c72688f0486211474d2678d018772e2a58`
-
-Accepted v14-r1 disposition:
+A split candidate must qualify and satisfy:
 
 ```text
-single_family_reference: null
-B2: FUTILE_QUALIFICATION
-best possible final activation precision: 0.9375
-required activation precision: >= 0.95
-F2 scheduled: false
-G3 scheduled: false
+F1 >= B2 + 0.03
+median context <= 0.85 * B2
+FAR <= B2
+wrong-specialist <= B2 + 0.01
+overactivation <= B2 + 0.01
 ```
 
-These artifacts are design evidence only for the new SDD re-entry and are not a future acceptance score.
+No material split -> B2 selected.
+
+### B2 scientifically does not qualify
+
+B2 is non-blocking and ineligible.
+
+A split candidate must qualify and satisfy:
+
+```text
+median context <= 0.85 * B2
+FAR <= B2
+wrong-specialist <= B2 + 0.01
+overactivation <= B2 + 0.01
+zero critical violations
+all deterministic/non-regression gates PASS
+```
+
+No eligible split -> no topology selected.
+
+### B2 invalid for technical/epoch reasons
+
+Fail closed. No topology selection.
 
 ## Next Chat Minimum Load
 
@@ -111,36 +121,39 @@ For every new source-maintenance chat:
 3. Read this checkpoint from that `develop`.
 4. Report `BOOTSTRAP_VALID` before substantive work.
 5. Apply D070/D069 to visible narration/final closure.
-6. For the current T023 frontier, load R27 first.
-7. Load R26 and D050 only when needed to resolve scientific-history or decision-boundary details.
-8. Do not load older T023/T061 history unless a concrete conflict requires it.
+6. For current T023 work, load D074 and R28 first.
+7. Load R27/R26/D050 only if a concrete design/history conflict requires them.
+8. Do not load older T023/T061 history unless needed to resolve an exact artifact or contamination boundary.
 9. For any future Codex launch/transport interaction, load D071/D072/D073 plus the then-current launch authority.
 10. Do not reconstruct the frontier from prior chats or Project Memory.
 
 ## Next action
 
-Proceed with Orchestrator-owned SDD Stage 2 Specify for `RIQ-NBC`.
+Proceed with Orchestrator-owned SDD Stage 3 Design and Stage 4 Plan & Trace for the v15 RIQ-NBC epoch.
 
-Stage 2 must persist, before Design / Plan & Trace:
+Before Stage 5, persist:
 
-1. the exact prospective refinement to D050/T023 scheduling and selection semantics, normally through a new decision rather than reinterpretation of historical R12/T061 authority;
-2. the exact fresh-epoch candidate set, including whether exact B2 bytes participate as a non-blocking control;
-3. the exact reference-independent scheduling rule for F2/G3;
-4. the absolute qualification/safety/non-regression gates to preserve;
-5. the selection/materiality rule when the single-family control qualifies;
-6. the selection/no-winner/tie-break rule when the control does not qualify;
-7. contamination/freshness requirements and new candidate/presentation/corpus/oracle/execution identities;
-8. D052 semantic-oracle ownership and holdout-freeze boundary;
-9. the path to a new Task Contract after Specify/Design/Plan authority is coherent.
+1. exact scientific branch lineage and D061/D062 freshness strategy;
+2. exact source paths and SHA/hash provenance for byte-copying B2/F2/G3 into Freeze E;
+3. exact candidate-hash manifest v3 schema/content;
+4. exact fresh corpus v9 construction, geometry and all-prior-corpus overlap guard;
+5. exact oracle v15 representation of independent scheduling, qualifying-control materiality, non-qualifying-control admissibility dominance, tie-break and no-winner outcomes;
+6. exact trial-envelope v3 scheduler order/interleaving and per-candidate/global futility semantics;
+7. exact provider-call budget ceilings for three independently scheduled candidates;
+8. deterministic/integrity verification matrix and synthetic-canary boundary;
+9. D052 semantic conformance guards;
+10. the new executable Task Contract identity and trace links;
+11. Stage 5 Candidate Freeze E -> remote verification -> fresh Holdout Freeze F materialization/publish sequence;
+12. the later separate Human-selected Stage 6 launch requirement.
 
-No candidate materialization, fresh holdout authoring, Executor launch or provider/model call is authorized during this Stage 2 work.
+No Stage 5 materialization, Executor launch or provider/model call is authorized until Design/Plan/Task Contract authority is durably integrated.
 
 ## Completion condition
 
-This Stage 1 re-entry objective is complete when R27 and O252 are durably integrated on `develop`.
+This Specify objective is complete when D074, R28 and O253 are durably integrated on `develop`.
 
-T023 remains unresolved until a future acceptance epoch produces sufficient evidence and Stage 7 selects or rejects a release topology under the newly specified policy.
+T023 remains unresolved and no release topology is selected.
 
 ## Do not
 
-Do not reuse R25. Do not continue or tune v14 B2. Do not schedule v14 F2/G3. Do not rewrite `67884f52...`, `aea43441...`, `6f98f2d6...`, Freeze C, Freeze D, or earlier historical evidence. Do not reuse exact v14 prompts as fresh acceptance stimuli. Do not weaken thresholds after observed failures. Do not create a new acceptance epoch before Specify/Design/Plan authority exists. Do not start T024. Do not modify or silently close D066 gaps. Do not reopen T058. Do not perform historical branch cleanup.
+Do not tune B2/F2/G3 bytes. Do not reuse v14 exact prompts. Do not import v14 observations into v15 scoring. Do not reuse R25 or any historical Stage 6 launch gate. Do not create Freeze E/F before Design/Plan/Task Contract authority exists. Do not launch an Executor or issue provider/model calls. Do not start T024. Do not modify or silently close D066 gaps. Do not reopen T058. Do not rewrite or clean historical scientific branches.
