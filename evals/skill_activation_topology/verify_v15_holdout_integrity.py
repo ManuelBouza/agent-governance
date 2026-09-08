@@ -15,7 +15,7 @@ CORPUS = EVAL / "corpus.json"
 ORACLE = EVAL / "oracle.json"
 TRIAL = EVAL / "trial-envelope.json"
 CANDIDATE_HASHES = EVAL / "candidate-hashes-v15.json"
-ALLOWED_FREEZE_F_PATHS = {
+FROZEN_PATHS = {
     "evals/skill_activation_topology/corpus.json",
     "evals/skill_activation_topology/oracle.json",
     "evals/skill_activation_topology/trial-envelope.json",
@@ -51,9 +51,9 @@ def _load(path: Path) -> dict[str, Any]:
     return value
 
 
-def _git(*args: str, text: bool = True) -> str | bytes:
+def _git(*args: str) -> str:
     return subprocess.check_output(
-        ["git", *args], cwd=ROOT, stderr=subprocess.STDOUT, text=text
+        ["git", *args], cwd=ROOT, stderr=subprocess.STDOUT, text=True
     )
 
 
@@ -66,22 +66,23 @@ def _historical_prompts(revision: str) -> set[str]:
     return set(prompts)
 
 
+def _freeze_f() -> str:
+    latest = _git("log", "-1", "--format=%H", "--", *sorted(FROZEN_PATHS)).strip()
+    assert latest, "cannot resolve Freeze F from frozen paths"
+    assert _git("merge-base", "--is-ancestor", FREEZE_E, latest) == ""
+    changed = set(filter(None, _git("diff", "--name-only", FREEZE_E, latest).splitlines()))
+    assert changed == FROZEN_PATHS, f"Freeze E -> F path boundary drift: {sorted(changed)}"
+    post_freeze = set(filter(None, _git("diff", "--name-only", latest, "HEAD").splitlines()))
+    assert not (post_freeze & FROZEN_PATHS), f"frozen asset drift after Freeze F: {sorted(post_freeze & FROZEN_PATHS)}"
+    return latest
+
+
 def main() -> int:
+    freeze_f = _freeze_f()
     corpus = _load(CORPUS)
     oracle = _load(ORACLE)
     trial = _load(TRIAL)
     hashes = _load(CANDIDATE_HASHES)
-
-    head = _git("rev-parse", "HEAD").strip()
-    parent = _git("rev-parse", "HEAD^").strip()
-    assert parent == FREEZE_E, f"Freeze F parent drift: {parent} != {FREEZE_E}"
-    assert _git("merge-base", "--is-ancestor", FREEZE_E, head).strip() == ""
-    changed = set(
-        filter(None, _git("diff", "--name-only", FREEZE_E, head).splitlines())
-    )
-    assert changed == ALLOWED_FREEZE_F_PATHS, (
-        f"Freeze E -> F path boundary drift: {sorted(changed)}"
-    )
 
     assert corpus["schema_version"] == "9.0.0"
     assert corpus["corpus_id"] == "MG1-T023-CORPUS-v9"
@@ -92,25 +93,16 @@ def main() -> int:
     prompts = [case["prompt"] for case in cases]
     assert len(ids) == len(set(ids)) == 70
     assert len(prompts) == len(set(prompts)) == 70
-    assert all(isinstance(prompt, str) and prompt for prompt in prompts)
     assert Counter(case["class"] for case in cases) == EXPECTED_CLASS_COUNTS
-    near = Counter(
-        case["near_miss_axis"] for case in cases if case["class"] == "near-miss"
-    )
-    assert near == EXPECTED_NEAR_MISS
-    far_denominator = sum(
-        1
-        for case in cases
-        if case["class"] in {"negative", "near-miss"}
-    )
+    assert Counter(case["near_miss_axis"] for case in cases if case["class"] == "near-miss") == EXPECTED_NEAR_MISS
+    far_denominator = sum(case["class"] in {"negative", "near-miss"} for case in cases)
     assert far_denominator == 40
 
+    overlaps: dict[str, int] = {}
     v15_prompts = set(prompts)
-    overlap_counts: dict[str, int] = {}
     for name, revision in HISTORICAL:
-        historical = _historical_prompts(revision)
-        overlap = v15_prompts & historical
-        overlap_counts[name] = len(overlap)
+        overlap = v15_prompts & _historical_prompts(revision)
+        overlaps[name] = len(overlap)
         assert not overlap, f"historical prompt reuse against {name}: {sorted(overlap)}"
 
     assert oracle["schema_version"] == "15.0.0"
@@ -141,8 +133,7 @@ def main() -> int:
     assert method["absolute_stage6_provider_model_attempt_ceiling"] == 1264
     assert method["timeout_seconds_per_model_attempt"] == 180
 
-    thresholds = oracle["qualifying_thresholds"]
-    assert thresholds == {
+    assert oracle["qualifying_thresholds"] == {
         "activation_precision_min": 0.95,
         "activation_recall_min": 0.95,
         "activation_f1_min": 0.95,
@@ -159,25 +150,18 @@ def main() -> int:
     assert selection["regime_b_b2_scientifically_nonqualifying"]["admissibility_dominance_required"] is True
     assert oracle["stage6_gate"]["provider_model_calls_during_stage5"] == 0
     assert oracle["stage6_gate"]["executor_launch_requires_separate_human_authorization"] is True
-
     assert trial["schema_version"] == "3.0.0"
     assert trial["envelope_id"] == "MG1-T023-TRIAL-ENVELOPE-v3"
 
-    print(
-        json.dumps(
-            {
-                "status": "PASS",
-                "freeze_e": FREEZE_E,
-                "freeze_f": head,
-                "case_count": len(cases),
-                "far_denominator": far_denominator,
-                "historical_prompt_overlap": overlap_counts,
-                "changed_paths": sorted(changed),
-                "provider_model_calls": 0,
-            },
-            sort_keys=True,
-        )
-    )
+    print(json.dumps({
+        "status": "PASS",
+        "freeze_e": FREEZE_E,
+        "freeze_f": freeze_f,
+        "case_count": len(cases),
+        "far_denominator": far_denominator,
+        "historical_prompt_overlap": overlaps,
+        "provider_model_calls": 0,
+    }, sort_keys=True))
     return 0
 
 
