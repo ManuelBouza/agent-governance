@@ -1,0 +1,66 @@
+{
+  "candidate_freeze_sha": "1fc38f979d67ff29649f69ae39b8d46d2523518b",
+  "capability_source_epoch": "MG1-2026-09-06-v4",
+  "capacity_event_count": 0,
+  "clean_context": "one new codex exec thread and disposable workspace per attempt",
+  "codex_cli": "codex-cli 0.149.0",
+  "completed_valid_observations": 26,
+  "corpus_id": "MG1-T023-CORPUS-v8",
+  "effective_host_profile": {
+    "codex_cli_version": "codex-cli 0.149.0",
+    "disabled_features": [
+      "apps",
+      "remote_plugin",
+      "multi_agent",
+      "skill_mcp_dependency_install",
+      "shell_snapshot",
+      "standalone_web_search"
+    ],
+    "effort": "medium",
+    "ignore_rules": true,
+    "ignore_user_config": true,
+    "logical_sandbox": "read-only",
+    "model": "gpt-5.6-sol",
+    "native_windows_backend": "elevated",
+    "workspace_acl_profile_identity": "windows-inherited-acl-mkdir-v1"
+  },
+  "effort": "medium",
+  "execution_epoch": "MG1-T023-EXECUTION-v14",
+  "frozen_asset_sha256": {
+    "evals/skill_activation_topology/candidate-hashes-v14.json": "bf9edfdaec6a4c26a154c7c40f6bc29b0d777b5d355771961e354d37ffe3a11e",
+    "evals/skill_activation_topology/corpus.json": "868028c7742322ee780671efbb50c2106e689403cab32721d9118e8e61392540",
+    "evals/skill_activation_topology/oracle.json": "aa7893c6a5392e56c224e2b904977b17f12d8f648b13b3e4245e10311651fa74",
+    "evals/skill_activation_topology/presentations/manifest.json": "8f7a887f68e9c8d87f3c2243db549a86a2d609b23ce352b479eca99497f08afb",
+    "evals/skill_activation_topology/topologies.json": "8b951250e77e4017e8439e972ebc6dcd17026ec205ccf3534c9dfbecfb0b2578",
+    "evals/skill_activation_topology/trial-envelope.json": "2d483784a8cfd1143c52e976218f2d96e2ccfa324516764ff35f939a6d777b7d"
+  },
+  "full_acceptance": true,
+  "host": "Codex",
+  "max_model_attempts_per_scheduled_observation": 2,
+  "model": "gpt-5.6-sol",
+  "oracle_id": "MG1-T023-TOPOLOGY-ORACLE-v14",
+  "platform": "native Windows (Windows-11-10.0.26200-SP0)",
+  "presentation_revision": "MG1-T023-PRESENTATIONS-v5",
+  "runner_sha256": "0d9fd19cb19ca4ccb288c92a79a3ae43ece8715a8bf724a257f605ba5e0ac19e",
+  "sandbox_selection_order": [
+    "read-only",
+    "workspace-write"
+  ],
+  "selected_backend": "elevated",
+  "selected_sandbox": "read-only",
+  "selected_workspace_acl_profile": "windows-inherited-acl-mkdir-v1",
+  "stage_state": "REFERENCE_FUTILE_NO_QUALIFIER",
+  "started_at": "2026-09-08T06:43:55.377200+00:00",
+  "status": "BLOCKED_NO_REFERENCE",
+  "stimulus_rule": "exact corpus prompt, two newlines, frozen neutral suffix",
+  "timeout_seconds": 180,
+  "trial_envelope_id": "MG1-T023-TRIAL-ENVELOPE-v2",
+  "updated_at": "2026-09-08T07:07:19.764840+00:00",
+  "windows_backend_selection_order": [
+    "elevated",
+    "unelevated"
+  ],
+  "workers": 4,
+  "workspace_factory": "windows-inherited-acl-mkdir-v1",
+  "workspace_parent": "C:\\Users\\Manuel\\AppData\\Local\\Temp"
+}
