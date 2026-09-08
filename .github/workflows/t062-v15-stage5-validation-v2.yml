@@ -52,8 +52,10 @@ jobs:
       - name: Full pytest
         run: uv run --locked python -m pytest
       - name: Provider boundary
+        if: always()
         run: echo provider_model_calls=0
       - name: Stage validated scientific tree
+        if: always()
         run: |
           root=/tmp/t062-v15-final-tree
           mkdir -p "$root"
@@ -82,6 +84,7 @@ jobs:
             cp "$path" "$root/$path"
           done
       - name: Upload validated scientific tree
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: t062-v15-final-tree
