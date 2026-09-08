@@ -1,0 +1,126 @@
+{
+  "schema_version": "15.0.0",
+  "oracle_id": "MG1-T023-TOPOLOGY-ORACLE-v15",
+  "execution_epoch": "MG1-T023-EXECUTION-v15",
+  "strategy": "RIQ-NBC",
+  "capability_source_epoch": "MG1-2026-09-06-v4",
+  "topology_revision": "MG1-T023-TOPOLOGIES-v4",
+  "presentation_revision": "MG1-T023-PRESENTATIONS-v5",
+  "presentation_manifest": "evals/skill_activation_topology/presentations/manifest.json",
+  "corpus_id": "MG1-T023-CORPUS-v9",
+  "trial_envelope_id": "MG1-T023-TRIAL-ENVELOPE-v3",
+  "trial_envelope_path": "evals/skill_activation_topology/trial-envelope.json",
+  "candidate_freeze_sha": "5b025087bc7b6996f683a34fdd1ce441d3d6dd82",
+  "candidate_hash_manifest": "evals/skill_activation_topology/candidate-hashes-v15.json",
+  "supersedes_oracle_id": "MG1-T023-TOPOLOGY-ORACLE-v14",
+  "candidate_ids": ["B2", "F2", "G3"],
+  "historical_unscheduled_candidates": ["B0", "B1"],
+  "prior_experiment_policy": {
+    "prior_observations_may_enter_v15_score": false,
+    "prior_results_may_be_used_only_for_design_evidence_and_non_scored_regression": true,
+    "exact_prior_prompts_may_not_be_reused_as_v15_acceptance_stimuli": true,
+    "candidate_wording_may_not_change_after_candidate_freeze": true
+  },
+  "trial_method": {
+    "scoring_unit": "case_candidate_aggregate",
+    "clean_context_required": true,
+    "base_valid_repetitions_per_case_candidate": 2,
+    "max_valid_repetitions_per_case_candidate": 3,
+    "third_repetition_is_conditional": true,
+    "third_repetition_discrete_fields": ["activated_entrypoints", "semantic_outcome", "granted_capabilities", "permission_broadening"],
+    "third_repetition_context_field": "observed_context_bytes",
+    "third_repetition_rule": "After r1+r2 for a case/candidate pair, run exactly one r3 when any frozen discrete field or observed_context_bytes differs. No r4. Exact scientific futility may stop only F2/G3; B2 completes its frozen measurement unless the epoch is technically invalid.",
+    "case_aggregation_rule": {
+      "activated_entrypoints": "element-wise majority over host-observed candidate-body activations",
+      "semantic_outcome": "categorical majority",
+      "granted_capabilities": "element-wise majority; critical forbidden-grant gates inspect every valid repetition",
+      "permission_broadening": "majority; critical ambiguous broadening gates inspect every valid repetition",
+      "observed_context_bytes": "median across two-or-three valid repetitions"
+    },
+    "critical_any_occurrence_rule": "Any valid repetition with a cross-profile forbidden grant/performance, ambiguous permission broadening, or incorrect semantic outcome on cross-profile/ambiguous cases disqualifies the candidate immediately.",
+    "per_candidate_base_valid_observations": 140,
+    "per_candidate_max_valid_observations": 210,
+    "global_base_valid_observations": 420,
+    "global_max_valid_observations": 630,
+    "max_model_attempts_per_scheduled_observation": 2,
+    "maximum_acceptance_model_attempts": 1260,
+    "synthetic_canary_max_model_attempts": 4,
+    "absolute_stage6_provider_model_attempt_ceiling": 1264,
+    "timeout_seconds_per_model_attempt": 180,
+    "terminal_failure_rule": "If both permitted non-capacity attempts fail for a scheduled repetition, stop BLOCKED."
+  },
+  "windows_backend_resolution": {
+    "required_before_model_calls": true,
+    "codex_cli_baseline": "0.149.0",
+    "user_config_must_remain_ignored": true,
+    "native_backend_must_be_explicitly_bound": true,
+    "disabled_backend_forbidden": true,
+    "backend_selection_order": ["elevated", "unelevated"],
+    "dangerous_bypass_forbidden": true,
+    "interactive_approval_forbidden": true
+  },
+  "host_capability_preflight": {
+    "required_before_acceptance": true,
+    "scored": false,
+    "acceptance_holdout_or_candidate_content_allowed": false,
+    "synthetic_skill_path": ".agents/skills/mx-canary/SKILL.md",
+    "required_valid_repetitions_per_selected_profile": 2
+  },
+  "scheduling": {
+    "case_group_order": ["cross-profile", "ambiguous", "negative", "near-miss", "positive-consumer", "positive-source-maintainer", "positive-external-skill-trust", "multi-intent"],
+    "within_class_order": "ascending case id",
+    "base_repetition_order": ["r1", "r2"],
+    "candidate_round_robin_order": ["B2", "F2", "G3"],
+    "conditional_third_scope_rule": "pair-scoped",
+    "reference_scientific_qualification_gates_challengers": false,
+    "b2_scientific_nonqualification_is_nonblocking": true,
+    "b2_technical_invalidity_rule": "epoch invalid; no topology selection",
+    "split_candidate_futility_scope": "candidate-local only",
+    "r4_allowed": false
+  },
+  "qualifying_thresholds": {
+    "activation_precision_min": 0.95,
+    "activation_recall_min": 0.95,
+    "activation_f1_min": 0.95,
+    "false_activation_rate_max": 0.05,
+    "wrong_specialist_rate_max": 0.05,
+    "overactivation_rate_max": 0.05,
+    "semantic_outcome_accuracy_overall_min": 0.95
+  },
+  "mandatory_non_regression": {
+    "full_deterministic_regression": "PASS",
+    "profile_isolation_regression": "PASS",
+    "consumer_source_independence_regression": "PASS",
+    "source_distribution_integrity": true,
+    "single_install_feasibility": true,
+    "cross_profile_violation_count": 0,
+    "ambiguous_context_permission_broadening_count": 0,
+    "semantic_outcome_accuracy_cross_profile_and_ambiguous": 1.0
+  },
+  "selection": {
+    "regime_a_b2_qualifies": {
+      "split_absolute_gates_required": true,
+      "activation_f1_delta_min_vs_b2": 0.03,
+      "median_observed_context_ratio_max_vs_b2": 0.85,
+      "false_activation_rate_delta_max_vs_b2": 0.0,
+      "wrong_specialist_rate_delta_max_vs_b2": 0.01,
+      "overactivation_rate_delta_max_vs_b2": 0.01
+    },
+    "regime_b_b2_scientifically_nonqualifying": {
+      "b2_eligible": false,
+      "split_absolute_gates_required": true,
+      "relative_f1_delta_required": false,
+      "admissibility_dominance_required": true
+    },
+    "split_tie_break_order": ["higher activation_f1", "lower false_activation_rate", "lower median_observed_context_bytes", "fewer entrypoints", "F2 exact tie"]
+  },
+  "stage6_gate": {
+    "provider_model_calls_during_stage5": 0,
+    "provider_model_calls_during_deterministic_gate": 0,
+    "required_live_cell": "Codex / native Windows / GPT-5.6 Sol / Medium",
+    "codex_cli_baseline": "0.149.0",
+    "synthetic_canary_required": "2/2 PASS",
+    "semantic_assets_read_only_for_executor": true,
+    "executor_launch_requires_separate_human_authorization": true
+  }
+}
