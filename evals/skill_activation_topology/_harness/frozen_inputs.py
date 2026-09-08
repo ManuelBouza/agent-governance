@@ -122,6 +122,26 @@ def _validate_document_identities(inputs: FrozenInputs) -> None:
         raise HarnessError("topology revision mismatch")
 
 
+def _validate_case(
+    case: dict[str, Any], fixtures: dict[str, Any], known_capabilities: set[str]
+) -> None:
+    case_id = case.get("id")
+    case_class = case.get("class")
+    if case_class not in V15_CLASS_ORDER:
+        raise HarnessError(f"{case_id}: unknown case class")
+    if set(case.get("expected_capabilities", [])) - known_capabilities:
+        raise HarnessError(f"{case_id}: unknown expected capability")
+    if set(case.get("forbidden_capabilities", [])) - known_capabilities:
+        raise HarnessError(f"{case_id}: unknown forbidden capability")
+    if case.get("expected_semantic_outcome") not in ALLOWED_OUTCOMES:
+        raise HarnessError(f"{case_id}: invalid semantic outcome")
+    fixture_role = case.get("fixture_role")
+    if fixture_role not in fixtures:
+        raise HarnessError(f"{case_id}: invalid fixture role")
+    if case_class in {"ambiguous", "negative", "near-miss"} and fixture_role != "neutral":
+        raise HarnessError(f"{case_id}: class requires a neutral fixture")
+
+
 def _validate_cases(inputs: FrozenInputs, known_capabilities: set[str]) -> None:
     cases = inputs.corpus.get("cases")
     if (
@@ -139,19 +159,7 @@ def _validate_cases(inputs: FrozenInputs, known_capabilities: set[str]) -> None:
     if set(fixtures) != {"neutral", "source", "consumer"}:
         raise HarnessError("trial-envelope fixture roles are not the frozen v15 set")
     for case in cases:
-        if case.get("class") not in V15_CLASS_ORDER:
-            raise HarnessError(f"{case.get('id')}: unknown case class")
-        if set(case.get("expected_capabilities", [])) - known_capabilities:
-            raise HarnessError(f"{case['id']}: unknown expected capability")
-        if set(case.get("forbidden_capabilities", [])) - known_capabilities:
-            raise HarnessError(f"{case['id']}: unknown forbidden capability")
-        if case.get("expected_semantic_outcome") not in ALLOWED_OUTCOMES:
-            raise HarnessError(f"{case['id']}: invalid semantic outcome")
-        fixture_role = case.get("fixture_role")
-        if fixture_role not in fixtures:
-            raise HarnessError(f"{case['id']}: invalid fixture role")
-        if case.get("class") in {"ambiguous", "negative", "near-miss"} and fixture_role != "neutral":
-            raise HarnessError(f"{case['id']}: class requires a neutral fixture")
+        _validate_case(case, fixtures, known_capabilities)
 
 
 def _validate_presentations(inputs: FrozenInputs, known_capabilities: set[str]) -> None:
