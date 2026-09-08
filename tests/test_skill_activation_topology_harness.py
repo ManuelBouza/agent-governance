@@ -33,10 +33,7 @@ def frozen(harness):
 def test_frozen_v14_inputs_validate_and_schedule_expected_ceilings(harness, frozen) -> None:
     assert frozen.oracle["oracle_id"] == "MG1-T023-TOPOLOGY-ORACLE-v14"
     assert frozen.oracle["execution_epoch"] == "MG1-T023-EXECUTION-v14"
-    assert (
-        frozen.oracle["candidate_freeze_sha"]
-        == "1fc38f979d67ff29649f69ae39b8d46d2523518b"
-    )
+    assert frozen.oracle["candidate_freeze_sha"] == "1fc38f979d67ff29649f69ae39b8d46d2523518b"
     assert frozen.oracle["candidate_ids"] == ["B2", "F2", "G3"]
     assert frozen.oracle["presentation_revision"] == "MG1-T023-PRESENTATIONS-v5"
     assert frozen.corpus["corpus_id"] == "MG1-T023-CORPUS-v8"
@@ -93,9 +90,7 @@ def test_negative_and_near_miss_cases_have_no_expected_entrypoint(harness, froze
         if case["class"] not in {"negative", "near-miss"}:
             continue
         for candidate in frozen.oracle["candidate_ids"]:
-            assert harness.expected_entrypoints(
-                frozen, harness.TrialSpec(case, candidate, 1)
-            ) == []
+            assert harness.expected_entrypoints(frozen, harness.TrialSpec(case, candidate, 1)) == []
 
 
 def _metrics(candidate: str, *, median: int, f1: float = 0.98) -> dict:

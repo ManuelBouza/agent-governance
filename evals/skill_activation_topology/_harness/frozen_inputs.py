@@ -269,7 +269,10 @@ def _validate_candidate_hashes(inputs: FrozenInputs) -> None:
         if _sha256(path) != expected:
             raise HarnessError(f"candidate/reference hash changed after Freeze C: {relative}")
         frozen_bytes = _git_bytes(freeze, relative)
-        if hashlib.sha256(frozen_bytes).hexdigest() != expected or path.read_bytes() != frozen_bytes:
+        if (
+            hashlib.sha256(frozen_bytes).hexdigest() != expected
+            or path.read_bytes() != frozen_bytes
+        ):
             raise HarnessError(f"candidate/reference bytes differ from Freeze C: {relative}")
     for current, historical in manifest.get("copy_equivalence", {}).items():
         if (REPO_ROOT / current).read_bytes() != (REPO_ROOT / historical).read_bytes():

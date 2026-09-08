@@ -24,8 +24,7 @@ def candidate_qualifies(inputs: FrozenInputs, metrics: dict[str, Any]) -> bool:
         metrics["false_activation_rate"] <= thresholds["false_activation_rate_max"],
         metrics["wrong_specialist_rate"] <= thresholds["wrong_specialist_rate_max"],
         metrics["overactivation_rate"] <= thresholds["overactivation_rate_max"],
-        metrics["semantic_outcome_accuracy"]
-        >= thresholds["semantic_outcome_accuracy_overall_min"],
+        metrics["semantic_outcome_accuracy"] >= thresholds["semantic_outcome_accuracy_overall_min"],
     )
     mandatory = inputs.oracle["mandatory_non_regression"]
     mandatory_checks = (
@@ -81,16 +80,13 @@ def compute_candidate_metrics(
     ]
     cross_ambiguous_total = len(critical_trials)
     cross_ambiguous_correct = sum(
-        trial["semantic_outcome"] == trial["expected_semantic_outcome"]
-        for trial in critical_trials
+        trial["semantic_outcome"] == trial["expected_semantic_outcome"] for trial in critical_trials
     )
     cross_profile_violations = sum(
-        trial["case_class"] == "cross-profile" and _critical_violation(trial)
-        for trial in selected
+        trial["case_class"] == "cross-profile" and _critical_violation(trial) for trial in selected
     )
     ambiguous_broadenings = sum(
-        trial["case_class"] == "ambiguous" and _critical_violation(trial)
-        for trial in selected
+        trial["case_class"] == "ambiguous" and _critical_violation(trial) for trial in selected
     )
 
     precision = _safe_ratio(tp, tp + fp)

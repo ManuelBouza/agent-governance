@@ -44,11 +44,7 @@ from .storage import _json_dump, _jsonl_dump
 
 def validate_execution_config(inputs: FrozenInputs, args: argparse.Namespace) -> None:
     method = inputs.oracle["trial_method"]
-    if (
-        args.model != "gpt-5.6-sol"
-        or args.effort != "medium"
-        or platform.system() != "Windows"
-    ):
+    if args.model != "gpt-5.6-sol" or args.effort != "medium" or platform.system() != "Windows":
         raise HarnessError("required live cell is native Windows / GPT-5.6 Sol / Medium")
     if _codex_version(args.codex_command) != REQUIRED_CODEX_VERSION:
         raise HarnessError(f"required Codex CLI baseline is {REQUIRED_CODEX_VERSION}")
@@ -158,9 +154,7 @@ def _initial_metadata(
         "sandbox_selection_order": ["read-only", "workspace-write"],
         "windows_backend_selection_order": list(WINDOWS_BACKEND_ORDER),
         "stimulus_rule": "exact corpus prompt, two newlines, frozen neutral suffix",
-        "stage_state": (
-            "REFERENCE_BASE_PENDING" if args.full_acceptance else "FILTERED_PENDING"
-        ),
+        "stage_state": ("REFERENCE_BASE_PENDING" if args.full_acceptance else "FILTERED_PENDING"),
         "status": "RUNNING",
         "started_at": datetime.now(UTC).isoformat(),
     }
@@ -246,9 +240,9 @@ def _start_new_run(
     metadata["selected_backend"] = preflight["selected_backend"]
     metadata["selected_sandbox"] = preflight["selected_sandbox"]
     metadata["selected_workspace_acl_profile"] = preflight["selected_workspace_acl_profile"]
-    metadata["effective_host_profile"] = _load_json(output / "host-preflight.json")["records"][
-        -1
-    ]["effective_host_profile"]
+    metadata["effective_host_profile"] = _load_json(output / "host-preflight.json")["records"][-1][
+        "effective_host_profile"
+    ]
     return metadata, None
 
 

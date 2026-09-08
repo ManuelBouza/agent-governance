@@ -46,4 +46,6 @@ def test_v3_historical_presentations_are_unchanged_by_v13(repo_root: Path) -> No
         "evals/skill_activation_topology/presentations-v3/G3/external-skill-trust/SKILL.md",
     ]
     for relative in paths:
-        assert (repo_root / relative).read_bytes() == _git_bytes(repo_root, f"{FREEZE_A}^", relative)
+        assert (repo_root / relative).read_bytes() == _git_bytes(
+            repo_root, f"{FREEZE_A}^", relative
+        )

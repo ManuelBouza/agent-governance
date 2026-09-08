@@ -146,8 +146,7 @@ def build_deterministic_evidence(inputs: FrozenInputs) -> dict[str, Any]:
 
 def _validated_prior_attempts(output: Path, spec: TrialSpec) -> list[dict[str, Any]]:
     prior = [
-        _load_json(path)
-        for path in sorted((output / "attempts").glob(f"{spec.key}--a*.json"))
+        _load_json(path) for path in sorted((output / "attempts").glob(f"{spec.key}--a*.json"))
     ]
     if [item["attempt"] for item in prior] != list(range(1, len(prior) + 1)):
         raise HarnessError(f"{spec.key}: invalid persisted attempt sequence")
@@ -231,9 +230,7 @@ def execute_logical_observation(
     return None
 
 
-def _validate_resumed_command(
-    spec: TrialSpec, command: Any, model: str, effort: str
-) -> list[str]:
+def _validate_resumed_command(spec: TrialSpec, command: Any, model: str, effort: str) -> list[str]:
     if not isinstance(command, list):
         raise HarnessError(f"{spec.key}: resumed command evidence is malformed")
     try:

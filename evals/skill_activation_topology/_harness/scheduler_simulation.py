@@ -126,9 +126,7 @@ def _critical_scenario(
 
     context, calls = _simulation_context(inputs, root / "critical", critical)
     _run_pairs(context, ordered[:1], "scheduler simulation critical path execution failure")
-    if calls != [f"{ordered[0]['id']}--B2--r1"] or "B2" not in (
-        context.terminal_candidates or {}
-    ):
+    if calls != [f"{ordered[0]['id']}--B2--r1"] or "B2" not in (context.terminal_candidates or {}):
         raise HarnessError("scheduler simulation did not terminate B2 immediately")
     return calls
 
