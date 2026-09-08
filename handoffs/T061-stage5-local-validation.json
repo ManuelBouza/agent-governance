@@ -1,0 +1,202 @@
+{
+  "schema_version": "1.0.0",
+  "task_id": "T061",
+  "purpose": "STAGE5_PROVIDER_FREE_LOCAL_VALIDATION",
+  "status": "BLOCKED",
+  "recorded_at": "2026-09-08T07:22:14.9394586+02:00",
+  "coordinator_id": "AG | agent-governance | T061 | root-3",
+  "branch": "test/t023-skill-activation-topology-evals-v14-r1",
+  "implementation_head_sha": "ddb58c5467c2cef831e5f3202fab8a7c6017e2ba",
+  "implementation_parent_sha": "a8caf6338dbae3a3ce4cefdc7965acd0d37f1557",
+  "canonical_develop_sha": "10c7f07dc5a50c434cacb81d22ba89139012fcbc",
+  "candidate_freeze_sha": "1fc38f979d67ff29649f69ae39b8d46d2523518b",
+  "holdout_freeze_sha": "f8cee7c72688f0486211474d2678d018772e2a58",
+  "historical_stage6_terminal": {
+    "branch": "test/t023-skill-activation-topology-evals-v14",
+    "head_sha": "75f52f64adddfc738ab1d5362efdfe90cf327786",
+    "verified_unchanged": true
+  },
+  "verification": {
+    "commands": [
+      "git fetch --prune origin",
+      "git rev-parse origin/develop",
+      "git rev-parse origin/test/t023-skill-activation-topology-evals-v14-r1",
+      "git rev-parse origin/test/t023-skill-activation-topology-evals-v14",
+      "git rev-parse origin/test/t023-skill-activation-topology-evals-v14-r1^",
+      "git merge-base --is-ancestor 1fc38f979d67ff29649f69ae39b8d46d2523518b origin/test/t023-skill-activation-topology-evals-v14-r1",
+      "git merge-base --is-ancestor f8cee7c72688f0486211474d2678d018772e2a58 origin/test/t023-skill-activation-topology-evals-v14-r1",
+      "git diff --name-status a8caf6338dbae3a3ce4cefdc7965acd0d37f1557 ddb58c5467c2cef831e5f3202fab8a7c6017e2ba",
+      "git diff --check a8caf6338dbae3a3ce4cefdc7965acd0d37f1557 ddb58c5467c2cef831e5f3202fab8a7c6017e2ba",
+      "uv run --locked python evals/skill_activation_topology/verify_v14_candidate_integrity.py",
+      "uv run --locked python evals/skill_activation_topology/verify_v14_holdout_integrity.py",
+      "uv run --locked ruff check .",
+      "uv run --locked ruff format --check .",
+      "uv run --locked python tools/code_health.py check --root .",
+      "uv run --locked python tools/code_health.py map --root .",
+      "uv run --locked python -m pytest tests/test_profile_abstraction.py tests/test_source_maintainer_profile.py",
+      "uv run --locked python -m pytest tests/test_source_consumer_separation.py tests/test_consumer_v1_characterization.py",
+      "uv run --locked python -m pytest tests/test_skill_activation_topology_v14_scheduler.py",
+      "uv run --locked python -m pytest",
+      "codex --version",
+      "npm view @openai/codex@0.149.0 version dist.tarball dist.integrity engines os cpu --json",
+      "npm exec --yes --cache <isolated-system-temp>/npm-cache --package=@openai/codex@0.149.0 -- codex --version",
+      "git diff --quiet a8caf6338dbae3a3ce4cefdc7965acd0d37f1557 ddb58c5467c2cef831e5f3202fab8a7c6017e2ba -- <each frozen scientific path>",
+      "git status --short --branch",
+      "git diff --check"
+    ],
+    "results": {
+      "canonical_sync": {
+        "status": "PASS",
+        "origin_develop": "10c7f07dc5a50c434cacb81d22ba89139012fcbc",
+        "remote_branch_initial_head": "ddb58c5467c2cef831e5f3202fab8a7c6017e2ba",
+        "implementation_parent": "a8caf6338dbae3a3ce4cefdc7965acd0d37f1557",
+        "direct_child": true,
+        "candidate_freeze_ancestor": true,
+        "holdout_freeze_ancestor": true
+      },
+      "repair_delta_review": {
+        "status": "PASS",
+        "changed_paths": [
+          "evals/skill_activation_topology/_harness/evidence.py",
+          "evals/skill_activation_topology/_harness/frozen_inputs.py",
+          "evals/skill_activation_topology/_harness/provenance.py",
+          "evals/skill_activation_topology/_harness/runner.py",
+          "evals/skill_activation_topology/_harness/scoring.py",
+          "evals/skill_activation_topology/verify_v14_candidate_integrity.py",
+          "evals/skill_activation_topology/verify_v14_holdout_integrity.py",
+          "tests/test_skill_activation_topology_harness.py",
+          "tests/test_t050_harness_cli_characterization.py"
+        ],
+        "git_diff_check_exit_code": 0,
+        "frozen_scientific_paths_changed": []
+      },
+      "candidate_freeze_integrity": {
+        "status": "PASS",
+        "exit_code": 0,
+        "stdout": "{\"candidate_count\": 3, \"copy_equivalence_count\": 8, \"hashed_file_count\": 9, \"identity\": \"MG1-T061-CANDIDATE-HASHES-v2\", \"status\": \"PASS\"}"
+      },
+      "holdout_oracle_freeze_integrity": {
+        "status": "PASS",
+        "exit_code": 0,
+        "stdout": "{\"candidate_freeze_sha\": \"1fc38f979d67ff29649f69ae39b8d46d2523518b\", \"case_count\": 70, \"corpus_id\": \"MG1-T023-CORPUS-v8\", \"far_denominator\": 40, \"historical_prompt_reuse\": 0, \"oracle_id\": \"MG1-T023-TOPOLOGY-ORACLE-v14\", \"status\": \"PASS\"}"
+      },
+      "ruff_lint": {
+        "status": "PASS",
+        "exit_code": 0,
+        "stdout": "All checks passed!"
+      },
+      "ruff_format_check": {
+        "status": "FAIL",
+        "exit_code": 1,
+        "summary": "7 files would be reformatted, 78 files already formatted",
+        "unformatted_paths": [
+          "evals/skill_activation_topology/_harness/evidence.py",
+          "evals/skill_activation_topology/_harness/frozen_inputs.py",
+          "evals/skill_activation_topology/_harness/runner.py",
+          "evals/skill_activation_topology/_harness/scheduler_simulation.py",
+          "evals/skill_activation_topology/_harness/scoring.py",
+          "tests/test_skill_activation_topology_harness.py",
+          "tests/test_skill_activation_topology_v11.py"
+        ],
+        "repair_attempted": false
+      },
+      "code_health_check": {
+        "status": "PASS",
+        "exit_code": 0,
+        "complexity_failures": [],
+        "dependency_failures": [],
+        "size_failures": []
+      },
+      "code_health_map": {
+        "status": "PASS",
+        "exit_code": 0,
+        "schema_version": 1
+      },
+      "profile_abstraction_source_maintainer_tests": {
+        "status": "PASS",
+        "exit_code": 0,
+        "summary": "48 passed in 32.48s"
+      },
+      "consumer_source_separation_tests": {
+        "status": "PASS",
+        "exit_code": 0,
+        "summary": "8 passed in 37.46s"
+      },
+      "v14_provider_free_scheduler_simulation": {
+        "status": "PASS",
+        "exit_code": 0,
+        "summary": "3 passed in 16.80s",
+        "entrypoint": "tests/test_skill_activation_topology_v14_scheduler.py",
+        "provider_model_calls_issued": 0
+      },
+      "full_locked_pytest": {
+        "status": "PASS",
+        "exit_code": 0,
+        "summary": "477 passed in 210.50s (0:03:30)"
+      },
+      "final_worktree_pre_evidence": {
+        "status": "PASS",
+        "branch_clean": true,
+        "git_diff_check_exit_code": 0
+      }
+    },
+    "runtime": {
+      "os": "Microsoft Windows 10.0.26200",
+      "platform": "win32",
+      "python": "3.13.14",
+      "uv": "0.11.32",
+      "ruff": "0.16.2",
+      "pytest": "9.1.1",
+      "git": "2.53.0.windows.2",
+      "node": "24.15.0",
+      "npm": "11.12.1"
+    },
+    "network_required": true,
+    "network_usage": {
+      "repository_sync": true,
+      "locked_provider_free_gates": false,
+      "official_npm_metadata_lookup": true,
+      "isolated_exact_cli_package_retrieval": true,
+      "t061_provider_or_model_evaluation": false
+    }
+  },
+  "provider_model_calls_issued_from_t061_harness": 0,
+  "host_cell": {
+    "default_codex_cli_version": "0.153.4",
+    "default_codex_command": "C:\\Users\\Manuel\\AppData\\Local\\Programs\\OpenAI\\Codex\\bin\\codex.exe",
+    "exact_0_149_0_realizable": true,
+    "realization_method": "Use official npm package @openai/codex@0.149.0 through npm exec with a dedicated system-temp cache and working directory; invoke codex --version; then remove the validated temporary directory. The desktop-bundled default installation is not replaced.",
+    "evidence": {
+      "official_package_version": "0.149.0",
+      "official_package_tarball": "https://registry.npmjs.org/@openai/codex/-/codex-0.149.0.tgz",
+      "official_package_integrity": "sha512-i4dryj2Y1j+00Mb5n+0n71EYnTK9/KDc2cdFo/dXD0d1oTog2bhUssKDEIOnKmnEf51P0Z/HJTWvTKw/UHyOvQ==",
+      "required_node_engine": ">=16",
+      "invocation_stdout": "codex-cli 0.149.0",
+      "invocation_exit_code": 0,
+      "temporary_artifacts_removed": true,
+      "repository_dependencies_or_configuration_changed": false
+    },
+    "persistent_host_mutation_required": false,
+    "network_required_for_fresh_realization": true,
+    "blocker": null
+  },
+  "scope_confirmation": {
+    "scientific_assets_modified": false,
+    "markdown_modified": false,
+    "implementation_or_tests_modified": false,
+    "automatic_formatting_write_mode_used": false,
+    "provider_backed_trials_run": false,
+    "synthetic_canary_run": false,
+    "b2_stage_r_run": false,
+    "f2_run": false,
+    "g3_run": false
+  },
+  "unresolved_issues": [
+    {
+      "id": "RUFF_FORMAT_CHECK_NOT_GREEN",
+      "gate": "uv run --locked ruff format --check .",
+      "status": "BLOCKING",
+      "detail": "The required check-only formatter gate exits 1 because seven files would be reformatted. This VERIFY/DIAGNOSE invocation did not repair or format them."
+    }
+  ]
+}
