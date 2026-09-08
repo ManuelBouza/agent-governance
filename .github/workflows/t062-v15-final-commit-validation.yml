@@ -1,0 +1,51 @@
+name: T062 v15 exact Stage 5 commit validation
+
+on:
+  push:
+    branches:
+      - chore/t062-v15-final-commit-validation
+
+permissions:
+  contents: read
+
+jobs:
+  deterministic:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: 3e0d0b71cf382db502e186622f40a23bcd915390
+          fetch-depth: 0
+      - name: Assert exact scientific commit
+        run: test "$(git rev-parse HEAD)" = "3e0d0b71cf382db502e186622f40a23bcd915390"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: python -m pip install 'uv==0.11.32'
+      - run: uv sync --locked
+      - name: Candidate guard
+        run: uv run --locked python evals/skill_activation_topology/verify_v15_candidate_integrity.py
+      - name: Holdout guard
+        run: uv run --locked python evals/skill_activation_topology/verify_v15_holdout_integrity.py
+      - name: Harness validate
+        run: uv run --locked python evals/skill_activation_topology/harness.py validate
+      - name: Ruff check
+        run: uv run --locked ruff check .
+      - name: Ruff format check
+        run: uv run --locked ruff format --check .
+      - name: Code health
+        run: uv run --locked python tools/code_health.py check --root .
+      - name: Symbol map
+        run: uv run --locked python tools/code_health.py map --root .
+      - name: Characterization
+        run: >-
+          uv run --locked python -m pytest
+          tests/test_skill_activation_topology_harness.py
+          tests/test_skill_activation_topology_v15.py
+          tests/test_skill_activation_topology_v15_scheduler.py
+          tests/test_t050_harness_cli_characterization.py
+      - name: Full pytest
+        run: uv run --locked python -m pytest
+      - name: Provider boundary
+        run: echo provider_model_calls=0
