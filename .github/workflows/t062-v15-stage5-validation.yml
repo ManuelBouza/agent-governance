@@ -6,7 +6,7 @@ on:
       - chore/t062-v15-harness-stage5-validation
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   deterministic:
@@ -28,6 +28,21 @@ jobs:
 
       - name: Sync locked environment
         run: uv sync --locked
+
+      - name: Apply frozen-path formatter exclusion and format candidate
+        if: github.event.head_commit.message != 'ci: apply ruff formatting'
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('pyproject.toml')
+          text = path.read_text(encoding='utf-8')
+          needle = 'extend-exclude = [\n    "**/*.md",\n    ".venv",\n]'
+          replacement = 'extend-exclude = [\n    "**/*.md",\n    ".venv",\n    "evals/skill_activation_topology/verify_v15_holdout_integrity.py",\n]'
+          assert needle in text
+          path.write_text(text.replace(needle, replacement), encoding='utf-8', newline='\n')
+          PY
+          uv run --locked ruff format .
+          git diff --check
 
       - name: Candidate Freeze E guard
         run: uv run --locked python evals/skill_activation_topology/verify_v15_candidate_integrity.py
@@ -63,3 +78,12 @@ jobs:
 
       - name: Provider/model call boundary
         run: echo 'provider_model_calls=0'
+
+      - name: Persist formatted validation candidate
+        if: github.event.head_commit.message != 'ci: apply ruff formatting'
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'ci: apply ruff formatting'
+          git push origin HEAD:chore/t062-v15-harness-stage5-validation
