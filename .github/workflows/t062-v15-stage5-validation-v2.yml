@@ -53,15 +53,38 @@ jobs:
         run: uv run --locked python -m pytest
       - name: Provider boundary
         run: echo provider_model_calls=0
-      - name: Emit formatted changed files
+      - name: Stage validated scientific tree
         run: |
-          git diff --name-only | grep -v '^.github/workflows/' | grep -v '^evals/skill_activation_topology/verify_v15_holdout_integrity.py$' > /tmp/t062-files.txt
-          python - <<'PY'
-          import base64
-          from pathlib import Path
-          for raw in Path('/tmp/t062-files.txt').read_text().splitlines():
-              path = Path(raw)
-              print(f'FILE_BEGIN {raw}')
-              print(base64.b64encode(path.read_bytes()).decode('ascii'))
-              print(f'FILE_END {raw}')
-          PY
+          root=/tmp/t062-v15-final-tree
+          mkdir -p "$root"
+          for path in \
+            pyproject.toml \
+            evals/skill_activation_topology/_harness/models.py \
+            evals/skill_activation_topology/_harness/frozen_inputs.py \
+            evals/skill_activation_topology/_harness/scheduling.py \
+            evals/skill_activation_topology/_harness/aggregation.py \
+            evals/skill_activation_topology/_harness/scoring.py \
+            evals/skill_activation_topology/_harness/run_support.py \
+            evals/skill_activation_topology/_harness/runner.py \
+            evals/skill_activation_topology/_harness/scheduler_simulation.py \
+            evals/skill_activation_topology/_harness/provenance.py \
+            evals/skill_activation_topology/_harness/evidence.py \
+            evals/skill_activation_topology/_harness/cli.py \
+            evals/skill_activation_topology/harness.py \
+            evals/skill_activation_topology/verify_v15_candidate_integrity.py \
+            tests/test_harness_foundation.py \
+            tests/test_skill_activation_topology_harness.py \
+            tests/test_skill_activation_topology_v15.py \
+            tests/test_skill_activation_topology_v15_scheduler.py \
+            tests/test_t050_harness_cli_characterization.py
+          do
+            mkdir -p "$root/$(dirname "$path")"
+            cp "$path" "$root/$path"
+          done
+      - name: Upload validated scientific tree
+        uses: actions/upload-artifact@v4
+        with:
+          name: t062-v15-final-tree
+          path: /tmp/t062-v15-final-tree
+          if-no-files-found: error
+          retention-days: 1
