@@ -1,14 +1,14 @@
 # Current ChatGPT Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O247
+Checkpoint-Sequence: O248  
 Canonical-Branch: `develop`  
-Current-Work-Unit: T061 / D068 Stage 7 convergence — `BLOCKED_ACCEPTED_REENTER_STAGE5_AWAITING_HUMAN_SELECTION`
-Chat-Closure: KEEP_CURRENT_CHAT
+Current-Work-Unit: T061 / D068 Stage 5 technical re-entry — `FORMAT_ONLY_REPAIR_REQUIRED_AND_SELECTED`  
+Chat-Closure: KEEP_CURRENT_CHAT  
 Active-Executor: none  
-Active-Executor-Surface: n/a until a later Human-authorized Stage 6 launch  
-Executor-Launch-State: NOT_AUTHORIZED  
-Last-Coordinator-ID: `AG | agent-governance | T061 | root-2`
+Active-Executor-Surface: Codex Local only for Human-mediated bounded Stage 5 tool execution/verification  
+Executor-Launch-State: STAGE6_NOT_AUTHORIZED  
+Last-Coordinator-ID: `AG | agent-governance | T061 | root-3`
 
 ## Durable frontier
 
@@ -17,100 +17,87 @@ Last-Coordinator-ID: `AG | agent-governance | T061 | root-2`
 - D071 controls Human-mediated ChatGPT -> Codex transport.
 - D072 controls exact Codex coordinator-title instruction and truthful `CHAT_TITLE_ACTION_REQUIRED` fallback.
 - D073 is accepted as the evidence-driven current-adapter adoption of prompt-driven Codex coordinator titles. Its generic rollout into `AGENTS.md` / `docs/EXECUTOR-LAUNCH-PROFILES.md` remains queued separately.
-- The Human returned terminal T061 v14 Executor output:
-  - `STATUS: BLOCKED`
-  - `HANDOFF: handoffs/T061-executor-handoff.json`
-  - `BRANCH: test/t023-skill-activation-topology-evals-v14`
-  - `HEAD: 75f52f64adddfc738ab1d5362efdfe90cf327786`.
-- Remote verification confirmed that exact branch HEAD and handoff.
-- The terminal commit `75f52f64...` is a direct child of reviewed Stage 5 HEAD `a8caf6338dbae3a3ce4cefdc7965acd0d37f1557` and changes only `handoffs/T061-executor-handoff.json`.
-- Handoff `implementation_head_sha` is exactly `a8caf633...`; terminal provenance is valid and handoff-only.
+- The historical T061 v14 Stage 6 terminal branch remains `test/t023-skill-activation-topology-evals-v14@75f52f64adddfc738ab1d5362efdfe90cf327786`; it is immutable evidence.
 - Candidate Freeze C remains `1fc38f979d67ff29649f69ae39b8d46d2523518b`.
 - Holdout/oracle Freeze D remains `f8cee7c72688f0486211474d2678d018772e2a58`.
-- No candidate/reference, corpus, oracle, harness, config, dependency, or Markdown bytes were changed by the Executor.
-- Accepted provider-free Stage 6 evidence from the remote handoff:
-  - candidate integrity `PASS`;
-  - holdout integrity `PASS`;
-  - scheduler simulation `PASS`;
-  - provider/model calls = `0`;
-  - synthetic canary prompts = `0`;
-  - B2 observations = `0`;
-  - F2/G3 observations = `0`;
-  - F2/G3 unscheduled.
-- Deterministic quality gate is not green at reviewed Stage 5 HEAD:
-  - `ruff check` fails on an unsorted import block in `_harness/provenance.py`;
-  - `ruff format --check` reports nine unformatted v14 harness/test files;
-  - code-health complexity fails in `_validate_cases` and `_validate_recomputed_outputs`;
-  - full locked pytest fails before completion.
-- R18 explicitly had not executed Ruff/full pytest/code-health at Stage 5. Stage 6 supplied the missing runtime evidence and disproved practical readiness of `a8caf633...`.
-- Frozen host cell also did not match: active native-Windows default `codex` reports `0.153.4`, while R19 requires exact `0.149.0`.
-- The current run therefore terminates `BLOCKED_ACCEPTED / REENTER_STAGE5_TECHNICAL_AND_HOST_CELL_RESOLUTION` under `docs/reviews/T023-R22.md`.
-- R19 launch authority is consumed by the terminal run and MUST NOT be reused for another attempt.
-- R18 `READY_FOR_STAGE6` is superseded as practical readiness for the current v14 technical head.
-- No semantic conclusion exists for B2/F2/G3 because no candidate was scheduled.
-- No topology is selected; T024 remains blocked; D066 gaps remain unchanged; T058 remains frozen.
+- R22 accepted the prior Stage 6 `BLOCKED` and authorized Human-selected Stage 5 technical re-entry without changing frozen scientific assets.
+- The Human selected that re-entry and ChatGPT materialized repair branch `test/t023-skill-activation-topology-evals-v14-r1`.
+- Stage 5 repair implementation head is `ddb58c5467c2cef831e5f3202fab8a7c6017e2ba`, a direct child of prior reviewed head `a8caf6338dbae3a3ce4cefdc7965acd0d37f1557`.
+- Human-mediated Codex Local validation used coordinator `AG | agent-governance | T061 | root-3` under a VERIFY/DIAGNOSE-only Stage 5 boundary and returned:
+  - `STATUS: BLOCKED`;
+  - `EVIDENCE: handoffs/T061-stage5-local-validation.json`;
+  - `BRANCH: test/t023-skill-activation-topology-evals-v14-r1`;
+  - `HEAD: 6ef1478122379578adc535a05d759658ea1d0847`.
+- Remote verification confirmed that exact branch/head.
+- `6ef147812...` is a direct child of `ddb58c5467...` and adds only `handoffs/T061-stage5-local-validation.json`.
+- R23 accepts that Stage 5 local-validation evidence as remote, represented, ancestry-consistent and evidence-only.
 
-## Re-entry boundary
+## Accepted Stage 5 provider-free evidence on `ddb58c5467...`
 
-If the Human selects continuation, ChatGPT Orchestrator re-enters D068 Stage 5 for technical mechanics only.
+The following gates are accepted `PASS`:
 
-Permitted objective:
+- candidate Freeze C integrity;
+- holdout/oracle Freeze D integrity;
+- `ruff check`;
+- code-health check;
+- code-health map;
+- profile abstraction/source-maintainer deterministic tests — `48 passed`;
+- Consumer/source-separation characterization tests — `8 passed`;
+- v14 provider-free scheduler simulation — `3 passed`, provider/model calls `0`;
+- full locked pytest — `477 passed`;
+- T061 harness provider/model calls = exactly `0`.
 
-- repair harness/tests/technical mechanics necessary for all provider-free deterministic gates to pass;
-- preserve all frozen scientific semantics and bytes;
-- resolve whether the exact Codex CLI `0.149.0` host cell can be realized without changing the scientific cell.
+No synthetic canary, B2, F2, G3 or provider-backed T061 acceptance call was run.
 
-Frozen assets that MUST remain unchanged during pure technical re-entry:
+## Remaining deterministic blocker
 
-- `presentations-v5/**`;
-- `candidate-hashes-v14.json`;
-- topology/presentation semantics;
-- capability-source semantics;
-- `corpus.json` / `MG1-T023-CORPUS-v8`;
-- `oracle.json` / `MG1-T023-TOPOLOGY-ORACLE-v14`;
-- Freeze C / Freeze D history;
-- thresholds, scheduling, materiality and aggregation semantics.
+Only `ruff format --check` remains not green.
 
-Pure post-Freeze-D technical harness/test repair does not itself require a new candidate/corpus/oracle identity. If a semantic/frozen asset must change, stop and perform a new Specify/Design/Plan scientific re-entry before mutation.
+It reports exactly seven files requiring formatter output:
 
-The terminal v14 branch at `75f52f64...` is historical Stage 6 evidence and MUST NOT be rewritten. The preferred later repair branch is a new represented line derived from the reviewed scientific HEAD / preserved freeze ancestry, suggested identity:
+- `evals/skill_activation_topology/_harness/evidence.py`;
+- `evals/skill_activation_topology/_harness/frozen_inputs.py`;
+- `evals/skill_activation_topology/_harness/runner.py`;
+- `evals/skill_activation_topology/_harness/scheduler_simulation.py`;
+- `evals/skill_activation_topology/_harness/scoring.py`;
+- `tests/test_skill_activation_topology_harness.py`;
+- `tests/test_skill_activation_topology_v11.py`.
 
-`test/t023-skill-activation-topology-evals-v14-r1`
+The validation invocation correctly did not write formatting changes.
 
-No repair branch is created until the Human selects re-entry.
+The next Stage 5 repair is limited to deterministic formatter output on those seven paths. No ignore/exclusion/configuration change or test weakening is authorized.
 
-## Host-cell boundary
+## Host-cell resolution
 
-The exact live cell remains:
+The former exact-CLI availability question is resolved for the current native-Windows host.
 
-- Codex;
-- native Windows;
-- GPT-5.6 Sol;
-- Medium;
-- Codex CLI exactly `0.149.0`.
+Accepted evidence:
 
-The current handoff proves the active default command was `0.153.4`; it does not authorize substituting that version.
+- default desktop-bundled Codex remains `0.153.4`;
+- official `@openai/codex@0.149.0` is available;
+- isolated `npm exec` realized exactly `codex-cli 0.149.0` with exit code `0`;
+- no persistent host replacement is required;
+- no repository dependency/configuration changed;
+- temporary artifacts were removed;
+- fresh exact-version realization requires network access.
 
-Before another Stage 6 launch, either:
-
-1. exact `0.149.0` must be demonstrably realizable on the selected supported host; or
-2. a later explicit Orchestrator semantic/scientific decision must change the host cell and determine whether new oracle/execution identities are required.
-
-Do not silently treat CLI versions as equivalent.
+The scientific cell remains exactly Codex / native Windows / GPT-5.6 Sol / Medium / CLI `0.149.0`. Do not substitute the default `0.153.4` during later Stage 6.
 
 ## Active remote artifacts
 
 - Governing Task Contract: `docs/tasks/T061-mg1-v13-positive-anchor-reference-evaluation.md` — historical filename retained.
 - v14 Stage 5 re-entry authority: `docs/reviews/T023-R17.md`.
-- superseded practical Stage 5 readiness: `docs/reviews/T023-R18.md`.
+- superseded practical readiness: `docs/reviews/T023-R18.md`.
 - consumed Stage 6 launch authority: `docs/reviews/T023-R19.md`.
 - Human-mediated transport correction: `docs/reviews/T023-R20.md`.
 - coordinator-title correction: `docs/reviews/T023-R21.md`.
-- current Stage 7 blocker convergence: `docs/reviews/T023-R22.md`.
-- terminal v14 branch: `test/t023-skill-activation-topology-evals-v14`.
-- terminal v14 HEAD: `75f52f64adddfc738ab1d5362efdfe90cf327786`.
-- terminal handoff: `handoffs/T061-executor-handoff.json` at that exact HEAD.
-- reviewed implementation head: `a8caf6338dbae3a3ce4cefdc7965acd0d37f1557`.
+- Stage 6 blocker convergence: `docs/reviews/T023-R22.md`.
+- current Stage 5 local-validation convergence: `docs/reviews/T023-R23.md`.
+- repair branch: `test/t023-skill-activation-topology-evals-v14-r1`.
+- repair implementation head: `ddb58c5467c2cef831e5f3202fab8a7c6017e2ba`.
+- local-validation evidence head: `6ef1478122379578adc535a05d759658ea1d0847`.
+- local-validation evidence: `handoffs/T061-stage5-local-validation.json` at that exact head.
+- historical Stage 6 terminal branch/head: `test/t023-skill-activation-topology-evals-v14@75f52f64adddfc738ab1d5362efdfe90cf327786`.
 - Candidate Freeze C: `1fc38f979d67ff29649f69ae39b8d46d2523518b`.
 - Holdout/oracle Freeze D: `f8cee7c72688f0486211474d2678d018772e2a58`.
 - Human-mediated Codex transport invariant: `docs/decisions/D071-human-mediated-codex-transport-boundary.md`.
@@ -127,7 +114,7 @@ For every new source-maintenance chat:
 4. Report `BOOTSTRAP_VALID` before substantive work.
 5. Apply D070/D069 to visible narration/final closure.
 6. For Codex launch/continuation/transport interactions, load D071/D072/D073.
-7. For T061 re-entry, load R22 before acting and load R17/R18/R19 only as needed to resolve the technical/freeze boundary.
+7. For T061 Stage 5 continuation, load R23 and only load R22/R17-R21 if a concrete conflict requires them.
 8. Do not reconstruct the frontier from prior chats or Project Memory.
 
 ## D073 rollout queue
@@ -136,24 +123,25 @@ D073 generic rollout remains a separate Markdown-only follow-up. Do not mix that
 
 ## Next action
 
-Await Human selection.
+Continue the already Human-selected T061 Stage 5 technical re-entry.
 
-If the Human selects T061 continuation (for example `go`):
-
-1. reverify current `develop`, terminal v14 branch/head, Freeze C/Freeze D and R22;
-2. create a new prospective technical repair branch preserving the scientific freeze ancestry, preferably `test/t023-skill-activation-topology-evals-v14-r1`;
-3. repair only provider-free harness/tests/technical mechanics until Ruff, format, code-health, pytest, scheduler and integrity gates are green;
-4. keep provider/model calls at `0` throughout Stage 5;
-5. establish a concrete path to the exact CLI `0.149.0` cell without changing scientific semantics, or stop for a separate semantic host-cell decision;
-6. publish a new reviewed Stage 5 technical HEAD and readiness review;
-7. require a new separate Human-selected Stage 6 launch and new launch gate before Codex execution.
+1. Use Human-mediated Codex Local `CONTINUE` on coordinator `AG | agent-governance | T061 | root-3` and branch `test/t023-skill-activation-topology-evals-v14-r1`.
+2. Require initial remote branch HEAD `6ef1478122379578adc535a05d759658ea1d0847` and preserve its evidence commit.
+3. Apply only deterministic Ruff formatter output to the seven paths listed in this checkpoint/R23.
+4. Do not modify scientific/frozen assets, Markdown, configuration, dependencies, tests semantically or acceptance logic.
+5. Rerun all provider-free gates: candidate integrity, holdout integrity, Ruff lint, Ruff format check, code-health, deterministic subsets, scheduler and full locked pytest.
+6. Keep T061 harness provider/model calls at `0`; do not run canary/B2/F2/G3.
+7. Verify exact CLI `0.149.0` remains realizable by the isolated method already evidenced; no silent substitution.
+8. Publish a repair implementation commit plus terminal Stage 5 validation evidence JSON on `v14-r1`.
+9. Return `STATUS / EVIDENCE / BRANCH / HEAD` to ChatGPT for remote verification and readiness reassessment.
+10. Even if all gates pass, do not start Stage 6. A separate Human Stage 6 selection and new persisted launch gate remain required.
 
 ## Completion condition
 
-This Stage 7 convergence objective is complete when R22 and O247 are durably integrated on `develop`.
+The current Stage 5 format-only repair objective is complete when formatter-only repair is remotely represented, all provider-free gates are green, exact CLI `0.149.0` remains realizable, and ChatGPT has persisted a new Stage 5 readiness review/checkpoint.
 
-T061 itself remains incomplete and blocked pending Human-selected Stage 5 technical re-entry plus host-cell resolution.
+T061 itself remains incomplete until a later authorized Stage 6 evaluation and Stage 7 convergence.
 
 ## Do not
 
-Do not reuse R19 for another Stage 6 run. Do not overwrite or rewrite terminal branch/head `75f52f64...`. Do not modify Freeze C/Freeze D scientific assets during technical-only re-entry. Do not issue provider/model calls during Stage 5. Do not silently substitute Codex CLI `0.153.4` for `0.149.0`. Do not infer B2/F2/G3 results from provider-free gates. Do not start T024. Do not modify or silently close D066 gaps. Do not reopen T058. Do not perform historical branch cleanup.
+Do not reuse R19. Do not rewrite `75f52f64...`, `6ef147812...`, Freeze C or Freeze D. Do not modify frozen scientific assets during format-only repair. Do not weaken tests/configuration or add ignores/exclusions to satisfy formatting. Do not issue T061 harness provider/model calls during Stage 5. Do not run synthetic canary, B2, F2 or G3. Do not silently substitute Codex CLI `0.153.4` for `0.149.0`. Do not start T024. Do not modify or silently close D066 gaps. Do not reopen T058. Do not perform historical branch cleanup.
