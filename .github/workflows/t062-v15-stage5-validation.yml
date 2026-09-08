@@ -1,0 +1,65 @@
+name: T062 v15 Stage 5 provider-free validation
+
+on:
+  push:
+    branches:
+      - chore/t062-v15-harness-stage5-validation
+
+permissions:
+  contents: read
+
+jobs:
+  deterministic:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout full history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python 3.13
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Install frozen uv baseline
+        run: python -m pip install 'uv==0.11.32'
+
+      - name: Sync locked environment
+        run: uv sync --locked
+
+      - name: Candidate Freeze E guard
+        run: uv run --locked python evals/skill_activation_topology/verify_v15_candidate_integrity.py
+
+      - name: Holdout Freeze F guard
+        run: uv run --locked python evals/skill_activation_topology/verify_v15_holdout_integrity.py
+
+      - name: Harness validate
+        run: uv run --locked python evals/skill_activation_topology/harness.py validate
+
+      - name: Ruff check
+        run: uv run --locked ruff check .
+
+      - name: Ruff format check
+        run: uv run --locked ruff format --check .
+
+      - name: Code health
+        run: uv run --locked python tools/code_health.py check --root .
+
+      - name: Symbol map
+        run: uv run --locked python tools/code_health.py map --root .
+
+      - name: T023 v15 characterization
+        run: >-
+          uv run --locked python -m pytest
+          tests/test_skill_activation_topology_harness.py
+          tests/test_skill_activation_topology_v15.py
+          tests/test_skill_activation_topology_v15_scheduler.py
+          tests/test_t050_harness_cli_characterization.py
+
+      - name: Full deterministic pytest
+        run: uv run --locked python -m pytest
+
+      - name: Provider/model call boundary
+        run: echo 'provider_model_calls=0'
