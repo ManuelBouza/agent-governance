@@ -1,4 +1,4 @@
-"""Extracted MG1 topology harness implementation."""
+"""Shared data models and constants for the T023 topology harness."""
 
 from __future__ import annotations
 
@@ -7,32 +7,15 @@ from pathlib import Path
 from typing import Any
 
 HERE = Path(__file__).resolve().parent.parent
-
-
 REPO_ROOT = HERE.parents[1]
-
-
 HARNESS_PATH = HERE / "harness.py"
-
-
 ORACLE_PATH = HERE / "oracle.json"
-
-
 CORPUS_PATH = HERE / "corpus.json"
-
-
 TOPOLOGIES_PATH = HERE / "topologies.json"
-
-
 MANIFEST_PATH = HERE / "presentations" / "manifest.json"
-
-
 ENVELOPE_PATH = HERE / "trial-envelope.json"
 
-
 ALLOWED_OUTCOMES = {"activate", "no-activation", "bounded-rejection", "clarify-context"}
-
-
 ACTIVATION_RELEVANT_CLASSES = {
     "positive-consumer",
     "positive-source-maintainer",
@@ -41,12 +24,8 @@ ACTIVATION_RELEVANT_CLASSES = {
     "ambiguous",
     "multi-intent",
 }
-
-
 NEGATIVE_CLASSES = {"negative", "near-miss"}
-
-
-V12_CLASS_ORDER = (
+V15_CLASS_ORDER = (
     "cross-profile",
     "ambiguous",
     "negative",
@@ -56,7 +35,8 @@ V12_CLASS_ORDER = (
     "positive-external-skill-trust",
     "multi-intent",
 )
-
+# Compatibility alias for historical helpers that import the old symbol name.
+V12_CLASS_ORDER = V15_CLASS_ORDER
 
 MINIMAL_DISABLED_FEATURES = (
     "apps",
@@ -66,28 +46,13 @@ MINIMAL_DISABLED_FEATURES = (
     "shell_snapshot",
     "standalone_web_search",
 )
-
-
 CANARY_NONCE = "The quartz heron carries seven indigo pebbles at noon."
-
-
 BACKEND_PROBE_NONCE = "T023_WINDOWS_SANDBOX_BACKEND_READY"
-
-
 WORKSPACE_PROBE_FILENAME = "workspace-probe.txt"
-
-
-WORKSPACE_PROBE_NONCE = "T023_V12_WORKSPACE_READABLE"
-
-
+WORKSPACE_PROBE_NONCE = "T023_V15_WORKSPACE_READABLE"
 WORKSPACE_FACTORY_ID = "windows-inherited-acl-mkdir-v1"
-
-
 REQUIRED_CODEX_VERSION = "codex-cli 0.149.0"
-
-
 WINDOWS_BACKEND_ORDER = ("elevated", "unelevated")
-
 
 TRIAL_SCHEMA: dict[str, Any] = {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
@@ -114,7 +79,6 @@ TRIAL_SCHEMA: dict[str, Any] = {
         "response_summary",
     ],
 }
-
 
 CANARY_SCHEMA: dict[str, Any] = {
     "$schema": "https://json-schema.org/draft/2020-12/schema",

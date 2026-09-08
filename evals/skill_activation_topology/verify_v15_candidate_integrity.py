@@ -14,6 +14,7 @@ HASHES = EVAL / "candidate-hashes-v15.json"
 TOPOLOGIES = EVAL / "topologies.json"
 MANIFEST = EVAL / "presentations" / "manifest.json"
 
+FREEZE_E = "5b025087bc7b6996f683a34fdd1ce441d3d6dd82"
 SOURCE_STAGE5_HEAD = "aea43441a424fe18003176cb05b5594b8b561a68"
 SOURCE_MANIFEST_PATH = "evals/skill_activation_topology/candidate-hashes-v14.json"
 SOURCE_MANIFEST_BLOB = "f78b587b76ef0c06669b15fa4d0e85b393cab5b0"
@@ -22,11 +23,11 @@ EXPECTED_EPOCH = "MG1-2026-09-06-v4"
 EXPECTED_TOPOLOGY = "MG1-T023-TOPOLOGIES-v4"
 EXPECTED_PRESENTATION = "MG1-T023-PRESENTATIONS-v5"
 EXPECTED_HASH_IDENTITY = "MG1-T023-CANDIDATE-HASHES-v3"
-FORBIDDEN_PRE_FREEZE_F = (
-    EVAL / "corpus.json",
-    EVAL / "oracle.json",
-    EVAL / "trial-envelope.json",
-    EVAL / "verify_v15_holdout_integrity.py",
+FORBIDDEN_AT_FREEZE_E = (
+    "evals/skill_activation_topology/corpus.json",
+    "evals/skill_activation_topology/oracle.json",
+    "evals/skill_activation_topology/trial-envelope.json",
+    "evals/skill_activation_topology/verify_v15_holdout_integrity.py",
 )
 
 
@@ -56,7 +57,30 @@ def _git_blob_for_path(relative: str) -> str:
     ).strip()
 
 
+def _path_exists_at(revision: str, relative: str) -> bool:
+    completed = subprocess.run(
+        ["git", "cat-file", "-e", f"{revision}:{relative}"],
+        cwd=ROOT,
+        check=False,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+    )
+    return completed.returncode == 0
+
+
+def _assert_freeze_e_ancestor() -> None:
+    completed = subprocess.run(
+        ["git", "merge-base", "--is-ancestor", FREEZE_E, "HEAD"],
+        cwd=ROOT,
+        check=False,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+    )
+    assert completed.returncode == 0, "Candidate Freeze E is not an ancestor of HEAD"
+
+
 def main() -> int:
+    _assert_freeze_e_ancestor()
     spec = _load_json(HASHES)
     topologies = _load_json(TOPOLOGIES)
     manifest = _load_json(MANIFEST)
@@ -90,6 +114,16 @@ def main() -> int:
     assert list(manifest["candidates"]) == EXPECTED_CANDIDATES
     assert topologies["historical_unscheduled_candidates"] == ["B0", "B1"]
 
+    frozen_identity_paths = (
+        "evals/skill_activation_topology/candidate-hashes-v15.json",
+        "evals/skill_activation_topology/topologies.json",
+        "evals/skill_activation_topology/presentations/manifest.json",
+    )
+    for relative in frozen_identity_paths:
+        assert (ROOT / relative).read_bytes() == _git_show(FREEZE_E, relative), (
+            f"Candidate Freeze E identity drift: {relative}"
+        )
+
     assert TOPOLOGIES.read_bytes() == _git_show(
         SOURCE_STAGE5_HEAD, "evals/skill_activation_topology/topologies.json"
     )
@@ -113,19 +147,25 @@ def main() -> int:
         assert path.read_bytes() == _git_show(SOURCE_STAGE5_HEAD, relative), (
             f"clean-source byte mismatch: {relative}"
         )
+        assert path.read_bytes() == _git_show(FREEZE_E, relative), (
+            f"Candidate Freeze E payload drift: {relative}"
+        )
 
     for target, historical_v3_source in spec["copy_equivalence"].items():
         assert (ROOT / target).read_bytes() == _git_show(
             SOURCE_STAGE5_HEAD, historical_v3_source
         ), f"v5/v3 copy drift: {target} != {historical_v3_source}"
 
-    for forbidden in FORBIDDEN_PRE_FREEZE_F:
-        assert not forbidden.exists(), f"holdout materialized before Freeze F: {forbidden}"
+    for forbidden in FORBIDDEN_AT_FREEZE_E:
+        assert not _path_exists_at(FREEZE_E, forbidden), (
+            f"holdout identity existed at Candidate Freeze E: {forbidden}"
+        )
 
     print(
         json.dumps(
             {
                 "status": "PASS",
+                "freeze_e": FREEZE_E,
                 "identity": spec["identity"],
                 "candidate_count": len(EXPECTED_CANDIDATES),
                 "hashed_file_count": len(spec["files"]),

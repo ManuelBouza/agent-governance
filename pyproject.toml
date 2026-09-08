@@ -33,6 +33,7 @@ target-version = "py313"
 extend-exclude = [
     "**/*.md",
     ".venv",
+    "evals/skill_activation_topology/verify_v15_holdout_integrity.py",
 ]
 
 [tool.ruff.lint]

@@ -1,4 +1,4 @@
-"""Extracted MG1 topology harness implementation."""
+"""Evidence verification and provider-free deterministic gates for T023 v15."""
 
 from __future__ import annotations
 
@@ -12,11 +12,7 @@ import time
 from pathlib import Path
 from typing import Any
 
-from .aggregation import (
-    aggregate_candidate_trials,
-    finalized_candidate_aggregates,
-    qualification_futility_certificate,
-)
+from .aggregation import aggregate_candidate_trials
 from .evidence import _validate_partial
 from .frozen_inputs import _load_json, _sha256, load_frozen_inputs
 from .models import (
@@ -32,8 +28,8 @@ from .models import (
     TrialSpec,
 )
 from .observability import _observed_skill_reads, _validate_model_result
-from .scheduling import _trial_prompt, all_possible_trials, stage_schedule
-from .scoring import apply_selection_rule, compute_candidate_metrics, select_single_family_reference
+from .scheduling import _trial_prompt, all_possible_trials, scheduled_trials
+from .scoring import apply_selection_rule, compute_candidate_metrics
 from .storage import _json_dump
 
 
@@ -56,25 +52,13 @@ def score_matrix(args: argparse.Namespace) -> int:
     inputs = load_frozen_inputs()
     output = args.output.resolve()
     validate_complete_evidence(inputs, output)
-    metadata = _load_json(output / "run-metadata.json")
-    if metadata["status"] == "BLOCKED_NO_REFERENCE":
-        return 0
     trials = load_trials(output / "trials.jsonl")
     deterministic = _load_json(output / "deterministic-evidence.json")
-    candidates = (
-        ["B0", "B1"]
-        if metadata["status"] == "BLOCKED_NO_REFERENCE"
-        else inputs.oracle["candidate_ids"]
-    )
     metrics = {
         candidate: compute_candidate_metrics(inputs, candidate, trials, deterministic)
-        for candidate in candidates
+        for candidate in inputs.oracle["candidate_ids"]
     }
-    selection = (
-        _load_json(output / "selection.json")
-        if len(candidates) == 2
-        else apply_selection_rule(inputs, metrics)
-    )
+    selection = apply_selection_rule(inputs, metrics)
     _json_dump(output / "metrics.json", metrics)
     _json_dump(output / "selection.json", selection)
     return 0
@@ -82,19 +66,21 @@ def score_matrix(args: argparse.Namespace) -> int:
 
 def _validate_run_identity(inputs: FrozenInputs, metadata: dict[str, Any]) -> None:
     method = inputs.oracle["trial_method"]
-    if metadata.get("status") not in {"COMPLETE", "BLOCKED_NO_REFERENCE"}:
-        raise HarnessError("incomplete V12 execution cannot be scored")
+    if metadata.get("status") != "COMPLETE":
+        raise HarnessError("incomplete v15 execution cannot be scored")
     if (
         metadata.get("oracle_id") != inputs.oracle["oracle_id"]
         or metadata.get("execution_epoch") != inputs.oracle["execution_epoch"]
         or metadata.get("trial_envelope_id") != inputs.oracle["trial_envelope_id"]
+        or metadata.get("strategy") != "RIQ-NBC"
         or metadata.get("full_acceptance") is not True
         or metadata.get("model") != "gpt-5.6-sol"
         or metadata.get("effort") != "medium"
         or metadata.get("host") != "Codex"
+        or metadata.get("workers") != 1
         or metadata.get("timeout_seconds") != method["timeout_seconds_per_model_attempt"]
     ):
-        raise HarnessError("mismatched V12 execution identity/configuration")
+        raise HarnessError("mismatched v15 execution identity/configuration")
     _validate_executed_runner_provenance(metadata)
     for path in (ORACLE_PATH, CORPUS_PATH, TOPOLOGIES_PATH, MANIFEST_PATH, ENVELOPE_PATH):
         relative = path.relative_to(REPO_ROOT).as_posix()
@@ -110,20 +96,28 @@ def _validate_deterministic_evidence(output: Path) -> dict[str, Any]:
             "full_deterministic_regression",
             "profile_isolation_regression",
             "consumer_source_independence_regression",
+            "quality_gate",
         )
     ):
         raise HarnessError("mandatory deterministic evidence is not PASS")
+    if deterministic.get("provider_model_calls_issued_during_deterministic_gate") != 0:
+        raise HarnessError("deterministic gate issued a provider/model call")
+    for candidate, evidence in deterministic.get("candidates", {}).items():
+        if (
+            evidence.get("source_distribution_integrity") is not True
+            or evidence.get("single_install_feasibility") is not True
+        ):
+            raise HarnessError(f"{candidate}: deterministic candidate integrity failed")
     return deterministic
 
 
 def _validate_schedule_records(
-    inputs: FrozenInputs, output: Path, metadata: dict[str, Any]
+    inputs: FrozenInputs, output: Path
 ) -> tuple[
     list[dict[str, Any]],
     list[dict[str, Any]],
     list[dict[str, Any]],
     dict[str, TrialSpec],
-    list[str],
     list[str],
     list[str],
 ]:
@@ -139,35 +133,27 @@ def _validate_schedule_records(
     if len(set(trial_keys)) != len(trial_keys) or set(trial_keys) != set(raw_keys):
         raise HarnessError("valid trial/raw identity mismatch or duplication")
     if set(trial_keys) - set(possible):
-        raise HarnessError("trial outside frozen V12 identity set")
-    evaluated = (
-        ["B0", "B1"]
-        if metadata["status"] == "BLOCKED_NO_REFERENCE"
-        else inputs.oracle["candidate_ids"]
-    )
-    expected_base = {
-        spec.key
-        for stage in (("R",) if len(evaluated) == 2 else ("R", "C"))
-        for spec in stage_schedule(inputs, stage)
-    }
-    if metadata["status"] != "BLOCKED_NO_REFERENCE" and not expected_base <= set(trial_keys):
-        raise HarnessError("mandatory paired base schedule is incomplete")
-    if metadata["status"] == "BLOCKED_NO_REFERENCE" and any(
-        trial["candidate_id"] in {"F2", "G3"} for trial in trials
+        raise HarnessError("trial outside frozen v15 identity set")
+    expected_base = {spec.key for spec in scheduled_trials(inputs)}
+    if not expected_base <= set(trial_keys):
+        raise HarnessError("mandatory v15 base schedule is incomplete")
+    if (
+        not method["global_base_valid_observations"]
+        <= len(trials)
+        <= method["global_max_valid_observations"]
     ):
-        raise HarnessError("challenger evidence exists despite no qualifying reference")
-    lower = (
-        1
-        if metadata["status"] == "BLOCKED_NO_REFERENCE"
-        else method["reference_stage_full_completion_base_valid_observations"]
-    )
-    upper = method["reference_stage_full_completion_max_valid_observations"]
-    if len(evaluated) == 4:
-        lower = lower + method["challenger_stage_full_completion_base_valid_observations"]
-        upper = method["overall_full_completion_ceiling_when_challengers_execute"]
-    if not lower <= len(trials) <= upper:
-        raise HarnessError("V12 valid observation count is outside the frozen stage range")
-    return trials, raw_trials, attempts, possible, trial_keys, raw_keys, evaluated
+        raise HarnessError("v15 valid observation count is outside the frozen range")
+    for candidate in inputs.oracle["candidate_ids"]:
+        count = sum(trial["candidate_id"] == candidate for trial in trials)
+        if (
+            not method["per_candidate_base_valid_observations"]
+            <= count
+            <= method["per_candidate_max_valid_observations"]
+        ):
+            raise HarnessError(f"{candidate}: valid observation count is outside frozen range")
+    if len(attempts) > method["maximum_acceptance_model_attempts"]:
+        raise HarnessError("v15 acceptance model-attempt ceiling exceeded")
+    return trials, raw_trials, attempts, possible, trial_keys, raw_keys
 
 
 def _started_threads(stdout_jsonl: str) -> list[str]:
@@ -248,90 +234,33 @@ def _validate_recomputed_outputs(
     inputs: FrozenInputs,
     output: Path,
     trials: list[dict[str, Any]],
-    evaluated: list[str],
     deterministic: dict[str, Any],
-    metadata: dict[str, Any],
 ) -> None:
-    if metadata["status"] == "BLOCKED_NO_REFERENCE":
-        _validate_futile_reference_outputs(inputs, output, trials, evaluated)
-        return
     aggregates = [
         item
-        for candidate in evaluated
+        for candidate in inputs.oracle["candidate_ids"]
         for item in aggregate_candidate_trials(inputs, candidate, trials)
     ]
     if aggregates != load_trials(output / "case-aggregates.jsonl"):
-        raise HarnessError("persisted V12 case aggregates are not exactly recomputable")
+        raise HarnessError("persisted v15 case aggregates are not exactly recomputable")
     recomputed_metrics = {
         candidate: compute_candidate_metrics(inputs, candidate, trials, deterministic)
-        for candidate in evaluated
+        for candidate in inputs.oracle["candidate_ids"]
     }
     if recomputed_metrics != _load_json(output / "metrics.json"):
-        raise HarnessError("persisted V12 metrics are not exactly recomputable")
-    expected_selection = (
-        {
-            "status": "BLOCKED",
-            "selected_candidate": None,
-            "reason": "neither B0 nor B1 qualifies; challenger stage not executed",
-            "qualifying": select_single_family_reference(inputs, recomputed_metrics)["qualifying"],
-            "scored": True,
-        }
-        if len(evaluated) == 2
-        else apply_selection_rule(inputs, recomputed_metrics)
-    )
+        raise HarnessError("persisted v15 metrics are not exactly recomputable")
+    expected_selection = apply_selection_rule(inputs, recomputed_metrics)
     if expected_selection != _load_json(output / "selection.json"):
-        raise HarnessError("persisted V12 selection is not exactly recomputable")
-
-
-def _validate_futile_reference_outputs(
-    inputs: FrozenInputs,
-    output: Path,
-    trials: list[dict[str, Any]],
-    evaluated: list[str],
-) -> None:
-    aggregates = [
-        item
-        for candidate in evaluated
-        for item in finalized_candidate_aggregates(inputs, candidate, trials)
-    ]
-    if aggregates != load_trials(output / "case-aggregates.jsonl"):
-        raise HarnessError("persisted V12 futile aggregates are not exactly recomputable")
-    certificates = {
-        candidate: qualification_futility_certificate(inputs, candidate, trials)
-        for candidate in evaluated
-    }
-    if any(not certificate["terminal"] for certificate in certificates.values()):
-        raise HarnessError("BLOCKED_NO_REFERENCE requires terminal qualification futility")
-    for candidate, certificate in certificates.items():
-        if certificate != _load_json(output / "futility-certificates" / f"{candidate}.json"):
-            raise HarnessError(f"{candidate}: persisted futility certificate is not recomputable")
-    expected_reference = {
-        "status": "BLOCKED",
-        "single_family_reference": None,
-        "reason": "both single-family candidates are FUTILE_QUALIFICATION",
-        "futility": certificates,
-    }
-    expected_selection = {
-        "status": "BLOCKED",
-        "selected_candidate": None,
-        "reason": "NO QUALIFYING SINGLE-FAMILY REFERENCE",
-        "scored": True,
-    }
-    if _load_json(output / "metrics-reference.json") != {}:
-        raise HarnessError("futile reference stage must not contain partial metrics")
-    if _load_json(output / "reference-selection.json") != expected_reference:
-        raise HarnessError("persisted V12 futile reference decision is not recomputable")
-    if _load_json(output / "selection.json") != expected_selection:
-        raise HarnessError("persisted V12 futile selection is not recomputable")
+        raise HarnessError("persisted v15 selection is not exactly recomputable")
 
 
 def validate_complete_evidence(inputs: FrozenInputs, output: Path) -> None:
-    """Fail closed on V12 epoch, adaptive schedule, attempts, traces and aggregates."""
+    """Fail closed on v15 epoch, attempts, traces, 2+1 aggregation and selection."""
     metadata = _load_json(output / "run-metadata.json")
     _validate_run_identity(inputs, metadata)
     deterministic = _validate_deterministic_evidence(output)
-    trials, raw_trials, attempts, possible, trial_keys, raw_keys, evaluated = (
-        _validate_schedule_records(inputs, output, metadata)
+    trials, raw_trials, attempts, possible, trial_keys, raw_keys = _validate_schedule_records(
+        inputs, output
     )
     raw_by_key = dict(zip(raw_keys, raw_trials, strict=True))
     workspaces: set[str] = set()
@@ -347,7 +276,7 @@ def validate_complete_evidence(inputs: FrozenInputs, output: Path) -> None:
             workspaces,
             thread_ids,
         )
-    _validate_recomputed_outputs(inputs, output, trials, evaluated, deterministic, metadata)
+    _validate_recomputed_outputs(inputs, output, trials, deterministic)
 
 
 def _validate_executed_runner_provenance(metadata: dict[str, Any]) -> None:
@@ -380,14 +309,15 @@ def verify_deterministic(args: argparse.Namespace) -> int:
     evidence = _load_json(evidence_path)
     if evidence.get("oracle_id") != inputs.oracle["oracle_id"]:
         raise HarnessError("deterministic evidence does not match the current frozen oracle")
+
     scheduler = evidence.get("adaptive_scheduler_preflight", {})
     scenarios = scheduler.get("scenarios", {})
     required_scenarios = {
-        "agreeing_pair_forward_progress",
-        "conditional_third_forward_progress",
+        "base_round_robin",
+        "conditional_third_pair_scoped",
+        "critical_instability_still_gets_r3",
         "no_fourth_repetition",
-        "critical_terminal",
-        "full_reference_adaptive_dry_run",
+        "b2_nonblocking_split_local_futility",
     }
     module_root = REPO_ROOT / "evals" / "skill_activation_topology" / "_harness"
     expected_hashes = {
@@ -408,9 +338,29 @@ def verify_deterministic(args: argparse.Namespace) -> int:
         or scheduler.get("tested_module_sha256") != expected_hashes
     )
     if scheduler_invalid:
-        raise HarnessError("provider-free adaptive scheduler simulation evidence is invalid")
+        raise HarnessError("provider-free v15 scheduler simulation evidence is invalid")
+    for candidate, candidate_evidence in evidence.get("candidates", {}).items():
+        if (
+            candidate_evidence.get("source_distribution_integrity") is not True
+            or candidate_evidence.get("single_install_feasibility") is not True
+        ):
+            raise HarnessError(f"{candidate}: provider-free deterministic integrity failed")
 
     command_groups = {
+        "candidate_guard": [
+            "uv",
+            "run",
+            "--locked",
+            "python",
+            "evals/skill_activation_topology/verify_v15_candidate_integrity.py",
+        ],
+        "holdout_guard": [
+            "uv",
+            "run",
+            "--locked",
+            "python",
+            "evals/skill_activation_topology/verify_v15_holdout_integrity.py",
+        ],
         "ruff_check": ["uv", "run", "--locked", "ruff", "check", "."],
         "ruff_format_check": ["uv", "run", "--locked", "ruff", "format", "--check", "."],
         "code_health": [
@@ -432,6 +382,17 @@ def verify_deterministic(args: argparse.Namespace) -> int:
             "map",
             "--root",
             ".",
+        ],
+        "characterization": [
+            "uv",
+            "run",
+            "--locked",
+            "python",
+            "-m",
+            "pytest",
+            "tests/test_skill_activation_topology_harness.py",
+            "tests/test_skill_activation_topology_v15.py",
+            "tests/test_skill_activation_topology_v15_scheduler.py",
         ],
         "full_pytest": ["uv", "run", "--locked", "python", "-m", "pytest"],
         "profile_isolation": [
@@ -491,7 +452,15 @@ def verify_deterministic(args: argparse.Namespace) -> int:
         "PASS"
         if all(
             runs[name]["returncode"] == 0
-            for name in ("ruff_check", "ruff_format_check", "code_health", "symbol_map")
+            for name in (
+                "candidate_guard",
+                "holdout_guard",
+                "ruff_check",
+                "ruff_format_check",
+                "code_health",
+                "symbol_map",
+                "characterization",
+            )
         )
         else "FAIL"
     )
