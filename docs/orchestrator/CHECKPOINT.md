@@ -1,110 +1,45 @@
 # Orchestrator Checkpoint
 
-Checkpoint-ID: O256  
+Checkpoint-ID: O257  
 Date: 2026-09-09  
 Current-Objective: T023 / T062 — v15 RIQ-NBC reference-independent evaluation  
-State: STAGE6_AUTHORIZED_AWAITING_HUMAN_CODEX_START  
+State: STAGE6_CONTINUATION_AUTHORIZED_AWAITING_HUMAN_CODEX_CONTINUE  
 Active-Executor: Codex  
-Stage6-Authorization: AUTHORIZED_BY_EXPLICIT_HUMAN_GO_AND_T023_R31  
+Stage6-Authorization: AUTHORIZED_BY_R31_AND_EXPLICIT_R32_PROVIDER_DESTINATION_PAYLOAD_COST_GO  
 Coordinator-ID: `AG | agent-governance | T062 | root-1`
 
 ## Canonical frontier
 
-The Human Owner explicitly launched T062 / D068 Stage 6 on 2026-09-09T07:51:45+02:00 by replying `go` after canonical O255 required a separate explicit Human launch.
+T062 Stage 6 was launched under `docs/reviews/T023-R31.md`. The first Executor attempt returned a durable `BLOCKED` handoff because the managed Codex approval boundary rejected the provider-backed harness command before process creation.
 
-Current Stage 6 launch authority:
+Verified blocked scientific branch HEAD:
 
-`docs/reviews/T023-R31.md`
+`test/t023-skill-activation-topology-evals-v15@b9034e450f04fbc9736543425e531159d4b79d49`
 
-Stage 5 readiness remains:
+Blocked handoff:
 
-`docs/reviews/T023-R30.md`
+`handoffs/T062-executor-handoff.json`
 
-Task Contract remains:
+Remote comparison from terminal Stage 5 HEAD `3e0d0b71cf382db502e186622f40a23bcd915390` to blocked HEAD `b9034e45...` contains exactly one commit and one added path: the JSON handoff. No executable/scientific/Markdown path changed on the scientific branch.
 
-`docs/tasks/T062-t023-riq-nbc-v15-reference-independent-evaluation.md`
+The Human Owner then explicitly authorized provider-backed continuation on 2026-09-09T08:37:00+02:00 by replying `go` to the Orchestrator's destination/payload/cost authorization. The controlling continuation review is:
 
-Protected `develop` revalidated immediately before launch-gate authoring:
+`docs/reviews/T023-R32.md`
 
-`7cf9a60762cfe07eecd33d94e7cdfbec33fc67a2`
+R32 does not broaden scientific semantics. It supplies the explicit external-transmission/cost authorization required to continue the already-approved T062 experiment.
 
-The launch gate is Markdown-only. It does not alter scientific candidate/reference/corpus/oracle/trial-envelope bytes or any frozen selection semantics.
-
-## Scientific branch and frozen boundaries
-
-Represented scientific branch:
-
-`test/t023-skill-activation-topology-evals-v15`
-
-Terminal Stage 5 scientific HEAD / expected remote branch HEAD before substantive Stage 6 execution:
-
-`3e0d0b71cf382db502e186622f40a23bcd915390`
-
-Candidate Freeze E:
-
-`5b025087bc7b6996f683a34fdd1ce441d3d6dd82`
-
-Holdout/oracle Freeze F:
-
-`5b8ac55980ecdbb6a2bf3784812b933647f2f13d`
-
-Remote launch revalidation confirmed the scientific branch still equals the terminal Stage 5 HEAD and both Freeze E and Freeze F remain exact ancestors of it. These boundaries are immutable; do not rewrite/reset/rebase/force-push them.
-
-## Stage 5 readiness receipt
-
-Terminal Stage 5 tree:
-
-`11cd1a5df9b66419f80f7a382181585a616f920a`
-
-Provider-free validation artifact:
+## Frozen scientific boundaries
 
 ```text
-name: t062-v15-final-tree
-artifact id: 10068441857
-sha256: 70841ac0f8f9d3869786eea5a0bb8b14b966e5501b8b32918e3ee7db8c40ffef
+terminal Stage 5 scientific HEAD: 3e0d0b71cf382db502e186622f40a23bcd915390
+Candidate Freeze E:              5b025087bc7b6996f683a34fdd1ce441d3d6dd82
+Holdout/oracle Freeze F:         5b8ac55980ecdbb6a2bf3784812b933647f2f13d
+blocked Stage 6 evidence HEAD:   b9034e450f04fbc9736543425e531159d4b79d49
 ```
 
-Exact terminal hosted-validation receipt:
+All are durable and must not be rewritten/reset/rebased/force-pushed.
 
-```text
-run: 34271270963
-job: 102213170730
-validated SHA: 3e0d0b71cf382db502e186622f40a23bcd915390
-candidate guard: PASS
-holdout guard: PASS
-harness validate: PASS
-ruff check: PASS
-ruff format --check: PASS
-code health: PASS
-symbol map: PASS
-characterization: 37 passed
-full pytest: 484 passed
-provider/model calls: 0
-result: SUCCESS
-```
-
-Stage 5 launched no Executor and issued exactly `0` scientific provider/model calls.
-
-## D061 / D062 launch revalidation
-
-D061 routing remains fail-closed: the Orchestrator launch gate is authored only on verified short-lived topic branch `docs/t062-v15-stage6-launch`, created from exact `develop@7cf9a60762cfe07eecd33d94e7cdfbec33fc67a2`, then returned through PR.
-
-GitHub ruleset `22339910` remains:
-
-```text
-name: Protect long-lived branches
-enforcement: active
-targets: main, develop
-pull request required: yes
-deletion blocked: yes
-non-fast-forward blocked: yes
-bypass actors: none
-current user bypass: never
-```
-
-No direct Orchestrator content write to `develop` or `main` is authorized.
-
-## Frozen scientific identities
+Frozen identities remain:
 
 ```text
 strategy:              RIQ-NBC
@@ -120,82 +55,131 @@ trial envelope:        MG1-T023-TRIAL-ENVELOPE-v3
 candidates:            B2 / F2 / G3
 ```
 
-B0/B1 remain historical and unscheduled. No v12/v13/v14 observation may enter v15 scoring.
+No v12/v13/v14 observation may enter v15 scoring.
 
-## D055 / D058 launch profile
+## Accepted blocked Stage 6 evidence
+
+The remote handoff at `b9034e45...` records provider-free completion and was verified against GitHub:
 
 ```text
-Executor: Codex
-Surface: Codex Local / native Windows
-Session: NEW
-Coordinator-ID: AG | agent-governance | T062 | root-1
-Model: GPT-5.6 Sol
-Reasoning: Medium
+candidate integrity: PASS
+holdout integrity: PASS
+ruff check: PASS
+ruff format --check: PASS
+full locked pytest: 484 passed
+code health: PASS
+symbol map: PASS
+frozen-input/scheduler validation: PASS
+v15 characterization: 31 passed
+exact cached native-Windows Codex CLI 0.149.0: PASS
+provider/model calls: 0
+backend/workspace/model behavioral preflight: NOT_RUN
+synthetic canary: NOT_RUN
+B2/F2/G3 acceptance: NOT_RUN
+topology selected: no
+```
+
+The command rejection occurred before provider-backed process creation. This is an authorization blocker, not scientific evidence and not a harness-command defect.
+
+## Explicit provider authorization
+
+R32 records explicit Human authorization for:
+
+### Destination
+
+OpenAI Codex only, using the authenticated frozen scientific cell:
+
+```text
+runtime: native Windows
+model: GPT-5.6 Sol
+reasoning: Medium
 Codex CLI: exactly 0.149.0
 ```
 
-This is the first Executor launch for T062, so `NEW` / `root-1` is required. No newer CLI/model/effort is accepted merely because it is available.
+No other external destination is authorized.
 
-If the exact native-Windows / GPT-5.6 Sol / Medium / Codex CLI `0.149.0` cell cannot be realized, Stage 6 fails closed before any provider-backed v15 evaluation call.
+### Payload
 
-## Mandatory Stage 6 execution order
+Transmission to OpenAI Codex of only the frozen T062 v15 evaluation prompts and candidate/fixture/workspace content deliberately exposed by the accepted harness for:
 
-The Executor must fail closed in this order:
+- backend/workspace/model behavioral preflight;
+- unchanged synthetic canary;
+- B2/F2/G3 acceptance execution.
 
-1. safe Git synchronization and represented branch/head/Freeze E/F ancestry verification;
-2. candidate-integrity guard;
-3. holdout-integrity guard;
-4. `ruff check`;
-5. `ruff format --check`;
-6. full locked `pytest`;
-7. code-health and symbol-map checks;
-8. frozen-input/scheduler characterization and proof that T062 Stage 6 provider/model calls so far equal exactly `0`;
-9. native-Windows backend/workspace/version preflight for the exact live cell;
-10. unchanged synthetic canary requiring `2/2 PASS`;
-11. full independent B2/F2/G3 acceptance schedule;
-12. Executor-owned Code Review & Verify, including D065 delegation re-evaluation;
-13. pushed terminal non-Markdown handoff/evidence.
+Unrelated repository data, credentials, secrets, private tokens and material outside the frozen evaluation envelope are not authorized for transmission.
 
-No canary or acceptance observation may run before every preceding gate passes.
+### Usage and cost
 
-Acceptance scheduler remains:
+The Human explicitly accepts ordinary OpenAI provider usage/cost on the existing account/plan within the frozen limits:
 
 ```text
-per ordered case: B2 -> F2 -> G3
-base repetitions: all r1, then all r2
-r3: unstable candidate/case pairs only
-r4: forbidden
-```
-
-B2 scientific non-qualification is non-blocking and does not suppress F2/G3 measurement. B2 still receives its complete required measurement. Exact scientific futility may stop F2 or G3 only candidate-locally. Technical/epoch/integrity invalidity remains a global fail-closed STOP.
-
-Budgets remain:
-
-```text
-per candidate base valid observations: 140
-per candidate maximum valid observations: 210
-global base valid observations: 420
-global maximum valid observations: 630
-max model attempts / scheduled observation: 2
-acceptance model-attempt ceiling: 1260
 synthetic canary maximum attempts: 4
+acceptance model-attempt ceiling: 1260
 absolute Stage 6 provider/model attempt ceiling: 1264
 per-attempt timeout: 180 seconds
 ```
 
-Selection semantics remain exactly T062/D074. The Executor produces measurement/verification evidence but does not perform D068 Stage 7 topology selection.
+The blocked attempt issued `0` provider/model calls, so the complete frozen attempt ceiling remains available.
 
-## Ownership and transport boundary
+No separate purchase, subscription/plan change, credential change or new billing arrangement is authorized. Such a requirement is a new Human gate.
 
-- Orchestrator owns completed Stage 5 materialization and D052 semantic conformance.
-- Executor now owns authorized Stage 6 execution/diagnosis/bounded technical repair/verification under R31/T062.
-- Orchestrator retains Stage 7 convergence/acceptance/integration/topology-selection authority.
-- Future terminal handoff path is `handoffs/T062-executor-handoff.json`.
-- D071 controls Human-mediated Codex transport: ChatGPT does not start/control Codex directly.
-- D072/D073 require the exact coordinator title instruction and truthful `CHAT_TITLE_ACTION_REQUIRED` fallback.
-- D065 delegation obligations remain applicable before substantial Stage 6 work and again before final Code Review & Verify.
+## Continuation profile
 
-Current state is `AUTHORIZED_AWAITING_HUMAN_CODEX_START`: authority exists, but no Stage 6 execution evidence, deterministic Stage 6 gate, native-Windows preflight, synthetic canary, B2/F2/G3 observation, topology selection or provider-backed v15 evaluation call is yet claimed.
+```text
+Executor: Codex
+Session: CONTINUE
+Coordinator-ID: AG | agent-governance | T062 | root-1
+Model: GPT-5.6 Sol
+Reasoning: Medium
+Runtime: native Windows
+Codex CLI: exactly 0.149.0
+```
+
+`CONTINUE` is required because this is a clean same-task/same-branch continuation from a single managed-approval blocker with durable evidence, no semantic drift and zero provider/model calls.
+
+## Continuation revalidation and resume point
+
+The prior provider-free suite may be reused only if Codex first confirms:
+
+1. remote scientific branch still equals `b9034e450f04fbc9736543425e531159d4b79d49`;
+2. `b9034e45...` remains a direct child of `3e0d0b71...` and its only delta is `handoffs/T062-executor-handoff.json`;
+3. Freeze E/F remain exact ancestors;
+4. current `origin/develop` contains R31 and R32;
+5. v15 candidate-integrity guard PASS;
+6. v15 holdout-integrity guard PASS;
+7. provider/model calls still equal exactly `0`;
+8. exact native-Windows Codex CLI `0.149.0` remains active.
+
+If these checks pass, resume at the previously blocked backend/workspace/model behavioral preflight. Do not repeat the full `484`-test provider-free suite merely for ceremony.
+
+If any executable/scientific drift exists, fail closed or rerun the complete R31 provider-free sequence as technically appropriate before any provider-backed call.
+
+After approved preflight:
+
+1. unchanged synthetic canary, require `2/2 PASS`;
+2. full independent acceptance schedule: per ordered case `B2 -> F2 -> G3`, all r1 then all r2, r3 only for unstable pairs, no r4;
+3. preserve frozen thresholds, aggregation, budgets and RIQ-NBC selection semantics;
+4. B2 scientific non-qualification remains non-blocking;
+5. F2/G3 exact scientific futility may stop only candidate-locally;
+6. technical/epoch/integrity invalidity remains global fail-closed STOP;
+7. Executor Code Review & Verify plus D065 re-evaluation;
+8. update/push `handoffs/T062-executor-handoff.json` and terminal non-Markdown evidence.
+
+Executor must not select a topology. Stage 7 convergence/selection remains Orchestrator-owned.
+
+If the managed approval system still rejects the provider-backed command after R32's explicit authorization, do not bypass/disable it; return `BLOCKED` with the exact denial and call counts.
+
+## D061 / D062 state
+
+Continuation-authority authoring base:
+
+`develop@0b3685a2d2bc5ad6988e8839f3dc188602a04307`
+
+Orchestrator writes use verified topic branch:
+
+`docs/t062-v15-provider-continuation-auth`
+
+Ruleset `22339910` was revalidated active over `main`/`develop`, requiring PR transport, blocking deletion/non-fast-forward updates and providing no routine bypass.
 
 ## Other frontier constraints
 
@@ -209,24 +193,22 @@ Current state is `AUTHORIZED_AWAITING_HUMAN_CODEX_START`: authority exists, but 
 At the start of the next chat, after reading current `develop`, `AGENTS.md` and this checkpoint:
 
 1. load `docs/tasks/T062-t023-riq-nbc-v15-reference-independent-evaluation.md`;
-2. load `docs/reviews/T023-R30.md`;
-3. load `docs/reviews/T023-R31.md`;
-4. for Codex launch/continuation/transport, load D071/D072/D073;
-5. load D074 / T023-R28 only if a semantic-selection conflict must be resolved;
-6. load T023-R26 only if clean-source provenance or lineage is disputed;
+2. load `docs/reviews/T023-R31.md` and `docs/reviews/T023-R32.md`;
+3. load `handoffs/T062-executor-handoff.json` from the current scientific branch;
+4. for Codex continuation/transport, load D071/D072/D073;
+5. load R30 only if Stage 5 readiness details are needed;
+6. load D074/R28 only if a semantic-selection conflict must be resolved;
 7. do not reconstruct the frontier from prior chats or Project Memory.
-
-Do not load older T023 history unless a concrete conflict requires it.
 
 ## Next Action
 
-Human performs the D071 transport step:
+Human performs D071 continuation transport:
 
-1. start/select NEW Codex Local coordinator `AG | agent-governance | T062 | root-1`;
-2. use native Windows, GPT-5.6 Sol, Medium and exact Codex CLI `0.149.0`;
-3. paste the complete R31 transport prompt rendered by ChatGPT;
-4. let Codex execute Stage 6 under R31/T062;
-5. return only the terminal Executor shape:
+1. continue the existing Codex coordinator `AG | agent-governance | T062 | root-1`;
+2. preserve native Windows / GPT-5.6 Sol / Medium / exact Codex CLI `0.149.0`;
+3. paste the complete R32 continuation prompt rendered by ChatGPT;
+4. let Codex resume from the blocked provider-backed preflight under the explicit R32 destination/payload/cost authorization;
+5. return only:
 
 ```text
 STATUS: <COMPLETED|BLOCKED>
@@ -235,4 +217,4 @@ BRANCH: test/t023-skill-activation-topology-evals-v15
 HEAD: <remote pushed HEAD sha>
 ```
 
-After terminal return, ChatGPT verifies remote Git and performs D068 Stage 7 convergence. No additional `go` is required for this already-authorized Stage 6 launch.
+After terminal return, ChatGPT verifies remote Git and performs D068 Stage 7 convergence. No additional `go` is required for this continuation.
