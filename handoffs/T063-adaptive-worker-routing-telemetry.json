@@ -1,0 +1,418 @@
+{
+  "schema_version": 1,
+  "run_id": "T063-20260909T190123Z",
+  "task_id": "T063",
+  "status": "BLOCKED",
+  "terminal_classification": "BLOCKED_EXECUTION_INVALID_INPUT",
+  "pilot_decision": null,
+  "pilot_decision_not_computed_reason": "P3 ADAPTIVE was the fifth scored child and received the frozen fixture path, but the native Windows read-only sandbox denied access to that temporary-directory file. The child therefore had no substantive P3 input. The immutable first attempt is preserved; P3 CONTROL and any rerun were not started because they could not produce or restore a valid matched comparison under T063-R2.",
+  "started_at_utc": "2026-09-09T19:01:23.839637Z",
+  "ended_at_utc": "2026-09-09T19:12:46.634858Z",
+  "authority": {
+    "task_contract": "docs/tasks/T063-adaptive-worker-routing-requalification.md",
+    "launch_authority_review": "docs/reviews/T063-R2.md",
+    "prelaunch_correction_review": "docs/reviews/T063-R1.md",
+    "measurement_decision": "docs/decisions/D063-qualified-codex-read-only-child-measurement-surface.md",
+    "routing_decision": "docs/decisions/D075-coordinator-direct-execution-gate.md",
+    "authority_origin_develop_head": "8845bef947bf10a18ee6ccdd947b85207d135a8a",
+    "frozen_evaluation_head": "69e910f329a2294c3b40df0f6ee983f9905f4677",
+    "evidence_branch": "test/t063-adaptive-worker-routing-requalification",
+    "execution_target": "CONTRACT_FIXED",
+    "underlying_delegation_eligibility": "DELEGATED"
+  },
+  "launch_profile": {
+    "executor": "Codex",
+    "surface": "Codex Local / native Windows",
+    "session": "NEW",
+    "coordinator_id": "AG | agent-governance | T063 | root-1",
+    "root_model": "gpt-5.6-sol",
+    "root_reasoning_effort": "medium",
+    "codex_cli_required": "0.153.4",
+    "codex_cli_observed": "0.153.4",
+    "codex_cli_path": "C:\\Users\\Manuel\\AppData\\Local\\Programs\\OpenAI\\Codex\\bin\\codex.exe",
+    "app_server_required": "0.153.4",
+    "app_server_observed": "0.153.4",
+    "platform_family": "windows",
+    "platform_os": "windows",
+    "auth_category_required": "chatgpt",
+    "auth_category_observed": "chatgpt",
+    "root_profile_correction": {
+      "initial_user_report": "gpt-5.6-luna / high",
+      "corrected_to": "gpt-5.6-sol / medium",
+      "corrected_before_any_scored_child_or_provider_backed_parent_turn": true
+    },
+    "model_or_effort_substitution_observed": false
+  },
+  "preflight": {
+    "safe_git_synchronization": true,
+    "unrepresented_primary_checkout_work_preserved": true,
+    "exclusive_t063_worktree": "C:\\Manuel\\Projects\\agent-governance\\.worktrees\\t063-adaptive-worker-routing-requalification",
+    "worktree_started_at_exact_frozen_head": true,
+    "later_develop_merged_rebased_or_cherry_picked": false,
+    "tracked_state_clean_before_scored_execution": true,
+    "native_schema_command": "codex app-server generate-json-schema --experimental --out <temporary-directory>",
+    "native_schema_generated_from_version": "0.153.4",
+    "experimental_api_enabled": true,
+    "thread_loaded_list_response_shape": "object with data: array<string> and nullable nextCursor",
+    "required_capabilities": {
+      "real_parent_child_correlation": true,
+      "parent_active_permission_profile": true,
+      "continuous_loaded_parent_residency": true,
+      "child_active_permission_profile": true,
+      "non_contradictory_legacy_read_only_projection": true,
+      "requested_and_resolved_model_reasoning": true,
+      "exact_non_estimated_child_turn_usage": true,
+      "exact_child_turn_duration": true,
+      "exact_child_reroute_observation": true,
+      "multi_agent_v2_spawn": true
+    },
+    "required_profiles_available": [
+      {
+        "model": "gpt-5.6-sol",
+        "reasoning_effort": "medium"
+      },
+      {
+        "model": "gpt-5.6-luna",
+        "reasoning_effort": "medium"
+      },
+      {
+        "model": "gpt-5.6-terra",
+        "reasoning_effort": "medium"
+      },
+      {
+        "model": "gpt-5.6-terra",
+        "reasoning_effort": "high"
+      }
+    ],
+    "preflight_result": "PASS"
+  },
+  "oracles": {
+    "p1": {
+      "frozen_head": "69e910f329a2294c3b40df0f6ee983f9905f4677",
+      "files": [
+        {
+          "path": ".python-version",
+          "blob_sha": "24ee5b1be9961e38a503c8e764b7385dbb6ba124",
+          "byte_size": 5,
+          "exists_at_frozen_head": true
+        },
+        {
+          "path": "agent-governance-source.json",
+          "blob_sha": "ad8fb3634591216194a4cfded0305e53ee66ed04",
+          "byte_size": 109,
+          "exists_at_frozen_head": true
+        },
+        {
+          "path": "pyproject.toml",
+          "blob_sha": "d6b38feaeb03771b3274a4411d83b7e2709ebfd7",
+          "byte_size": 950,
+          "exists_at_frozen_head": true
+        },
+        {
+          "path": "code-health.json",
+          "blob_sha": "717c5114ac0364da50af8453339359ddf2aa322a",
+          "byte_size": 1429,
+          "exists_at_frozen_head": true
+        },
+        {
+          "path": "src/agent_governance/profile.py",
+          "blob_sha": "1e3ae205b4350adc18a2f3f5d631dd739056ba34",
+          "byte_size": 2327,
+          "exists_at_frozen_head": true
+        },
+        {
+          "path": "src/agent_governance/source_adapter.py",
+          "blob_sha": "582afae64498447bfd68843a2486b287fecfaa93",
+          "byte_size": 6414,
+          "exists_at_frozen_head": true
+        }
+      ]
+    },
+    "p2": {
+      "edges": [
+        [
+          "agent_governance.engine",
+          "agent_governance.profile"
+        ],
+        [
+          "agent_governance.engine",
+          "agent_governance.source_adapter"
+        ]
+      ],
+      "acyclic": true,
+      "symbol_owners": {
+        "ArtifactBuildError": "agent_governance.artifact",
+        "build_artifact": "agent_governance.artifact",
+        "Profile": "agent_governance.profile",
+        "resolve_profile": "agent_governance.profile",
+        "SourceContext": "agent_governance.source_adapter",
+        "_bootstrap": "agent_governance.engine"
+      }
+    },
+    "p3": {
+      "seed_path": "src/agent_governance/profile.py",
+      "seed_blob": "1e3ae205b4350adc18a2f3f5d631dd739056ba34",
+      "fixture_sha256": "cd82af740a51e9137eb43903d581e0969e3a8841585c853788bdf4b97c850617",
+      "mutation_count": 1,
+      "root_reproduction": {
+        "input_profile_name": "invalid",
+        "returned_profile_name": "source-maintainer",
+        "grants_source_maintenance": true,
+        "expected_original_behavior": "ProfileError"
+      },
+      "severity": "HIGH",
+      "mechanism": "authority/profile escalation through unsupported-name fallback",
+      "minimal_fix": "restore fail-closed ProfileError for unsupported names"
+    },
+    "computed_before_scored_children": true
+  },
+  "task_message_digests": {
+    "P1": "1961e7565cd47ac7fe7daccf5b2160428aa9191bfe92e95cc7bb2a3eee60248f",
+    "P2": "3036b48a38555ff428143050b8c24e4f3ce7ee8510275e57174a993386d66852",
+    "P3": "15358a6519c12250653711273e374723cc840c1a117ea9f8979d67c3e36cb24e"
+  },
+  "scored_children": [
+    {
+      "child_id": "01a0878c-1406-7130-82b3-ab6c309ca05e",
+      "parent_id": "01a0878b-ddcf-73f0-ba7b-da2b19e1b971",
+      "turn_id": "01a0878c-14e2-7ec0-98bb-04e6ae98cc93",
+      "probe": "P1",
+      "arm": "ADAPTIVE",
+      "role": "t063_p1_adaptive",
+      "task_class": "narrow_deterministic_evidence_retrieval",
+      "task_message_sha256": "1961e7565cd47ac7fe7daccf5b2160428aa9191bfe92e95cc7bb2a3eee60248f",
+      "requested_profile": "gpt-5.6-luna / medium",
+      "requested_model": "gpt-5.6-luna",
+      "requested_reasoning_effort": "medium",
+      "resolved_model": "gpt-5.6-luna",
+      "resolved_reasoning_effort": "medium",
+      "permission_profile": ":read-only",
+      "legacy_sandbox_projection": "readOnly",
+      "reroute_observed": false,
+      "backend_served_profile_verified": false,
+      "input_tokens": 68989,
+      "cached_input_tokens": 50432,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 1060,
+      "reasoning_tokens": 266,
+      "total_tokens": 70049,
+      "duration_seconds": 34.501,
+      "result_status": "PASS",
+      "oracle_score": 1,
+      "verification_result": "Exact frozen HEAD, ordered paths, blob SHAs, Git-object byte sizes and existence flags matched the root oracle.",
+      "retry_or_escalation_reason": null,
+      "oracle_leak_observed": false,
+      "parent_residency_passed": true,
+      "usage_exact_and_non_estimated": true,
+      "closed": true
+    },
+    {
+      "child_id": "01a0878d-b365-7dd2-8924-0059f31e5b14",
+      "parent_id": "01a0878d-7f65-7a13-8103-6ed37d7a76fd",
+      "turn_id": "01a0878d-b44b-7dc2-99a4-d403ef836f6d",
+      "probe": "P1",
+      "arm": "CONTROL",
+      "role": "t063_p1_control",
+      "task_class": "narrow_deterministic_evidence_retrieval",
+      "task_message_sha256": "1961e7565cd47ac7fe7daccf5b2160428aa9191bfe92e95cc7bb2a3eee60248f",
+      "requested_profile": "gpt-5.6-sol / medium",
+      "requested_model": "gpt-5.6-sol",
+      "requested_reasoning_effort": "medium",
+      "resolved_model": "gpt-5.6-sol",
+      "resolved_reasoning_effort": "medium",
+      "permission_profile": ":read-only",
+      "legacy_sandbox_projection": "readOnly",
+      "reroute_observed": false,
+      "backend_served_profile_verified": false,
+      "input_tokens": 47648,
+      "cached_input_tokens": 35328,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 921,
+      "reasoning_tokens": 148,
+      "total_tokens": 48569,
+      "duration_seconds": 39.298,
+      "result_status": "PASS",
+      "oracle_score": 1,
+      "verification_result": "Exact frozen HEAD, ordered paths, blob SHAs, Git-object byte sizes and existence flags matched the root oracle.",
+      "retry_or_escalation_reason": null,
+      "oracle_leak_observed": false,
+      "parent_residency_passed": true,
+      "usage_exact_and_non_estimated": true,
+      "closed": true
+    },
+    {
+      "child_id": "01a0878f-8762-76b0-a9bc-d722efa07dd1",
+      "parent_id": "01a0878f-4dc0-7943-bffb-b159c809a1a6",
+      "turn_id": "01a0878f-8824-79e3-a9b2-6536a05c49b0",
+      "probe": "P2",
+      "arm": "CONTROL",
+      "role": "t063_p2_control",
+      "task_class": "broader_code_dependency_exploration",
+      "task_message_sha256": "3036b48a38555ff428143050b8c24e4f3ce7ee8510275e57174a993386d66852",
+      "requested_profile": "gpt-5.6-sol / medium",
+      "requested_model": "gpt-5.6-sol",
+      "requested_reasoning_effort": "medium",
+      "resolved_model": "gpt-5.6-sol",
+      "resolved_reasoning_effort": "medium",
+      "permission_profile": ":read-only",
+      "legacy_sandbox_projection": "readOnly",
+      "reroute_observed": false,
+      "backend_served_profile_verified": false,
+      "input_tokens": 91709,
+      "cached_input_tokens": 68608,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 1935,
+      "reasoning_tokens": 637,
+      "total_tokens": 93644,
+      "duration_seconds": 80.574,
+      "result_status": "PASS",
+      "oracle_score": 1,
+      "verification_result": "Exact two-edge static AST graph, acyclicity and all six symbol owners matched the root oracle.",
+      "retry_or_escalation_reason": null,
+      "oracle_leak_observed": false,
+      "parent_residency_passed": true,
+      "usage_exact_and_non_estimated": true,
+      "closed": true
+    },
+    {
+      "child_id": "01a08791-beeb-72a0-a8bc-416376069c80",
+      "parent_id": "01a08791-83b9-70c0-8b23-81499d217c80",
+      "turn_id": "01a08791-bfc5-7e20-aa4e-a0ffb2829a11",
+      "probe": "P2",
+      "arm": "ADAPTIVE",
+      "role": "t063_p2_adaptive",
+      "task_class": "broader_code_dependency_exploration",
+      "task_message_sha256": "3036b48a38555ff428143050b8c24e4f3ce7ee8510275e57174a993386d66852",
+      "requested_profile": "gpt-5.6-terra / medium",
+      "requested_model": "gpt-5.6-terra",
+      "requested_reasoning_effort": "medium",
+      "resolved_model": "gpt-5.6-terra",
+      "resolved_reasoning_effort": "medium",
+      "permission_profile": ":read-only",
+      "legacy_sandbox_projection": "readOnly",
+      "reroute_observed": false,
+      "backend_served_profile_verified": false,
+      "input_tokens": 76336,
+      "cached_input_tokens": 48640,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 1181,
+      "reasoning_tokens": 239,
+      "total_tokens": 77517,
+      "duration_seconds": 37.436,
+      "result_status": "PASS",
+      "oracle_score": 1,
+      "verification_result": "Exact two-edge static AST graph, acyclicity and all six symbol owners matched the root oracle.",
+      "retry_or_escalation_reason": null,
+      "oracle_leak_observed": false,
+      "parent_residency_passed": true,
+      "usage_exact_and_non_estimated": true,
+      "closed": true
+    },
+    {
+      "child_id": "01a08793-4fb3-73d0-8dc0-82c4c5f3fd49",
+      "parent_id": "01a08793-2348-7231-9128-d9bc7229b6a2",
+      "turn_id": "01a08793-5003-7382-8cf6-723502bf164e",
+      "probe": "P3",
+      "arm": "ADAPTIVE",
+      "role": "t063_p3_adaptive",
+      "task_class": "adversarial_independent_review",
+      "task_message_sha256": "15358a6519c12250653711273e374723cc840c1a117ea9f8979d67c3e36cb24e",
+      "requested_profile": "gpt-5.6-terra / high",
+      "requested_model": "gpt-5.6-terra",
+      "requested_reasoning_effort": "high",
+      "resolved_model": "gpt-5.6-terra",
+      "resolved_reasoning_effort": "high",
+      "permission_profile": ":read-only",
+      "legacy_sandbox_projection": "readOnly",
+      "reroute_observed": false,
+      "backend_served_profile_verified": false,
+      "input_tokens": 53073,
+      "cached_input_tokens": 41216,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 402,
+      "reasoning_tokens": 159,
+      "total_tokens": 53475,
+      "duration_seconds": 21.441,
+      "result_status": "EXECUTION_INVALID_INPUT_UNREADABLE",
+      "oracle_score": null,
+      "verification_result": "The child attempted only the supplied fixture. Get-Content failed with access denied and rg reported access denied for the working directory; the child returned blocked with no findings. This is not scored as a quality false negative because the substantive input was unavailable.",
+      "retry_or_escalation_reason": "No rerun or escalation was started because replacing the immutable first attempt after moving the fixture would violate the frozen first-attempt comparison.",
+      "oracle_leak_observed": false,
+      "parent_residency_passed": true,
+      "usage_exact_and_non_estimated": true,
+      "closed": true
+    }
+  ],
+  "unexecuted_scored_children": [
+    {
+      "probe": "P3",
+      "arm": "CONTROL",
+      "requested_model": "gpt-5.6-sol",
+      "requested_reasoning_effort": "medium",
+      "reason": "Pilot stopped after execution-invalid P3 ADAPTIVE input access. Running CONTROL against the same unreadable fixture would not create a valid matched comparison."
+    }
+  ],
+  "matched_arm_equality": {
+    "P1": {
+      "task_message_digest_equal": true,
+      "input_equal": true,
+      "tool_permission_surface_equal": true
+    },
+    "P2": {
+      "task_message_digest_equal": true,
+      "input_equal": true,
+      "tool_permission_surface_equal": true
+    },
+    "P3": {
+      "complete_pair": false,
+      "reason": "CONTROL not started after ADAPTIVE input access invalidated the probe."
+    }
+  },
+  "partial_scoring": {
+    "control_pass_count": 2,
+    "control_attempted_count": 2,
+    "adaptive_pass_count": 2,
+    "adaptive_attempted_count": 3,
+    "adaptive_first_attempt_quality_failures": 0,
+    "adaptive_execution_invalid_attempts": 1,
+    "adaptive_escalation_count": 0,
+    "material_false_negative_count": null,
+    "material_false_positive_count": 0,
+    "profile_resolution_failures": 0,
+    "completed_pair_control_exact_tokens_total": 142213,
+    "completed_pair_adaptive_exact_tokens_total": 147566,
+    "completed_pair_control_exact_duration_total_seconds": 119.872,
+    "completed_pair_adaptive_exact_duration_total_seconds": 71.937,
+    "all_observed_control_exact_tokens_total": 142213,
+    "all_observed_adaptive_exact_tokens_total": 201041,
+    "root_rework_events_caused_by_children": 0,
+    "root_input_surface_diagnostic_events": 1,
+    "complete_pilot_score_available": false
+  },
+  "safety": {
+    "parent_and_children_read_only": true,
+    "parent_approval_policy": "never",
+    "tracked_mutation_by_measurement_observed": false,
+    "product_source_modified": false,
+    "committed_markdown_modified": false,
+    "t062_touched": false,
+    "t023_touched": false,
+    "t024_touched": false,
+    "t058_touched": false,
+    "oracle_leak_observed": false,
+    "backend_identity_claim_made": false,
+    "provider_pricing_or_savings_claim_made": false,
+    "diagnostic_or_compensating_child_attempts": 0,
+    "scored_child_attempts": 5,
+    "ephemeral_fixture_removed_after_capture": true,
+    "temporary_controllers_removed_before_commit": true,
+    "normal_committed_evidence_files": [
+      "handoffs/T063-adaptive-worker-routing-telemetry.json",
+      "handoffs/T063-executor-handoff.json"
+    ]
+  },
+  "policy_boundary": {
+    "d075_direct_execution_policy_claim": "Preserved; T063 topology remained CONTRACT_FIXED and does not re-evaluate coordinator-direct routing.",
+    "r007_adaptive_compute_policy_claim": "No qualification or global routing decision can be made from this incomplete execution-invalid pilot."
+  }
+}

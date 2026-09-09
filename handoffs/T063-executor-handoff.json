@@ -1,0 +1,99 @@
+{
+  "schema_version": 1,
+  "task_id": "T063",
+  "status": "BLOCKED",
+  "terminal_classification": "BLOCKED_EXECUTION_INVALID_INPUT",
+  "branch": "test/t063-adaptive-worker-routing-requalification",
+  "frozen_evaluation_head": "69e910f329a2294c3b40df0f6ee983f9905f4677",
+  "implementation_head_sha": "69e910f329a2294c3b40df0f6ee983f9905f4677",
+  "telemetry_path": "handoffs/T063-adaptive-worker-routing-telemetry.json",
+  "task_contract_path": "docs/tasks/T063-adaptive-worker-routing-requalification.md",
+  "launch_authority_review": "docs/reviews/T063-R2.md",
+  "execution_summary": "T063 passed safe synchronization, exact-version/native-Windows/auth/model-capability preflight and executed five fresh read-only measured children in frozen order. P1 CONTROL/ADAPTIVE and P2 CONTROL/ADAPTIVE all resolved to their requested profiles and passed their exact root oracles. P3 ADAPTIVE resolved to Terra/High with valid D063 receipts but could not read the frozen fixture because the native Windows read-only sandbox denied access to the system-temp directory. The immutable attempt was preserved and execution stopped before P3 CONTROL or any rerun.",
+  "blocker": {
+    "code": "P3_FIXTURE_READ_DENIED",
+    "phase": "P3 ADAPTIVE first attempt",
+    "cause": "The temporary fixture was created correctly outside tracked repository state, but its system-temp directory was not readable from the child read-only sandbox despite being the parent/child cwd and runtime workspace root.",
+    "evidence": [
+      "Get-Content -LiteralPath <frozen-fixture> -Raw returned Access to the path is denied.",
+      "rg --files -g profile_fixture.py returned Acceso denegado for the supplied working directory.",
+      "The child returned blocked with no findings and did not inspect repository or oracle authority."
+    ],
+    "why_no_rerun": "Moving the fixture and rerunning the ADAPTIVE arm would replace the immutable first attempt. Running CONTROL against the same unreadable input would not yield a valid matched comparison. T063 therefore requires Orchestrator re-entry rather than executor-side experimental redesign."
+  },
+  "pilot_decision": null,
+  "pilot_decision_basis": "No pilot decision was computed because P3 lacked accessible substantive input and the six-child matched set was not completed. The valid partial results cannot qualify or disqualify the adaptive routing policy.",
+  "launch_and_measurement_receipts": {
+    "coordinator_id": "AG | agent-governance | T063 | root-1",
+    "root_profile": "gpt-5.6-sol / medium",
+    "root_profile_corrected_before_provider_backed_work": true,
+    "codex_cli": "0.153.4",
+    "app_server": "0.153.4",
+    "platform": "native Windows",
+    "auth_category": "chatgpt",
+    "execution_target": "CONTRACT_FIXED",
+    "underlying_delegation_eligibility": "DELEGATED",
+    "d063_receipts_valid_for_all_five_attempted_children": true,
+    "requested_resolved_profile_mismatches": 0,
+    "reroutes_observed": 0,
+    "backend_served_profile_verified": false,
+    "oracle_leak_observed": false
+  },
+  "first_attempt_results": {
+    "P1_ADAPTIVE": "PASS — Luna/Medium — 70049 tokens — 34.501 seconds",
+    "P1_CONTROL": "PASS — Sol/Medium — 48569 tokens — 39.298 seconds",
+    "P2_CONTROL": "PASS — Sol/Medium — 93644 tokens — 80.574 seconds",
+    "P2_ADAPTIVE": "PASS — Terra/Medium — 77517 tokens — 37.436 seconds",
+    "P3_ADAPTIVE": "EXECUTION_INVALID_INPUT_UNREADABLE — Terra/High — 53475 tokens — 21.441 seconds",
+    "P3_CONTROL": "NOT_STARTED"
+  },
+  "partial_metrics": {
+    "completed_pair_control_passes": 2,
+    "completed_pair_adaptive_passes": 2,
+    "completed_pair_control_tokens": 142213,
+    "completed_pair_adaptive_tokens": 147566,
+    "completed_pair_control_duration_seconds": 119.872,
+    "completed_pair_adaptive_duration_seconds": 71.937,
+    "adaptive_quality_failures": 0,
+    "adaptive_execution_invalid_attempts": 1,
+    "escalations": 0,
+    "profile_resolution_failures": 0,
+    "complete_pilot_score_available": false
+  },
+  "technical_review": {
+    "frozen_base_preserved": true,
+    "later_develop_integrated_into_evidence_baseline": false,
+    "exclusive_worktree_used": true,
+    "tracked_product_mutation_observed": false,
+    "product_source_changed": false,
+    "markdown_changed": false,
+    "normal_committed_delta_limited_to_authorized_json": true,
+    "unrelated_held_work_touched": false
+  },
+  "acceptance_trace": {
+    "AC-T063-1": "PASS — NEW task-scoped root and frozen Sol/Medium profile before scored execution.",
+    "AC-T063-2": "PASS — D063 native surface revalidated on exact 0.153.4.",
+    "AC-T063-3": "PASS — CONTRACT_FIXED topology with DELEGATED underlying eligibility.",
+    "AC-T063-4": "PASS — P1 unambiguous inventory executed and both arms passed.",
+    "AC-T063-5": "PASS — P2 explicit static-AST semantics executed and both arms passed.",
+    "AC-T063-6": "BLOCKED — P3 fixture was mechanically correct but inaccessible to the scored child.",
+    "AC-T063-7": "PARTIAL — P1/P2 matched inputs verified; P3 pair not completed.",
+    "AC-T063-8": "PASS for all five attempted children — exact profile, permission, reroute, usage and duration receipts captured.",
+    "AC-T063-9": "PASS — first attempts preserved; no retry or score rewriting.",
+    "AC-T063-10": "PASS — children remained read-only and no tracked product or Markdown mutation occurred.",
+    "AC-T063-11": "BLOCKED — no complete frozen pilot decision was computed.",
+    "AC-T063-12": "PASS — D075 and R007 claims remain explicitly separate."
+  },
+  "provider_execution": {
+    "scored_child_attempts": 5,
+    "scored_parent_turns": 5,
+    "diagnostic_child_attempts": 0,
+    "compensating_attempts": 0,
+    "p3_control_attempts": 0
+  },
+  "changed_files": [
+    "handoffs/T063-adaptive-worker-routing-telemetry.json",
+    "handoffs/T063-executor-handoff.json"
+  ],
+  "next_required_authority": "ChatGPT Orchestrator must review the execution-invalid P3 input surface and persist any restart/requalification authority. The Executor must not move the fixture and rerun under the existing frozen attempt semantics without that re-entry."
+}
