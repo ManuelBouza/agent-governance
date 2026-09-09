@@ -77,7 +77,7 @@ ruff format --check: PASS
 code health: PASS
 symbol map: PASS
 characterization: 37 passed
-full pytest: 460 passed
+full pytest: 484 passed
 provider/model calls: 0
 result: SUCCESS
 ```
