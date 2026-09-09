@@ -393,7 +393,7 @@ harness validate: PASS (420 base / 630 maximum identities)
 ruff check / format: PASS
 code health / symbol map: PASS
 characterization: 37 passed
-full pytest: 460 passed
+full pytest: 484 passed
 Stage 5 provider/model calls: 0
 Executor launched: no
 ```
