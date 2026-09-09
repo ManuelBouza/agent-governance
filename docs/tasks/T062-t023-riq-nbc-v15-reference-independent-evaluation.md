@@ -1,11 +1,13 @@
 # T062 — T023 RIQ-NBC v15 Reference-Independent Evaluation
 
 Status: READY  
-Stage-Readiness: READY_FOR_STAGE5  
-Executor-Authorization: NOT_AUTHORIZED_PENDING_STAGE5_AND_SEPARATE_HUMAN_LAUNCH  
+Stage-Readiness: READY_FOR_STAGE6  
+Executor-Authorization: NOT_AUTHORIZED_PENDING_SEPARATE_HUMAN_LAUNCH  
 Owner: ChatGPT Orchestrator (D068 Stages 3–5 and semantic conformance) / Executor (Stage 6 only after separate Human launch)  
 Date: 2026-09-08  
 Prospective-Scientific-Branch: `test/t023-skill-activation-topology-evals-v15`
+
+`READY_FOR_STAGE6` means D068 Stage 5 candidate materialization is complete and coherently published on the v15 scientific branch. It does **not** authorize an Executor, provider/model call, or Stage 6 execution; those require a separate Human-selected launch objective under the then-current D055/D058 requirements.
 
 ## Objective
 
@@ -28,6 +30,7 @@ The experiment must determine whether an absolute-qualified topology can be sele
 - `docs/reviews/T023-R27.md`
 - `docs/reviews/T023-R28.md`
 - `docs/reviews/T023-R29.md`
+- `docs/reviews/T023-R30.md`
 
 D074 is the semantic authority for RIQ-NBC. This Task Contract operationalizes that decision; it does not broaden it.
 
@@ -365,6 +368,37 @@ Only then:
 Executor evidence/handoff path for T062 is:
 
 `handoffs/T062-executor-handoff.json`
+
+## Stage 5 completion receipt
+
+Stage 5 terminal scientific branch:
+
+`test/t023-skill-activation-topology-evals-v15@3e0d0b71cf382db502e186622f40a23bcd915390`
+
+Freeze receipts:
+
+```text
+Freeze E: 5b025087bc7b6996f683a34fdd1ce441d3d6dd82
+Freeze F: 5b8ac55980ecdbb6a2bf3784812b933647f2f13d
+```
+
+Exact terminal provider-free validation:
+
+```text
+GitHub Actions run: 34271270963
+candidate guard: PASS
+holdout guard: PASS
+historical prompt overlap v12/v13/v14: 0/0/0
+harness validate: PASS (420 base / 630 maximum identities)
+ruff check / format: PASS
+code health / symbol map: PASS
+characterization: 37 passed
+full pytest: 484 passed
+Stage 5 provider/model calls: 0
+Executor launched: no
+```
+
+Durable review: `docs/reviews/T023-R30.md`.
 
 ## Acceptance criteria
 
