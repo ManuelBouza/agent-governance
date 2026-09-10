@@ -122,6 +122,18 @@ Any file-based executable artifact created by the Executor during Stage 6 and ac
 
 Any later unqualified wording in this file assigning broad Executor "technical harness work", private tooling or implementation aids is subject to D076. `docs/decisions/D076-stage6-ephemeral-executable-materialization-boundary.md` controls the full rule.
 
+### D077 version-sensitive upstream revalidation
+
+D077 controls consequential research, design, evaluation and launch decisions that materially depend on external version-specific behavior.
+
+Before relying on a pinned runtime/library/provider behavior, ChatGPT Orchestrator must inspect the pinned/reference version, the current stable upstream release, and higher relevant releases needed to determine whether the material behavior changed. Relevant higher prereleases must also be inspected when a blocker remains unresolved and the prerelease plausibly touches that surface.
+
+Do not preserve an old workaround merely because the project was already pinned if a newer supported release fixes the material blocker. Conversely, do not upgrade merely because a newer version exists when the qualified pin remains necessary and the newer version does not solve the problem.
+
+The explicit dispositions are `PIN_RETAINED`, `UPGRADE_REQUIRED`, `REQUALIFICATION_REQUIRED`, or `NO_MATERIAL_CHANGE` (or semantically equivalent unambiguous wording). A materially new stable release appearing between review and consequential launch requires relevance classification before execution.
+
+D077 does not auto-extend D063 qualification to later Codex versions and does not make prereleases production/experiment authority. `docs/decisions/D077-version-sensitive-upstream-revalidation.md` controls the full rule.
+
 ### D052 test-authorship override
 
 D052 prospectively refines semantic test/eval ownership. When the controlling Task Contract/gate selects `orchestrator-conformance` or `mixed`, ChatGPT Orchestrator owns the narrowly designated conformance/oracle assets that directly encode ChatGPT-owned acceptance semantics; the Agente de IA Ejecutor owns Stage 6 execution, technical harness work and authorized supplementary technical testing/repair. Under D068, ChatGPT may also materialize candidate implementation/regression/integration tests during Stage 5 without transferring semantic-oracle authority. Semantic changes to an Orchestrator-owned oracle require persisted ChatGPT authority. Existing T032/T021 work is grandfathered and T022 may complete under its existing contract; MG1/T023 remains governed by its persisted authority unless prospectively revised.
@@ -277,6 +289,7 @@ D057 and `docs/RESEARCH-TRACEABILITY.md` define how material Orchestrator resear
 - `EVALUATING`, `DEFERRED`, `REJECTED` and `SUPERSEDED` dispositions remain durable so later chats do not rediscover or silently reinterpret prior work;
 - completed research MUST NOT be silently rewritten to match later conclusions; use successor/supersession lineage while preserving Git history;
 - volatile vendor/model/pricing/regulatory facts MUST be refreshed before a later decision materially relies on them;
+- version-sensitive external dependencies are additionally subject to D077: compare the pinned/reference version, current stable, and higher relevant releases before promoting a version-dependent conclusion into consequential authority;
 - the current checkpoint carries only live research frontier items, while the registry retains the full historical ledger.
 
 Chat turnover, prompt repetition or Executor session changes never alter research/decision state; only persisted Git changes do.

@@ -1,15 +1,18 @@
 # Orchestrator Checkpoint
 
-Checkpoint-ID: O263  
+Checkpoint-ID: O264  
 Date: 2026-09-10  
 Current-Objective: T063 — adaptive worker routing requalification  
-State: T063_V2_BLOCKED_ORCHESTRATOR_REENTRY_REQUIRED  
-Active-Executor: none  
-Executor-Launch-State: NOT_AUTHORIZED  
-Coordinator-ID: `AG | agent-governance | T063 | root-2` — historical blocked v2 root; continuation not authorized  
-T063-V2-Evidence-Branch: `test/t063-adaptive-worker-routing-requalification-v2`  
-T063-V2-Evidence-HEAD: `3ff745a8d29e031ca818c1bc618b15a54e0cbf2b`  
-T063-V2-Candidate-Before-Provider-HEAD: `3088501147b408503acdd93b8bc7b76e6f957bac`  
+State: T063_V3_STAGE6_AUTHORIZED_AWAITING_HUMAN_CODEX_START  
+Active-Executor: none — Codex selected for pending Human launch  
+Executor-Launch-State: AUTHORIZED_AWAITING_HUMAN_CODEX_START  
+Coordinator-ID: `AG | agent-governance | T063 | root-3` — reserved NEW failover root; not yet started  
+T063-V3-Candidate-Branch: `test/t063-adaptive-worker-routing-requalification-v3`  
+T063-V3-Candidate-HEAD: `9b8a8d96b7586c25e808e93c3cec02d1f2fa3467`  
+T063-V3-Candidate-Base: `7772886f174ae06e0a377fc04612f1059af961b6`  
+T063-V3-Launch-Authority: `docs/reviews/T063-R6.md`  
+T063-V3-Receipt-Research: `docs/research/R021-T063-V3-CONFIG-AUTHORITATIVE-WORKER-RECEIPTS.md`  
+Historical-T063-V2-Evidence-HEAD: `3ff745a8d29e031ca818c1bc618b15a54e0cbf2b`  
 Historical-T063-V1-Evidence-HEAD: `3d8a9460988351383a90adfc6b76e2deff056504`  
 Held-Work-Unit: T062 / T023 v15 Stage 6  
 Held-State: HUMAN_HOLD_R32_UNCONSUMED  
@@ -17,143 +20,186 @@ Chat-Closure: KEEP_CURRENT_CHAT
 
 ## Canonical transition
 
-O262 authorized a clean T063 v2 rerun under T063-R4. The Human launched NEW Codex root-2 and returned:
+O263 required Orchestrator re-entry after the T063 v2 adapter blocked on unsupported Multi-Agent V2 receipt assumptions.
+
+The Human explicitly continued T063 repair. ChatGPT Orchestrator completed D068 Stage 5 re-entry without provider/model calls and published a new candidate:
 
 ```text
-STATUS: BLOCKED
-HANDOFF: handoffs/T063-executor-handoff-v2.json
-BRANCH: test/t063-adaptive-worker-routing-requalification-v2
-HEAD: 3ff745a8d29e031ca818c1bc618b15a54e0cbf2b
+branch: test/t063-adaptive-worker-routing-requalification-v3
+HEAD:   9b8a8d96b7586c25e808e93c3cec02d1f2fa3467
+base:   7772886f174ae06e0a377fc04612f1059af961b6
 ```
 
-Remote Git verification confirmed that the returned HEAD exactly matches the branch.
-
-Orchestrator convergence is recorded by:
+The candidate is exactly eight commits / eight files ahead of its base and contains only:
 
 ```text
-docs/research/R020-T063-V2-LIVE-RECEIPT-CORRECTION.md
-docs/reviews/T063-R5.md
+evals/adaptive_worker_routing_v3/__init__.py
+evals/adaptive_worker_routing_v3/__main__.py
+evals/adaptive_worker_routing_v3/app_server.py
+evals/adaptive_worker_routing_v3/config.py
+evals/adaptive_worker_routing_v3/measurement.py
+evals/adaptive_worker_routing_v3/oracles.py
+evals/adaptive_worker_routing_v3/runner.py
+tests/test_t063_adaptive_worker_routing_v3_harness.py
 ```
 
-R020 prospectively supersedes only R019's incorrect live V2 spawn-correlation and child-message-attestation assumptions. It does not rewrite R019 history.
-
-## Terminal v2 accounting
-
-The accepted evidence accounting is:
+Provider-free Orchestrator verification:
 
 ```text
-scored parent turns:       1
-scored child attempts:     1
-compensating attempts:     0
-diagnostic child attempts: 0
-valid scored children:     0
-invalid attempt:            P1 ADAPTIVE
-requested profile:          gpt-5.6-luna / medium
-resolved profile:           gpt-5.6-luna / medium
-worker answer:              PASS_DIAGNOSTIC_ONLY_UNSCORED
-rerun performed:            false
-pilot_decision:             null
+candidate harness tests: 23 passed
+Python compile check:    PASS
+provider/model calls:    0
 ```
 
-The v2 P1 result is not a quality PASS or FAIL. It is diagnostic evidence only.
+Repository-native lint remains a Stage 6 **pre-provider** technical gate because the Orchestrator environment did not provide the lint executable.
 
-No additional v2 scored arm is authorized.
+## V3 receipt repair
 
-## Accepted Stage 6 repairs
+R021/R6 replace the invalid v2 exact spawned-task-message receipt with a config-authoritative architecture.
 
-Before the provider-backed attempt, Codex made two bounded represented repairs to the published harness:
+The substantive child task and requested child model/reasoning are materialized by the Stage 5 harness into App Server `thread/start.config` before the measurement parent acts:
 
 ```text
-8472718db9f6a82b4c79b9493255f3c314ef27b2
-  parse the native App Server 0.153.4 initialize/version receipt
-
-3088501147b408503acdd93b8bc7b76e6f957bac
-  remove invalid provider-free preflight archive behavior
+features.multi_agent_v2.subagent_developer_instructions = <frozen child contract>
+agents.default_subagent_model = <frozen arm model>
+agents.default_subagent_reasoning_effort = <frozen arm effort>
+features.multi_agent_v2.expose_spawn_agent_model_overrides = false
+features.multi_agent_v2.hide_spawn_agent_metadata = true
 ```
 
-Both are accepted under D068/D076 as bounded technical repairs preserving frozen experiment semantics.
+The parent is transport-only. It may spawn exactly one child with the harness-provided `task_name`, a deterministic non-substantive trigger and `fork_turns="none"`; it may not select `agent_type`, model, reasoning or task semantics.
 
-## Blocker root cause
+The child must return the frozen contract nonce, task digest and exact received trigger. Any mismatch invalidates the arm. This is a controlled transport/contract consistency receipt, not provider-signed prompt identity.
 
-Exact official `rust-v0.153.4` source and live evidence establish:
+Public child correlation uses:
 
 ```text
-V2 spawn public child-correlation item:
-  subAgentActivity(kind=Started, agentThreadId=<child>)
-
-collabAgentToolCall in V2 spawn handler:
-  analytics record; not the live App Server item the harness waited for
-
-spawn task delivery:
-  InterAgentCommunication
-  not child UserInput/userMessage
-
-public thread/read reconstruction:
-  does not project RolloutItem::InterAgentCommunication
+subAgentActivity(kind=Started, agentThreadId=<exact child>)
 ```
 
-Therefore the R019/R4 harness assumptions were wrong. The blocked run is classified as:
+Internal raw response events are not used.
+
+## D063 measurement preservation
+
+V3 retains the mandatory D063 exact-child measurement set:
 
 ```text
-BLOCKED_EXECUTION_INVALID
-cause: ORCHESTRATOR_STAGE5_ADAPTER_AUTHORITY_DEFECT
-```
-
-This is not attributed to worker quality or Executor noncompliance.
-
-## D063 consequence
-
-The original App Server process ended after the harness timeout. The run therefore lacks the mandatory live receipts needed to score P1 ADAPTIVE, including:
-
-```text
+real parent/child correlation
+parent activePermissionProfile.id == :read-only
+non-contradictory legacy read-only projection
+continuous parent residency before child reattachment
+child parentThreadId == exact parent
 child activePermissionProfile.id == :read-only
-continuous parent residency through child reattachment
+requested child model/reasoning from frozen Stage 5 config
+resolved configured child model/reasoning exact match
 exact non-estimated child-turn usage
+exact child-turn duration
 exact-child reroute observation
-R4 task-message equality receipt
+no tracked/global mutation attributable to measurement
 ```
 
-Post-run `thread/read` confirmed child identity, Luna/Medium configured profile and a correct P1 answer, but those facts do not replace the missing D063 receipts.
+`backend_served_profile_verified = false` remains controlling.
 
-## Raw-response-event boundary
+Custom/local agent-role ambiguity is a pre-provider blocker.
 
-Codex `0.153.4` contains:
+## D077 version-sensitive revalidation
+
+D077 is now the global rule for material version-dependent research/launch authority.
+
+R021 reviewed:
 
 ```text
-thread/start.experimentalRawEvents=true
-rawResponseItem/completed
-ResponseItem::FunctionCall { name, arguments, call_id, ... }
+0.153.4            D063-qualified T063 reference
+0.154.0            current stable Codex release at review/authority time
+0.155.0-alpha.2    later relevant prerelease
 ```
 
-This could potentially expose the actual parent `spawn_agent` arguments and support exact task-message attestation.
-
-However the exact App Server protocol marks this raw-event surface **internal use only**. D063 did not qualify it, and T063-R4 did not authorize it.
-
-Do not use raw response events for a future scored run unless a new Orchestrator qualification/authority explicitly permits them.
-
-## D076 review
-
-Terminal evidence reports:
+The reviewed higher versions do not remove the public exact spawned-task-message blocker. T063 therefore records:
 
 ```text
-ephemeral_artifacts: []
-executor_material_ephemeral_artifacts: []
+version disposition: PIN_RETAINED
+runtime:             0.153.4
+upgrade fixes blocker: false
 ```
 
-No private substantial Stage 6 controller/harness/oracle was created. D076 held.
+If a newer stable Codex release appears before the Human actually launches `root-3`, stop and classify its relevance under D077 before provider-backed execution.
 
 ## Scientific restart rule
 
-The v2 attempt is historical invalid evidence and cannot be reused in scoring.
-
-If T063 is repaired again, the eventual scored set must again be a homogeneous clean six-arm run under one corrected and prequalified receipt strategy. Preserve both historical blocked heads:
+V3 must be one homogeneous clean six-arm run:
 
 ```text
-v1  3d8a9460988351383a90adfc6b76e2deff056504
-v2  3ff745a8d29e031ca818c1bc618b15a54e0cbf2b
+P1 ADAPTIVE -> CONTROL
+P2 CONTROL  -> ADAPTIVE
+P3 ADAPTIVE -> CONTROL
 ```
 
-No pilot decision exists. R007 remains `EVALUATING`.
+Historical T063 v1/v2 results are excluded from every v3 score/metric/pilot decision.
+
+Frozen source/oracle baseline remains:
+
+```text
+69e910f329a2294c3b40df0f6ee983f9905f4677
+```
+
+No v3 provider/model calls have occurred yet.
+
+## Launch profile
+
+T063-R6 freezes:
+
+```text
+Executor:        Codex
+Surface:         Codex Local / native Windows
+Session:         NEW
+Coordinator-ID:  AG | agent-governance | T063 | root-3
+Root model:      gpt-5.6-sol
+Root reasoning:  medium
+Codex CLI:       exactly 0.153.4
+App Server:      exactly 0.153.4
+Auth category:   chatgpt
+```
+
+Child matrix:
+
+```text
+P1 ADAPTIVE  gpt-5.6-luna  / medium
+P1 CONTROL   gpt-5.6-sol   / medium
+P2 CONTROL   gpt-5.6-sol   / medium
+P2 ADAPTIVE  gpt-5.6-terra / medium
+P3 ADAPTIVE  gpt-5.6-terra / high
+P3 CONTROL   gpt-5.6-sol   / medium
+```
+
+No model/effort/runtime substitution is authorized after provider-backed execution begins.
+
+## D076 Stage 6 boundary
+
+Codex executes/diagnoses/verifies the published v3 candidate and may make only bounded represented technical repairs that preserve R6 semantics.
+
+Substantial missing controller/harness/fixture/oracle implementation outside the candidate is a stop/re-entry condition. File-based non-candidate executable aids actually used in verification remain subject to the D076 `ephemeral_artifacts` audit.
+
+Executor-authored committed Markdown remains prohibited.
+
+## Evidence and terminal return
+
+Normal evidence paths:
+
+```text
+handoffs/T063-adaptive-worker-routing-telemetry-v3.json
+handoffs/T063-executor-handoff-v3.json
+```
+
+Terminal Human return after Codex completes or blocks:
+
+```text
+STATUS: COMPLETED | BLOCKED
+HANDOFF: handoffs/T063-executor-handoff-v3.json
+BRANCH: test/t063-adaptive-worker-routing-requalification-v3
+HEAD: <actual remote pushed HEAD>
+```
+
+A `BLOCKED` result authorizes no compensating provider call unless the existing R6 rules explicitly cover it; otherwise return to Orchestrator review.
 
 ## T062 held frontier
 
@@ -176,41 +222,34 @@ Do not execute the old T062 R32 continuation prompt.
 
 - T024 remains unauthorized until T023 selects a topology from valid evidence.
 - T058 remains frozen by explicit Human decision; do not resume, integrate, clean or copy it without new explicit Human authorization.
-- D066 intentional gaps remain unchanged.
 - D061/D062 continue to require PR-mediated long-lived branch mutation.
 - D071 continues to require Human-mediated Codex transport.
-- No provider/model calls are authorized for T063 from O263.
+- R007 remains `EVALUATING`; R6 authorizes an experiment, not a global routing policy.
 
 ## Next Chat Minimum Load
 
 After normal bootstrap (`develop`, `AGENTS.md`, this checkpoint):
 
-1. for any T063 continuation, load `docs/reviews/T063-R5.md` first;
-2. load R020 for the corrected V2 receipt facts;
-3. load D063 before designing or accepting any replacement measurement receipt;
-4. load D076 before handing any substantial execution-harness work back to an Executor;
-5. load T063/R4/R019 only when the exact frozen experiment or superseded adapter assumption is needed;
+1. for pending T063 v3 launch or convergence, load `docs/reviews/T063-R6.md` first;
+2. load R021 when receipt/version rationale is needed;
+3. load D063 before interpreting measurement validity;
+4. load D076 before accepting any Stage 6 repair/ephemeral executable behavior;
+5. load the v3 candidate `config.py` / `measurement.py` / `runner.py` only when execution mechanics or evidence conflict requires it;
 6. for T062 resumption, instead load T023-R31/R32/R33 plus the held scientific branch/handoff;
 7. do not reconstruct either frontier from prior chat/Project Memory.
 
+D077 is bootstrap-visible in `AGENTS.md` and controls any newly changed upstream version state.
+
 ## Next Action
 
-No Executor action is authorized.
+After O264/R6/D077/R021 are merged into `develop`, T063 v3 Stage 6 is authorized.
 
-If the Human wants to continue T063, require an explicit selection such as:
-
-```text
-repair T063
-```
-
-Then ChatGPT must re-enter Stage 5 and first decide/qualify a supported receipt strategy for:
+The Human should start a **NEW** Codex session with exact title:
 
 ```text
-child correlation
-exact spawned task-message attestation
-D063 live parent/child permission + residency + usage + reroute evidence
+AG | agent-governance | T063 | root-3
 ```
 
-Do not launch a successor Codex root or make another provider-backed scored call until that repair is materialized, provider-free verified where possible, reviewed, and explicitly authorized.
+Use the R6-frozen root profile and exact candidate branch/HEAD. The transport prompt should remain thin and point Codex to canonical Git authority rather than duplicating experiment semantics.
 
-If the Human instead resumes T062, follow the separate held-line authority. T058 remains frozen.
+ChatGPT must not start or directly control Codex under D071. After the Human returns the terminal four-line result, ChatGPT performs remote verification and Stage 7 convergence.
