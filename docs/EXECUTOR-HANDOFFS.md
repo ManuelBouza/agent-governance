@@ -12,7 +12,7 @@ D029 defines the non-self-referential Git identity model used by this contract. 
 
 For D068-mode work, the coherent candidate and its controlling authority published on the verified topic branch are sufficient authority for Executor verification. A separate planning/candidate merge into `develop` is not required before Stage 6. Historical executed contracts/handoffs retain their original meaning and are not rewritten retroactively.
 
-D052 semantic-oracle ownership, D054 execution-mechanics ownership, D060 coordinator continuity, D061/D062 protections/freshness, and D065 delegation obligations remain intact.
+D052 semantic-oracle ownership, D054 execution-mechanics ownership, D060 coordinator continuity, D061/D062 protections/freshness, D065 delegation obligations, and D076 Stage 6 ephemeral executable-materialization/audit boundaries remain intact.
 
 ## Canonical location
 
@@ -62,6 +62,7 @@ For new or materially revised D053/D068-governed tasks, the handoff MUST additio
 - `code_review.upstream_reentry_required` — boolean
 - `code_review.upstream_reentry_stage` — `null`, `Specify`, `Design`, or `Plan & Trace` as applicable
 - `requirement_trace` — mapping/evidence pointers for material requirement/spec-delta items, including `PRESERVED` invariants where applicable
+- `ephemeral_artifacts` — the D076 inventory described below, or an empty array when no reportable artifact existed
 
 A `COMPACT` task MAY represent these through concise equivalent fields rather than verbose nested objects, provided ChatGPT can reconstruct the same claims unambiguously from the handoff plus referenced evidence. A Task Contract may require stronger `STANDARD`/`ASSURED` trace detail.
 
@@ -73,6 +74,32 @@ The handoff JSON MUST NOT be required to contain the SHA of the commit that cont
 
 For backward compatibility, an existing `head_sha` field MAY be interpreted as the implementation/review anchor when the handoff explicitly states that meaning.
 
+### D076 ephemeral executable artifact inventory
+
+For D068 Stage 6, any file-based executable artifact created by the Executor and actually executed or used to influence verification MUST be represented in `ephemeral_artifacts` when that artifact was not already part of the published/authorized Stage 5 candidate.
+
+Each reportable artifact MUST record, directly or through an unambiguous equivalent structure:
+
+```text
+label_or_path
+kind
+purpose
+materiality: mechanical | material | uncertain
+authority_basis
+approximate_size_or_lines_if_known
+content_digest_if_safe_and_available
+executed: true|false
+persisted: true|false
+removed: true|false
+reentry_required: true|false
+```
+
+Absolute local paths may be sanitized when they expose irrelevant machine/user information. Secrets, credentials and private chain-of-thought MUST NOT be persisted merely to satisfy this inventory.
+
+Routine commands and inline one-liners that never become file-based executable artifacts do not require per-artifact inventory beyond normal verification/command evidence.
+
+`ephemeral`, `temporary`, `untracked`, outside-worktree, deleted-before-commit, or absent-from-final-diff status does not make a substantial artifact exempt from D076. If an artifact is `material` or becomes `uncertain` in a way that indicates missing first-pass candidate materialization, Stage 6 stops for Orchestrator re-entry rather than silently deleting the artifact and continuing.
+
 ## Code Review & Verify invariant
 
 Before a normal D068 task may report `DONE`, the executor SHALL review the published/final repaired candidate against the approved specification/Design/Plan and applicable Task Contract obligations for:
@@ -83,9 +110,12 @@ Before a normal D068 task may report `DONE`, the executor SHALL review the publi
 - maintainability/unnecessary complexity;
 - represented security/privacy/reliability/compatibility constraints;
 - required deterministic/property/integration/eval/conformance evidence;
-- material unauthorized scope additions.
+- material unauthorized scope additions;
+- D076 compliance for any Executor-created file-based executable artifact used during Stage 6.
 
 The executor MAY correct findings that are technical implementation/test defects inside the D068 repair envelope and then rerun affected verification. If a material finding indicates a defective/ambiguous/infeasible upstream specification, Design, Plan or acceptance meaning, the executor MUST NOT redesign/reinterpret it in the handoff. It reports `upstream_reentry_required`, persists the evidence, and returns `BLOCKED` or `PARTIAL` as appropriate to the Task Contract.
+
+Likewise, if Stage 6 requires a substantial new controller, harness, script, fixture generator, oracle/grader or equivalent executable artifact that was not present in the published candidate, the executor MUST stop before first-pass materialization under D076. Bounded repair of an already-published executable candidate remains allowed under D068.
 
 D052 semantic oracle meaning remains Orchestrator-owned. An Executor may not weaken or reinterpret an Orchestrator-owned oracle merely to make the candidate pass.
 
@@ -98,11 +128,11 @@ For D068-mode work:
 1. ChatGPT persists the SDD-anchored Task Contract, applicable D052 semantic oracle assets, and complete Stage 5 candidate on the verified topic branch.
 2. ChatGPT publishes one coherent topic-branch checkpoint containing that authority/candidate; no separate pre-verification merge to `develop` is required.
 3. The executor synchronizes the canonical remote, verifies the exact topic-branch candidate HEAD and protected-base/freshness relationship, and uses that candidate as the Stage 6 starting state.
-4. The executor executes the candidate, diagnoses failures, performs only bounded technical repairs inside approved semantics/Design, and performs Code Review & Verify plus required verification.
-5. If an upstream SDD defect is found, the executor persists a terminal blocker/re-entry handoff rather than redefining the contract.
+4. The executor executes the candidate, diagnoses failures, performs only bounded technical repairs inside approved semantics/Design, obeys D076 when any new executable aid is needed, and performs Code Review & Verify plus required verification.
+5. If an upstream SDD defect or D076 materialization stop condition is found, the executor persists a terminal blocker/re-entry handoff rather than redefining the contract or first-pass materializing the missing substantial artifact.
 6. For a `DONE` path, the executor commits the final candidate/repair/test/eval state that the review/verification evidence describes.
 7. The executor records that commit as `implementation_head_sha` and `code_review.reviewed_head_sha` in the task handoff artifact under `handoffs/`.
-8. The executor records material requirement-to-evidence trace and review findings/results.
+8. The executor records material requirement-to-evidence trace, review findings/results, and the D076 `ephemeral_artifacts` inventory or an explicit empty array.
 9. The executor commits the handoff artifact; this may create a handoff-only successor commit.
 10. For a normal task, after Stage 6 terminal state and handoff are coherent, the executor performs the planned publication of the complete topic-branch state to the canonical remote under D048.
 11. The executor verifies that the remote topic branch resolves to the pushed final HEAD.
@@ -141,7 +171,8 @@ Before the planned Stage 6 publication, the executor MUST ensure:
 - Code Review & Verify is complete for the implementation anchor described by the handoff or the terminal blocker state is explicitly represented;
 - required verification is complete for the implementation anchor described by the handoff;
 - the handoff artifact is committed;
-- no unreported in-scope working-tree changes would make the handoff misleading.
+- no unreported in-scope working-tree changes would make the handoff misleading;
+- no D076-reportable file-based executable artifact used during Stage 6 is omitted merely because it was untracked, temporary or removed before commit.
 
 After that push and before returning status, the executor MUST ensure:
 - the topic branch is present on the canonical remote;
@@ -200,9 +231,10 @@ A reviewer must be able to reconstruct from the canonical Git remote:
 - the exact published Stage 5 candidate/authority checkpoint when D068 applies;
 - what final candidate/repair state the Executor attests to: `implementation_head_sha` in `handoffs/<task>-executor-handoff.json`;
 - what Stage 6 technical review/verification the Executor performed and whether any upstream re-entry issue remains;
+- the existence, classification, purpose and lifecycle of every D076-reportable Executor-created file-based executable artifact used during Stage 6, even when its contents were temporary or later removed;
 - how material requirement/spec-delta items map to implementation/evidence at the depth required by the SDD profile;
 - what exact pushed branch state contains that handoff: the visible `HEAD` verified against the remote branch;
 - what actually changed: pushed commits/diff and test/eval artifacts;
 - what ChatGPT later accepted/rejected through Stage 7 convergence review.
 
-Chat history and an Executor's unpushed local filesystem MUST NOT be required for this reconstruction.
+D076 does not require persisting artifact source content when doing so is unsafe, unauthorized or unnecessary; the inventory must still make the artifact's existence/materiality/lifecycle auditable. Chat history and an Executor's unpushed local filesystem MUST NOT be required for this reconstruction.
