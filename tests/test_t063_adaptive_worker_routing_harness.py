@@ -342,6 +342,18 @@ def test_v2_app_server_overrides_are_frozen() -> None:
     )
 
 
+def test_app_server_version_from_01534_initialize_receipt() -> None:
+    initialized = {
+        "userAgent": "Codex Desktop/0.153.4 (Windows 10.0.26200; x86_64) dumb "
+        "(agent-governance-t063; 1)"
+    }
+    assert m.app_server_version(initialized) == "0.153.4"
+
+
+def test_app_server_version_rejects_unrecognized_receipt() -> None:
+    assert m.app_server_version({"userAgent": "unrecognized"}) is None
+
+
 def test_v2_parent_message_requires_task_name_and_no_context_fork() -> None:
     spec = c.ArmSpec("P1", "ADAPTIVE", "gpt-5.6-luna", "medium")
     child = c.build_task_messages()["P1"]

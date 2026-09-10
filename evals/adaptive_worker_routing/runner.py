@@ -25,7 +25,7 @@ from .config import (
     PreparedInputs,
     ProfileResolutionBlocked,
 )
-from .measurement import execute_arm, preflight
+from .measurement import app_server_version, execute_arm, preflight
 from .oracles import cleanup_runtime_root, git, prepare_inputs
 
 
@@ -221,8 +221,7 @@ def run_evaluation(
                 config_overrides=app_server_overrides,
             ) as arm_client:
                 initialized = arm_client.initialize()
-                server = initialized.get("serverInfo")
-                app_version = server.get("version") if isinstance(server, dict) else None
+                app_version = app_server_version(initialized)
                 if app_version != REQUIRED_CODEX_VERSION:
                     raise MeasurementSurfaceBlocked(
                         f"scored arm App Server mismatch: expected {REQUIRED_CODEX_VERSION}, got {app_version!r}"

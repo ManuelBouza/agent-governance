@@ -40,6 +40,19 @@ def _codex_version(codex_bin: Path, repo: Path) -> str:
     return match.group(1)
 
 
+def app_server_version(initialized: dict[str, Any]) -> str | None:
+    """Return the native App Server version from the 0.153.4 initialize receipt."""
+    server = initialized.get("serverInfo")
+    if isinstance(server, dict) and isinstance(server.get("version"), str):
+        return server["version"]
+    user_agent = initialized.get("userAgent")
+    if isinstance(user_agent, str):
+        match = re.search(r"\bCodex Desktop/(\d+\.\d+\.\d+)\b", user_agent)
+        if match is not None:
+            return match.group(1)
+    return None
+
+
 def _active_profile(payload: dict[str, Any]) -> str | None:
     active = payload.get("activePermissionProfile")
     if isinstance(active, dict) and isinstance(active.get("id"), str):
@@ -149,8 +162,7 @@ def preflight(
         )
     schema = _generate_schema(codex_bin, repo, runtime_root)
     initialized = client.initialize()
-    server = initialized.get("serverInfo")
-    app_server = server.get("version") if isinstance(server, dict) else None
+    app_server = app_server_version(initialized)
     if app_server != REQUIRED_CODEX_VERSION:
         raise MeasurementSurfaceBlocked(
             f"App Server mismatch: expected {REQUIRED_CODEX_VERSION}, got {app_server!r}"
