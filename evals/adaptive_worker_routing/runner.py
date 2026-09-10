@@ -10,6 +10,7 @@ from typing import Any
 
 from .app_server import AppServerClient, AppServerError
 from .config import (
+    APP_SERVER_CONFIG_OVERRIDES,
     ARM_ORDER,
     EVIDENCE_BRANCH,
     FROZEN_HEAD,
@@ -197,10 +198,11 @@ def run_evaluation(
 
     try:
         prepared = prepare_inputs(repo, runtime_root)
+        app_server_overrides = APP_SERVER_CONFIG_OVERRIDES
         with AppServerClient(
             codex_bin,
             cwd=repo,
-            config_overrides=("features.multi_agent_v2.enabled=true",),
+            config_overrides=app_server_overrides,
         ) as client:
             required_profiles = {(model, effort) for _, _, model, effort in ARM_ORDER}
             preflight_receipt = preflight(
@@ -210,10 +212,24 @@ def run_evaluation(
                 runtime_root=runtime_root,
                 required_profiles=required_profiles,
             )
-            for probe, arm, model, reasoning in ARM_ORDER:
+        preflight_receipt["fresh_app_server_per_scored_arm"] = True
+        preflight_receipt["app_server_config_overrides"] = list(app_server_overrides)
+        for probe, arm, model, reasoning in ARM_ORDER:
+            with AppServerClient(
+                codex_bin,
+                cwd=repo,
+                config_overrides=app_server_overrides,
+            ) as arm_client:
+                initialized = arm_client.initialize()
+                server = initialized.get("serverInfo")
+                app_version = server.get("version") if isinstance(server, dict) else None
+                if app_version != REQUIRED_CODEX_VERSION:
+                    raise MeasurementSurfaceBlocked(
+                        f"scored arm App Server mismatch: expected {REQUIRED_CODEX_VERSION}, got {app_version!r}"
+                    )
                 scored.append(
                     execute_arm(
-                        client,
+                        arm_client,
                         repo=repo,
                         runtime_root=runtime_root,
                         prepared=prepared,
@@ -288,21 +304,25 @@ def run_evaluation(
 
 
 def command_prepare(args: argparse.Namespace) -> int:
-    prepared = prepare_inputs(args.repo.resolve(), args.runtime_root.resolve())
-    print(
-        json.dumps(
-            {
-                "p1_oracle": prepared.p1_oracle,
-                "p2_oracle": prepared.p2_oracle,
-                "p3_oracle": prepared.p3_oracle,
-                "task_message_digests": prepared.task_message_digests,
-            },
-            indent=2,
-            sort_keys=True,
+    runtime_root = args.runtime_root.resolve()
+    prepared: PreparedInputs | None = None
+    try:
+        prepared = prepare_inputs(args.repo.resolve(), runtime_root)
+        print(
+            json.dumps(
+                {
+                    "p1_oracle": prepared.p1_oracle,
+                    "p2_oracle": prepared.p2_oracle,
+                    "p3_oracle": prepared.p3_oracle,
+                    "task_message_digests": prepared.task_message_digests,
+                },
+                indent=2,
+                sort_keys=True,
+            )
         )
-    )
-    cleanup_runtime_root(args.runtime_root.resolve(), prepared)
-    return 0
+        return 0
+    finally:
+        cleanup_runtime_root(runtime_root, prepared)
 
 
 def command_run(args: argparse.Namespace) -> int:

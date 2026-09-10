@@ -363,14 +363,78 @@ def tool_trace_oracle_leak(turn: dict[str, Any]) -> bool:
     return False
 
 
+def _task_name(spec: ArmSpec) -> str:
+    return f"t063_{spec.probe.lower()}_{spec.arm.lower()}"
+
+
 def _parent_message(spec: ArmSpec, child_task: str) -> str:
     return (
+        f"Required task_name: {_task_name(spec)}\n"
         f"Requested child model: {spec.model}\n"
-        f"Requested child reasoning_effort: {spec.reasoning}\n\n"
+        f"Requested child reasoning_effort: {spec.reasoning}\n"
+        'Required fork_turns: "none"\n\n'
         "Child task message begins after the delimiter and must be passed unchanged.\n"
         "--- CHILD TASK ---\n"
         f"{child_task}"
     )
+
+
+def _child_user_message_text(turn: dict[str, Any]) -> str:
+    items = turn.get("items")
+    if not isinstance(items, list):
+        raise ExecutionInvalid("child turn items unavailable")
+    user_messages = [
+        item
+        for item in items
+        if isinstance(item, dict) and item.get("type") == "userMessage"
+    ]
+    if len(user_messages) != 1:
+        raise ExecutionInvalid(
+            f"expected one child userMessage item, got {len(user_messages)}"
+        )
+    content = user_messages[0].get("content")
+    if not isinstance(content, list):
+        raise ExecutionInvalid("child userMessage content unavailable")
+    texts = [
+        part.get("text")
+        for part in content
+        if isinstance(part, dict) and part.get("type") == "text" and isinstance(part.get("text"), str)
+    ]
+    if len(texts) != 1:
+        raise ExecutionInvalid(
+            f"expected one text part in child userMessage, got {len(texts)}"
+        )
+    return texts[0]
+
+
+def _validate_parent_surface(parent_turn: dict[str, Any]) -> dict[str, Any]:
+    items = parent_turn.get("items")
+    if not isinstance(items, list):
+        raise ExecutionInvalid("parent completed turn items unavailable")
+    spawn_calls = [
+        item
+        for item in items
+        if isinstance(item, dict)
+        and item.get("type") == "collabAgentToolCall"
+        and item.get("tool") in {"spawnAgent", "spawn_agent"}
+    ]
+    if len(spawn_calls) != 1:
+        raise ExecutionInvalid(f"parent created {len(spawn_calls)} child spawns; expected 1")
+    forbidden_types = {
+        "commandExecution",
+        "fileChange",
+        "mcpToolCall",
+        "dynamicToolCall",
+        "webSearch",
+        "imageView",
+        "imageGeneration",
+    }
+    used = sorted(
+        {item.get("type") for item in items if isinstance(item, dict) and item.get("type") in forbidden_types}
+    )
+    if used:
+        raise ExecutionInvalid(f"measurement parent used forbidden tool/item types: {used}")
+    return spawn_calls[0]
 
 
 def execute_arm(
@@ -435,26 +499,20 @@ def execute_arm(
 
     parent_done = _wait_parent_completed(client, parent_id, parent_turn_id, index)
     parent_turn_payload = parent_done.params.get("turn")
-    parent_items = (
-        parent_turn_payload.get("items") if isinstance(parent_turn_payload, dict) else None
-    )
-    if not isinstance(parent_items, list):
-        raise ExecutionInvalid("parent completed turn items unavailable")
-    spawn_calls = [
-        item
-        for item in parent_items
-        if isinstance(item, dict)
-        and item.get("type") == "collabAgentToolCall"
-        and item.get("tool") in {"spawnAgent", "spawn_agent"}
-    ]
-    if len(spawn_calls) != 1:
-        raise ExecutionInvalid(f"parent created {len(spawn_calls)} child spawns; expected 1")
+    if not isinstance(parent_turn_payload, dict):
+        raise ExecutionInvalid("parent completed turn unavailable")
+    _validate_parent_surface(parent_turn_payload)
 
     child_read = client.request("thread/read", {"threadId": child_id, "includeTurns": True})
     child_turn = _one_child_turn(child_read)
     child_turn_id = child_turn.get("id")
     if not isinstance(child_turn_id, str) or child_turn.get("status") != "completed":
         raise ExecutionInvalid("child turn did not complete with stable identity")
+    observed_child_message = _child_user_message_text(child_turn)
+    if observed_child_message != child_task:
+        raise ExecutionInvalid(
+            f"child task message drift in {spec.probe} {spec.arm}; exact equality required"
+        )
     duration_ms = child_turn.get("durationMs")
     if not isinstance(duration_ms, int) or duration_ms < 0:
         raise MeasurementSurfaceBlocked("exact child duration unavailable")
@@ -484,13 +542,14 @@ def execute_arm(
         "turn_id": child_turn_id,
         "probe": spec.probe,
         "arm": spec.arm,
-        "role": f"t063_{spec.probe.lower()}_{spec.arm.lower()}",
+        "role": _task_name(spec),
         "task_class": {
             "P1": "narrow_deterministic_evidence_retrieval",
             "P2": "broader_code_dependency_exploration",
             "P3": "adversarial_independent_review",
         }[spec.probe],
         "task_message_sha256": prepared.task_message_digests[spec.probe],
+        "child_message_exact_match": True,
         "requested_profile": spec.requested_profile,
         "requested_model": requested_model,
         "requested_reasoning_effort": requested_reasoning,

@@ -15,6 +15,7 @@ from pathlib import Path
 from typing import Any
 
 from .config import (
+    EXPECTED_TASK_MESSAGE_DIGESTS,
     FROZEN_HEAD,
     P1_PATHS,
     P2_FILES,
@@ -188,6 +189,8 @@ def ensure_runtime_root_safe(repo: Path, runtime_root: Path) -> None:
     system_temp = Path(tempfile.gettempdir()).resolve()
     if runtime_root == repo or repo in runtime_root.parents:
         raise HarnessError("P3 runtime root must be outside the repository/worktree")
+    if runtime_root.parent != repo.parent:
+        raise HarnessError("P3 runtime root must be a sibling of the repository/worktree")
     if runtime_root == system_temp or system_temp in runtime_root.parents:
         raise HarnessError("P3 runtime root must not be inside the system temp directory")
     if runtime_root.exists():
@@ -217,6 +220,11 @@ def seed_p3_fixture(repo: Path, runtime_root: Path) -> tuple[Path, dict[str, Any
     runtime_root.mkdir(parents=True, exist_ok=False)
     fixture = runtime_root / "profile_fixture.py"
     fixture.write_text(mutated, encoding="utf-8", newline="\n")
+    try:
+        with fixture.open("rb") as handle:
+            handle.read(1)
+    except OSError as exc:
+        raise HarnessError(f"P3 fixture is not host-readable after creation: {exc}") from exc
     digest = sha256_file(fixture)
     if digest != P3_EXPECTED_FIXTURE_SHA256:
         raise HarnessError(
@@ -270,13 +278,18 @@ def prepare_inputs(repo: Path, runtime_root: Path) -> PreparedInputs:
     p2 = compute_p2_oracle(repo)
     fixture, p3 = seed_p3_fixture(repo, runtime_root)
     messages = build_task_messages()
+    digests = {probe: sha256_text(message) for probe, message in messages.items()}
+    if digests != EXPECTED_TASK_MESSAGE_DIGESTS:
+        raise HarnessError(
+            f"frozen task-message digest drift: expected {EXPECTED_TASK_MESSAGE_DIGESTS}, got {digests}"
+        )
     return PreparedInputs(
         p1_oracle=p1,
         p2_oracle=p2,
         p3_oracle=p3,
         p3_fixture=fixture,
         task_messages=messages,
-        task_message_digests={probe: sha256_text(message) for probe, message in messages.items()},
+        task_message_digests=digests,
     )
 
 

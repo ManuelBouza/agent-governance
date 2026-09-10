@@ -13,6 +13,18 @@ ROOT_REASONING = "medium"
 EVIDENCE_BRANCH = "test/t063-adaptive-worker-routing-requalification-v2"
 HISTORICAL_BLOCKED_HEAD = "3d8a9460988351383a90adfc6b76e2deff056504"
 
+APP_SERVER_CONFIG_OVERRIDES = (
+    "features.multi_agent=true",
+    "features.multi_agent_v2.enabled=true",
+    "features.multi_agent_v2.expose_spawn_agent_model_overrides=true",
+)
+
+EXPECTED_TASK_MESSAGE_DIGESTS = {
+    "P1": "9aa60aef807873669690a2ad2b564fed58e0731ff0d6e0162fbef40c621a2164",
+    "P2": "031c06d7544f6146901e633d4bceb8af0e15325c0124dc586e10f545aaadfe4a",
+    "P3": "9d980424d08517c72911eaacaa9cee36ddf2003d50c21ad6b4d0c25786d9554f",
+}
+
 P1_PATHS = (
     ".python-version",
     "agent-governance-source.json",
@@ -88,9 +100,9 @@ Return only compact JSON with keys status and findings. Each material finding mu
 
 PARENT_INSTRUCTIONS = """You are a measurement parent for one frozen Agent Governance probe.
 Do not solve the probe yourself and do not inspect repository files for the answer.
-Use the collaboration spawn_agent tool exactly once with the exact requested child model and reasoning_effort stated in this turn.
+Use the collaboration spawn_agent tool exactly once with the exact task_name, child model, and reasoning_effort stated in this turn.
 Pass the supplied child task message unchanged as the child message.
-Do not fork parent context into the child.
+Set fork_turns to "none". Multi-Agent V2 does not accept fork_context.
 Wait for that exact child to finish, then return only the child's final answer without commentary.
 Do not create files or modify repository state.
 """

@@ -255,8 +255,8 @@ class ProfileError(Exception):
     \"\"\"Fail-closed profile-routing error.\"\"\"
 
 
-ACTIVE_PROFILES = frozenset({"consumer", "source-maintainer"})
-DEFAULT_PROFILE = "consumer"
+ACTIVE_PROFILES = frozenset({\"consumer\", \"source-maintainer\"})
+DEFAULT_PROFILE = \"consumer\"
 
 
 @dataclass(frozen=True)
@@ -272,11 +272,11 @@ class Profile:
 
     @property
     def is_consumer(self) -> bool:
-        return self.name == "consumer"
+        return self.name == \"consumer\"
 
     @property
     def is_source_maintainer(self) -> bool:
-        return self.name == "source-maintainer"
+        return self.name == \"source-maintainer\"
 
     @property
     def grants_source_maintenance(self) -> bool:
@@ -287,10 +287,10 @@ def validate_profile(profile: object) -> Profile:
     \"\"\"Validate a resolved profile against the active runtime identities.\"\"\"
 
     if not isinstance(profile, Profile):
-        raise ProfileError(f"profile must be a Profile instance, got {type(profile).__name__}")
+        raise ProfileError(f\"profile must be a Profile instance, got {type(profile).__name__}\")
     if not isinstance(profile.name, str) or profile.name not in ACTIVE_PROFILES:
         raise ProfileError(
-            f"unsupported profile: {profile.name!r}; active profiles: {sorted(ACTIVE_PROFILES)}"
+            f\"unsupported profile: {profile.name!r}; active profiles: {sorted(ACTIVE_PROFILES)}\"
         )
     return profile
 
@@ -310,8 +310,8 @@ def resolve_profile(name: str | None = None) -> Profile:
         name = DEFAULT_PROFILE
     if not isinstance(name, str) or not name:
         raise ProfileError(
-            f"profile must be a non-empty string, got {name!r}; "
-            f"active profiles: {sorted(ACTIVE_PROFILES)}"
+            f\"profile must be a non-empty string, got {name!r}; \"
+            f\"active profiles: {sorted(ACTIVE_PROFILES)}\"
         )
     return validate_profile(Profile(name=name))
 """
@@ -331,3 +331,77 @@ def test_task_messages_do_not_contain_p3_oracle() -> None:
     assert "ProfileError" not in messages["P3"]
     assert c.FROZEN_HEAD in messages["P1"]
     assert c.FROZEN_HEAD in messages["P2"]
+
+
+
+def test_v2_app_server_overrides_are_frozen() -> None:
+    assert c.APP_SERVER_CONFIG_OVERRIDES == (
+        "features.multi_agent=true",
+        "features.multi_agent_v2.enabled=true",
+        "features.multi_agent_v2.expose_spawn_agent_model_overrides=true",
+    )
+
+
+def test_v2_parent_message_requires_task_name_and_no_context_fork() -> None:
+    spec = c.ArmSpec("P1", "ADAPTIVE", "gpt-5.6-luna", "medium")
+    child = c.build_task_messages()["P1"]
+    text = m._parent_message(spec, child)
+    assert "Required task_name: t063_p1_adaptive" in text
+    assert 'Required fork_turns: "none"' in text
+    assert "fork_context" not in text
+    assert text.endswith(child)
+
+
+def test_child_user_message_exact_text_receipt() -> None:
+    turn = {
+        "items": [
+            {
+                "type": "userMessage",
+                "content": [{"type": "text", "text": "exact child message", "text_elements": []}],
+            },
+            {"type": "agentMessage", "text": "{}"},
+        ]
+    }
+    assert m._child_user_message_text(turn) == "exact child message"
+    turn["items"][0]["content"][0]["text"] = "drift"
+    assert m._child_user_message_text(turn) == "drift"
+
+
+def test_parent_surface_rejects_non_spawn_execution() -> None:
+    valid = {
+        "items": [
+            {"type": "userMessage", "content": []},
+            {
+                "type": "collabAgentToolCall",
+                "tool": "spawnAgent",
+                "receiverThreadIds": ["child"],
+            },
+            {"type": "agentMessage", "text": "done"},
+        ]
+    }
+    assert m._validate_parent_surface(valid)["tool"] == "spawnAgent"
+    invalid = json.loads(json.dumps(valid))
+    invalid["items"].insert(1, {"type": "commandExecution", "command": "git status"})
+    with pytest.raises(c.ExecutionInvalid, match="forbidden"):
+        m._validate_parent_surface(invalid)
+
+
+def test_runtime_root_requires_worktree_sibling(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    monkeypatch.setattr(o.tempfile, "gettempdir", lambda: str(tmp_path / "system-temp"))
+    parent = tmp_path / "worktrees"
+    parent.mkdir()
+    repo = parent / "t063"
+    repo.mkdir()
+    o.ensure_runtime_root_safe(repo, parent / "t063-runtime")
+    with pytest.raises(c.HarnessError, match="sibling"):
+        o.ensure_runtime_root_safe(repo, tmp_path / "other" / "t063-runtime")
+
+
+def test_frozen_task_message_digests_match_candidate() -> None:
+    observed = {
+        probe: o.sha256_text(message)
+        for probe, message in c.build_task_messages().items()
+    }
+    assert observed == c.EXPECTED_TASK_MESSAGE_DIGESTS

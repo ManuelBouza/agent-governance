@@ -1,158 +1,158 @@
 # Orchestrator Checkpoint
 
-Checkpoint-ID: O261  
+Checkpoint-ID: O262  
 Date: 2026-09-10  
 Current-Objective: T063 — adaptive worker routing requalification  
-State: T063_BLOCKED_ORCHESTRATOR_REENTRY_REQUIRED_D076  
-Active-Executor: none  
-Executor-Launch-State: NOT_AUTHORIZED  
-Coordinator-ID: `AG | agent-governance | T063 | root-1` — historical blocked root; continuation not authorized  
-T063-Evidence-Branch: `test/t063-adaptive-worker-routing-requalification`  
-T063-Evidence-HEAD: `3d8a9460988351383a90adfc6b76e2deff056504`  
+State: T063_V2_STAGE6_AUTHORIZED_AWAITING_HUMAN_CODEX_START  
+Active-Executor: Codex  
+Executor-Launch-State: AUTHORIZED_AWAITING_HUMAN_CODEX_START  
+Coordinator-ID: `AG | agent-governance | T063 | root-2`  
+T063-V2-Branch: `test/t063-adaptive-worker-routing-requalification-v2`  
+Historical-T063-Evidence-Branch: `test/t063-adaptive-worker-routing-requalification`  
+Historical-T063-Evidence-HEAD: `3d8a9460988351383a90adfc6b76e2deff056504`  
 Held-Work-Unit: T062 / T023 v15 Stage 6  
 Held-State: HUMAN_HOLD_R32_UNCONSUMED  
 Chat-Closure: KEEP_CURRENT_CHAT
 
 ## Canonical transition
 
-O260 authorized Human-mediated T063 execution. The Human subsequently returned:
+O261 required Orchestrator re-entry after the blocked T063 run and D076 correction.
+
+The Human continued the T063 repair path. ChatGPT then materialized a complete published Stage 5 harness rather than delegating substantial controller reconstruction to Codex.
+
+New controlling records:
 
 ```text
-STATUS: BLOCKED
-HANDOFF: handoffs/T063-executor-handoff.json
-BRANCH: test/t063-adaptive-worker-routing-requalification
-HEAD: 3d8a9460988351383a90adfc6b76e2deff056504
+docs/research/R019-T063-MULTI-AGENT-V2-HARNESS-REENTRY.md
+docs/reviews/T063-R4.md
 ```
 
-Remote Git verification established that the evidence branch is exactly one commit ahead of the frozen evaluation base:
+The executable candidate is published under:
+
+```text
+evals/adaptive_worker_routing/
+tests/test_t063_adaptive_worker_routing_harness.py
+```
+
+The exact remote candidate/authority SHA is the remotely verified HEAD of `test/t063-adaptive-worker-routing-requalification-v2` containing O262 and T063-R4. The Human launch card must state that exact SHA; no remembered or locally inferred SHA controls.
+
+## Stage 5 verification
+
+Provider-free candidate verification before publication:
+
+```text
+python -m pytest -q tests/test_t063_adaptive_worker_routing_harness.py
+21 passed
+
+python -m compileall -q evals tests
+PASS
+
+provider/model calls during repair: 0
+```
+
+## R019 adapter correction
+
+Fresh exact-source revalidation of `rust-v0.153.4` established:
+
+```text
+Multi-Agent V2 spawn requires: message + task_name
+no-history V2 spawn uses:      fork_turns = "none"
+fork_context in V2:            rejected
+model/reasoning exposure:      explicit config required
+multi_agent_v2 default:        disabled
+V2 collab prompt receipt:      insufficient for full message attestation
+```
+
+The harness therefore forces:
+
+```text
+features.multi_agent=true
+features.multi_agent_v2.enabled=true
+features.multi_agent_v2.expose_spawn_agent_model_overrides=true
+```
+
+and verifies exact child task-message equality from the child thread before scoring.
+
+Codex `0.154.0` is now the current stable release, but T063 v2 remains deliberately pinned to exact `0.153.4` because D063 qualified that surface and R2 froze it as the experiment baseline. This is now an explicit experimental pin, not a claim that `0.153.4` remains vendor-current.
+
+## Scientific restart
+
+The v2 pilot is a full clean rerun.
+
+Historical P1/P2 PASS results remain preserved evidence but are excluded from final v2 scoring because the corrected harness changes material execution conditions.
+
+Fresh scored order remains:
+
+```text
+P1 ADAPTIVE -> CONTROL
+P2 CONTROL  -> ADAPTIVE
+P3 ADAPTIVE -> CONTROL
+```
+
+Frozen probe source/oracle baseline remains:
 
 ```text
 69e910f329a2294c3b40df0f6ee983f9905f4677
 ```
 
-and that the only committed delta is:
+Frozen child profiles remain:
 
 ```text
-handoffs/T063-adaptive-worker-routing-telemetry.json
-handoffs/T063-executor-handoff.json
+P1 ADAPTIVE  gpt-5.6-luna  / medium
+P1 CONTROL   gpt-5.6-sol   / medium
+P2 CONTROL   gpt-5.6-sol   / medium
+P2 ADAPTIVE  gpt-5.6-terra / medium
+P3 ADAPTIVE  gpt-5.6-terra / high
+P3 CONTROL   gpt-5.6-sol   / medium
 ```
 
-No product source, tests, config, schemas or committed Markdown changed on the evidence branch.
-
-The blocked handoff and telemetry are reviewed by:
+Frozen task-message SHA-256 values:
 
 ```text
-docs/reviews/T063-R3.md
+P1  9aa60aef807873669690a2ad2b564fed58e0731ff0d6e0162fbef40c621a2164
+P2  031c06d7544f6146901e633d4bceb8af0e15325c0124dc586e10f545aaadfe4a
+P3  9d980424d08517c72911eaacaa9cee36ddf2003d50c21ad6b4d0c25786d9554f
 ```
 
-## T063 blocked execution result
+## P3 correction
 
-The accepted historical run accounting is:
+The published harness creates the P3 fixture under a fresh runtime directory that must be an unused sibling of the exclusive T063 v2 worktree, outside the repository and outside Windows system temp.
+
+The fixture semantics/oracle remain frozen from `69e910...`; the Executor supplies the safe runtime-root location only. The harness verifies exact fixture SHA, host readability and cleanup.
+
+## D060/D055 launch authority
+
+Use:
 
 ```text
-P1 ADAPTIVE   PASS — Luna / Medium
-P1 CONTROL    PASS — Sol / Medium
-P2 CONTROL    PASS — Sol / Medium
-P2 ADAPTIVE   PASS — Terra / Medium
-P3 ADAPTIVE   EXECUTION_INVALID_INPUT_UNREADABLE — Terra / High
-P3 CONTROL    NOT_STARTED
-
-scored child attempts:       5
-scored parent turns:         5
-diagnostic child attempts:   0
-compensating attempts:       0
-P3 CONTROL attempts:         0
+Executor:        Codex
+Surface:         Codex Local / native Windows
+Session:         NEW
+Coordinator-ID:  AG | agent-governance | T063 | root-2
+Model:           gpt-5.6-sol
+Effort:          medium
+Codex/App Server: exactly 0.153.4
+Auth:            chatgpt
 ```
 
-D063 receipts were reported valid for all five attempted children, with zero requested/resolved profile mismatches and zero reroutes.
+Root-2 is justified D060 failover/re-entry. Root-1 is historical, has observed the blocked-run results/failure context, and predates the new published harness; continuing it would contaminate the clean rerun boundary.
 
-P3 blocked because the mechanically seeded fixture was placed in a Windows system-temp location that the read-only child sandbox could not read. The immutable P3 ADAPTIVE first attempt was preserved; no move-and-rerun or P3 CONTROL attempt occurred.
+D071/D072/D073 control Human-mediated transport/title behavior.
 
-No T063 pilot decision is accepted. P1/P2 partial results remain historical evidence only.
+## D076 Stage 6 boundary
 
-## Stage 5 / Stage 6 ownership regression finding
+Codex executes/diagnoses/repairs/verifies the published harness. It does not recreate another substantial private controller.
 
-After the terminal return, the Human supplied Executor-UI evidence showing two temporary Python files created and deleted during T063:
+Any non-candidate file-based executable aid actually used by Stage 6 must be inventoried as `ephemeral_artifacts`. A `material` or `uncertain` missing-candidate artifact is an immediate Orchestrator re-entry condition.
+
+The final normal evidence paths are:
 
 ```text
-t063_controller.py  +572 / -572
-t063_prepare.py     +202 / -202
+handoffs/T063-adaptive-worker-routing-telemetry-v2.json
+handoffs/T063-executor-handoff-v2.json
 ```
 
-The files are absent from canonical Git and their source content is not reconstructable from the remote evidence branch. The T063 telemetry independently reports:
-
-```text
-temporary_controllers_removed_before_commit = true
-```
-
-The incident exposed an ambiguity between D068 complete Orchestrator Stage 5 candidate materialization and older broad Stage 6 `technical harness work` / private-tooling wording.
-
-The Human authorized correction of this governance regression. That authorization did not resume T063 or T062.
-
-## D076 accepted correction
-
-New controlling decision:
-
-```text
-docs/decisions/D076-stage6-ephemeral-executable-materialization-boundary.md
-```
-
-D076 establishes prospectively:
-
-```text
-small mechanical execution aid
-    -> Executor Stage 6
-
-substantial new controller/harness/script/fixture-oracle implementation
-    -> STOP
-    -> Orchestrator re-entry
-    -> ChatGPT Stage 5 materialization
-    -> publish coherent candidate
-    -> Executor Stage 6 execute/diagnose/repair/verify
-```
-
-Tracked/untracked, committed/deleted, persistent/ephemeral status is not the ownership classifier. No rigid LOC threshold controls materiality.
-
-`AGENTS.md` now loads this rule globally for future source-maintenance sessions.
-
-`docs/EXECUTOR-HANDOFFS.md` now requires a D076 `ephemeral_artifacts` inventory, or semantic equivalent, for any non-candidate file-based executable artifact created by the Executor and actually executed/used to influence Stage 6 verification. Material or uncertain missing-candidate artifacts require re-entry rather than silent deletion/continuation.
-
-D076 preserves D054 execution mechanics and D068 bounded technical repair of an already-published candidate.
-
-## T063 current authority
-
-Controlling records:
-
-```text
-docs/tasks/T063-adaptive-worker-routing-requalification.md
-docs/reviews/T063-R1.md
-docs/reviews/T063-R2.md
-docs/reviews/T063-R3.md
-docs/decisions/D063-qualified-codex-read-only-child-measurement-surface.md
-docs/decisions/D076-stage6-ephemeral-executable-materialization-boundary.md
-```
-
-Current T063 state:
-
-```text
-blocked evidence accepted:       YES
-pilot decision accepted:         NO
-continuation authorized:         NO
-additional provider/model calls: NO
-orchestrator re-entry required:  YES
-```
-
-Before any further scored provider-backed turn, ChatGPT must decide and persist:
-
-- a complete Stage 5 harness/controller candidate rather than asking Codex to recreate substantial execution machinery;
-- a P3 fixture placement/access strategy compatible with the read-only child sandbox;
-- whether the prior P1/P2 pairs can remain scientifically reusable after the harness correction or whether a clean complete rerun is required;
-- the D076 boundary for any allowed small ephemeral Stage 6 aids;
-- D060/D055 continuation/root authority.
-
-Do not reconstruct the deleted temporary controllers from chat/model memory and treat them as authoritative source.
-
-Preserve the evidence branch and `3d8a946...` history; do not reset, rewrite, force-push, delete, clean or repurpose it merely to obtain a cleaner experiment.
+No Executor-authored committed Markdown is authorized.
 
 ## T062 held frontier
 
@@ -165,48 +165,52 @@ Candidate Freeze E:              5b025087bc7b6996f683a34fdd1ce441d3d6dd82
 Holdout/oracle Freeze F:         5b8ac55980ecdbb6a2bf3784812b933647f2f13d
 blocked Stage 6 evidence HEAD:   b9034e450f04fbc9736543425e531159d4b79d49
 provider/model calls:            0
-R32 continuation authority:      valid but unconsumed
+R32 provider continuation authority: valid but unconsumed
 R32 transport:                   PAUSED by T023-R33
 ```
 
-Do not execute the old T062 R32 continuation prompt while R33 controls.
+Do not execute the old T062 R32 continuation prompt.
 
 ## Other durable constraints
 
 - T024 remains unauthorized until T023 selects a topology from valid evidence.
 - T058 remains frozen by explicit Human decision; do not resume, integrate, clean or copy it without new explicit Human authorization.
 - D066 intentional gaps remain unchanged.
-- D071/D072/D073 continue to control Human-mediated Codex transport/title handling.
-- R007 remains `EVALUATING`; the blocked T063 run adopts no global adaptive routing policy.
+- R007 remains `EVALUATING`; T063 v2 has not produced a pilot result yet.
+- Historical T063 evidence branch/HEAD remains preserved and must not be rewritten.
 
 ## Next Chat Minimum Load
 
 After normal bootstrap (`develop`, `AGENTS.md`, this checkpoint):
 
-1. for T063 re-entry, load `docs/reviews/T063-R3.md` and D076 first;
-2. then load T063 and T063-R2 for the frozen experimental semantics;
-3. load the submitted `handoffs/T063-executor-handoff.json` and telemetry only when deciding scientific reuse/restart details;
-4. load D063 when designing the corrected executable measurement surface;
-5. load D060/D055 only when deciding concrete continuation/root launch authority;
+1. for T063 v2 execution return, load `docs/reviews/T063-R4.md` first;
+2. load T063 and D063 only when interpreting/scoring terminal evidence or a measurement blocker;
+3. load R019 only when adapter/version/message-transport provenance is material;
+4. load T063-R3 and historical handoff/telemetry only when comparing against the blocked run or diagnosing regression;
+5. load D076 when Stage 6 reports any non-candidate file-based executable artifact;
 6. for T062 resumption, instead load T023-R31/R32/R33 plus the held scientific branch/handoff;
-7. do not reconstruct deleted temporary T063 controllers or either frontier from prior chats/Project Memory.
+7. do not reconstruct either frontier from prior chat/Project Memory.
 
 ## Next Action
 
-STOP. The governance regression is corrected, but T063 scored execution is not authorized to continue.
+Human-mediated Codex transport is next.
 
-The Human may explicitly choose:
-
-```text
-repair T063
-```
-
-Then ChatGPT performs Orchestrator re-entry, materializes the corrected Stage 5 harness/input surface and determines scientifically valid restart/continuation authority before any Codex prompt or provider call.
-
-Or the Human may explicitly choose:
+The Human must start a **NEW** Codex session using the exact launch card supplied by ChatGPT:
 
 ```text
-resume T062
+Coordinator-ID: AG | agent-governance | T063 | root-2
+Model: gpt-5.6-sol
+Effort: medium
+Native runtime: exact Codex/App Server 0.153.4
 ```
 
-Then follow the held T062 revalidation path.
+The Human pastes the complete T063-R4 transport prompt. Codex executes the published candidate and returns only:
+
+```text
+STATUS: COMPLETED | BLOCKED
+HANDOFF: handoffs/T063-executor-handoff-v2.json
+BRANCH: test/t063-adaptive-worker-routing-requalification-v2
+HEAD: <actual remote pushed HEAD>
+```
+
+ChatGPT then verifies remote Git before accepting any scientific result.
