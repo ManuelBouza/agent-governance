@@ -1,0 +1,224 @@
+{
+  "authority": {
+    "candidate_head_before_execution": "3088501147b408503acdd93b8bc7b76e6f957bac",
+    "evidence_branch": "test/t063-adaptive-worker-routing-requalification-v2",
+    "execution_target": "CONTRACT_FIXED",
+    "frozen_evaluation_head": "69e910f329a2294c3b40df0f6ee983f9905f4677",
+    "launch_authority_review": "docs/reviews/T063-R4.md",
+    "measurement_decision": "docs/decisions/D063-qualified-codex-read-only-child-measurement-surface.md",
+    "stage6_materialization_decision": "docs/decisions/D076-stage6-ephemeral-executable-materialization-boundary.md",
+    "underlying_delegation_eligibility": "DELEGATED"
+  },
+  "backend_served_profile_verified": false,
+  "blocker": {
+    "code": "BLOCKED_EXECUTION_INVALID",
+    "message": "P1 ADAPTIVE executed, but the published harness timed out because Codex 0.153.4 V2 exposed subAgentActivity rather than the expected spawn notification. Supported post-run thread/read confirmed the exact child and correct output, but the child thread had no userMessage item and the original App Server process had ended, so R4 child-message equality and D063 continuous-residency/usage/reroute receipts cannot be qualified. The consumed first attempt was not rerun."
+  },
+  "d076": {
+    "candidate_runtime_artifacts": [
+      {
+        "created_by": "published T063 harness",
+        "label": "P3 profile fixture",
+        "materiality": "candidate-owned semantic fixture",
+        "persisted": false,
+        "removed_after_run": true
+      }
+    ],
+    "executor_material_ephemeral_artifacts": [],
+    "published_stage5_harness_used": true
+  },
+  "ended_at_utc": "20260910T174822Z",
+  "historical_blocked_evidence_head": "3d8a9460988351383a90adfc6b76e2deff056504",
+  "invalid_attempts": [
+    {
+      "arm": "ADAPTIVE",
+      "child_closed": true,
+      "child_id": "01a08c6d-aada-7733-94a7-b4da21007197",
+      "child_message_exact_match": null,
+      "child_output_oracle_result": "PASS_DIAGNOSTIC_ONLY_UNSCORED",
+      "child_reasoning_effort_from_supported_thread_read": "medium",
+      "child_turn_duration_seconds_from_supported_thread_read": 45.417,
+      "child_user_message_item_present": false,
+      "failure": "mandatory live V2 spawn/message/measurement receipts were not captured",
+      "parent_closed": true,
+      "parent_id": "01a08c6d-8341-7c20-8a28-f2a9e979588c",
+      "parent_residency_at_child_reattachment": null,
+      "permission_profile": null,
+      "probe": "P1",
+      "requested_model": "gpt-5.6-luna",
+      "requested_reasoning_effort": "medium",
+      "resolved_model_from_supported_thread_read": "gpt-5.6-luna",
+      "reroute_observed": null,
+      "rerun_performed": false,
+      "task_message_sha256": "9aa60aef807873669690a2ad2b564fed58e0731ff0d6e0162fbef40c621a2164",
+      "usage_exact_and_non_estimated": false
+    }
+  ],
+  "launch_profile": {
+    "app_server_required": "0.153.4",
+    "auth_category_required": "chatgpt",
+    "codex_cli_required": "0.153.4",
+    "executor": "Codex",
+    "root_model": "gpt-5.6-sol",
+    "root_reasoning_effort": "medium"
+  },
+  "metrics": {
+    "adaptive_escalation_count": 0,
+    "adaptive_exact_duration_total": 0,
+    "adaptive_exact_tokens_total": 0,
+    "adaptive_first_attempt_failures": 0,
+    "adaptive_pass_count": 0,
+    "control_exact_duration_total": 0,
+    "control_exact_tokens_total": 0,
+    "control_pass_count": 0,
+    "material_false_negative_count": 0,
+    "material_false_positive_count": 0,
+    "profile_resolution_failures": 0,
+    "root_rework_events_caused_by_children": 0
+  },
+  "oracle_leak_observed": false,
+  "oracles": {
+    "computed_before_scored_children": true,
+    "p1": {
+      "files": [
+        {
+          "blob_sha": "24ee5b1be9961e38a503c8e764b7385dbb6ba124",
+          "byte_size": 5,
+          "exists_at_frozen_head": true,
+          "path": ".python-version"
+        },
+        {
+          "blob_sha": "ad8fb3634591216194a4cfded0305e53ee66ed04",
+          "byte_size": 109,
+          "exists_at_frozen_head": true,
+          "path": "agent-governance-source.json"
+        },
+        {
+          "blob_sha": "d6b38feaeb03771b3274a4411d83b7e2709ebfd7",
+          "byte_size": 950,
+          "exists_at_frozen_head": true,
+          "path": "pyproject.toml"
+        },
+        {
+          "blob_sha": "717c5114ac0364da50af8453339359ddf2aa322a",
+          "byte_size": 1429,
+          "exists_at_frozen_head": true,
+          "path": "code-health.json"
+        },
+        {
+          "blob_sha": "1e3ae205b4350adc18a2f3f5d631dd739056ba34",
+          "byte_size": 2327,
+          "exists_at_frozen_head": true,
+          "path": "src/agent_governance/profile.py"
+        },
+        {
+          "blob_sha": "582afae64498447bfd68843a2486b287fecfaa93",
+          "byte_size": 6414,
+          "exists_at_frozen_head": true,
+          "path": "src/agent_governance/source_adapter.py"
+        }
+      ],
+      "frozen_head": "69e910f329a2294c3b40df0f6ee983f9905f4677"
+    },
+    "p2": {
+      "acyclic": true,
+      "edges": [
+        [
+          "agent_governance.engine",
+          "agent_governance.profile"
+        ],
+        [
+          "agent_governance.engine",
+          "agent_governance.source_adapter"
+        ]
+      ],
+      "symbol_owners": {
+        "ArtifactBuildError": "agent_governance.artifact",
+        "Profile": "agent_governance.profile",
+        "SourceContext": "agent_governance.source_adapter",
+        "_bootstrap": "agent_governance.engine",
+        "build_artifact": "agent_governance.artifact",
+        "resolve_profile": "agent_governance.profile"
+      }
+    },
+    "p3": {
+      "fixture_sha256": "cd82af740a51e9137eb43903d581e0969e3a8841585c853788bdf4b97c850617",
+      "mechanism": "authority/profile escalation through unsupported-name fallback",
+      "minimal_fix": "restore fail-closed ProfileError for unsupported names",
+      "mutation_count": 1,
+      "root_reproduction": {
+        "expected_original_behavior": "ProfileError",
+        "grants_source_maintenance": true,
+        "input_profile_name": "invalid",
+        "returned_profile_name": "source-maintainer"
+      },
+      "seed_blob": "1e3ae205b4350adc18a2f3f5d631dd739056ba34",
+      "seed_path": "src/agent_governance/profile.py",
+      "severity": "HIGH"
+    }
+  },
+  "pilot_decision": null,
+  "preflight": {
+    "app_server": "0.153.4",
+    "app_server_config_overrides": [
+      "features.multi_agent=true",
+      "features.multi_agent_v2.enabled=true",
+      "features.multi_agent_v2.expose_spawn_agent_model_overrides=true"
+    ],
+    "auth_category": "chatgpt",
+    "codex_cli": "0.153.4",
+    "fresh_app_server_per_scored_arm": true,
+    "parent_read_only_preflight": true,
+    "platform": "native Windows",
+    "required_profiles": [
+      {
+        "model": "gpt-5.6-luna",
+        "reasoning_effort": "medium"
+      },
+      {
+        "model": "gpt-5.6-sol",
+        "reasoning_effort": "medium"
+      },
+      {
+        "model": "gpt-5.6-terra",
+        "reasoning_effort": "high"
+      },
+      {
+        "model": "gpt-5.6-terra",
+        "reasoning_effort": "medium"
+      }
+    ],
+    "result": "PASS",
+    "schema": {
+      "missing_markers": [],
+      "required_markers": [
+        "activePermissionProfile",
+        "runtimeWorkspaceRoots",
+        "thread/loaded/list",
+        "thread/tokenUsage/updated",
+        "model/rerouted",
+        "reasoningEffort",
+        "parentThreadId"
+      ]
+    }
+  },
+  "prior_blocked_run_reused_for_scoring": false,
+  "provider_execution": {
+    "compensating_attempts": 0,
+    "diagnostic_child_attempts": 0,
+    "scored_child_attempts": 1,
+    "scored_parent_turns": 1
+  },
+  "run_id": "T063-v2-20260910T174617Z",
+  "schema_version": 2,
+  "scored_children": [],
+  "started_at_utc": "20260910T174617Z",
+  "status": "BLOCKED",
+  "task_id": "T063",
+  "task_message_digests": {
+    "P1": "9aa60aef807873669690a2ad2b564fed58e0731ff0d6e0162fbef40c621a2164",
+    "P2": "031c06d7544f6146901e633d4bceb8af0e15325c0124dc586e10f545aaadfe4a",
+    "P3": "9d980424d08517c72911eaacaa9cee36ddf2003d50c21ad6b4d0c25786d9554f"
+  },
+  "terminal_classification": "BLOCKED_EXECUTION_INVALID"
+}

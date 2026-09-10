@@ -1,0 +1,62 @@
+{
+  "blocker": {
+    "code": "BLOCKED_EXECUTION_INVALID",
+    "message": "P1 ADAPTIVE executed, but the published harness timed out because Codex 0.153.4 V2 exposed subAgentActivity rather than the expected spawn notification. Supported post-run thread/read confirmed the exact child and correct output, but the child thread had no userMessage item and the original App Server process had ended, so R4 child-message equality and D063 continuous-residency/usage/reroute receipts cannot be qualified. The consumed first attempt was not rerun."
+  },
+  "branch": "test/t063-adaptive-worker-routing-requalification-v2",
+  "candidate_head_before_execution": "3088501147b408503acdd93b8bc7b76e6f957bac",
+  "ephemeral_artifacts": [],
+  "frozen_evaluation_head": "69e910f329a2294c3b40df0f6ee983f9905f4677",
+  "invalid_attempts": [
+    {
+      "arm": "ADAPTIVE",
+      "child_closed": true,
+      "child_id": "01a08c6d-aada-7733-94a7-b4da21007197",
+      "child_output_oracle_result": "PASS_DIAGNOSTIC_ONLY_UNSCORED",
+      "failure": "mandatory live V2 spawn/message/measurement receipts were not captured",
+      "parent_closed": true,
+      "parent_id": "01a08c6d-8341-7c20-8a28-f2a9e979588c",
+      "probe": "P1",
+      "requested_profile": "gpt-5.6-luna / medium",
+      "rerun_performed": false
+    }
+  ],
+  "metrics": {
+    "adaptive_escalation_count": 0,
+    "adaptive_exact_duration_total": 0,
+    "adaptive_exact_tokens_total": 0,
+    "adaptive_first_attempt_failures": 0,
+    "adaptive_pass_count": 0,
+    "control_exact_duration_total": 0,
+    "control_exact_tokens_total": 0,
+    "control_pass_count": 0,
+    "material_false_negative_count": 0,
+    "material_false_positive_count": 0,
+    "profile_resolution_failures": 0,
+    "root_rework_events_caused_by_children": 0
+  },
+  "next_required_authority": "ChatGPT Orchestrator review/re-entry required before additional scored calls.",
+  "pilot_decision": null,
+  "provider_execution": {
+    "compensating_attempts": 0,
+    "diagnostic_child_attempts": 0,
+    "scored_child_attempts": 1,
+    "scored_parent_turns": 1
+  },
+  "schema_version": 2,
+  "status": "BLOCKED",
+  "task_id": "T063",
+  "technical_review": {
+    "bounded_repair_commits": [
+      "8472718db9f6a82b4c79b9493255f3c314ef27b2",
+      "3088501147b408503acdd93b8bc7b76e6f957bac"
+    ],
+    "material_reentry_required": true,
+    "markdown_changed_by_harness": false,
+    "prior_blocked_run_reused_for_scoring": false,
+    "product_source_changed_by_harness": false,
+    "published_stage5_harness_used": true
+  },
+  "telemetry_path": "handoffs/T063-adaptive-worker-routing-telemetry-v2.json",
+  "terminal_classification": "BLOCKED_EXECUTION_INVALID"
+}
