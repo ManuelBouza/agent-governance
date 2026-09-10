@@ -190,7 +190,6 @@ def preflight(
     parent_id = _thread_id(probe_parent)
     if _active_profile(probe_parent) != ":read-only" or not _legacy_read_only(probe_parent):
         raise MeasurementSurfaceBlocked("provider-free parent read-only receipt failed")
-    client.request("thread/archive", {"threadId": parent_id})
     return {
         "platform": "native Windows",
         "codex_cli": cli_version,
