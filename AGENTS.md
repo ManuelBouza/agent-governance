@@ -94,6 +94,34 @@ D052 semantic-oracle ownership remains intact. D066 unresolved gaps remain unres
 
 D068 is prospective. Historical executed Task Contracts, handoffs, reviews and evidence keep the authority and meaning they had when executed. Any later unqualified wording in this file that assigns first-pass D068 Stage 5 implementation to the Executor, requires a separate pre-verification merge into `develop`, or assigns all non-Markdown D068 candidate materialization to the Executor is subject to this D068 refinement and retains only explicit historical/grandfathered or non-D068 scope.
 
+### D076 Stage 6 ephemeral executable materialization boundary
+
+D076 prospectively closes the tracked/untracked loophole at the D068 Stage 5/Stage 6 boundary.
+
+For D068-mode work, persistence status is **not** an ownership classifier. `ephemeral`, `temporary`, `untracked`, `outside the worktree`, `deleted before commit`, or `not part of the final diff` do not make substantial executable material Executor-owned.
+
+The effective rule is:
+
+```text
+small mechanical execution aid
+    -> Executor Stage 6 may create/use it
+
+substantial new controller/harness/script/fixture-oracle implementation
+    -> STOP
+    -> Orchestrator re-entry
+    -> ChatGPT Stage 5 materialization
+    -> publish coherent candidate
+    -> Executor Stage 6 execute/diagnose/repair/verify
+```
+
+No rigid LOC threshold controls this classification. Materiality depends on semantic function, orchestration responsibility, control/state flow, task-specific logic, risk and whether the artifact implements behavior that should have existed in the complete Stage 5 candidate.
+
+D076 preserves D054 command/API/SDK/shell mechanics and D068 bounded repair of an already-published candidate. It forbids using private-process autonomy as authority for first-pass substantial executable materialization merely because the artifact is temporary.
+
+Any file-based executable artifact created by the Executor during Stage 6 and actually executed or used to influence verification, when not already part of the published/authorized candidate, must be classified in the persisted handoff under D076. Material or uncertain late-discovered artifacts require re-entry rather than silent deletion/continuation.
+
+Any later unqualified wording in this file assigning broad Executor "technical harness work", private tooling or implementation aids is subject to D076. `docs/decisions/D076-stage6-ephemeral-executable-materialization-boundary.md` controls the full rule.
+
 ### D052 test-authorship override
 
 D052 prospectively refines semantic test/eval ownership. When the controlling Task Contract/gate selects `orchestrator-conformance` or `mixed`, ChatGPT Orchestrator owns the narrowly designated conformance/oracle assets that directly encode ChatGPT-owned acceptance semantics; the Agente de IA Ejecutor owns Stage 6 execution, technical harness work and authorized supplementary technical testing/repair. Under D068, ChatGPT may also materialize candidate implementation/regression/integration tests during Stage 5 without transferring semantic-oracle authority. Semantic changes to an Orchestrator-owned oracle require persisted ChatGPT authority. Existing T032/T021 work is grandfathered and T022 may complete under its existing contract; MG1/T023 remains governed by its persisted authority unless prospectively revised.
