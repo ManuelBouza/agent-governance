@@ -40,7 +40,7 @@ See D057 for transition semantics and required metadata for new research.
 | R004 | `docs/research/MG1-V8-WINDOWS-SANDBOX-ROOT-CAUSE.md` | COMPLETE | SUPERSEDED | `docs/reviews/T023-R7.md`; successor MG1 host-preflight work | none | Root-cause analysis informed later host/workspace corrections; v8 restart authority is no longer current. |
 | R005 | `docs/research/MG1-V9-WINDOWS-TEMP-ACL-ANALYSIS.md` | COMPLETE | SUPERSEDED | T023 successor-method lineage; later MG1 reviews | none | ACL findings remain diagnostic evidence; the v9-specific remediation path has been superseded by later MG1 iterations. |
 | R006 | `docs/research/CODEX-PERSISTENT-EXECUTOR-COORDINATOR-RESEARCH.md` | COMPLETE | SUPERSEDED | `docs/tasks/T053-codex-persistent-executor-coordinator-pilot.md`; `docs/reviews/T053-R1.md`; R013 | `docs/decisions/D060-task-scoped-executor-coordinator-continuity.md` | T053's positive same-task continuity/context-locality evidence remains valid, but R006's broader cross-Task-Contract dossier-root recommendation is superseded. D060 adopts one Human-visible coordinator root per exact Task/Operational Contract. |
-| R007 | `docs/research/ADAPTIVE-SUBAGENT-COMPUTE-ROUTING-RESEARCH.md` | COMPLETE | EVALUATING | `docs/tasks/T054-adaptive-subagent-compute-routing-pilot.md`; `docs/reviews/T054-R1.md`; D063; `docs/tasks/T063-adaptive-worker-routing-requalification.md`; `docs/reviews/T063-R1.md`; R018; R019; `docs/reviews/T063-R4.md` | none | T054 was accepted but `NOT_QUALIFIED`. D063 later qualified the read-only child measurement substrate. T063 is the corrected successor evaluation; after the blocked first run and D076 re-entry, R019/T063-R4 publish a corrected Stage 5 harness and require a clean six-arm v2 rerun. No global adaptive worker-routing policy is adopted unless T063 later converges with sufficient evidence and receives a separate D057 decision transition. |
+| R007 | `docs/research/ADAPTIVE-SUBAGENT-COMPUTE-ROUTING-RESEARCH.md` | COMPLETE | EVALUATING | `docs/tasks/T054-adaptive-subagent-compute-routing-pilot.md`; `docs/reviews/T054-R1.md`; D063; `docs/tasks/T063-adaptive-worker-routing-requalification.md`; R018; R019; R020; `docs/reviews/T063-R5.md` | none | T054 was accepted but `NOT_QUALIFIED`. D063 later qualified the read-only child measurement substrate. T063 v1 blocked and led to D076. The corrected v2 run also blocked after one invalid/unscored P1 ADAPTIVE attempt because R019/R4 used incorrect V2 receipt assumptions; R020/R5 accept the blocked evidence and require Orchestrator re-entry before any further scored call. No global adaptive worker-routing policy is adopted. |
 | R008 | `docs/research/CODEX-CHILD-OBSERVABILITY-SURFACE-RESEARCH.md` | COMPLETE | DECIDED | T055/T056/T057; `docs/reviews/T057-R1.md`; evidence PRs `#280`, `#284`, `#296` | `docs/decisions/D063-qualified-codex-read-only-child-measurement-surface.md` | T057 qualified the exact-child read-only/identity/usage/duration/reroute measurement surface. D063 adopts that bounded, version-sensitive substrate while preserving the backend-served identity boundary. |
 | R009 | `docs/research/CODEX-CHILD-SANDBOX-INHERITANCE-RESEARCH.md` | COMPLETE | DECIDED | T056/T057; `docs/reviews/T057-R1.md`; evidence PRs `#284`, `#296` | `docs/decisions/D063-qualified-codex-read-only-child-measurement-surface.md` | T057 empirically closed the exact-child `:read-only` provenance and continuous-parent-residency gate. D063 adopts the qualified surface subject to native version/capability revalidation. |
 | R010 | `docs/research/GPT6-ASTRA-EXECUTOR-LAUNCH-PROFILE-RESEARCH.md` | COMPLETE | DEFERRED | no empirical project evaluation yet | none | GPT-6 Astra is an official quality-first flagship and current Codex source supports it, but availability alone does not justify globally replacing Sol under D055. Global/default adoption remains deferred pending task-level/comparative evidence and host/account availability. |
@@ -52,7 +52,8 @@ See D057 for transition semantics and required metadata for new research.
 | R016 | `docs/research/R016-MG1-V12-REFERENCE-FAMILY-REENTRY.md` | COMPLETE | EVALUATING | T061 successor lineage; D074/T062 v15 RIQ-NBC; T023-R30/R31/R32/R33 | none | The original reference-family re-entry has evolved into T062 RIQ-NBC. T062 Stage 5 is complete, the first Stage 6 attempt blocked before provider process creation with zero provider/model calls, R32 continuation authority exists but is unconsumed, and T023-R33 places the scientific line in Human Hold. No topology is selected; the research/evaluation disposition remains open. |
 | R017 | `docs/research/R017-COORDINATOR-DIRECT-EXECUTION-GATE.md` | COMPLETE | DECIDED | R012/D065; R007/T054/T054-R1; D063; fresh official revalidation by R018 | `docs/decisions/D075-coordinator-direct-execution-gate.md` | D075 makes the first routing gate explicit: low-elaboration auxiliary microactions may remain coordinator-direct when delegation overhead dominates, while materially elaborated isolatable units remain subject to D065 mandatory delegation. R018 subsequently performs the fresh external revalidation that was not actually executed before D075 integration and confirms the decision without normative change. |
 | R018 | `docs/research/R018-CODEX-SUBAGENT-RUNTIME-REVALIDATION.md` | COMPLETE | NOT_REQUIRED | D075; T063; `docs/reviews/T063-R1.md`; exact official Codex `rust-v0.153.4` source and current OpenAI docs | none | Fresh official revalidation supported D075/D065 and the T063 hypotheses. Its volatile statement that `0.153.4` was current stable was true at review time; R019 records that `0.154.0` later became stable while `0.153.4` remains deliberately pinned as the D063-qualified T063 experimental baseline. |
-| R019 | `docs/research/R019-T063-MULTI-AGENT-V2-HARNESS-REENTRY.md` | COMPLETE | NOT_REQUIRED | `docs/reviews/T063-R3.md`; D076; `docs/reviews/T063-R4.md`; exact official Codex `rust-v0.153.4` source | none | Re-entry research freezes the corrected Multi-Agent V2 harness: required `task_name`, `fork_turns="none"`, explicit V2/model-override features, child-thread exact message equality, worktree-sibling P3 fixture, fresh App Server per arm, and a clean six-arm rerun. It records `0.154.0` as newer stable while intentionally preserving `0.153.4` for T063. No global routing decision is implied. |
+| R019 | `docs/research/R019-T063-MULTI-AGENT-V2-HARNESS-REENTRY.md` | COMPLETE | NOT_REQUIRED | `docs/reviews/T063-R3.md`; D076; `docs/reviews/T063-R4.md`; R020 | none | R019 correctly froze the runtime pin, V2 `task_name`/`fork_turns`, explicit feature configuration, P3 placement, clean-rerun rule and D076 boundary. R020 prospectively supersedes only R019 Finding 4 and its live V2 spawn/message receipt assumptions: `subAgentActivity` is the public spawn correlation item and `thread/read` cannot attest the inter-agent task as a child `userMessage`. |
+| R020 | `docs/research/R020-T063-V2-LIVE-RECEIPT-CORRECTION.md` | COMPLETE | NOT_REQUIRED | v2 terminal HEAD `3ff745a8d29e031ca818c1bc618b15a54e0cbf2b`; `docs/reviews/T063-R5.md`; exact official Codex `rust-v0.153.4` source | none | Live evidence plus exact source establish that T063 v2 blocked on incorrect Stage 5 receipt assumptions, not worker quality. One P1 ADAPTIVE call was consumed but is invalid/unscored. `experimentalRawEvents` could expose exact function-call arguments but is internal-only and not D063-qualified, so no further provider execution is authorized pending Orchestrator re-entry. |
 
 ## Live research frontier
 
@@ -70,26 +71,38 @@ R018 — Codex subagent/runtime revalidation
 
 R019 — T063 Multi-Agent V2 harness re-entry
   COMPLETE / NOT_REQUIRED
-  current vendor stable observed: 0.154.0
-  T063 frozen qualified runtime: exact 0.153.4
-  V2 transport / P3 placement / D076 harness boundary corrected
-  six fresh scored arms required
+  runtime pin / V2 task_name + fork_turns / P3 / D076 corrections remain valid
+  spawn/message receipt assumption partially superseded by R020
+
+R020 — T063 v2 live receipt correction
+  COMPLETE / NOT_REQUIRED
+  v2 terminal HEAD: 3ff745a8d29e031ca818c1bc618b15a54e0cbf2b
+  one P1 ADAPTIVE attempt consumed; invalid/unscored
+  worker answer diagnostic PASS only
+  public V2 child correlation: subAgentActivity
+  child spawn task: InterAgentCommunication, not userMessage
+  raw response event route: internal-only / not D063-qualified
 
 R007 — adaptive subagent compute routing
   COMPLETE / EVALUATING
   T054: accepted execution / NOT_QUALIFIED
   D063: measurement substrate qualified on 0.153.4
-  T063 blocked first run: no pilot decision
-  T063-R4: corrected v2 Stage 5 candidate published
+  T063 v1: blocked / no pilot decision
+  T063 v2: blocked / no pilot decision
   scored execution_target: CONTRACT_FIXED
   underlying probe delegation eligibility: DELEGATED
-  Stage B remains experimental: child role/model/reasoning/context
-  Executor launch: AUTHORIZED_AWAITING_HUMAN_CODEX_START
+  Executor continuation: NOT_AUTHORIZED
+  next T063 step: Orchestrator repair/requalification only after explicit Human continuation
 ```
 
 T063 deliberately does not vary the D075 Stage-A delegation-worthiness decision. Its exact matched-arm topology is contract-fixed because topology is material to the experiment, while the selected probe units independently satisfy D065/D075 material-delegation eligibility. Only the child execution profile is the scored experimental variable.
 
-The historical blocked T063 evidence branch remains immutable evidence and is excluded from v2 scoring. The v2 run starts under `AG | agent-governance | T063 | root-2` with six fresh first attempts.
+Both blocked T063 evidence heads remain historical and excluded from any future scoring:
+
+```text
+v1  3d8a9460988351383a90adfc6b76e2deff056504
+v2  3ff745a8d29e031ca818c1bc618b15a54e0cbf2b
+```
 
 ### Held T023/T062 scientific frontier
 
@@ -126,6 +139,10 @@ R017 — coordinator direct-execution gate
 R018 — Codex subagent/runtime revalidation
   COMPLETE / NOT_REQUIRED
   supporting evidence for D075/T063 prelaunch
+
+R019/R020 — T063 runtime/harness receipt research
+  COMPLETE / NOT_REQUIRED
+  R020 partially supersedes R019's V2 message-receipt mechanics
 ```
 
 ## Deferred/qualified dependencies
