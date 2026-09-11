@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import sys
 from pathlib import Path
 from typing import Any
 
@@ -18,7 +19,9 @@ HISTORICAL_BLOCKED_HEADS = (*v4.HISTORICAL_BLOCKED_HEADS, V4_TERMINAL_HEAD)
 _BASE_V4_EVIDENCE_PAYLOAD = v4._v4_evidence_payload
 
 
-def _failure_domain(terminal_classification: str, blocker: dict[str, Any] | None) -> str | None:
+def _failure_domain(
+    terminal_classification: str, blocker: dict[str, Any] | None
+) -> str | None:
     if terminal_classification == "COMPLETED_SCORED":
         return None
     if terminal_classification == "BLOCKED_PROFILE_RESOLUTION":
@@ -27,9 +30,12 @@ def _failure_domain(terminal_classification: str, blocker: dict[str, Any] | None
         return "MEASUREMENT_SURFACE"
     if terminal_classification == "BLOCKED_EXECUTION_INVALID":
         message = str((blocker or {}).get("message", "")).lower()
-        if all(marker in message for marker in ("thread/resume failed:", "thread-store", "rollout at", "is empty")):
+        if all(
+            marker in message
+            for marker in ("thread/resume failed:", "thread-store", "rollout at", "is empty")
+        ):
             return "MEASUREMENT_ADAPTER"
-        return "EXECUTION_INFRASTRUCTURE"
+        return "EXECUTION_VALIDITY"
     return "UNCLASSIFIED_EXECUTION"
 
 
@@ -49,14 +55,13 @@ def _annotate_model_evidence(
     for child in scored:
         if not isinstance(child, dict):
             continue
+        passed = child.get("result_status") == "PASS"
         child["execution_validity"] = "VALID"
-        child["failure_domain"] = (
-            None if child.get("result_status") == "PASS" else "WORKER_QUALITY"
-        )
+        child["failure_domain"] = None if passed else "WORKER_QUALITY"
         child["model_quality_eligible"] = True
-        child["model_efficiency_eligible"] = True
+        child["model_efficiency_eligible"] = passed
         quality_eligible += 1
-        efficiency_eligible += 1
+        efficiency_eligible += int(passed)
 
     complete_clean_run = status == "COMPLETED" and len(scored) == 6
     payload["model_evidence"] = {
@@ -89,15 +94,15 @@ def _v5_evidence_payload(**kwargs: Any) -> dict[str, Any]:
     )
 
 
-def _argument_path(argv: list[str] | None, flag: str, default: Path) -> Path:
-    if argv and flag in argv:
+def _argument_path(argv: list[str], flag: str, default: Path) -> Path:
+    if flag in argv:
         index = argv.index(flag)
         if index + 1 < len(argv):
             return Path(argv[index + 1])
     return default
 
 
-def _copy_model_evidence_to_handoff(argv: list[str] | None) -> None:
+def _copy_model_evidence_to_handoff(argv: list[str]) -> None:
     repo = _argument_path(argv, "--repo", Path.cwd()).resolve()
     telemetry = _argument_path(argv, "--telemetry", TELEMETRY_DEFAULT)
     handoff = _argument_path(argv, "--handoff", HANDOFF_DEFAULT)
@@ -126,7 +131,8 @@ def _install_adapter() -> None:
 
 def main(argv: list[str] | None = None) -> int:
     _install_adapter()
-    result = base_runner.main(argv)
-    if not argv or (argv and "run" in argv):
-        _copy_model_evidence_to_handoff(argv)
+    effective_argv = list(sys.argv[1:] if argv is None else argv)
+    result = base_runner.main(effective_argv)
+    if "run" in effective_argv:
+        _copy_model_evidence_to_handoff(effective_argv)
     return result
