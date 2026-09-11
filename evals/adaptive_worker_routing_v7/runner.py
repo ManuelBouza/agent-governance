@@ -59,7 +59,7 @@ def _trial_metadata(index: int) -> dict[str, int | str]:
 
 
 def _spec_tuple(spec: ArmSpec) -> tuple[str, str, str, str]:
-    return (spec.probe, spec.arm, spec.model, spec.reasoning_effort)
+    return (spec.probe, spec.arm, spec.model, spec.reasoning)
 
 
 def _v7_execute_arm(client: Any, **kwargs: Any) -> dict[str, Any]:
