@@ -1,0 +1,59 @@
+{
+  "blocker": {
+    "code": "BLOCKED_EXECUTION_INVALID",
+    "message": "thread/resume failed: {'code': -32603, 'message': 'failed to read thread: thread-store internal error: failed to read session metadata C:\\\\Users\\\\Manuel\\\\.codex\\\\sessions\\\\2026\\\\09\\\\11\\\\rollout-2026-09-11T14-47-30-01a09082-3ff1-7cd1-8be0-e79727fc3422.jsonl: rollout at C:\\\\Users\\\\Manuel\\\\.codex\\\\sessions\\\\2026\\\\09\\\\11\\\\rollout-2026-09-11T14-47-30-01a09082-3ff1-7cd1-8be0-e79727fc3422.jsonl is empty'}"
+  },
+  "branch": "test/t063-adaptive-worker-routing-requalification-v4",
+  "candidate_head_before_execution": "f06c8f48f7b1d59dff9fc117cca5b42453ad23e8",
+  "ephemeral_artifacts": [],
+  "executor_material_ephemeral_artifacts": [],
+  "frozen_evaluation_head": "69e910f329a2294c3b40df0f6ee983f9905f4677",
+  "metrics": {
+    "adaptive_escalation_count": 0,
+    "adaptive_exact_duration_total": 0,
+    "adaptive_exact_tokens_total": 0,
+    "adaptive_first_attempt_failures": 0,
+    "adaptive_pass_count": 0,
+    "control_exact_duration_total": 0,
+    "control_exact_tokens_total": 0,
+    "control_pass_count": 0,
+    "material_false_negative_count": 0,
+    "material_false_positive_count": 0,
+    "profile_resolution_failures": 0,
+    "root_rework_events_caused_by_children": 0
+  },
+  "next_required_authority": "ChatGPT Orchestrator review/re-entry required before additional scored calls.",
+  "pilot_decision": null,
+  "provider_execution": {
+    "compensating_attempts": 0,
+    "diagnostic_child_attempts": 0,
+    "reattachment_rpc_retries": 0,
+    "scored_child_attempts": 1,
+    "scored_parent_turns": 1
+  },
+  "schema_version": 3,
+  "status": "BLOCKED",
+  "task_id": "T063",
+  "technical_review": {
+    "markdown_changed_by_harness": false,
+    "post_block_repair": {
+      "files": [
+        "evals/adaptive_worker_routing_v4/runner.py",
+        "tests/test_t063_adaptive_worker_routing_v4_adapter.py"
+      ],
+      "provider_calls_after_repair": 0,
+      "reason": "The live error used 'thread-store internal error', which the published exact-empty-rollout classifier did not recognize.",
+      "verification": {
+        "compileall": "PASS",
+        "pytest": "29 passed",
+        "ruff": "PASS"
+      }
+    },
+    "prior_blocked_run_reused_for_scoring": false,
+    "product_source_changed_by_harness": false,
+    "published_stage5_harness_used": true,
+    "raw_response_events_used": false
+  },
+  "telemetry_path": "handoffs/T063-adaptive-worker-routing-telemetry-v4.json",
+  "terminal_classification": "BLOCKED_EXECUTION_INVALID"
+}

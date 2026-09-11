@@ -36,7 +36,7 @@ RESUME_RETRY_DELAY_SECONDS = 0.2
 
 _EMPTY_ROLLOUT_MARKERS = (
     "thread/resume failed:",
-    "thread-store error",
+    "thread-store",
     "failed to read session metadata",
     "rollout at",
     "is empty",

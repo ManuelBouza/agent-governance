@@ -15,6 +15,12 @@ EMPTY_ROLLOUT_ERROR = AppServerError(
     "C:\\\\x\\\\rollout.jsonl is empty'}"
 )
 
+EMPTY_ROLLOUT_INTERNAL_ERROR = AppServerError(
+    "thread/resume failed: {'code': -32603, 'message': 'failed to read thread: "
+    "thread-store internal error: failed to read session metadata "
+    "C:\\\\x\\\\rollout.jsonl: rollout at C:\\\\x\\\\rollout.jsonl is empty'}"
+)
+
 
 def _client() -> v4.V4AppServerClient:
     client = v4.V4AppServerClient(Path("codex.exe"), cwd=Path("."))
@@ -24,6 +30,7 @@ def _client() -> v4.V4AppServerClient:
 
 def test_empty_rollout_classifier_is_exact() -> None:
     assert v4._is_empty_rollout_resume_error(EMPTY_ROLLOUT_ERROR) is True
+    assert v4._is_empty_rollout_resume_error(EMPTY_ROLLOUT_INTERNAL_ERROR) is True
     assert v4._is_empty_rollout_resume_error(
         AppServerError("thread/resume failed: {'message': 'thread-store error'}")
     ) is False
