@@ -1,8 +1,8 @@
 """T063 v4 adapter for the v3 harness.
 
 V4 preserves the v3 experiment, oracles, task messages, profile matrix and
-scoring.  It adds one bounded persistence barrier around reattaching the exact
-child after ``subAgentActivity(kind=Started)``.  Codex 0.153.4 can emit that
+scoring. It adds one bounded persistence barrier around reattaching the exact
+child after ``subAgentActivity(kind=Started)``. Codex 0.153.4 can emit that
 public activity before the first rollout JSONL metadata line is durable; an
 immediate ``thread/resume`` can therefore fail with an empty-rollout error even
 though the same child is already running.
@@ -109,8 +109,30 @@ class V4AppServerClient(BaseAppServerClient):
                 "child reattachment has no exact explicitly-started parent identity"
             )
         _CHILD_ATTEMPT_IDS.add(child_id)
+        parent_residency_rechecks = 0
 
         for attempt in range(1, RESUME_MAX_ATTEMPTS + 1):
+            if attempt > 1:
+                time.sleep(RESUME_RETRY_DELAY_SECONDS)
+                parent_residency_rechecks += 1
+                if parent_id not in self._loaded_ids_via_base_request():
+                    audit = {
+                        "child_id": child_id,
+                        "parent_id": parent_id,
+                        "status": "PARENT_LOST",
+                        "attempt_count": attempt - 1,
+                        "retry_count": attempt - 2,
+                        "transient_error_class": "EMPTY_ROLLOUT",
+                        "retry_delay_seconds": RESUME_RETRY_DELAY_SECONDS,
+                        "parent_residency_rechecks": parent_residency_rechecks,
+                        "same_child_reused": True,
+                        "new_provider_turn_created": False,
+                    }
+                    _REATTACHMENT_AUDIT.append(audit)
+                    raise MeasurementSurfaceBlocked(
+                        "parent lost residency immediately before same-child reattach retry"
+                    )
+
             try:
                 result = super().request(method, params, timeout=timeout)
             except AppServerError as exc:
@@ -125,6 +147,7 @@ class V4AppServerClient(BaseAppServerClient):
                         "retry_count": attempt - 1,
                         "transient_error_class": "EMPTY_ROLLOUT",
                         "retry_delay_seconds": RESUME_RETRY_DELAY_SECONDS,
+                        "parent_residency_rechecks": parent_residency_rechecks,
                         "same_child_reused": True,
                         "new_provider_turn_created": False,
                     }
@@ -133,22 +156,6 @@ class V4AppServerClient(BaseAppServerClient):
                         "same-child thread/resume persistence barrier exhausted after "
                         f"{RESUME_MAX_ATTEMPTS} attempts"
                     ) from exc
-                if parent_id not in self._loaded_ids_via_base_request():
-                    audit = {
-                        "child_id": child_id,
-                        "parent_id": parent_id,
-                        "status": "PARENT_LOST",
-                        "attempt_count": attempt,
-                        "retry_count": attempt - 1,
-                        "transient_error_class": "EMPTY_ROLLOUT",
-                        "same_child_reused": True,
-                        "new_provider_turn_created": False,
-                    }
-                    _REATTACHMENT_AUDIT.append(audit)
-                    raise MeasurementSurfaceBlocked(
-                        "parent lost residency during same-child reattach persistence barrier"
-                    ) from exc
-                time.sleep(RESUME_RETRY_DELAY_SECONDS)
                 continue
 
             receipt = {
@@ -162,7 +169,7 @@ class V4AppServerClient(BaseAppServerClient):
                 "total_retry_wait_seconds": round(
                     (attempt - 1) * RESUME_RETRY_DELAY_SECONDS, 3
                 ),
-                "parent_residency_rechecks": attempt - 1,
+                "parent_residency_rechecks": parent_residency_rechecks,
                 "same_child_reused": True,
                 "new_provider_turn_created": False,
             }
@@ -210,7 +217,7 @@ def _v4_evidence_payload(**kwargs: Any) -> dict[str, Any]:
         "retry_only_on": "exact empty-rollout thread-store error",
         "max_attempts": RESUME_MAX_ATTEMPTS,
         "retry_delay_seconds": RESUME_RETRY_DELAY_SECONDS,
-        "parent_residency_rechecked_before_each_retry": True,
+        "parent_residency_rechecked_immediately_before_each_retry": True,
         "new_child_or_provider_turn_on_retry": False,
     }
     payload["historical_blocked_evidence_heads"] = list(HISTORICAL_BLOCKED_HEADS)
