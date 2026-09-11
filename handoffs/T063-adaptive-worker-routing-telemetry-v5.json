@@ -1,0 +1,300 @@
+{
+  "adapter_reattachment_audit": [
+    {
+      "attempt_count": 2,
+      "child_id": "01a091cf-d92b-7723-a4d0-aa14e1333663",
+      "new_provider_turn_created": false,
+      "parent_id": "01a091cf-be78-7fb1-b969-c768345f8649",
+      "parent_residency_rechecks": 1,
+      "retry_count": 1,
+      "retry_delay_seconds": 0.2,
+      "same_child_reused": true,
+      "status": "PASS",
+      "total_retry_wait_seconds": 0.2,
+      "transient_error_class": "EMPTY_ROLLOUT"
+    }
+  ],
+  "authority": {
+    "adapter_research": "docs/research/R022-T063-V3-EMPTY-ROLLOUT-REATTACH-RACE.md",
+    "candidate_head_before_execution": "94b5ec6dcf0d094c1a90f84b08e7ce1de483716f",
+    "evidence_branch": "test/t063-adaptive-worker-routing-requalification-v5",
+    "execution_target": "CONTRACT_FIXED",
+    "frozen_evaluation_head": "69e910f329a2294c3b40df0f6ee983f9905f4677",
+    "launch_authority_review": "docs/reviews/T063-R9.md",
+    "measurement_decision": "docs/decisions/D063-qualified-codex-read-only-child-measurement-surface.md",
+    "stage6_materialization_decision": "docs/decisions/D076-stage6-ephemeral-executable-materialization-boundary.md",
+    "underlying_delegation_eligibility": "DELEGATED"
+  },
+  "authority_head": "0a7d86b3c30001efb322cc63a147919d062d1c57",
+  "backend_served_profile_verified": false,
+  "blocker": {
+    "code": "BLOCKED_EXECUTION_INVALID",
+    "message": "parent spawn activity count mismatch: total=0, matching=0"
+  },
+  "d076": {
+    "candidate_runtime_artifacts": [
+      {
+        "created_by": "published T063 v3 harness reused by v4 adapter",
+        "label": "P3 profile fixture",
+        "materiality": "candidate-owned semantic fixture",
+        "persisted": false,
+        "removed_after_run": true
+      }
+    ],
+    "executor_material_ephemeral_artifacts": [],
+    "published_stage5_harness_used": true,
+    "v3_repaired_harness_reused_byte_for_byte": true,
+    "v4_adapter_materialized_by_orchestrator": true,
+    "v5_model_evidence_taxonomy_materialized_by_orchestrator": true
+  },
+  "ephemeral_artifacts": [
+    {
+      "authority_basis": "Published Stage 5 candidate evals/adaptive_worker_routing_v3/oracles.py",
+      "content_digest_if_safe_and_available": "cd82af740a51e9137eb43903d581e0969e3a8841585c853788bdf4b97c850617",
+      "executed": true,
+      "kind": "candidate-owned P3 semantic fixture",
+      "label_or_path": "isolated sibling runtime-root/profile_fixture.py",
+      "materiality": "material",
+      "persisted": false,
+      "purpose": "Provider-free P3 oracle preparation and authorized scored-run input",
+      "reentry_required": false,
+      "removed": true
+    }
+  ],
+  "executor_material_ephemeral_artifacts": [],
+  "ended_at_utc": "20260911T185154Z",
+  "historical_blocked_evidence_heads": [
+    "3d8a9460988351383a90adfc6b76e2deff056504",
+    "3ff745a8d29e031ca818c1bc618b15a54e0cbf2b",
+    "746519abc6f159e959120f68d5c9f920d88d5797",
+    "4135a13ce8daa4f6b1fcabe45063364fbbdd16f1"
+  ],
+  "launch_profile": {
+    "app_server_required": "0.153.4",
+    "auth_category_required": "chatgpt",
+    "codex_cli_required": "0.153.4",
+    "executor": "Codex",
+    "root_model": "gpt-5.6-sol",
+    "root_reasoning_effort": "medium"
+  },
+  "metrics": {
+    "adaptive_escalation_count": 0,
+    "adaptive_exact_duration_total": 0,
+    "adaptive_exact_tokens_total": 0,
+    "adaptive_first_attempt_failures": 0,
+    "adaptive_pass_count": 0,
+    "control_exact_duration_total": 0,
+    "control_exact_tokens_total": 0,
+    "control_pass_count": 0,
+    "material_false_negative_count": 0,
+    "material_false_positive_count": 0,
+    "profile_resolution_failures": 0,
+    "root_rework_events_caused_by_children": 0
+  },
+  "model_evidence": {
+    "failure_domain": "EXECUTION_VALIDITY",
+    "pilot_eligible": false,
+    "root_model_failure_attributed": false,
+    "run_execution_validity": "INVALID",
+    "run_model_comparison_eligible": false,
+    "scored_child_efficiency_eligible_count": 0,
+    "scored_child_quality_eligible_count": 0,
+    "unscored_child_attempts_count_as_model_quality": false
+  },
+  "oracle_leak_observed": false,
+  "oracles": {
+    "computed_before_scored_children": true,
+    "p1": {
+      "files": [
+        {
+          "blob_sha": "24ee5b1be9961e38a503c8e764b7385dbb6ba124",
+          "byte_size": 5,
+          "exists_at_frozen_head": true,
+          "path": ".python-version"
+        },
+        {
+          "blob_sha": "ad8fb3634591216194a4cfded0305e53ee66ed04",
+          "byte_size": 109,
+          "exists_at_frozen_head": true,
+          "path": "agent-governance-source.json"
+        },
+        {
+          "blob_sha": "d6b38feaeb03771b3274a4411d83b7e2709ebfd7",
+          "byte_size": 950,
+          "exists_at_frozen_head": true,
+          "path": "pyproject.toml"
+        },
+        {
+          "blob_sha": "717c5114ac0364da50af8453339359ddf2aa322a",
+          "byte_size": 1429,
+          "exists_at_frozen_head": true,
+          "path": "code-health.json"
+        },
+        {
+          "blob_sha": "1e3ae205b4350adc18a2f3f5d631dd739056ba34",
+          "byte_size": 2327,
+          "exists_at_frozen_head": true,
+          "path": "src/agent_governance/profile.py"
+        },
+        {
+          "blob_sha": "582afae64498447bfd68843a2486b287fecfaa93",
+          "byte_size": 6414,
+          "exists_at_frozen_head": true,
+          "path": "src/agent_governance/source_adapter.py"
+        }
+      ],
+      "frozen_head": "69e910f329a2294c3b40df0f6ee983f9905f4677"
+    },
+    "p2": {
+      "acyclic": true,
+      "edges": [
+        [
+          "agent_governance.engine",
+          "agent_governance.profile"
+        ],
+        [
+          "agent_governance.engine",
+          "agent_governance.source_adapter"
+        ]
+      ],
+      "symbol_owners": {
+        "ArtifactBuildError": "agent_governance.artifact",
+        "Profile": "agent_governance.profile",
+        "SourceContext": "agent_governance.source_adapter",
+        "_bootstrap": "agent_governance.engine",
+        "build_artifact": "agent_governance.artifact",
+        "resolve_profile": "agent_governance.profile"
+      }
+    },
+    "p3": {
+      "fixture_sha256": "cd82af740a51e9137eb43903d581e0969e3a8841585c853788bdf4b97c850617",
+      "mechanism": "authority/profile escalation through unsupported-name fallback",
+      "minimal_fix": "restore fail-closed ProfileError for unsupported names",
+      "mutation_count": 1,
+      "root_reproduction": {
+        "expected_original_behavior": "ProfileError",
+        "grants_source_maintenance": true,
+        "input_profile_name": "invalid",
+        "returned_profile_name": "source-maintainer"
+      },
+      "seed_blob": "1e3ae205b4350adc18a2f3f5d631dd739056ba34",
+      "seed_path": "src/agent_governance/profile.py",
+      "severity": "HIGH"
+    }
+  },
+  "pilot_decision": null,
+  "pre_provider_verification": {
+    "candidate_base": "b71cc3b23bedb2c3e361207497ebd96f1dc59e49",
+    "candidate_base_ancestry": "PASS",
+    "candidate_identity": "PASS",
+    "compileall": "PASS",
+    "current_stable_codex_release": "rust-v0.154.0",
+    "deterministic_tests": "36 passed",
+    "provider_free_oracle_prepare": "PASS",
+    "ruff": "PASS",
+    "tracked_candidate_state": "PASS"
+  },
+  "preflight": {
+    "agent_type_override_surface_blocked": true,
+    "app_server": "0.153.4",
+    "app_server_config_overrides": [
+      "features.multi_agent=true",
+      "features.multi_agent_v2.enabled=true",
+      "features.multi_agent_v2.expose_spawn_agent_model_overrides=false",
+      "features.multi_agent_v2.hide_spawn_agent_metadata=true"
+    ],
+    "auth_category": "chatgpt",
+    "codex_cli": "0.153.4",
+    "custom_agent_roles": [],
+    "fresh_app_server_per_scored_arm": true,
+    "parent_read_only_preflight": true,
+    "platform": "native Windows",
+    "required_profiles": [
+      {
+        "model": "gpt-5.6-luna",
+        "reasoning_effort": "medium"
+      },
+      {
+        "model": "gpt-5.6-sol",
+        "reasoning_effort": "medium"
+      },
+      {
+        "model": "gpt-5.6-terra",
+        "reasoning_effort": "high"
+      },
+      {
+        "model": "gpt-5.6-terra",
+        "reasoning_effort": "medium"
+      }
+    ],
+    "result": "PASS",
+    "schema": {
+      "missing_markers": [],
+      "required_markers": [
+        "activePermissionProfile",
+        "runtimeWorkspaceRoots",
+        "thread/loaded/list",
+        "thread/tokenUsage/updated",
+        "model/rerouted",
+        "reasoningEffort",
+        "parentThreadId",
+        "subAgentActivity",
+        "agentThreadId"
+      ]
+    }
+  },
+  "prior_blocked_run_reused_for_scoring": false,
+  "provider_execution": {
+    "compensating_attempts": 0,
+    "diagnostic_child_attempts": 0,
+    "reattachment_rpc_retries": 1,
+    "scored_child_attempts": 1,
+    "scored_parent_turns": 1
+  },
+  "reattach_resume_attempts_total": 2,
+  "reattach_resume_retries_total": 1,
+  "receipt_strategy": {
+    "child_context_receipt": "contract nonce + task digest + received trigger",
+    "child_correlation": "public subAgentActivity started item",
+    "child_reattachment": {
+      "max_attempts": 10,
+      "method": "same-child bounded thread/resume persistence barrier",
+      "new_child_or_provider_turn_on_retry": false,
+      "parent_residency_rechecked_immediately_before_each_retry": true,
+      "retry_delay_seconds": 0.2,
+      "retry_only_on": "exact empty-rollout thread-store error"
+    },
+    "custom_agent_roles_allowed": false,
+    "raw_response_events_used": false,
+    "requested_profile": "thread/start.config agents defaults",
+    "spawn_model_reasoning_overrides_exposed": false,
+    "task_authority": "thread/start.config multi_agent_v2.subagent_developer_instructions"
+  },
+  "run_id": "T063-v5-20260911T185139Z",
+  "schema_version": 3,
+  "scored_children": [],
+  "represented_stage6_repairs": [],
+  "started_at_utc": "20260911T185139Z",
+  "status": "BLOCKED",
+  "task_id": "T063",
+  "task_message_digests": {
+    "P1": "9aa60aef807873669690a2ad2b564fed58e0731ff0d6e0162fbef40c621a2164",
+    "P2": "031c06d7544f6146901e633d4bceb8af0e15325c0124dc586e10f545aaadfe4a",
+    "P3": "9d980424d08517c72911eaacaa9cee36ddf2003d50c21ad6b4d0c25786d9554f"
+  },
+  "terminal_classification": "BLOCKED_EXECUTION_INVALID",
+  "tracked_state_before_evidence": [],
+  "version_sensitive_revalidation": {
+    "current_main_same_resume_path_reviewed": true,
+    "disposition": "PIN_RETAINED",
+    "latest_stable_reviewed": "0.154.0",
+    "newer_prerelease_reviewed": "0.155.0-alpha.2",
+    "retained_runtime": "0.153.4",
+    "upgrade_fixes_blocker": false,
+    "versions_reviewed": [
+      "0.153.4",
+      "0.154.0",
+      "0.155.0-alpha.2"
+    ]
+  }
+}

@@ -1,0 +1,157 @@
+{
+  "authority_head": "0a7d86b3c30001efb322cc63a147919d062d1c57",
+  "base_branch": "develop",
+  "base_sha": "b71cc3b23bedb2c3e361207497ebd96f1dc59e49",
+  "blocker": {
+    "code": "BLOCKED_EXECUTION_INVALID",
+    "failure_domain": "EXECUTION_VALIDITY",
+    "message": "parent spawn activity count mismatch: total=0, matching=0"
+  },
+  "branch": "test/t063-adaptive-worker-routing-requalification-v5",
+  "candidate_head_before_execution": "94b5ec6dcf0d094c1a90f84b08e7ce1de483716f",
+  "chatgpt_read_path": [
+    "docs/tasks/T063-adaptive-worker-routing-requalification.md",
+    "docs/reviews/T063-R9.md",
+    "handoffs/T063-adaptive-worker-routing-telemetry-v5.json",
+    "handoffs/T063-executor-handoff-v5.json"
+  ],
+  "code_review": {
+    "findings": [
+      {
+        "classification": "BLOCKING_EXECUTION_VALIDITY",
+        "evidence": "After exact public child-start correlation and successful same-child reattachment, the completed parent turn exposed zero subAgentActivity(kind=Started) items, so the published parent-surface validator could not establish the required completed-turn spawn receipt.",
+        "scope": "D063 public child-correlation / candidate measurement adapter"
+      }
+    ],
+    "resolved_findings": [],
+    "reviewed_head_sha": "94b5ec6dcf0d094c1a90f84b08e7ce1de483716f",
+    "summary": "The published v3/v4/v5 candidate passed deterministic tests, compile, lint and provider-free oracle preparation. The live run then failed closed at the first P1 ADAPTIVE arm because the completed parent turn did not retain the mandatory spawn-activity item. No semantic repair, compensating call or model-quality attribution was made.",
+    "upstream_reentry_required": true,
+    "upstream_reentry_stage": "Design"
+  },
+  "dependencies_or_config_changes": [],
+  "ephemeral_artifacts": [
+    {
+      "authority_basis": "Published Stage 5 candidate evals/adaptive_worker_routing_v3/oracles.py",
+      "content_digest_if_safe_and_available": "cd82af740a51e9137eb43903d581e0969e3a8841585c853788bdf4b97c850617",
+      "executed": true,
+      "kind": "candidate-owned P3 semantic fixture",
+      "label_or_path": "isolated sibling runtime-root/profile_fixture.py",
+      "materiality": "material",
+      "persisted": false,
+      "purpose": "Provider-free P3 oracle preparation and authorized scored-run input",
+      "reentry_required": false,
+      "removed": true
+    }
+  ],
+  "executor_material_ephemeral_artifacts": [],
+  "files_changed": [
+    "handoffs/T063-adaptive-worker-routing-telemetry-v5.json",
+    "handoffs/T063-executor-handoff-v5.json"
+  ],
+  "frozen_evaluation_head": "69e910f329a2294c3b40df0f6ee983f9905f4677",
+  "git_status": "clean after terminal evidence commit",
+  "implementation_head_sha": "94b5ec6dcf0d094c1a90f84b08e7ce1de483716f",
+  "implementation_summary": "Executed the exact published v5 candidate without implementation repair; persisted a fail-closed first-arm execution-validity block and its complete Stage 6 evidence.",
+  "metrics": {
+    "adaptive_escalation_count": 0,
+    "adaptive_exact_duration_total": 0,
+    "adaptive_exact_tokens_total": 0,
+    "adaptive_first_attempt_failures": 0,
+    "adaptive_pass_count": 0,
+    "control_exact_duration_total": 0,
+    "control_exact_tokens_total": 0,
+    "control_pass_count": 0,
+    "material_false_negative_count": 0,
+    "material_false_positive_count": 0,
+    "profile_resolution_failures": 0,
+    "root_rework_events_caused_by_children": 0
+  },
+  "model_evidence": {
+    "failure_domain": "EXECUTION_VALIDITY",
+    "pilot_eligible": false,
+    "root_model_failure_attributed": false,
+    "run_execution_validity": "INVALID",
+    "run_model_comparison_eligible": false,
+    "scored_child_efficiency_eligible_count": 0,
+    "scored_child_quality_eligible_count": 0,
+    "unscored_child_attempts_count_as_model_quality": false
+  },
+  "next_required_authority": "ChatGPT Orchestrator Design/Stage 5 re-entry is required before any additional scored call.",
+  "pilot_decision": null,
+  "pre_provider_verification": {
+    "candidate_base_ancestry": "PASS: merge-base with origin/develop was b71cc3b23bedb2c3e361207497ebd96f1dc59e49",
+    "candidate_identity": "PASS: local and remote v5 branch resolved to 94b5ec6dcf0d094c1a90f84b08e7ce1de483716f",
+    "compileall": "PASS",
+    "current_stable_codex_release": "PASS: official openai/codex GitHub release API returned rust-v0.154.0",
+    "deterministic_tests": "PASS: 36 passed",
+    "p3_runtime_root": "PASS: fresh sibling outside repository/worktree and Windows system temp; removed after run",
+    "provider_free_oracle_prepare": "PASS",
+    "ruff": "PASS",
+    "tracked_candidate_state": "PASS: no unauthorized tracked changes",
+    "runtime_surface": "PASS: native Windows; Codex CLI 0.153.4; App Server 0.153.4; auth chatgpt; custom roles empty; required profiles resolved"
+  },
+  "provider_execution": {
+    "compensating_attempts": 0,
+    "diagnostic_child_attempts": 0,
+    "reattachment_rpc_retries": 1,
+    "scored_child_attempts": 1,
+    "scored_parent_turns": 1
+  },
+  "reattach_resume_attempts_total": 2,
+  "reattach_resume_retries_total": 1,
+  "recommended_next_task": "Converge this terminal evidence, diagnose why completed parent turn history omitted the already-correlated spawn activity, and materialize any approved successor candidate before relaunch.",
+  "represented_stage6_repairs": [],
+  "requirement_trace": {
+    "T063-RQ-1": "Historical v1-v4 evidence excluded; one new v5 attempt only.",
+    "T063-RQ-2": "Exact empty-rollout classifier entered; same child resumed successfully after one bounded retry.",
+    "T063-RQ-3": "Unscored execution-validity block is not model-quality evidence.",
+    "T063-RQ-4": "No efficiency observation was claimed.",
+    "T063-RQ-5": "NEW root-5 coordinator and exclusive v5 worktree used.",
+    "T063-RQ-6": "Mandatory D063 completed-turn spawn receipt failed; run blocked before scoring.",
+    "T063-RQ-7": "Stage 5 config-authoritative task/profile and frozen matrix used.",
+    "T063-RQ-8": "No score rewriting or rerun occurred.",
+    "T063-RQ-9": "Read-only preflight passed; no tracked/global product mutation observed.",
+    "T063-RQ-10": "No R007 policy decision was made; pilot_decision remains null."
+  },
+  "scored_child_attempts": 1,
+  "scored_parent_turns": 1,
+  "schema_version": 4,
+  "sdd_profile": "ASSURED",
+  "status": "BLOCKED",
+  "task_contract_path": "docs/tasks/T063-adaptive-worker-routing-requalification.md",
+  "task_id": "T063",
+  "technical_review": {
+    "markdown_changed_by_harness": false,
+    "prior_blocked_run_reused_for_scoring": false,
+    "product_source_changed_by_harness": false,
+    "published_stage5_harness_used": true,
+    "raw_response_events_used": false,
+    "represented_stage6_repairs": []
+  },
+  "telemetry_path": "handoffs/T063-adaptive-worker-routing-telemetry-v5.json",
+  "terminal_classification": "BLOCKED_EXECUTION_INVALID",
+  "unresolved_issues": [
+    "The completed parent turn contained zero public spawn-activity items even though live child-start correlation had succeeded; the mandatory D063 completed-turn receipt is unavailable for this consumed attempt."
+  ],
+  "verification": {
+    "commands": [
+      "uv run --locked python -m pytest tests/test_t063_adaptive_worker_routing_v3_harness.py tests/test_t063_adaptive_worker_routing_v4_adapter.py tests/test_t063_adaptive_worker_routing_v5_model_evidence.py",
+      "uv run --locked python -m compileall -q evals/adaptive_worker_routing_v3 evals/adaptive_worker_routing_v4 evals/adaptive_worker_routing_v5 tests/test_t063_adaptive_worker_routing_v3_harness.py tests/test_t063_adaptive_worker_routing_v4_adapter.py tests/test_t063_adaptive_worker_routing_v5_model_evidence.py",
+      "uv run --locked ruff check evals/adaptive_worker_routing_v3 evals/adaptive_worker_routing_v4 evals/adaptive_worker_routing_v5 tests/test_t063_adaptive_worker_routing_v3_harness.py tests/test_t063_adaptive_worker_routing_v4_adapter.py tests/test_t063_adaptive_worker_routing_v5_model_evidence.py",
+      "uv run --locked python -m evals.adaptive_worker_routing_v5 prepare --repo <v5-worktree> --runtime-root <fresh-sibling-runtime-root>",
+      "uv run --locked python -m evals.adaptive_worker_routing_v5 run --repo <v5-worktree> --codex-bin <desktop-codex-0.153.4> --runtime-root <fresh-sibling-runtime-root>",
+      "git diff --check b71cc3b23bedb2c3e361207497ebd96f1dc59e49..94b5ec6dcf0d094c1a90f84b08e7ce1de483716f"
+    ],
+    "network_required": true,
+    "results": [
+      "36 passed",
+      "compileall PASS",
+      "Ruff PASS",
+      "provider-free oracle/fixture preparation PASS",
+      "live evaluation BLOCKED_EXECUTION_INVALID after 1 parent turn, 1 child attempt and 1 same-child reattachment retry",
+      "candidate diff-check PASS"
+    ],
+    "runtime": "native Windows; CPython 3.13.14; Codex CLI 0.153.4; App Server 0.153.4; auth category chatgpt"
+  }
+}
