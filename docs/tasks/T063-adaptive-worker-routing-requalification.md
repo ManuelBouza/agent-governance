@@ -3,110 +3,257 @@
 ## Identity
 
 - Task ID: `T063`
-- Status: `READY / NOT_AUTHORIZED_PENDING_SEPARATE_HUMAN_LAUNCH`
+- Status: `READY / AUTHORIZED_AWAITING_HUMAN_START`
 - Type: `read-only matched-arm Executor/subagent evaluation`
 - SDD profile: `ASSURED`
-- Owner: ChatGPT Orchestrator (specification/oracle/acceptance) / Executor (execution/evidence after Human launch)
-- Research source: `R007 — docs/research/ADAPTIVE-SUBAGENT-COMPUTE-ROUTING-RESEARCH.md`
-- Routing-gate authority: `D075 — docs/decisions/D075-coordinator-direct-execution-gate.md`
-- Measurement authority: `D063 — docs/decisions/D063-qualified-codex-read-only-child-measurement-surface.md`
-- Predecessor evaluation: `T054` / `docs/reviews/T054-R1.md`
-- Expected evidence branch: `test/t063-adaptive-worker-routing-requalification`
+- Base branch: `develop`
+- Expected topic branch: `test/t063-adaptive-worker-routing-requalification-v4`
+- Expected executor handoff: `handoffs/T063-executor-handoff-v4.json`
+- Expected telemetry: `handoffs/T063-adaptive-worker-routing-telemetry-v4.json`
+- Test-Authorship-Mode: `orchestrator-conformance`
+- Owner: ChatGPT Orchestrator (specification/oracle/acceptance and D068 Stage 5) / Agente de IA Ejecutor (Stage 6 execution/evidence) / Human Owner (final authority and Human-mediated launch)
+- Current launch review: `docs/reviews/T063-R8.md`
+- Measurement authority: `docs/decisions/D063-qualified-codex-read-only-child-measurement-surface.md`
+- Version authority: `docs/decisions/D077-version-sensitive-upstream-revalidation.md`
+- Materialization boundary: `docs/decisions/D076-stage6-ephemeral-executable-materialization-boundary.md`
 
 ## Objective
 
-Run the corrected successor evaluation required by D063/R007 to determine whether task-adaptive **delegated worker** compute profiles can preserve first-attempt quality while reducing configured compute and/or exact attributable usage relative to a root-equivalent control.
+Run one clean six-arm evaluation to determine whether task-adaptive **delegated worker** compute profiles can preserve first-attempt quality while reducing configured compute and/or exact attributable usage relative to root-equivalent controls.
 
-T063 evaluates **Stage B** of the routing architecture only:
+T063 evaluates Stage B worker compute routing only. Delegation-worthiness is fixed by D075/D065 and is not an experimental variable. This Task Contract does not adopt a global adaptive routing policy.
+
+## Current specification carrier / controlling references
+
+The minimum controlling set is:
+
+- `AGENTS.md`;
+- this Task Contract;
+- `docs/reviews/T063-R8.md`;
+- `docs/research/R021-T063-V3-CONFIG-AUTHORITATIVE-WORKER-RECEIPTS.md`;
+- `docs/research/R022-T063-V3-EMPTY-ROLLOUT-REATTACH-RACE.md`;
+- D063, D075, D076 and D077.
+
+Historical T063 reviews/evidence remain provenance only and MUST NOT be used for v4 scoring.
+
+## Requirement / specification delta
+
+### MODIFIED
+
+- **T063-RQ-1 — authoritative execution carrier:** all active v4 execution semantics now reside in this Task Contract and its referenced canonical Git authority. The Human-visible launch prompt is transport/bootstrap only.
+- **T063-RQ-2 — child reattachment:** after public `subAgentActivity(kind=Started, agentThreadId=<child>)` correlation, exact-child `thread/resume` may retry only the same child/params for the exact empty-rollout persistence failure class under the bounded barrier defined below.
+- **T063-RQ-3 — clean restart:** v4 is a new homogeneous six-arm run. Consumed v1/v2/v3 attempts are historical and excluded from every v4 score/metric/pilot decision.
+
+### PRESERVED
+
+- **T063-RQ-4 — D063 measurement:** exact child identity, permission, parent residency, configured profile, exact usage/duration and reroute receipts remain mandatory.
+- **T063-RQ-5 — config-authoritative task/profile:** substantive child task and requested child model/reasoning remain frozen by Stage 5 configuration; the parent is transport-only.
+- **T063-RQ-6 — first-attempt scoring:** valid first attempts determine quality score; failures are never rewritten by reruns.
+- **T063-RQ-7 — read-only children:** scored workers remain read-only and measurement must not mutate tracked/global product state.
+- **T063-RQ-8 — no policy adoption:** the Executor produces evidence only; R007 remains an Orchestrator decision after convergence.
+
+## Controlling Design
+
+### Routing topology
 
 ```text
-Stage A — already governed by D075/D065
+Stage A — already governed
     COORDINATOR_DIRECT | DELEGATED | CONTRACT_FIXED
 
-Stage B — T063 experimental variable
-    delegated child role / model tier / reasoning / bounded context
+T063 scored topology
+    one fixed Human-visible root
+        -> one fresh exact read-only child per arm
+        -> three matched probe classes
+        -> CONTROL versus ADAPTIVE profile only
 ```
 
-All T063 probes are deliberately material/read-heavy enough to be `DELEGATED` under D075/D065. T063 does not experimentally vary whether the coordinator should delegate. This avoids confounding delegation-worthiness with child-compute quality.
+All scored probes are material/read-heavy `DELEGATED` units. The matched topology is `CONTRACT_FIXED` because topology is experimentally material.
 
-No global adaptive routing policy is authorized by this Task Contract. Qualification may support a later ChatGPT Orchestrator decision under D057.
+### Config-authoritative child contract
 
-## Why T063 is required
+Before the measurement parent acts, the published Stage 5 candidate fixes substantive worker task and requested compute profile in App Server configuration. The parent may trigger exactly one child but does not select task semantics, model or reasoning.
 
-T054 was faithfully executed but ended `NOT_QUALIFIED`:
-
-- P1 `Luna / Low` failed an exact physical-LOC requirement on first attempt;
-- P2 had a shared task/oracle semantic ambiguity that caused both CONTROL and ADAPTIVE to add the same extra edge;
-- P3 passed for both arms;
-- the then-current surface lacked the exact effective child-profile/usage receipts required for a strong quantitative claim.
-
-D063 subsequently qualified a version-sensitive Codex App Server measurement substrate for exact read-only child permission/profile/usage/duration/reroute receipts.
-
-T063 corrects the remaining experimental defects:
-
-1. use an unambiguous P1 with a less aggressive first-attempt economy mapping;
-2. remove the P2 dependency-definition ambiguity;
-3. require D063 measurement revalidation before scoring;
-4. freeze requested->resolved child mappings before each scored turn;
-5. preserve first-attempt scoring and bounded escalation without rewriting failures.
-
-## Preserved governance
-
-D039, D041, D055, D058, D060, D063, D065, D068 and D075 remain controlling.
-
-T063 does not:
-
-- modify D055 root-launch policy;
-- adopt Luna/Terra/Sol names as provider-neutral semantics;
-- authorize child writes;
-- change product code or committed Markdown during Executor execution;
-- let children redefine probes/oracles/thresholds;
-- select a global routing policy from Executor evidence;
-- treat configured/resolved child profile as provider-signed backend execution identity.
-
-The Human-visible root owns task coordination. Children are bounded read-only workers. ChatGPT Orchestrator owns later convergence/decision acceptance.
-
-## Human launch gate
-
-T063 MUST NOT start from this definition alone.
-
-A later explicit Human launch is required. Immediately before launch, ChatGPT Orchestrator must revalidate current `develop`, D063/D075, current Codex capabilities and current model availability, then persist the exact concrete launch/profile matrix without changing probe semantics.
-
-No current T062 authorization, coordinator or scientific branch is reusable for T063. T063 is a distinct work unit and requires `NEW` under D060/D055.
-
-## Root profile
-
-The concrete root model/effort is selected and frozen at launch under then-current D055 guidance.
-
-For matched-arm validity:
-
-- one root profile remains fixed for the complete run;
-- CONTROL children inherit the exact root-equivalent configured model/effort;
-- root profile cannot change mid-run;
-- a root profile change is a stop/re-entry condition, not an experimental adjustment.
-
-Current design assumption is a frontier-capable root at proportionate `Medium` effort, but exact provider model names are launch-time adapter data.
-
-## D063 measurement preflight
-
-Before any scored child probe, the Executor must revalidate the current native Codex surface against D063.
-
-Required exact-child receipts are the semantic equivalent of:
+Public child correlation uses:
 
 ```text
-real parent/child correlation
-parent activePermissionProfile.id == :read-only
-continuous parent residency for child reattachment
-child activePermissionProfile.id == :read-only
-requested child model/reasoning
-resolved configured child model/reasoning
-exact non-estimated child/turn token usage
-exact child-turn duration
-exact-child reroute signal/event observation
-no tracked/global mutation caused by measurement
+subAgentActivity(kind=Started, agentThreadId=<exact child>)
 ```
 
-Persist separately:
+Internal experimental raw-response events are not passing evidence.
+
+### V4 same-child reattachment barrier
+
+The v3 failure was a persistence-visibility race: public child-start correlation could arrive before persisted rollout metadata was readable by `thread/resume`.
+
+V4 may retry `thread/resume` only when the exact represented failure is the empty-rollout thread-store class. Each retry MUST:
+
+```text
+reuse same exact child id
+reuse same thread/resume parameters
+wait 0.2 seconds
+recheck exact parent loaded residency after the wait
+if parent absent -> BLOCK
+retry thread/resume for that same child
+```
+
+Maximum total `thread/resume` attempts: `10`.
+
+The adapter MUST NOT replay `spawn_agent`, replay the parent turn, create another child, or create another provider turn. Reattachment RPC retries are adapter transport retries and MUST be counted separately from scored child attempts.
+
+Any nonmatching error, residency loss or exhaustion blocks fail-closed.
+
+## Plan & Trace
+
+| Unit | Requirement / Design ref | Candidate artifact(s) | Required evidence |
+| --- | --- | --- | --- |
+| V4 adapter | T063-RQ-2 | `evals/adaptive_worker_routing_v4/runner.py`; v4 adapter tests | bounded same-child retry behavior; exact retry count; residency-before-retry evidence |
+| P1 | T063-RQ-4..7 | published v3 evaluation package reused in v4 candidate | exact Git evidence oracle + complete D063 receipts |
+| P2 | T063-RQ-4..7 | published v3 evaluation package reused in v4 candidate | exact static-AST map oracle + complete D063 receipts |
+| P3 | T063-RQ-4..7 | published v3 evaluation package reused in v4 candidate | seeded-defect review oracle + complete D063 receipts |
+| terminal evidence | T063-RQ-1..8 | v4 telemetry + handoff JSON | six-arm validity, mutation audit, scoring, pilot decision or exact blocker |
+
+## Stage ownership and published candidate freeze
+
+T063 is D068-mode work.
+
+```text
+Stages 1-5 -> ChatGPT Orchestrator
+Stage 6    -> Agente de IA Ejecutor
+Stage 7    -> ChatGPT Orchestrator
+```
+
+Authorized Stage 6 candidate:
+
+```text
+candidate_branch: test/t063-adaptive-worker-routing-requalification-v4
+candidate_head:   f06c8f48f7b1d59dff9fc117cca5b42453ad23e8
+candidate_base:   9da2b6fed64ded9af8d38f67cd53cd066abef838
+```
+
+No provider-backed call is authorized from another initial candidate HEAD.
+
+The candidate contains the repaired v3 executable evaluation package plus the v4 reattachment adapter/tests. No new substantial harness/controller/oracle may be created privately in Stage 6.
+
+## Authorized Stage 6 scope
+
+The Executor may:
+
+- synchronize/establish the exact authorized remote candidate safely;
+- run deterministic pre-provider checks;
+- execute the published v4 evaluation;
+- diagnose failures;
+- make bounded represented technical repairs that preserve this Task Contract's semantics/Design;
+- perform technical Code Review & Verify;
+- persist and push authorized non-Markdown v4 telemetry/handoff evidence.
+
+A bounded technical repair may correct candidate mechanics only. Any change to probe semantics, oracle meaning, arm order, compute matrix, receipt strategy, retry contract, thresholds or pilot criteria requires Orchestrator re-entry.
+
+## Explicit exclusions
+
+The Executor MUST NOT:
+
+- edit/commit Markdown;
+- redesign T063 or change this Task Contract;
+- change frozen probe/oracle semantics or task messages;
+- change the requested model/reasoning matrix after scored execution begins;
+- treat historical v1/v2/v3 results as v4 evidence;
+- silently rerun/rewrite a consumed invalid scored child;
+- infer backend-served identity beyond D063;
+- use internal raw-response events as passing evidence;
+- create substantial private/ephemeral controller, harness, fixture generator, oracle/grader, lifecycle controller or telemetry system absent from the candidate;
+- decide the global R007 routing policy.
+
+## Invariants / constraints
+
+### Root/runtime launch profile
+
+The Human-facing D055 launch card is separate from the transport prompt. Current frozen launch profile:
+
+```text
+Executor:        Codex
+Surface:         Codex Desktop / native Windows
+Session:         NEW
+Coordinator-ID:  AG | agent-governance | T063 | root-4
+Root model:      gpt-5.6-sol
+Root reasoning:  medium
+Codex runtime:   exactly 0.153.4
+App Server:      exactly 0.153.4
+Auth category:   chatgpt
+```
+
+The Desktop-bundled `codex.exe` may satisfy the runtime requirement when its effective version is exactly `0.153.4`; no standalone CLI installation is required merely for interface use.
+
+### Frozen child matrix
+
+```text
+P1 ADAPTIVE  gpt-5.6-luna  / medium
+P1 CONTROL   gpt-5.6-sol   / medium
+P2 CONTROL   gpt-5.6-sol   / medium
+P2 ADAPTIVE  gpt-5.6-terra / medium
+P3 ADAPTIVE  gpt-5.6-terra / high
+P3 CONTROL   gpt-5.6-sol   / medium
+```
+
+No profile/runtime substitution is authorized after provider-backed execution begins. A required profile that cannot resolve exactly is `BLOCKED_PROFILE_RESOLUTION`.
+
+### Frozen arm order
+
+```text
+P1 ADAPTIVE -> CONTROL
+P2 CONTROL  -> ADAPTIVE
+P3 ADAPTIVE -> CONTROL
+```
+
+### Frozen source/oracle baseline
+
+```text
+69e910f329a2294c3b40df0f6ee983f9905f4677
+```
+
+### Historical evidence excluded from v4
+
+```text
+v1  3d8a9460988351383a90adfc6b76e2deff056504
+v2  3ff745a8d29e031ca818c1bc618b15a54e0cbf2b
+v3  746519abc6f159e959120f68d5c9f920d88d5797
+```
+
+## Probe semantics
+
+### P1 — exact Git evidence inventory
+
+For the frozen six-file set, each child returns exact path, Git blob SHA, byte size from Git object metadata and frozen-HEAD existence. PASS requires exact equality with the deterministic repository-owned oracle and exact frozen HEAD identity.
+
+### P2 — static dependency/symbol map
+
+`dependency edge` means only a static Python AST import edge between frozen in-scope source files. Dynamic/bootstrap/package-discovery/runtime-cache relationships and external imports are excluded. The child returns exact internal edge set, acyclicity and owners for the frozen six symbols. PASS requires exact oracle equality.
+
+### P3 — adversarial independent review
+
+Use the published semantic fixture generator to place one fresh runtime fixture outside the repository/worktree and outside Windows system temp. The location must be fresh and readable by the qualified read-only child. The fixture contains exactly one frozen material defect. PASS requires detection of that defect, correct mechanism/severity, proof direction and minimal fix direction without invented material findings.
+
+If P3 prepared input is unreadable, execution is invalid; do not rewrite/rerun a consumed first attempt without new durable authority.
+
+## D063 measurement requirements
+
+Every valid scored child requires:
+
+```text
+real exact parent/child correlation
+parent activePermissionProfile.id == :read-only
+non-contradictory legacy read-only projection
+continuous loaded-parent residency before/through child reattachment
+child parentThreadId == exact parent
+child activePermissionProfile.id == :read-only
+requested child model/reasoning from frozen Stage 5 config
+resolved configured child model/reasoning exact match
+exact non-estimated child-turn token usage
+exact child-turn duration
+exact-child reroute observation
+no tracked/global mutation attributable to measurement
+```
+
+Persist separately at least:
 
 ```text
 requested_profile
@@ -115,227 +262,69 @@ reroute_observed
 backend_served_profile_verified
 ```
 
-Unless a stronger qualified receipt exists at execution time, `backend_served_profile_verified` remains `false` exactly as D063 requires.
+`backend_served_profile_verified` remains `false` unless a separately qualified stronger receipt exists.
 
-If the mandatory D063 surface cannot be revalidated, return `BLOCKED_MEASUREMENT_SURFACE`; do not fall back to inferred/estimated usage or profile identity.
+Missing mandatory evidence is `BLOCKED_MEASUREMENT_SURFACE`, not worker-quality failure.
 
-## Execution topology
+## First-attempt scoring and escalation
 
-- one NEW Human-visible Executor coordinator root;
-- three matched probe classes P1/P2/P3;
-- one fresh CONTROL child + one fresh ADAPTIVE child per probe;
-- all scored children read-only;
-- identical bounded task message, repository input and tool surface within each matched pair;
-- child context fork minimized/equivalent across matched arms;
-- no child reuse between probes;
-- maximum two concurrently open children, but sequential matched arms are preferred for evidence clarity;
-- close each child after evidence capture;
-- concise structured child return only; no full transcript persistence.
+First-attempt quality is the scored result. Preserve valid failures.
 
-The coordinator may perform D075 conforming microactions for Git identity, oracle execution and evidence checks. Those root actions are not the experimental variable.
+If a valid ADAPTIVE first attempt fails its oracle, at most one fresh diagnosis-only escalation may run at the next stronger justified tier if the published candidate/authority permits it. It never replaces the original first-attempt score.
 
-## Experimental profiles
+CONTROL may be rerun at most once only for host/tool diagnosis when authorized by the candidate semantics. Preserve the original score.
 
-Concrete model names MUST be frozen in the launch review after current capability revalidation.
+No indefinite retries and no compensating provider call after a measurement block unless this Task Contract explicitly authorizes that exact action.
 
-Current intended Codex adapter mapping, derived from official current guidance and T054 evidence, is:
+## D076 executable-materialization boundary
 
-| Probe | Task class | CONTROL | ADAPTIVE hypothesis | Reasoning |
-| --- | --- | --- | --- | --- |
-| P1 | narrow deterministic evidence retrieval | root-equivalent | Luna-class economy worker | `Medium` |
-| P2 | broader code/dependency exploration | root-equivalent | Terra-class balanced worker | `Medium` |
-| P3 | adversarial independent technical review | root-equivalent | Terra-class balanced worker | `High` |
+Stage 6 may create/use small mechanical execution aids. Substantial new executable material absent from the published candidate requires STOP -> Orchestrator Stage 5 re-entry.
 
-The P1 mapping intentionally does **not** repeat T054's failed `Luna / Low` hypothesis.
-
-A launch-time model substitution is allowed only before any scored probe and only when official current Codex capabilities provide a documented equivalent tier. The exact frozen matrix must then be persisted. No mid-run substitution is allowed.
-
-## Matched-arm order
-
-Freeze the complete child task message before the first arm of each pair.
-
-Use alternating order to reduce simple order bias:
+Terminal handoff MUST include:
 
 ```text
-P1: ADAPTIVE -> CONTROL
-P2: CONTROL -> ADAPTIVE
-P3: ADAPTIVE -> CONTROL
+ephemeral_artifacts: [...]
+executor_material_ephemeral_artifacts: []
 ```
 
-Do not reveal one arm's result to the other arm before both first attempts are complete.
+Any material or uncertain late-discovered executable artifact is a re-entry condition.
 
-## Probe P1 — exact Git evidence inventory
+## Pre-provider gates
 
-### Purpose
+Before the first provider/model call, Stage 6 MUST verify:
 
-Test a narrow, clear, repetitive evidence task that should be suitable for an economy worker without the physical-LOC semantic ambiguity that invalidated T054 P1.
+- exact candidate branch/HEAD and protected-base relationship;
+- native Windows host;
+- effective Codex runtime exactly `0.153.4`;
+- App Server exactly `0.153.4`;
+- auth category `chatgpt`;
+- no unauthorized tracked candidate changes;
+- no custom/local agent-role ambiguity that could alter child instructions;
+- P3 runtime-root requirements can be satisfied;
+- repository-native deterministic lint/test/compile/preflight checks required by the candidate pass;
+- no newer stable Codex release requiring D077 re-entry has appeared.
 
-### Frozen task semantics
+Any pre-provider gate failure blocks with zero new scored provider calls.
 
-At launch, the Orchestrator freezes a list of exactly six tracked UTF-8 repository files from current `develop`.
+## Version-sensitive launch gate
 
-Each child must return for every file:
+Reviewed upstream state at current v4 authority:
 
 ```text
-path
-Git blob SHA
-byte size from Git object metadata
-exists_at_frozen_HEAD: true|false
+qualified pin:          Codex/App Server 0.153.4
+current stable reviewed: 0.154.0
+higher relevant review:  current upstream main for reattach path
+version disposition:    PIN_RETAINED
+upgrade fixes v3 race:  false at reviewed state
 ```
 
-The child must also return the exact frozen HEAD it evaluated and concise evidence commands/APIs used.
+The stable `0.154.0` and upstream main retain the persisted-read dependency in the running-thread `thread/resume` path; `0.154.0` retains the empty-rollout error class.
 
-### Oracle
-
-The root independently derives exact values from Git object metadata at the frozen HEAD. Files and values are compared exactly.
-
-P1 PASS requires all paths, blob SHAs, sizes and HEAD identity exact with no invented path/value.
-
-### Adaptive intent
-
-Economy worker / Medium reasoning. The task tests precise bounded tool use rather than ambiguous measurement interpretation.
-
-## Probe P2 — unambiguous static dependency/symbol map
-
-### Purpose
-
-Re-evaluate the T054 code-mapping class without the shared dependency-definition confound.
-
-### Frozen definition
-
-At launch, select one existing Python package slice with a deterministic repository-owned characterization.
-
-For T063, `dependency edge` means **only a static Python import edge represented in the AST between the frozen in-scope source files**.
-
-Explicit exclusions:
-
-- package bootstrap execution;
-- dynamic loader side effects;
-- `sys.modules` runtime reuse;
-- filesystem/package-discovery relationships that are not AST import statements;
-- imports to modules outside the frozen in-scope file set.
-
-The child returns:
-
-```text
-exact internal static AST edge set
-acyclic: true|false
-owner module for six frozen symbols
-concise evidence
-```
-
-### Oracle
-
-Before execution, the Orchestrator freezes the package slice, six symbols and exact deterministic AST characterization. Root verification recomputes the same definition independently.
-
-P2 PASS requires exact edge-set equality, correct acyclicity and all symbol owners exact.
-
-### Adaptive intent
-
-Balanced exploration worker / Medium reasoning.
-
-## Probe P3 — adversarial independent review
-
-### Purpose
-
-Test whether a balanced worker with higher task-specific reasoning can preserve material review quality below the root model tier.
-
-### Fixture
-
-Use one ephemeral, non-tracked fixture with exactly one frozen material defect. The defect must be mechanically seeded from current source and independently reproducible by the root.
-
-The fixture/oracle must be frozen before child execution and must not be disclosed to either arm.
-
-Prefer a same-process isolation/cache, ordering, fail-closed or ownership defect that has one objectively testable mechanism and does not require broad product redesign.
-
-### Child return
-
-```text
-status
-material findings with severity
-mechanism/evidence
-minimal reproduction/proof direction
-minimal fix direction
-```
-
-P3 PASS requires detection of the seeded material defect, correct mechanism, appropriate severity and no invented material finding.
-
-### Adaptive intent
-
-Balanced worker / High reasoning.
-
-## First-attempt mapping gate
-
-Before each scored ADAPTIVE turn:
-
-1. spawn/configure the fresh child with the frozen requested model/effort;
-2. use the D063-qualified surface to verify the resolved configured child profile and read-only permission before relying on the turn;
-3. fail closed if requested->resolved mapping is not the frozen mapping;
-4. record reroute events separately;
-5. never infer backend-served identity beyond D063.
-
-A mapping mismatch is `BLOCKED_PROFILE_RESOLUTION`, not an adaptive quality failure.
-
-## Escalation
-
-First-attempt quality is the scored result.
-
-If an ADAPTIVE child fails the task oracle after valid profile resolution:
-
-- preserve the failure;
-- optionally run one fresh diagnosis-only escalation child at the next stronger justified tier;
-- record escalation cause, requested/resolved profile and outcome;
-- do not replace the failed first-attempt score.
-
-CONTROL may be rerun once only to diagnose host/tool instability. Preserve the original score.
-
-No indefinite retries.
-
-## Telemetry
-
-Persist only authorized non-Markdown evidence on the T063 evidence branch:
-
-- `handoffs/T063-adaptive-worker-routing-telemetry.json`
-- `handoffs/T063-executor-handoff.json`
-
-Per scored child capture at least:
-
-```text
-child_id
-probe
-arm
-role
-task_class
-requested_profile
-requested_model
-requested_reasoning_effort
-resolved_model
-resolved_reasoning_effort
-permission_profile
-reroute_observed
-backend_served_profile_verified
-input_tokens
-cached_input_tokens
-output_tokens
-reasoning_tokens
-total_tokens
-duration_seconds
-result_status
-oracle_score
-verification_result
-retry_or_escalation_reason
-closed
-```
-
-Unavailable fields may be `null` only when D063 permits them to be non-mandatory. Never estimate mandatory quantitative fields.
-
-Also capture root profile, Codex version/capabilities, exact frozen HEAD, task-message digests, matched-arm equality, oracle digests, child closure and tracked-worktree mutation check.
-
-Do not persist private chain-of-thought or full worker transcripts.
+If a stable Codex release newer than `0.154.0` appears before the first provider-backed v4 call, STOP and return to Orchestrator for D077 relevance classification. Do not independently upgrade/downgrade/substitute the experiment runtime.
 
 ## Scoring
 
-Compute:
+Compute from v4 only:
 
 ```text
 control_pass_count / 3
@@ -350,81 +339,137 @@ adaptive_exact_tokens_total
 control_exact_duration_total
 adaptive_exact_duration_total
 root_rework_events_caused_by_children
+reattach_resume_attempts_total
+reattach_resume_retries_total
 ```
 
 ## Pilot decision
 
-Final `pilot_decision` is exactly one of:
+Final `pilot_decision` is one of:
 
-### `QUALIFIED`
+- `QUALIFIED` — CONTROL 3/3 and ADAPTIVE 3/3 first-attempt PASS; no adaptive escalation/material false result/profile-resolution-invalidating reroute; complete D063 receipts; exact adaptive usage lower than control or a predeclared valid configured-cost normalization demonstrates lower compute; no offsetting material root rework or safety/authority incident.
+- `QUALIFIED_QUALITY_ONLY` — all quality/profile/measurement requirements pass but a valid savings/cost claim cannot be made; exact token/duration evidence still required.
+- `NOT_QUALIFIED` — a valid ADAPTIVE first attempt has a material quality regression/escalation/material false result or offsetting root rework.
+- `BLOCKED_MEASUREMENT_SURFACE` — mandatory D063 measurement cannot be obtained.
+- `BLOCKED_PROFILE_RESOLUTION` — a frozen requested child profile cannot resolve exactly before its scored turn.
 
-Require all:
-
-- CONTROL `3/3` first-attempt PASS;
-- ADAPTIVE `3/3` first-attempt PASS;
-- adaptive escalation count `0`;
-- no material false negative/false positive;
-- no profile-resolution failure or reroute that invalidates the intended comparison;
-- D063 mandatory exact-child receipts valid for all scored children;
-- exact adaptive total token usage is lower than exact control total token usage across the complete matched set **or** a predeclared normalized compute-cost mapping shows lower total configured cost without unsupported backend identity claims;
-- no offsetting material increase in root rework;
-- no safety/authority/branch incident.
-
-`QUALIFIED` supports later policy consideration. It is not itself a global routing decision.
-
-### `QUALIFIED_QUALITY_ONLY`
-
-Allowed only if all quality/profile-resolution conditions pass but the exact current provider pricing/cost normalization needed for a monetary claim is unavailable or unsuitable. Exact token/duration receipts must still be reported. This outcome supports quality feasibility but not a savings claim or global preferred mapping by itself.
-
-### `NOT_QUALIFIED`
-
-Use when a valid ADAPTIVE first attempt has a material quality regression, requires escalation, produces a material false result, or creates offsetting root rework that defeats minimum-sufficient-compute intent.
-
-### `BLOCKED_MEASUREMENT_SURFACE`
-
-Use when D063 mandatory measurement cannot be revalidated.
-
-### `BLOCKED_PROFILE_RESOLUTION`
-
-Use when a requested frozen child model/effort cannot resolve to the required configured thread profile before a scored turn.
+A T063 pilot decision is evidence for later R007 convergence only; it is not itself global policy.
 
 ## Acceptance criteria
 
-- **AC-T063-1:** separate Human launch; NEW task-scoped root; root profile frozen before probes.
-- **AC-T063-2:** D063 native measurement surface revalidated before scored work.
-- **AC-T063-3:** all probes are fixed `DELEGATED` units under D075/D065; delegation-worthiness is not an experimental variable.
-- **AC-T063-4:** P1 removes T054 physical-LOC ambiguity and uses the revised first-attempt economy/Medium hypothesis.
-- **AC-T063-5:** P2 static-AST edge semantics are explicit and exclude the T054 package-bootstrap ambiguity.
-- **AC-T063-6:** P3 uses one independently reproducible seeded material defect with no oracle leakage.
-- **AC-T063-7:** matched-arm messages/input/tools/context are equivalent except frozen compute profile.
-- **AC-T063-8:** requested/resolved profile, permission, reroute, exact usage and duration receipts satisfy D063 for every scored child.
-- **AC-T063-9:** all first-attempt failures/retries/escalations are preserved; no score rewriting.
-- **AC-T063-10:** children remain read-only; no tracked product mutation or Executor-authored Markdown.
-- **AC-T063-11:** one frozen pilot decision is computed exactly; no unsupported provider-backend identity or savings claim.
-- **AC-T063-12:** final evidence explicitly states that D075 direct-execution policy and R007 adaptive compute-routing policy are separate claims.
+- **AC-T063-1:** NEW `root-4`; root/runtime profile frozen and all pre-provider gates pass before scored execution.
+- **AC-T063-2:** one clean v4 six-arm run in the frozen order; v1/v2/v3 excluded.
+- **AC-T063-3:** every valid scored child satisfies complete D063 receipts and remains read-only.
+- **AC-T063-4:** P1/P2/P3 satisfy their frozen deterministic/oracle semantics without leakage.
+- **AC-T063-5:** v4 retry behavior is same-child/same-params only, bounded to the exact empty-rollout class, with parent residency checked immediately before every retry and separately counted.
+- **AC-T063-6:** no score rewriting, unauthorized compensating calls, profile/runtime substitution, or semantic repair.
+- **AC-T063-7:** D076 audit is complete and no substantial Executor-created private executable material was used.
+- **AC-T063-8:** telemetry/handoff are pushed and sufficient for remote Stage 7 verification.
+- **AC-T063-9:** exactly one valid pilot decision is emitted only when its prerequisites are satisfied; otherwise the exact blocker is preserved.
+- **AC-T063-10:** R007 global routing policy remains unchanged until Orchestrator convergence.
 
-## Non-goals
+## Verification and evidence requirements
 
-T063 does not:
+Stage 6 must persist enough evidence to verify:
 
-- retest whether D075 microactions should be root-local;
-- test write-capable workers;
-- optimize worker count/parallelism;
-- optimize context-fork depth as a separate variable;
-- change D055 root policy;
-- establish model names as durable governance semantics;
-- authorize automatic routing rollout;
-- modify T062 or resume its held scientific execution.
+- authority/candidate identity and `candidate_head_before_execution`;
+- all pre-provider gates and any represented bounded repair before provider execution;
+- exact scored parent-turn count;
+- exact scored child-attempt count;
+- separately counted reattachment RPC attempts/retries;
+- per-arm mandatory D063 receipts;
+- exact token/duration/reroute receipts;
+- task-contract consistency receipts defined by the published candidate;
+- tracked/global mutation checks;
+- oracle outcomes and frozen first-attempt results;
+- pilot decision only when scientifically valid;
+- D076 ephemeral-artifact inventory.
 
-## Completion and convergence
+Do not persist private chain-of-thought or full worker transcripts.
 
-Executor terminal evidence must be pushed to the expected T063 evidence branch and return only the Task-Contract-defined terminal shape.
+## Code Review & Verify obligations
 
-After remote verification, ChatGPT Orchestrator performs convergence under D057:
+Before terminal completion, the Executor must review the executed/repaired candidate against this Task Contract, verify that any Stage 6 repair remained bounded and semantic-preserving, rerun affected deterministic checks, and persist the result in the handoff.
 
-- accept/reject execution validity;
-- transition R007 based on the frozen pilot decision;
-- only if evidence is sufficient, specify a later normative Stage-B routing decision/rollout;
-- otherwise preserve the failed/deferred disposition without tuning post hoc.
+## Stop / escalation / SDD re-entry conditions
 
-No Executor launch is authorized by this definition.
+STOP rather than guess when:
+
+- exact canonical/candidate identity cannot be established safely;
+- a material defect/ambiguity exists in this Task Contract, Design, oracle, acceptance meaning or candidate completeness;
+- a frozen model/reasoning/runtime/profile cannot resolve exactly;
+- D063 mandatory measurement is unavailable;
+- a required repair would alter experiment semantics or the v4 reattachment contract;
+- D076-material executable content is missing;
+- parent residency is lost during required reattachment;
+- retry exhaustion/nonmatching reattach error occurs;
+- P3 input/permission requirements cannot be satisfied;
+- a newer stable Codex release triggers D077 re-entry;
+- any safety/authority/branch invariant fails.
+
+Persist available authorized evidence, push the handoff when possible, and return `BLOCKED`. Do not compensate by expanding the launch prompt or making another provider call unless this Task Contract explicitly authorizes it.
+
+## Expected handoff / evidence
+
+```text
+handoffs/T063-adaptive-worker-routing-telemetry-v4.json
+handoffs/T063-executor-handoff-v4.json
+```
+
+The terminal handoff must include at least:
+
+```text
+authority_head
+candidate_head_before_execution
+represented_stage6_repairs
+scored_parent_turns
+scored_child_attempts
+reattach_resume_attempts_total
+reattach_resume_retries_total
+ephemeral_artifacts
+executor_material_ephemeral_artifacts
+pilot_decision
+```
+
+plus the per-arm measurement/scoring receipts required above.
+
+## Terminal return shape
+
+After pushing all authorized Stage 6 state, return only:
+
+```text
+STATUS: COMPLETED | BLOCKED
+HANDOFF: handoffs/T063-executor-handoff-v4.json
+BRANCH: test/t063-adaptive-worker-routing-requalification-v4
+HEAD: <actual remote pushed HEAD>
+```
+
+## Human launch gate
+
+```text
+launch_state: AUTHORIZED_AWAITING_HUMAN_START
+```
+
+Human-mediated launch under D071 is required. ChatGPT does not start or directly control Codex.
+
+D055 launch profile is presented to the Human separately from the transport prompt.
+
+## Thin transport invariant
+
+The Human-visible transport prompt is only a pointer to canonical Git authority. It MUST NOT restate this contract's experiment matrix, retry logic, acceptance criteria, evidence schema, exclusions, version runbook or stop conditions.
+
+Normal T063 v4 transport:
+
+```text
+Set the visible Codex chat title to exactly:
+AG | agent-governance | T063 | root-4
+
+Repository: https://github.com/ManuelBouza/agent-governance
+Session: NEW
+Task Contract: docs/tasks/T063-adaptive-worker-routing-requalification.md
+Authorized candidate: test/t063-adaptive-worker-routing-requalification-v4@f06c8f48f7b1d59dff9fc117cca5b42453ad23e8
+
+Synchronize canonical Git authority, load the repository instructions/checkpoint and the Task Contract, then execute that Task Contract exactly. Return only its defined terminal result.
+```
+
+If a substantive task instruction appears necessary in transport, STOP and persist it into this Task Contract or another referenced canonical authority before launch.
