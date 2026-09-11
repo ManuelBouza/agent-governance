@@ -1,17 +1,18 @@
 # Orchestrator Checkpoint
 
-Checkpoint-ID: O264  
-Date: 2026-09-10  
+Checkpoint-ID: O265  
+Date: 2026-09-11  
 Current-Objective: T063 — adaptive worker routing requalification  
-State: T063_V3_STAGE6_AUTHORIZED_AWAITING_HUMAN_CODEX_START  
+State: T063_V4_STAGE6_AUTHORIZED_AWAITING_HUMAN_CODEX_START  
 Active-Executor: none — Codex selected for pending Human launch  
 Executor-Launch-State: AUTHORIZED_AWAITING_HUMAN_CODEX_START  
-Coordinator-ID: `AG | agent-governance | T063 | root-3` — reserved NEW failover root; not yet started  
-T063-V3-Candidate-Branch: `test/t063-adaptive-worker-routing-requalification-v3`  
-T063-V3-Candidate-HEAD: `9b8a8d96b7586c25e808e93c3cec02d1f2fa3467`  
-T063-V3-Candidate-Base: `7772886f174ae06e0a377fc04612f1059af961b6`  
-T063-V3-Launch-Authority: `docs/reviews/T063-R6.md`  
-T063-V3-Receipt-Research: `docs/research/R021-T063-V3-CONFIG-AUTHORITATIVE-WORKER-RECEIPTS.md`  
+Coordinator-ID: `AG | agent-governance | T063 | root-4` — reserved NEW same-work-unit failover root; not yet started  
+T063-V4-Candidate-Branch: `test/t063-adaptive-worker-routing-requalification-v4`  
+T063-V4-Candidate-HEAD: `f06c8f48f7b1d59dff9fc117cca5b42453ad23e8`  
+T063-V4-Candidate-Base: `9da2b6fed64ded9af8d38f67cd53cd066abef838`  
+T063-V4-Launch-Authority: `docs/reviews/T063-R7.md`  
+T063-V4-Race-Research: `docs/research/R022-T063-V3-EMPTY-ROLLOUT-REATTACH-RACE.md`  
+Historical-T063-V3-Evidence-HEAD: `746519abc6f159e959120f68d5c9f920d88d5797`  
 Historical-T063-V2-Evidence-HEAD: `3ff745a8d29e031ca818c1bc618b15a54e0cbf2b`  
 Historical-T063-V1-Evidence-HEAD: `3d8a9460988351383a90adfc6b76e2deff056504`  
 Held-Work-Unit: T062 / T023 v15 Stage 6  
@@ -20,74 +21,99 @@ Chat-Closure: KEEP_CURRENT_CHAT
 
 ## Canonical transition
 
-O263 required Orchestrator re-entry after the T063 v2 adapter blocked on unsupported Multi-Agent V2 receipt assumptions.
+O264/R6 authorized T063 v3 on `root-3`.
 
-The Human explicitly continued T063 repair. ChatGPT Orchestrator completed D068 Stage 5 re-entry without provider/model calls and published a new candidate:
+The Human launched that authority. V3 terminated `BLOCKED` on the verified remote scientific branch:
 
 ```text
 branch: test/t063-adaptive-worker-routing-requalification-v3
-HEAD:   9b8a8d96b7586c25e808e93c3cec02d1f2fa3467
-base:   7772886f174ae06e0a377fc04612f1059af961b6
+HEAD:   746519abc6f159e959120f68d5c9f920d88d5797
 ```
 
-The candidate is exactly eight commits / eight files ahead of its base and contains only:
+The run consumed one P1 ADAPTIVE parent/child first attempt. The exact child had started, but immediate public App Server `thread/resume` failed because persisted rollout/session metadata was not yet readable and the thread store reported an empty rollout.
+
+No subsequent arm ran. No pilot decision exists. The consumed v3 P1 is invalid/unscored and historical.
+
+R022 classifies the blocker as:
 
 ```text
-evals/adaptive_worker_routing_v3/__init__.py
-evals/adaptive_worker_routing_v3/__main__.py
-evals/adaptive_worker_routing_v3/app_server.py
-evals/adaptive_worker_routing_v3/config.py
-evals/adaptive_worker_routing_v3/measurement.py
-evals/adaptive_worker_routing_v3/oracles.py
-evals/adaptive_worker_routing_v3/runner.py
-tests/test_t063_adaptive_worker_routing_v3_harness.py
+BLOCKED_MEASUREMENT_SURFACE
+cause: SAME_CHILD_ROLLOUT_PERSISTENCE_VISIBILITY_RACE
+worker-quality failure: no
+profile-resolution failure: no
+D076 violation: no
 ```
 
-Provider-free Orchestrator verification:
+ChatGPT Orchestrator re-entered D068 Stage 5 and published the successor v4 candidate without provider/model calls:
 
 ```text
-candidate harness tests: 23 passed
-Python compile check:    PASS
-provider/model calls:    0
+branch: test/t063-adaptive-worker-routing-requalification-v4
+HEAD:   f06c8f48f7b1d59dff9fc117cca5b42453ad23e8
+base:   9da2b6fed64ded9af8d38f67cd53cd066abef838
 ```
 
-Repository-native lint remains a Stage 6 **pre-provider** technical gate because the Orchestrator environment did not provide the lint executable.
+## V4 candidate and persistence barrier
 
-## V3 receipt repair
+The v4 branch is three commits ahead of its exact `develop` base. It includes the repaired v3 executable evaluation package plus the v4 adapter and adapter tests; no committed Markdown authority or product-source change is present on the scientific branch.
 
-R021/R6 replace the invalid v2 exact spawned-task-message receipt with a config-authoritative architecture.
-
-The substantive child task and requested child model/reasoning are materialized by the Stage 5 harness into App Server `thread/start.config` before the measurement parent acts:
+All nine reused v3 code/test blobs were verified byte-for-byte against the repaired v3 state represented by:
 
 ```text
-features.multi_agent_v2.subagent_developer_instructions = <frozen child contract>
-agents.default_subagent_model = <frozen arm model>
-agents.default_subagent_reasoning_effort = <frozen arm effort>
-features.multi_agent_v2.expose_spawn_agent_model_overrides = false
-features.multi_agent_v2.hide_spawn_agent_metadata = true
+4a1bc28b83bffecc706df0f2e42aafe29456c54e
 ```
 
-The parent is transport-only. It may spawn exactly one child with the harness-provided `task_name`, a deterministic non-substantive trigger and `fork_turns="none"`; it may not select `agent_type`, model, reasoning or task semantics.
+V4 changes only measurement reattachment behavior after the exact child is already correlated.
 
-The child must return the frozen contract nonce, task digest and exact received trigger. Any mismatch invalidates the arm. This is a controlled transport/contract consistency receipt, not provider-signed prompt identity.
-
-Public child correlation uses:
+On exact empty-rollout thread-store failure only:
 
 ```text
-subAgentActivity(kind=Started, agentThreadId=<exact child>)
+wait 0.2 seconds
+-> recheck exact parent loaded residency
+-> if parent absent: BLOCK
+-> retry thread/resume for the same exact child id/params
+-> maximum 10 total resume attempts
 ```
 
-Internal raw response events are not used.
+The parent residency check occurs **after the delay and immediately before each retry**.
+
+The adapter never replays `spawn_agent`, never restarts the parent turn, and never creates another child/provider turn. Reattachment RPC retries are counted separately from scored parent/child attempts.
+
+Any nonmatching error, parent-residency loss, or retry exhaustion blocks fail-closed.
+
+## Provider-free verification
+
+Provider-free Orchestrator verification of the final v4 adapter candidate:
+
+```text
+v4 adapter tests:      6 passed
+Python compileall:     PASS
+Codex/App Server runs: 0
+provider/model calls:  0
+```
+
+The executed v4 source/test copies matched the remote Git blobs exactly:
+
+```text
+evals/adaptive_worker_routing_v4/runner.py
+  3996ad60619d8f4822707389e13878b5a134f7fe
+
+tests/test_t063_adaptive_worker_routing_v4_adapter.py
+  4c50e3a47c41d9cb42d1f709356ba89f924656ff
+```
+
+Stage 6 must still run repository-native deterministic lint/test/compile checks before the first provider-backed turn. Failure at that gate blocks with zero scored provider calls.
 
 ## D063 measurement preservation
 
-V3 retains the mandatory D063 exact-child measurement set:
+R021's config-authoritative substantive child contract remains unchanged.
+
+V4 retains the complete D063 exact-child measurement requirements:
 
 ```text
 real parent/child correlation
 parent activePermissionProfile.id == :read-only
 non-contradictory legacy read-only projection
-continuous parent residency before child reattachment
+continuous loaded-parent residency before and through child reattachment
 child parentThreadId == exact parent
 child activePermissionProfile.id == :read-only
 requested child model/reasoning from frozen Stage 5 config
@@ -98,35 +124,46 @@ exact-child reroute observation
 no tracked/global mutation attributable to measurement
 ```
 
-`backend_served_profile_verified = false` remains controlling.
+Public child correlation remains:
 
-Custom/local agent-role ambiguity is a pre-provider blocker.
+```text
+subAgentActivity(kind=Started, agentThreadId=<exact child>)
+```
+
+Internal raw-response events are not passing evidence.
+
+`backend_served_profile_verified = false` remains controlling.
 
 ## D077 version-sensitive revalidation
 
-D077 is now the global rule for material version-dependent research/launch authority.
+Immediately before R7/O265, official upstream release state was revalidated.
 
-R021 reviewed:
+Current stable remains:
 
 ```text
-0.153.4            D063-qualified T063 reference
-0.154.0            current stable Codex release at review/authority time
-0.155.0-alpha.2    later relevant prerelease
+Codex 0.154.0
+release tag: rust-v0.154.0
 ```
 
-The reviewed higher versions do not remove the public exact spawned-task-message blocker. T063 therefore records:
+No newer stable appeared after R021/R6.
+
+Exact source review establishes that `0.154.0` still calls persisted `read_stored_thread_for_resume(... include_history=false)` when reattaching an already-running thread and still contains the `rollout at <path> is empty` failure. Fresh upstream `main` review also retains the running-thread persisted-read dependency.
+
+Therefore:
 
 ```text
 version disposition: PIN_RETAINED
-runtime:             0.153.4
-upgrade fixes blocker: false
+qualified runtime:   0.153.4
+upgrade fixes race:  false based on current stable review
 ```
 
-If a newer stable Codex release appears before the Human actually launches `root-3`, stop and classify its relevance under D077 before provider-backed execution.
+This does not qualify `0.154.0` or `main` under D063.
+
+If a newer stable Codex release appears before Human launch of `root-4`, stop and return to Orchestrator for D077 relevance classification before any provider-backed execution.
 
 ## Scientific restart rule
 
-V3 must be one homogeneous clean six-arm run:
+V4 must be one homogeneous clean six-arm run:
 
 ```text
 P1 ADAPTIVE -> CONTROL
@@ -134,7 +171,13 @@ P2 CONTROL  -> ADAPTIVE
 P3 ADAPTIVE -> CONTROL
 ```
 
-Historical T063 v1/v2 results are excluded from every v3 score/metric/pilot decision.
+Historical v1/v2/v3 results are excluded from every v4 score, metric and pilot decision:
+
+```text
+v1  3d8a9460988351383a90adfc6b76e2deff056504
+v2  3ff745a8d29e031ca818c1bc618b15a54e0cbf2b
+v3  746519abc6f159e959120f68d5c9f920d88d5797
+```
 
 Frozen source/oracle baseline remains:
 
@@ -142,17 +185,17 @@ Frozen source/oracle baseline remains:
 69e910f329a2294c3b40df0f6ee983f9905f4677
 ```
 
-No v3 provider/model calls have occurred yet.
+No v4 provider/model calls have occurred.
 
 ## Launch profile
 
-T063-R6 freezes:
+T063-R7 freezes:
 
 ```text
 Executor:        Codex
 Surface:         Codex Local / native Windows
 Session:         NEW
-Coordinator-ID:  AG | agent-governance | T063 | root-3
+Coordinator-ID:  AG | agent-governance | T063 | root-4
 Root model:      gpt-5.6-sol
 Root reasoning:  medium
 Codex CLI:       exactly 0.153.4
@@ -171,35 +214,37 @@ P3 ADAPTIVE  gpt-5.6-terra / high
 P3 CONTROL   gpt-5.6-sol   / medium
 ```
 
-No model/effort/runtime substitution is authorized after provider-backed execution begins.
+No model/effort/runtime substitution is authorized after provider-backed execution starts.
 
 ## D076 Stage 6 boundary
 
-Codex executes/diagnoses/verifies the published v3 candidate and may make only bounded represented technical repairs that preserve R6 semantics.
+Codex executes/diagnoses/verifies the published v4 candidate and may make only bounded represented technical repairs that preserve R7 semantics.
 
-Substantial missing controller/harness/fixture/oracle implementation outside the candidate is a stop/re-entry condition. File-based non-candidate executable aids actually used in verification remain subject to the D076 `ephemeral_artifacts` audit.
+Substantial missing executable controller/harness/fixture/oracle or a changed reattachment/receipt strategy is immediate Orchestrator re-entry. Persistence status does not change ownership.
 
 Executor-authored committed Markdown remains prohibited.
+
+The terminal evidence must audit both ordinary ephemeral aids and material ephemeral artifacts as required by `docs/EXECUTOR-HANDOFFS.md`.
 
 ## Evidence and terminal return
 
 Normal evidence paths:
 
 ```text
-handoffs/T063-adaptive-worker-routing-telemetry-v3.json
-handoffs/T063-executor-handoff-v3.json
+handoffs/T063-adaptive-worker-routing-telemetry-v4.json
+handoffs/T063-executor-handoff-v4.json
 ```
 
 Terminal Human return after Codex completes or blocks:
 
 ```text
 STATUS: COMPLETED | BLOCKED
-HANDOFF: handoffs/T063-executor-handoff-v3.json
-BRANCH: test/t063-adaptive-worker-routing-requalification-v3
+HANDOFF: handoffs/T063-executor-handoff-v4.json
+BRANCH: test/t063-adaptive-worker-routing-requalification-v4
 HEAD: <actual remote pushed HEAD>
 ```
 
-A `BLOCKED` result authorizes no compensating provider call unless the existing R6 rules explicitly cover it; otherwise return to Orchestrator review.
+A `BLOCKED` terminal result authorizes no compensating provider call without new Orchestrator review.
 
 ## T062 held frontier
 
@@ -224,32 +269,34 @@ Do not execute the old T062 R32 continuation prompt.
 - T058 remains frozen by explicit Human decision; do not resume, integrate, clean or copy it without new explicit Human authorization.
 - D061/D062 continue to require PR-mediated long-lived branch mutation.
 - D071 continues to require Human-mediated Codex transport.
-- R007 remains `EVALUATING`; R6 authorizes an experiment, not a global routing policy.
+- R007 remains `EVALUATING`; R7 authorizes an experiment, not a global routing policy.
 
 ## Next Chat Minimum Load
 
 After normal bootstrap (`develop`, `AGENTS.md`, this checkpoint):
 
-1. for pending T063 v3 launch or convergence, load `docs/reviews/T063-R6.md` first;
-2. load R021 when receipt/version rationale is needed;
-3. load D063 before interpreting measurement validity;
-4. load D076 before accepting any Stage 6 repair/ephemeral executable behavior;
-5. load the v3 candidate `config.py` / `measurement.py` / `runner.py` only when execution mechanics or evidence conflict requires it;
-6. for T062 resumption, instead load T023-R31/R32/R33 plus the held scientific branch/handoff;
-7. do not reconstruct either frontier from prior chat/Project Memory.
-
-D077 is bootstrap-visible in `AGENTS.md` and controls any newly changed upstream version state.
+1. for pending T063 v4 launch or convergence, load `docs/reviews/T063-R7.md` first;
+2. load R022 for the same-child persistence-race diagnosis and retry boundary;
+3. load R021 only when config-authoritative child-contract details are needed;
+4. load D063 before interpreting measurement validity;
+5. load D076 before accepting Stage 6 repair/ephemeral executable behavior;
+6. load D077 before consequential launch if upstream stable state changed;
+7. load the v4 candidate adapter/v3 measurement implementation only when execution mechanics or evidence conflict requires it;
+8. for T062 resumption, instead load T023-R31/R32/R33 plus the held scientific branch/handoff;
+9. do not reconstruct either frontier from prior chat/Project Memory.
 
 ## Next Action
 
-After O264/R6/D077/R021 are merged into `develop`, T063 v3 Stage 6 is authorized.
+After O265/R7/R022 are integrated into `develop`, T063 v4 Stage 6 is authorized.
 
-The Human should start a **NEW** Codex session with exact title:
+The Human should start a **NEW** Codex session with exact visible title:
 
 ```text
-AG | agent-governance | T063 | root-3
+AG | agent-governance | T063 | root-4
 ```
 
-Use the R6-frozen root profile and exact candidate branch/HEAD. The transport prompt should remain thin and point Codex to canonical Git authority rather than duplicating experiment semantics.
+Use the R7-frozen root profile and exact candidate branch/HEAD. The transport prompt must remain thin and load canonical authority from `develop`; the published candidate owns experiment mechanics and the scientific contract.
 
-ChatGPT must not start or directly control Codex under D071. After the Human returns the terminal four-line result, ChatGPT performs remote verification and Stage 7 convergence.
+ChatGPT must not start or directly control Codex under D071.
+
+After the Human returns the terminal four-line result, ChatGPT performs remote verification and Stage 7 convergence.
