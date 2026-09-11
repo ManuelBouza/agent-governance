@@ -1,0 +1,62 @@
+{
+  "blocker": {
+    "code": "BLOCKED_EXECUTION_INVALID",
+    "message": "thread/resume failed: {'code': -32603, 'message': 'failed to read thread: thread-store internal error: failed to read session metadata C:\\\\Users\\\\Manuel\\\\.codex\\\\sessions\\\\2026\\\\09\\\\11\\\\rollout-2026-09-11T07-21-25-01a08ee9-d9a7-7db1-ada8-e541f54b4dab.jsonl: rollout at C:\\\\Users\\\\Manuel\\\\.codex\\\\sessions\\\\2026\\\\09\\\\11\\\\rollout-2026-09-11T07-21-25-01a08ee9-d9a7-7db1-ada8-e541f54b4dab.jsonl is empty'}"
+  },
+  "branch": "test/t063-adaptive-worker-routing-requalification-v3",
+  "candidate_head_before_execution": "4a1bc28b83bffecc706df0f2e42aafe29456c54e",
+  "ephemeral_artifacts": [],
+  "frozen_evaluation_head": "69e910f329a2294c3b40df0f6ee983f9905f4677",
+  "metrics": {
+    "adaptive_escalation_count": 0,
+    "adaptive_exact_duration_total": 0,
+    "adaptive_exact_tokens_total": 0,
+    "adaptive_first_attempt_failures": 0,
+    "adaptive_pass_count": 0,
+    "control_exact_duration_total": 0,
+    "control_exact_tokens_total": 0,
+    "control_pass_count": 0,
+    "material_false_negative_count": 0,
+    "material_false_positive_count": 0,
+    "profile_resolution_failures": 0,
+    "root_rework_events_caused_by_children": 0
+  },
+  "next_required_authority": "ChatGPT Orchestrator review/re-entry required before additional scored calls.",
+  "pilot_decision": null,
+  "provider_execution": {
+    "attempted_first_arm": "P1 ADAPTIVE",
+    "compensating_attempts": 0,
+    "diagnostic_child_attempts": 0,
+    "scored_child_attempts": 1,
+    "scored_parent_turns": 1,
+    "valid_scored_children": 0
+  },
+  "schema_version": 3,
+  "status": "BLOCKED",
+  "task_id": "T063",
+  "technical_review": {
+    "markdown_changed_by_harness": false,
+    "prior_blocked_run_reused_for_scoring": false,
+    "product_source_changed_by_harness": false,
+    "published_stage5_harness_used": true,
+    "raw_response_events_used": false,
+    "provider_free_verification": {
+      "candidate_compile": "PASS",
+      "candidate_harness_tests": "23 passed",
+      "full_repository_tests": "547 passed",
+      "native_preflight": "PASS",
+      "provider_free_oracle_preparation": "PASS",
+      "ruff_check": "PASS",
+      "ruff_format_check": "89 files already formatted"
+    },
+    "pre_provider_repair_commits": [
+      {
+        "classification": "bounded mechanical Python quality-gate repair",
+        "commit": "4a1bc28b83bffecc706df0f2e42aafe29456c54e",
+        "provider_calls_before_commit": 0
+      }
+    ]
+  },
+  "telemetry_path": "handoffs/T063-adaptive-worker-routing-telemetry-v3.json",
+  "terminal_classification": "BLOCKED_EXECUTION_INVALID"
+}
