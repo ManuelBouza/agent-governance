@@ -1,0 +1,80 @@
+{
+  "blocker": {
+    "code": "BLOCKED_EXECUTION_INVALID",
+    "message": "CONTROL did not pass 3/3 first attempts; baseline invalid"
+  },
+  "branch": "test/t063-adaptive-worker-routing-requalification-v6",
+  "candidate_head_before_execution": "af2de380569285b63e33de3f53628cadcf4052b6",
+  "chatgpt_read_path": "handoffs/T063-executor-handoff-v6.json",
+  "code_review": {
+    "reviewed_head_sha": "af2de380569285b63e33de3f53628cadcf4052b6",
+    "summary": "Published v6 candidate reviewed against T063-RQ-1..13. No Stage 6 repair was made; the v4 same-child barrier, v5 evidence attribution, and v6 live parent-surface semantics remained intact. All six children were execution-valid; the P3 CONTROL first attempt was a retained WORKER_QUALITY failure, so the control baseline was invalid and no pilot decision was produced.",
+    "upstream_reentry_stage": null
+  },
+  "ephemeral_artifacts": [],
+  "executor_material_ephemeral_artifacts": [],
+  "frozen_evaluation_head": "69e910f329a2294c3b40df0f6ee983f9905f4677",
+  "implementation_head_sha": "af2de380569285b63e33de3f53628cadcf4052b6",
+  "metrics": {
+    "adaptive_escalation_count": 0,
+    "adaptive_exact_duration_total": 139.296,
+    "adaptive_exact_tokens_total": 84547,
+    "adaptive_first_attempt_failures": 0,
+    "adaptive_pass_count": 3,
+    "control_exact_duration_total": 104.161,
+    "control_exact_tokens_total": 84985,
+    "control_pass_count": 2,
+    "material_false_negative_count": 1,
+    "material_false_positive_count": 1,
+    "profile_resolution_failures": 0,
+    "root_rework_events_caused_by_children": 0
+  },
+  "model_evidence": {
+    "failure_domain": "EXECUTION_VALIDITY",
+    "pilot_eligible": false,
+    "root_model_failure_attributed": false,
+    "run_execution_validity": "INVALID",
+    "run_model_comparison_eligible": false,
+    "scored_child_efficiency_eligible_count": 5,
+    "scored_child_quality_eligible_count": 6,
+    "unscored_child_attempts_count_as_model_quality": false
+  },
+  "next_required_authority": "ChatGPT Orchestrator review/re-entry required before additional scored calls.",
+  "pilot_decision": null,
+  "provider_execution": {
+    "compensating_attempts": 0,
+    "diagnostic_child_attempts": 0,
+    "reattachment_rpc_retries": 6,
+    "scored_child_attempts": 6,
+    "scored_parent_turns": 6
+  },
+  "provider_free_verification": {
+    "candidate_base_ancestry": "PASS",
+    "compileall": "PASS",
+    "deterministic_tests": "45 passed",
+    "p1_p2_p3_oracle_preparation": "PASS",
+    "ruff": "PASS",
+    "stable_codex_release_gate": "PASS: 0.154.0 remains latest stable"
+  },
+  "requirement_trace": {
+    "T063-RQ-1": "Fresh v6 run; historical v1-v5 evidence excluded.",
+    "T063-RQ-2..5": "Six parent surfaces passed the published v6 live notification validator.",
+    "T063-RQ-6": "All six same-child reattachments passed; six bounded empty-rollout retries and no new provider turns.",
+    "T063-RQ-7..12": "Six execution-valid scored-child snapshots persisted; P3 CONTROL retained as WORKER_QUALITY FAIL and efficiency-ineligible.",
+    "T063-RQ-13": "pilot_decision remains null for Orchestrator convergence; no global policy adopted."
+  },
+  "schema_version": 3,
+  "sdd_profile": "ASSURED",
+  "status": "BLOCKED",
+  "task_id": "T063",
+  "task_contract_path": "docs/tasks/T063-adaptive-worker-routing-requalification.md",
+  "technical_review": {
+    "markdown_changed_by_harness": false,
+    "prior_blocked_run_reused_for_scoring": false,
+    "product_source_changed_by_harness": false,
+    "published_stage5_harness_used": true,
+    "raw_response_events_used": false
+  },
+  "telemetry_path": "handoffs/T063-adaptive-worker-routing-telemetry-v6.json",
+  "terminal_classification": "BLOCKED_EXECUTION_INVALID"
+}
