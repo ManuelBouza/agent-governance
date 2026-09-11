@@ -1,18 +1,17 @@
 # Orchestrator Checkpoint
 
-Checkpoint-ID: O269  
+Checkpoint-ID: O270  
 Date: 2026-09-11  
 Current-Objective: T063 — adaptive worker routing requalification  
-State: T063_V6_STAGE6_AUTHORIZED_AWAITING_HUMAN_START  
-Active-Executor: none — Codex selected for pending Human launch  
-Executor-Launch-State: AUTHORIZED_AWAITING_HUMAN_CODEX_START  
-Coordinator-ID: `AG | agent-governance | T063 | root-6` — reserved NEW same-work-unit failover root; not yet started  
-Task-Contract: `docs/tasks/T063-adaptive-worker-routing-requalification.md`  
-Current-Launch-Review: `docs/reviews/T063-R11.md`  
-Current-Research: `docs/research/R023-T063-V5-LIVE-SPAWN-RECEIPT-PERSISTENCE-GAP.md`  
+State: T063_V6_CONVERGED_INCONCLUSIVE_BASELINE_SPEC_DESIGN_REENTRY_REQUIRED  
+Active-Executor: none  
+Executor-Launch-State: NOT_AUTHORIZED  
+Coordinator-ID: `AG | agent-governance | T063 | root-6` — retired after consumed v6 six-arm run  
+Task-Contract: `docs/tasks/T063-adaptive-worker-routing-requalification.md` — v6 execution authority consumed; do not relaunch from its stale Human launch block  
+Current-Convergence-Review: `docs/reviews/T063-R12.md`  
 T063-V6-Candidate-Branch: `test/t063-adaptive-worker-routing-requalification-v6`  
 T063-V6-Candidate-HEAD: `af2de380569285b63e33de3f53628cadcf4052b6`  
-T063-V6-Candidate-Base: `d5ff447d3ad162ddfc8afd8baadeac67154d7a6a`  
+T063-V6-Evidence-HEAD: `276fa94cde6904c003482c8b527de7e8cda416d4`  
 Historical-T063-V5-Evidence-HEAD: `3f9830a65a152ad595653961205e0ca52b9c5ccc`  
 Historical-T063-V4-Evidence-HEAD: `4135a13ce8daa4f6b1fcabe45063364fbbdd16f1`  
 Historical-T063-V3-Evidence-HEAD: `746519abc6f159e959120f68d5c9f920d88d5797`  
@@ -24,124 +23,114 @@ Chat-Closure: KEEP_CURRENT_CHAT
 
 ## Canonical transition
 
-V5 was converged at O268 as `BLOCKED_EXECUTION_INVALID / EXECUTION_VALIDITY` with no model-quality evidence. R023/T063-R10 established that the blocker came from the v5 adapter requiring a public live `subAgentActivity(kind=Started)` receipt to be duplicated in the completed parent-turn snapshot even though the live exact-child correlation had already succeeded.
+V6 completed all six prospectively frozen arms with valid D063/v6 execution receipts. The terminal evidence branch is exactly one evidence-only commit ahead of the authorized candidate and adds only the v6 telemetry and executor handoff JSON files.
 
-ChatGPT Orchestrator re-entered Stage 5 and materialized a clean v6 successor from protected-base snapshot `d5ff447d3ad162ddfc8afd8baadeac67154d7a6a`.
-
-Authorized v6 candidate:
+Provider-free verification passed before execution:
 
 ```text
-branch: test/t063-adaptive-worker-routing-requalification-v6
-HEAD:   af2de380569285b63e33de3f53628cadcf4052b6
-base:   d5ff447d3ad162ddfc8afd8baadeac67154d7a6a
+candidate/base ancestry: PASS
+deterministic tests:     45 passed
+compileall:              PASS
+Ruff:                    PASS
+oracle preparation:      PASS
+stable release gate:     PASS
 ```
 
-Remote comparison shows the candidate is exactly one commit ahead of its base. It promotes the accepted v3/v4/v5 executable/test package without historical v5 telemetry/handoff evidence and adds only the v6 adapter package plus deterministic v6 parent-surface regression coverage.
-
-## V6 parent-surface correction
-
-V6 preserves the existing public `subAgentActivity` correlation and changes only how parent-surface cardinality/safety are validated.
-
-For the exact parent thread/turn, public live `item/started` and `item/completed` notifications are captured from immediately before parent `turn/start`.
-
-Started `subAgentActivity` representations are deduplicated by public item ID. A valid parent surface requires exactly one unique Started logical item matching the exact correlated child and frozen expected task name, no second/different Started activity, no conflicting duplicate representation, and no forbidden parent tool/item activity.
-
-The completed parent turn still must have the exact turn identity, final `PARENT_SPAWNED` text and no contradictory/forbidden represented activity. It no longer needs to duplicate the already-observed live Started item.
-
-Internal/raw response events remain excluded.
-
-## Preserved scientific semantics
-
-V6 preserves:
-
-- frozen P1/P2/P3 probes and semantic oracles;
-- frozen task messages;
-- frozen arm order and compute matrix;
-- config-authoritative child task/profile;
-- D063 exact read-only/identity/usage/duration/reroute receipts;
-- v4 exact same-child empty-rollout reattachment barrier;
-- first-attempt scoring;
-- v5 model-quality/efficiency eligibility taxonomy;
-- D076 materialization boundary;
-- exclusion of historical v1-v5 evidence from v6 scoring.
-
-Historical evidence remains:
+Provider accounting:
 
 ```text
-v1  3d8a9460988351383a90adfc6b76e2deff056504
-v2  3ff745a8d29e031ca818c1bc618b15a54e0cbf2b
-v3  746519abc6f159e959120f68d5c9f920d88d5797
-v4  4135a13ce8daa4f6b1fcabe45063364fbbdd16f1
-v5  3f9830a65a152ad595653961205e0ca52b9c5ccc
+scored parent turns:       6
+scored child attempts:     6
+reattachment RPC retries:  6
+compensating attempts:     0
+diagnostic child attempts: 0
 ```
 
-No historical attempt may enter v6 scoring.
+All six public live parent surfaces passed. All six children are `execution_validity=VALID` and model-quality eligible. Five are quality-preserving efficiency eligible.
 
-## Verification status
+## V6 quality outcome
 
-Remote structural review completed:
+Observed first-attempt result:
 
 ```text
-v6 branch identity:                    VERIFIED
-v6 exact base ancestry:                VERIFIED
-candidate diff boundary:               VERIFIED
-v3/v4/v5 promoted blob reuse:          VERIFIED BY CONSTRUCTION/REMOTE BLOB IDS
-v6 parent-surface adapter present:      VERIFIED
-v6 deterministic regression test:      VERIFIED
-new v6 Python AST parse:                PASS
+P1 ADAPTIVE  Luna/Medium   PASS
+P1 CONTROL   Sol/Medium    PASS
+P2 CONTROL   Sol/Medium    PASS
+P2 ADAPTIVE  Terra/Medium  PASS
+P3 ADAPTIVE  Terra/High    PASS
+P3 CONTROL   Sol/Medium    FAIL
 ```
 
-The Orchestrator attempted a fresh local clone of the v6 branch, but the sandbox again could not resolve `github.com`. Therefore no local pytest, Ruff or compileall PASS is claimed.
+The P3 CONTROL result is a valid `WORKER_QUALITY` failure, not an execution/measurement failure. It contains one material false negative and one material false positive against the frozen P3 oracle.
 
-Stage 6 MUST execute every deterministic/provider-free test/compile/lint/preflight gate successfully before the first provider/model call. Any failure blocks with zero new scored calls.
+Aggregate descriptive metrics:
 
-No provider/model call was consumed during v6 Stage 5/readiness work.
+```text
+CONTROL pass count:        2/3
+ADAPTIVE pass count:       3/3
+CONTROL exact tokens:      84,985
+ADAPTIVE exact tokens:     84,547
+CONTROL exact duration:    104.161 s
+ADAPTIVE exact duration:   139.296 s
+```
+
+The 438-token raw adaptive reduction is not an accepted-quality savings claim because the failed CONTROL P3 arm is efficiency-ineligible.
+
+## Convergence diagnosis
+
+The published harness emitted:
+
+```text
+BLOCKED_EXECUTION_INVALID
+CONTROL did not pass 3/3 first attempts; baseline invalid
+```
+
+Stage 7 does not adopt that run-level semantic diagnosis because every scored child is execution-valid. The blocker is a prospective specification/decision-taxonomy gap inherited from T054/T063: the frozen pilot enum requires CONTROL 3/3 for qualification but defines no explicit outcome for a complete valid run where CONTROL fails and ADAPTIVE passes.
+
+Canonical Stage 7 diagnosis:
+
+```text
+INCONCLUSIVE_BASELINE / SPECIFICATION_DESIGN_GAP
+```
+
+Frozen v6 `pilot_decision` remains `null`. No post-hoc outcome is added.
+
+R007 remains `EVALUATING`; no global adaptive-routing policy is adopted.
+
+## No rerun authority
+
+The v6 launch authority is consumed.
+
+Do not rerun P3 CONTROL, replay v6, substitute profiles, change thresholds or execute compensating provider calls. Repeating until CONTROL passes would condition the experiment on observed results and violate first-attempt/frozen-design semantics.
+
+Any successor requires fresh prospective authority.
+
+## Required re-entry
+
+Before any v7/provider-backed successor, ChatGPT Orchestrator must re-enter Specify / Design / Plan & Trace and freeze at least:
+
+1. the semantic outcome for valid CONTROL quality failure;
+2. whether the experiment is absolute accepted-quality gating, paired comparative/non-inferiority evaluation, or both;
+3. prospective stochastic-variance handling without outcome-conditioned reruns;
+4. repeated-trial/sample structure if repetition is used;
+5. decision taxonomy for all CONTROL/ADAPTIVE pass/fail combinations;
+6. accepted-quality efficiency eligibility rules;
+7. whether root-equivalent Sol/Medium remains the comparison baseline for P3 or a separately justified accepted-quality reference is needed.
+
+Historical v1-v6 results are planning/provenance evidence only for any future successor unless the new prospective design explicitly says otherwise before execution.
 
 ## D077 state
 
-Launch-readiness upstream revalidation on 2026-09-11 found:
+V6 launch-time evidence confirmed:
 
 ```text
 qualified pin:              0.153.4
-latest stable:              0.154.0
-newest observed prerelease: 0.155.0-alpha.3.9
-newer stable than 0.154.0:  none
-D077 disposition:           PIN_RETAINED
+latest stable at execution: 0.154.0
+newest reviewed prerelease: 0.155.0-alpha.3.9
+disposition:                PIN_RETAINED
 ```
 
-R023 established that 0.154.0 retains the relevant live-item/history persistence distinction and does not remove the v5 blocker. D063 qualification is not extended to 0.154.0.
-
-If a stable release newer than `0.154.0` appears before the first v6 provider call, STOP and return to Orchestrator for relevance classification.
-
-## Coordinator continuity
-
-V5 `root-5` is retired after the consumed blocked run and material adapter/Task Contract revision.
-
-V6 uses NEW failover root:
-
-```text
-AG | agent-governance | T063 | root-6
-```
-
-This is a D060 same-work-unit failover, not a concurrent second root.
-
-## Launch profile
-
-Current D055 Human-facing launch card:
-
-```text
-Executor:        Codex
-Surface:         Codex Desktop / native Windows
-Session:         NEW
-Coordinator-ID:  AG | agent-governance | T063 | root-6
-Root model:      gpt-5.6-sol
-Root reasoning:  medium
-Codex runtime:   exactly 0.153.4
-App Server:      exactly 0.153.4
-Auth category:   chatgpt
-```
-
-The launch profile is separate from Task semantics and remains separate from the thin transport prompt.
+No runtime/profile substitution occurred.
 
 ## Held and frozen work
 
@@ -149,28 +138,20 @@ T062/T023 remains on Human hold exactly as previously recorded. Do not execute i
 
 T058 remains frozen by explicit Human decision. Do not resume, integrate, clean or copy it without new explicit Human authorization.
 
-R007 remains `EVALUATING`; no global adaptive worker-routing policy is adopted.
-
 ## Next Chat Minimum Load
 
 After normal bootstrap (`develop`, `AGENTS.md`, this checkpoint):
 
-1. for T063 launch/convergence, load `docs/tasks/T063-adaptive-worker-routing-requalification.md` first;
-2. load `docs/reviews/T063-R11.md` for v6 readiness rationale;
-3. load R023/R022/R021/D063/D076/D077 only when the Task Contract references require deeper interpretation or a concrete conflict arises;
-4. for creation/material revision/readiness review of any source-product Task Contract, load the Maintainer Skill v4 template + usage reference;
-5. for T062 resumption, load its separate held-line authority instead;
-6. do not reconstruct frontiers from prior chat/Project Memory.
+1. for T063, load `docs/reviews/T063-R12.md` first;
+2. load the active T063 Task Contract only as the historical v6 specification whose launch authority is consumed;
+3. load R007 and T054/T063 scoring authority when redesigning the outcome taxonomy;
+4. load D063/D076/D077 only if the successor still depends on those surfaces or a concrete conflict requires them;
+5. for creation/material revision/readiness review of any successor Task Contract, load the Maintainer Skill v4 template + usage reference;
+6. for T062 resumption, load its separate held-line authority instead;
+7. do not reconstruct the frontier from prior chat/Project Memory.
 
 ## Next Action
 
-Before Human-mediated v6 launch:
+T063 remains the current objective, but no Executor launch is authorized.
 
-1. revalidate `develop` and exact v6 candidate HEAD;
-2. revalidate that no stable Codex release newer than `0.154.0` has appeared;
-3. present the D055 launch card separately;
-4. give the Human only the thin transport prompt defined by the canonical T063 Task Contract.
-
-ChatGPT MUST NOT start or directly control Codex under D071.
-
-After the Human returns the Task Contract-defined terminal four-line result, ChatGPT performs remote verification and Stage 7 convergence.
+ChatGPT Orchestrator must now perform the prospective baseline-validity/outcome-taxonomy/statistical-design correction for a possible successor. Do not materialize or launch v7 until the revised Specify / Design / Plan & Trace authority is complete and internally consistent.
