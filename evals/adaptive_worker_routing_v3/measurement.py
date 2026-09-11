@@ -1,4 +1,5 @@
 """D063 live preflight and one-arm measured execution for T063 v3."""
+
 from __future__ import annotations
 
 import json
@@ -105,7 +106,14 @@ def _generate_schema(codex_bin: Path, repo: Path, runtime_root: Path) -> dict[st
     schema_dir = runtime_root / "native-schema"
     schema_dir.mkdir()
     run_command(
-        [str(codex_bin), "app-server", "generate-json-schema", "--experimental", "--out", str(schema_dir)],
+        [
+            str(codex_bin),
+            "app-server",
+            "generate-json-schema",
+            "--experimental",
+            "--out",
+            str(schema_dir),
+        ],
         cwd=repo,
         timeout=60,
     )
@@ -290,7 +298,9 @@ def _wait_for_spawn(
     start_index: int,
 ) -> tuple[int, str, dict[str, Any]]:
     index, event = client.wait_for_notification(
-        lambda item: activity_child_id(item, parent_id, parent_turn_id, expected_task_name) is not None,
+        lambda item: (
+            activity_child_id(item, parent_id, parent_turn_id, expected_task_name) is not None
+        ),
         start_index=start_index,
         timeout=120,
     )
@@ -444,7 +454,8 @@ def _validate_parent_surface(
         and item["kind"].lower() == "started"
     ]
     matching = [
-        item for item in activities
+        item
+        for item in activities
         if item.get("agentThreadId") == child_id
         and isinstance(item.get("agentPath"), str)
         and item["agentPath"].rstrip("/").split("/")[-1] == expected_task_name
@@ -462,11 +473,13 @@ def _validate_parent_surface(
         "imageView",
         "imageGeneration",
     }
-    used = sorted({
-        item.get("type")
-        for item in items
-        if isinstance(item, dict) and item.get("type") in forbidden_types
-    })
+    used = sorted(
+        {
+            item.get("type")
+            for item in items
+            if isinstance(item, dict) and item.get("type") in forbidden_types
+        }
+    )
     if used:
         raise ExecutionInvalid(f"measurement parent used forbidden tool/item types: {used}")
     final = _final_agent_text(parent_turn).strip()
@@ -546,9 +559,7 @@ def execute_arm(
     )
     if parent_done.get("id") != parent_turn_id:
         raise ExecutionInvalid("parent completed turn identity mismatch")
-    _validate_parent_surface(
-        parent_done, child_id=child_id, expected_task_name=spec.task_name
-    )
+    _validate_parent_surface(parent_done, child_id=child_id, expected_task_name=spec.task_name)
 
     _child_index, child_done = _wait_turn_completed(
         client, child_id, start_index=start_index, timeout=300

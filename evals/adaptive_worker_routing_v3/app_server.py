@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import contextlib
 import json
 import queue
 import subprocess
@@ -49,7 +50,7 @@ class AppServerClient:
         self._stderr_lines: list[str] = []
         self._stderr_thread: threading.Thread | None = None
 
-    def __enter__(self) -> "AppServerClient":
+    def __enter__(self) -> AppServerClient:
         self.start()
         return self
 
@@ -90,10 +91,8 @@ class AppServerClient:
         if proc is None:
             return
         if proc.stdin is not None:
-            try:
+            with contextlib.suppress(OSError):
                 proc.stdin.close()
-            except OSError:
-                pass
         try:
             proc.terminate()
             proc.wait(timeout=2)
@@ -227,4 +226,6 @@ class AppServerClient:
 
     def _raise_reader_error(self) -> None:
         if self._reader_error is not None:
-            raise AppServerError(f"app-server reader failed: {self._reader_error}") from self._reader_error
+            raise AppServerError(
+                f"app-server reader failed: {self._reader_error}"
+            ) from self._reader_error

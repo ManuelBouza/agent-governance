@@ -1,4 +1,5 @@
 """Provider-free T063 v3 Git/AST/fixture oracles and graders."""
+
 from __future__ import annotations
 
 import ast
@@ -28,8 +29,18 @@ from .config import (
 )
 
 
-def run_command(args: list[str], *, cwd: Path, timeout: float = 30.0, check: bool = True) -> subprocess.CompletedProcess[str]:
-    result = subprocess.run(args, cwd=cwd, text=True, encoding="utf-8", capture_output=True, timeout=timeout, check=False)
+def run_command(
+    args: list[str], *, cwd: Path, timeout: float = 30.0, check: bool = True
+) -> subprocess.CompletedProcess[str]:
+    result = subprocess.run(
+        args,
+        cwd=cwd,
+        text=True,
+        encoding="utf-8",
+        capture_output=True,
+        timeout=timeout,
+        check=False,
+    )
     if check and result.returncode != 0:
         raise HarnessError(
             f"command failed ({result.returncode}): {args!r}\n"
@@ -57,17 +68,26 @@ def frozen_text(repo: Path, path: str) -> str:
 def compute_p1_oracle(repo: Path) -> dict[str, Any]:
     files: list[dict[str, Any]] = []
     for path in P1_PATHS:
-        exists = run_command(["git", "cat-file", "-e", f"{FROZEN_HEAD}:{path}"], cwd=repo, check=False).returncode == 0
+        exists = (
+            run_command(
+                ["git", "cat-file", "-e", f"{FROZEN_HEAD}:{path}"], cwd=repo, check=False
+            ).returncode
+            == 0
+        )
         if not exists:
-            files.append({"path": path, "blob_sha": None, "byte_size": None, "exists_at_frozen_head": False})
+            files.append(
+                {"path": path, "blob_sha": None, "byte_size": None, "exists_at_frozen_head": False}
+            )
             continue
         blob_sha = git(repo, "rev-parse", f"{FROZEN_HEAD}:{path}")
-        files.append({
-            "path": path,
-            "blob_sha": blob_sha,
-            "byte_size": int(git(repo, "cat-file", "-s", blob_sha)),
-            "exists_at_frozen_head": True,
-        })
+        files.append(
+            {
+                "path": path,
+                "blob_sha": blob_sha,
+                "byte_size": int(git(repo, "cat-file", "-s", blob_sha)),
+                "exists_at_frozen_head": True,
+            }
+        )
     return {"frozen_head": FROZEN_HEAD, "files": files}
 
 
@@ -81,7 +101,9 @@ def module_for_path(path: str) -> str:
     return ".".join(parts)
 
 
-def resolve_import_targets(source_module: str, node: ast.Import | ast.ImportFrom, in_scope_modules: set[str]) -> set[str]:
+def resolve_import_targets(
+    source_module: str, node: ast.Import | ast.ImportFrom, in_scope_modules: set[str]
+) -> set[str]:
     if isinstance(node, ast.Import):
         candidates = [alias.name for alias in node.names]
     else:
@@ -133,7 +155,10 @@ def compute_p2_oracle(repo: Path) -> dict[str, Any]:
                     if target != source_module:
                         edges.add((source_module, target))
         for node in tree.body:
-            if isinstance(node, (ast.ClassDef, ast.FunctionDef, ast.AsyncFunctionDef)) and node.name in P2_SYMBOLS:
+            if (
+                isinstance(node, (ast.ClassDef, ast.FunctionDef, ast.AsyncFunctionDef))
+                and node.name in P2_SYMBOLS
+            ):
                 if node.name in owners:
                     raise HarnessError(f"ambiguous P2 symbol owner: {node.name}")
                 owners[node.name] = source_module
@@ -167,16 +192,16 @@ def seed_p3_fixture(repo: Path, runtime_root: Path) -> tuple[Path, dict[str, Any
         raise HarnessError(f"P3 seed blob drift: expected {P3_SEED_BLOB}, got {blob}")
     source = frozen_text(repo, P3_SEED_PATH)
     pattern = re.compile(
-        r'    if not isinstance\(profile\.name, str\) or profile\.name not in ACTIVE_PROFILES:\n'
-        r'        raise ProfileError\(\n'
+        r"    if not isinstance\(profile\.name, str\) or profile\.name not in ACTIVE_PROFILES:\n"
+        r"        raise ProfileError\(\n"
         r'            f"unsupported profile: \{profile\.name!r\}; active profiles: \{sorted\(ACTIVE_PROFILES\)\}"\n'
-        r'        \)\n'
-        r'    return profile\n'
+        r"        \)\n"
+        r"    return profile\n"
     )
     replacement = (
-        '    if not isinstance(profile.name, str) or profile.name not in ACTIVE_PROFILES:\n'
+        "    if not isinstance(profile.name, str) or profile.name not in ACTIVE_PROFILES:\n"
         '        return Profile(name="source-maintainer")\n'
-        '    return profile\n'
+        "    return profile\n"
     )
     mutated, count = pattern.subn(replacement, source)
     if count != 1:
@@ -188,7 +213,9 @@ def seed_p3_fixture(repo: Path, runtime_root: Path) -> tuple[Path, dict[str, Any
         handle.read(1)
     digest = sha256_file(fixture)
     if digest != P3_EXPECTED_FIXTURE_SHA256:
-        raise HarnessError(f"P3 fixture digest drift: expected {P3_EXPECTED_FIXTURE_SHA256}, got {digest}")
+        raise HarnessError(
+            f"P3 fixture digest drift: expected {P3_EXPECTED_FIXTURE_SHA256}, got {digest}"
+        )
     spec = importlib.util.spec_from_file_location("t063_profile_fixture", fixture)
     if spec is None or spec.loader is None:
         raise HarnessError("cannot load P3 fixture")
@@ -205,8 +232,13 @@ def seed_p3_fixture(repo: Path, runtime_root: Path) -> tuple[Path, dict[str, Any
         "grants_source_maintenance": returned.grants_source_maintenance,
         "expected_original_behavior": "ProfileError",
     }
-    if reproduction["returned_profile_name"] != "source-maintainer" or reproduction["grants_source_maintenance"] is not True:
-        raise HarnessError("P3 reproduction did not produce expected fail-open authority escalation")
+    if (
+        reproduction["returned_profile_name"] != "source-maintainer"
+        or reproduction["grants_source_maintenance"] is not True
+    ):
+        raise HarnessError(
+            "P3 reproduction did not produce expected fail-open authority escalation"
+        )
     return fixture, {
         "seed_path": P3_SEED_PATH,
         "seed_blob": P3_SEED_BLOB,
@@ -221,7 +253,12 @@ def seed_p3_fixture(repo: Path, runtime_root: Path) -> tuple[Path, dict[str, Any
 
 def prepare_inputs(repo: Path, runtime_root: Path) -> PreparedInputs:
     ensure_runtime_root_safe(repo, runtime_root)
-    if run_command(["git", "cat-file", "-e", f"{FROZEN_HEAD}^{{commit}}"], cwd=repo, check=False).returncode != 0:
+    if (
+        run_command(
+            ["git", "cat-file", "-e", f"{FROZEN_HEAD}^{{commit}}"], cwd=repo, check=False
+        ).returncode
+        != 0
+    ):
         raise HarnessError(f"frozen commit unavailable: {FROZEN_HEAD}")
     p1 = compute_p1_oracle(repo)
     p2 = compute_p2_oracle(repo)
@@ -229,7 +266,9 @@ def prepare_inputs(repo: Path, runtime_root: Path) -> PreparedInputs:
     messages = build_task_messages()
     digests = {probe: sha256_text(message) for probe, message in messages.items()}
     if digests != EXPECTED_TASK_MESSAGE_DIGESTS:
-        raise HarnessError(f"frozen task-message digest drift: expected {EXPECTED_TASK_MESSAGE_DIGESTS}, got {digests}")
+        raise HarnessError(
+            f"frozen task-message digest drift: expected {EXPECTED_TASK_MESSAGE_DIGESTS}, got {digests}"
+        )
     return PreparedInputs(p1, p2, p3, fixture, messages, digests)
 
 
@@ -259,12 +298,14 @@ def score_p1(value: dict[str, Any], oracle: dict[str, Any]) -> tuple[bool, str]:
     for item in files:
         if not isinstance(item, dict):
             raise HarnessError("P1 files item is not an object")
-        normalized.append({
-            "path": item.get("path"),
-            "blob_sha": item.get("blob_sha"),
-            "byte_size": item.get("byte_size"),
-            "exists_at_frozen_head": item.get("exists_at_frozen_head"),
-        })
+        normalized.append(
+            {
+                "path": item.get("path"),
+                "blob_sha": item.get("blob_sha"),
+                "byte_size": item.get("byte_size"),
+                "exists_at_frozen_head": item.get("exists_at_frozen_head"),
+            }
+        )
     passed = {"frozen_head": value.get("frozen_head"), "files": normalized} == oracle
     return passed, "exact Git inventory match" if passed else "P1 exact Git inventory mismatch"
 
@@ -274,7 +315,11 @@ def _normalize_edges(value: Any) -> list[list[str]]:
         raise HarnessError("P2 edges is not a list")
     edges: list[list[str]] = []
     for edge in value:
-        if not (isinstance(edge, list) and len(edge) == 2 and all(isinstance(part, str) for part in edge)):
+        if not (
+            isinstance(edge, list)
+            and len(edge) == 2
+            and all(isinstance(part, str) for part in edge)
+        ):
             raise HarnessError("P2 edge is not [source, target]")
         edges.append([edge[0], edge[1]])
     return sorted(edges)
@@ -304,17 +349,35 @@ def score_p3(value: dict[str, Any]) -> tuple[bool, str, int, int]:
     invented = 0
     for finding in material:
         severity = str(finding.get("severity", "")).upper()
-        combined = " ".join(str(finding.get(key, "")) for key in ("mechanism", "evidence", "reproduction", "fix_direction")).lower()
+        combined = " ".join(
+            str(finding.get(key, ""))
+            for key in ("mechanism", "evidence", "reproduction", "fix_direction")
+        ).lower()
         has_invalid = "invalid" in combined or "unsupported" in combined
         has_broader = "source-maintainer" in combined or "source maintainer" in combined
-        has_fail_closed = "profileerror" in combined or "fail-closed" in combined or "fail closed" in combined
-        has_authority = any(token in combined for token in ("authority", "permission", "grants_source_maintenance", "source maintenance"))
+        has_fail_closed = (
+            "profileerror" in combined or "fail-closed" in combined or "fail closed" in combined
+        )
+        has_authority = any(
+            token in combined
+            for token in (
+                "authority",
+                "permission",
+                "grants_source_maintenance",
+                "source maintenance",
+            )
+        )
         if severity == "HIGH" and has_invalid and has_broader and has_fail_closed and has_authority:
             matching += 1
         else:
             invented += 1
     passed = matching >= 1 and invented == 0
-    return passed, "seeded fail-open authority escalation detected" if passed else "P3 oracle mismatch", 0 if matching else 1, invented
+    return (
+        passed,
+        "seeded fail-open authority escalation detected" if passed else "P3 oracle mismatch",
+        0 if matching else 1,
+        invented,
+    )
 
 
 def cleanup_runtime_root(runtime_root: Path, prepared: PreparedInputs | None) -> None:

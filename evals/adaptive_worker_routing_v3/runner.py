@@ -1,4 +1,5 @@
 """Executable T063 v3 harness entrypoint and evidence materializer."""
+
 from __future__ import annotations
 
 import argparse
@@ -43,15 +44,25 @@ def aggregate(scored: list[dict[str, Any]]) -> dict[str, Any]:
     return {
         "control_pass_count": sum(item["result_status"] == "PASS" for item in controls),
         "adaptive_pass_count": sum(item["result_status"] == "PASS" for item in adaptive),
-        "adaptive_first_attempt_failures": sum(item["result_status"] != "PASS" for item in adaptive),
+        "adaptive_first_attempt_failures": sum(
+            item["result_status"] != "PASS" for item in adaptive
+        ),
         "adaptive_escalation_count": 0,
-        "material_false_negative_count": sum(item.get("material_false_negative_count", 0) for item in scored),
-        "material_false_positive_count": sum(item.get("material_false_positive_count", 0) for item in scored),
+        "material_false_negative_count": sum(
+            item.get("material_false_negative_count", 0) for item in scored
+        ),
+        "material_false_positive_count": sum(
+            item.get("material_false_positive_count", 0) for item in scored
+        ),
         "profile_resolution_failures": 0,
         "control_exact_tokens_total": sum(item["total_tokens"] for item in controls),
         "adaptive_exact_tokens_total": sum(item["total_tokens"] for item in adaptive),
-        "control_exact_duration_total": round(sum(item["duration_seconds"] for item in controls), 3),
-        "adaptive_exact_duration_total": round(sum(item["duration_seconds"] for item in adaptive), 3),
+        "control_exact_duration_total": round(
+            sum(item["duration_seconds"] for item in controls), 3
+        ),
+        "adaptive_exact_duration_total": round(
+            sum(item["duration_seconds"] for item in adaptive), 3
+        ),
         "root_rework_events_caused_by_children": 0,
     }
 
@@ -207,7 +218,9 @@ def run_evaluation(
 
     try:
         prepared = prepare_inputs(repo, runtime_root)
-        with AppServerClient(codex_bin, cwd=repo, config_overrides=APP_SERVER_CONFIG_OVERRIDES) as client:
+        with AppServerClient(
+            codex_bin, cwd=repo, config_overrides=APP_SERVER_CONFIG_OVERRIDES
+        ) as client:
             required_profiles = {(model, effort) for _, _, model, effort in ARM_ORDER}
             preflight_receipt = preflight(
                 client,
@@ -219,7 +232,9 @@ def run_evaluation(
         preflight_receipt["fresh_app_server_per_scored_arm"] = True
         preflight_receipt["app_server_config_overrides"] = list(APP_SERVER_CONFIG_OVERRIDES)
         for probe, arm, model, reasoning in ARM_ORDER:
-            with AppServerClient(codex_bin, cwd=repo, config_overrides=APP_SERVER_CONFIG_OVERRIDES) as arm_client:
+            with AppServerClient(
+                codex_bin, cwd=repo, config_overrides=APP_SERVER_CONFIG_OVERRIDES
+            ) as arm_client:
                 initialized = arm_client.initialize()
                 version = app_server_version(initialized)
                 if version != REQUIRED_CODEX_VERSION:
@@ -316,12 +331,18 @@ def command_prepare(args: argparse.Namespace) -> int:
     prepared: PreparedInputs | None = None
     try:
         prepared = prepare_inputs(args.repo.resolve(), runtime_root)
-        print(json.dumps({
-            "p1_oracle": prepared.p1_oracle,
-            "p2_oracle": prepared.p2_oracle,
-            "p3_oracle": prepared.p3_oracle,
-            "task_message_digests": prepared.task_message_digests,
-        }, indent=2, sort_keys=True))
+        print(
+            json.dumps(
+                {
+                    "p1_oracle": prepared.p1_oracle,
+                    "p2_oracle": prepared.p2_oracle,
+                    "p3_oracle": prepared.p3_oracle,
+                    "task_message_digests": prepared.task_message_digests,
+                },
+                indent=2,
+                sort_keys=True,
+            )
+        )
         return 0
     finally:
         cleanup_runtime_root(runtime_root, prepared)
