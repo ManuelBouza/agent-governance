@@ -3,7 +3,7 @@
 Status: CURRENT  
 Owner: ChatGPT Orchestrator  
 Controlling decision: `docs/decisions/D057-research-decision-traceability.md`  
-Last-Registry-Review: 2026-09-10
+Last-Registry-Review: 2026-09-11
 
 ## Purpose
 
@@ -40,7 +40,7 @@ See D057 for transition semantics and required metadata for new research.
 | R004 | `docs/research/MG1-V8-WINDOWS-SANDBOX-ROOT-CAUSE.md` | COMPLETE | SUPERSEDED | `docs/reviews/T023-R7.md`; successor MG1 host-preflight work | none | Root-cause analysis informed later host/workspace corrections; v8 restart authority is no longer current. |
 | R005 | `docs/research/MG1-V9-WINDOWS-TEMP-ACL-ANALYSIS.md` | COMPLETE | SUPERSEDED | T023 successor-method lineage; later MG1 reviews | none | ACL findings remain diagnostic evidence; the v9-specific remediation path has been superseded by later MG1 iterations. |
 | R006 | `docs/research/CODEX-PERSISTENT-EXECUTOR-COORDINATOR-RESEARCH.md` | COMPLETE | SUPERSEDED | `docs/tasks/T053-codex-persistent-executor-coordinator-pilot.md`; `docs/reviews/T053-R1.md`; R013 | `docs/decisions/D060-task-scoped-executor-coordinator-continuity.md` | T053's positive same-task continuity/context-locality evidence remains valid, but R006's broader cross-Task-Contract dossier-root recommendation is superseded. D060 adopts one Human-visible coordinator root per exact Task/Operational Contract. |
-| R007 | `docs/research/ADAPTIVE-SUBAGENT-COMPUTE-ROUTING-RESEARCH.md` | COMPLETE | EVALUATING | `docs/tasks/T054-adaptive-subagent-compute-routing-pilot.md`; `docs/reviews/T054-R1.md`; D063; `docs/tasks/T063-adaptive-worker-routing-requalification.md`; R018; R019; R020; R021; `docs/reviews/T063-R6.md` | none | T054 was accepted but `NOT_QUALIFIED`. T063 v1 and v2 both blocked without a pilot decision. R021/R6 replace the unsupported v2 spawned-task receipt with a config-authoritative v3 Stage 5 candidate while retaining D063 measurement semantics and the deliberate Codex `0.153.4` pin after higher-version review. V3 Stage 6 is authorized but has not yet been launched; no global adaptive worker-routing policy is adopted. |
+| R007 | `docs/research/ADAPTIVE-SUBAGENT-COMPUTE-ROUTING-RESEARCH.md` | COMPLETE | EVALUATING | `docs/tasks/T054-adaptive-subagent-compute-routing-pilot.md`; `docs/reviews/T054-R1.md`; D063; `docs/tasks/T063-adaptive-worker-routing-requalification.md`; R018; R019; R020; R021; R022; `docs/reviews/T063-R7.md` | none | T054 was accepted but `NOT_QUALIFIED`. T063 v1, v2 and v3 each blocked without a pilot decision. R022/R7 classify v3 as a same-child rollout-persistence visibility race and authorize a clean v4 run with a bounded same-child reattachment barrier while retaining the D063 measurement set and deliberate Codex `0.153.4` pin. No global adaptive worker-routing policy is adopted. |
 | R008 | `docs/research/CODEX-CHILD-OBSERVABILITY-SURFACE-RESEARCH.md` | COMPLETE | DECIDED | T055/T056/T057; `docs/reviews/T057-R1.md`; evidence PRs `#280`, `#284`, `#296` | `docs/decisions/D063-qualified-codex-read-only-child-measurement-surface.md` | T057 qualified the exact-child read-only/identity/usage/duration/reroute measurement surface. D063 adopts that bounded, version-sensitive substrate while preserving the backend-served identity boundary. |
 | R009 | `docs/research/CODEX-CHILD-SANDBOX-INHERITANCE-RESEARCH.md` | COMPLETE | DECIDED | T056/T057; `docs/reviews/T057-R1.md`; evidence PRs `#284`, `#296` | `docs/decisions/D063-qualified-codex-read-only-child-measurement-surface.md` | T057 empirically closed the exact-child `:read-only` provenance and continuous-parent-residency gate. D063 adopts the qualified surface subject to native version/capability revalidation. |
 | R010 | `docs/research/GPT6-ASTRA-EXECUTOR-LAUNCH-PROFILE-RESEARCH.md` | COMPLETE | DEFERRED | no empirical project evaluation yet | none | GPT-6 Astra is an official quality-first flagship and current Codex source supports it, but availability alone does not justify globally replacing Sol under D055. Global/default adoption remains deferred pending task-level/comparative evidence and host/account availability. |
@@ -55,6 +55,7 @@ See D057 for transition semantics and required metadata for new research.
 | R019 | `docs/research/R019-T063-MULTI-AGENT-V2-HARNESS-REENTRY.md` | COMPLETE | NOT_REQUIRED | `docs/reviews/T063-R3.md`; D076; `docs/reviews/T063-R4.md`; R020 | none | R019 correctly froze the runtime pin, V2 `task_name`/`fork_turns`, explicit feature configuration, P3 placement, clean-rerun rule and D076 boundary. R020 prospectively supersedes only R019 Finding 4 and its live V2 spawn/message receipt assumptions: `subAgentActivity` is the public spawn correlation item and `thread/read` cannot attest the inter-agent task as a child `userMessage`. |
 | R020 | `docs/research/R020-T063-V2-LIVE-RECEIPT-CORRECTION.md` | COMPLETE | NOT_REQUIRED | v2 terminal HEAD `3ff745a8d29e031ca818c1bc618b15a54e0cbf2b`; `docs/reviews/T063-R5.md`; exact official Codex `rust-v0.153.4` source | none | Live evidence plus exact source establish that T063 v2 blocked on incorrect Stage 5 receipt assumptions, not worker quality. One P1 ADAPTIVE call was consumed but is invalid/unscored. `experimentalRawEvents` could expose exact function-call arguments but is internal-only and not D063-qualified. R021 changes the future repair architecture rather than rewriting this historical diagnosis. |
 | R021 | `docs/research/R021-T063-V3-CONFIG-AUTHORITATIVE-WORKER-RECEIPTS.md` | COMPLETE | DECIDED | v3 candidate `9b8a8d96b7586c25e808e93c3cec02d1f2fa3467`; `docs/reviews/T063-R6.md`; official Codex `0.153.4`, `0.154.0`, `0.155.0-alpha.2` source/release evidence | `docs/decisions/D077-version-sensitive-upstream-revalidation.md` | V3 removes the unsupported exact spawned-task-message receipt by moving substantive task/profile authority into Stage 5 App Server configuration, retaining public `subAgentActivity` child correlation and D063 measurement receipts. Higher relevant Codex versions do not remove the blocker, so `0.153.4` remains deliberately pinned. D077 adopts the general version-sensitive upstream-revalidation rule. |
+| R022 | `docs/research/R022-T063-V3-EMPTY-ROLLOUT-REATTACH-RACE.md` | COMPLETE | NOT_REQUIRED | v3 terminal HEAD `746519abc6f159e959120f68d5c9f920d88d5797`; v4 candidate `f06c8f48f7b1d59dff9fc117cca5b42453ad23e8`; `docs/reviews/T063-R7.md`; official Codex `0.153.4`, `0.154.0` and current-main source | none | V3 blocked because immediate exact-child `thread/resume` raced rollout metadata persistence. The live-thread reattach path still reads persisted thread state, and current stable retains the same dependency/error class. V4 adds a bounded same-child retry barrier with parent-residency recheck immediately before each retry, no new provider turn, and fail-closed handling; the 0.153.4 qualified pin remains deliberate. |
 
 ## Live research frontier
 
@@ -86,12 +87,21 @@ R020 — T063 v2 live receipt correction
 
 R021 — T063 v3 config-authoritative receipt repair
   COMPLETE / DECIDED -> D077 for the general version-sensitive rule
-  candidate HEAD: 9b8a8d96b7586c25e808e93c3cec02d1f2fa3467
+  original v3 candidate HEAD: 9b8a8d96b7586c25e808e93c3cec02d1f2fa3467
   substantive child task/profile authority: Stage 5 thread config
   public child correlation: subAgentActivity
   D063 measurement set: preserved
   raw response events: not used
-  versions reviewed: 0.153.4 / 0.154.0 / 0.155.0-alpha.2
+  version disposition: PIN_RETAINED on 0.153.4
+
+R022 — T063 v3 empty-rollout reattach race
+  COMPLETE / NOT_REQUIRED
+  v3 terminal HEAD: 746519abc6f159e959120f68d5c9f920d88d5797
+  one P1 ADAPTIVE attempt consumed; invalid/unscored
+  blocker: same-child rollout-persistence visibility race during thread/resume
+  v4 candidate HEAD: f06c8f48f7b1d59dff9fc117cca5b42453ad23e8
+  retry invariant: same child / no provider replay / parent residency immediately before retry
+  current stable reviewed: 0.154.0; same persistence dependency remains
   version disposition: PIN_RETAINED on 0.153.4
 
 R007 — adaptive subagent compute routing
@@ -100,19 +110,21 @@ R007 — adaptive subagent compute routing
   D063: measurement substrate qualified on 0.153.4
   T063 v1: blocked / no pilot decision
   T063 v2: blocked / no pilot decision
-  T063 v3: Stage 5 complete / Stage 6 authorized awaiting Human Codex start
+  T063 v3: blocked / no pilot decision
+  T063 v4: Stage 5 complete / Stage 6 authorized awaiting Human Codex start
   scored execution_target: CONTRACT_FIXED
   underlying probe delegation eligibility: DELEGATED
-  next T063 step: NEW root-3 clean six-arm v3 execution, then Orchestrator convergence
+  next T063 step: NEW root-4 clean six-arm v4 execution, then Orchestrator convergence
 ```
 
 T063 deliberately does not vary the D075 Stage-A delegation-worthiness decision. Its exact matched-arm topology is contract-fixed because topology is material to the experiment, while the selected probe units independently satisfy D065/D075 material-delegation eligibility. Only the child execution profile is the scored experimental variable.
 
-Both blocked T063 evidence heads remain historical and excluded from v3 scoring:
+All three blocked T063 evidence heads remain historical and excluded from v4 scoring:
 
 ```text
 v1  3d8a9460988351383a90adfc6b76e2deff056504
 v2  3ff745a8d29e031ca818c1bc618b15a54e0cbf2b
+v3  746519abc6f159e959120f68d5c9f920d88d5797
 ```
 
 ### Held T023/T062 scientific frontier
@@ -157,6 +169,10 @@ R019/R020 — T063 historical runtime/harness receipt research
 
 R021 — T063 v3 config-authoritative receipt/version revalidation
   COMPLETE / DECIDED -> D077
+
+R022 — T063 v3 empty-rollout reattach race
+  COMPLETE / NOT_REQUIRED
+  supports R7 v4 measurement-adapter repair without normative decision change
 ```
 
 ## Deferred/qualified dependencies
