@@ -3,16 +3,17 @@
 ## Identity
 
 - Task ID: `T063`
-- Status: `READY / AUTHORIZED_AWAITING_HUMAN_START`
-- Type: `read-only matched-arm Executor/subagent evaluation`
+- Status: `DRAFT / STAGE5_REQUIRED / NOT_AUTHORIZED`
+- Type: `read-only replicated matched-arm Executor/subagent evaluation`
 - SDD profile: `ASSURED`
 - Base branch: `develop`
-- Expected topic branch: `test/t063-adaptive-worker-routing-requalification-v6`
-- Expected executor handoff: `handoffs/T063-executor-handoff-v6.json`
-- Expected telemetry: `handoffs/T063-adaptive-worker-routing-telemetry-v6.json`
+- Expected topic branch: `test/t063-adaptive-worker-routing-requalification-v7`
+- Expected executor handoff: `handoffs/T063-executor-handoff-v7.json`
+- Expected telemetry: `handoffs/T063-adaptive-worker-routing-telemetry-v7.json`
 - Test-Authorship-Mode: `orchestrator-conformance`
 - Owner: ChatGPT Orchestrator (specification/oracle/acceptance and D068 Stage 5) / Agente de IA Ejecutor (Stage 6 execution/evidence) / Human Owner (final authority and Human-mediated launch)
-- Current launch review: `docs/reviews/T063-R11.md`
+- Current design review: `docs/reviews/T063-R13.md`
+- Prior convergence: `docs/reviews/T063-R12.md`
 - Measurement authority: `docs/decisions/D063-qualified-codex-read-only-child-measurement-surface.md`
 - Delegation authority: `docs/decisions/D065-semantic-executor-delegation-obligation.md`
 - Routing gate authority: `docs/decisions/D075-coordinator-direct-execution-gate.md`
@@ -21,47 +22,64 @@
 
 ## Objective
 
-Run one clean six-arm evaluation to determine whether task-adaptive **delegated worker** compute profiles can preserve first-attempt quality while reducing configured compute and/or exact attributable usage relative to root-equivalent controls.
+Run one clean, prospectively replicated qualification evaluation to determine whether the frozen task-adaptive delegated-worker profiles preserve absolute oracle-scored quality across repeated trials and, when the root-equivalent CONTROL also meets accepted quality, whether ADAPTIVE provides material provider-neutral token efficiency and/or a validated lower-tier routing result.
 
 T063 evaluates Stage B worker compute routing only. Delegation-worthiness is fixed by D075/D065 and is not an experimental variable. This Task Contract does not adopt a global adaptive routing policy.
 
 ## Current specification carrier / controlling references
 
-The smallest controlling set is:
+Load only the smallest controlling set needed for execution:
 
 - `AGENTS.md`;
 - this Task Contract;
-- `docs/reviews/T063-R10.md`;
-- `docs/reviews/T063-R11.md`;
+- `docs/reviews/T063-R13.md`;
+- `docs/reviews/T063-R12.md` for v6 convergence/provenance;
 - `docs/research/R021-T063-V3-CONFIG-AUTHORITATIVE-WORKER-RECEIPTS.md`;
 - `docs/research/R022-T063-V3-EMPTY-ROLLOUT-REATTACH-RACE.md`;
 - `docs/research/R023-T063-V5-LIVE-SPAWN-RECEIPT-PERSISTENCE-GAP.md`;
 - D063, D065, D075, D076 and D077.
 
-Historical T063 v1/v2/v3/v4/v5 reviews, handoffs and telemetry are provenance only and MUST NOT be reused for v6 scoring.
+Historical T054/T063 v1-v6 attempts are planning/provenance evidence only and MUST NOT be reused for v7 scoring.
 
 ## Requirement / specification delta
 
+### ADDED
+
+- **T063-RQ-14 — fixed replication:** execute exactly four replicate blocks, giving 24 scored first-attempt child trials when the run completes validly.
+- **T063-RQ-15 — counterbalanced order:** for each probe, ADAPTIVE is first exactly twice and CONTROL is first exactly twice according to the frozen schedule below.
+- **T063-RQ-16 — quality-failure continuation:** a fully measured valid `WORKER_QUALITY` FAIL is preserved and does not stop the remaining fixed schedule or invalidate the run.
+- **T063-RQ-17 — absolute profile qualification:** each profile/probe requires 4/4 PASS; global profile qualification requires 12/12 PASS and intact profile/reroute evidence.
+- **T063-RQ-18 — complete outcome taxonomy:** complete valid runs classify CONTROL and ADAPTIVE quality separately and always produce one non-null pilot decision from the frozen enum below.
+- **T063-RQ-19 — quality-adjusted operational usage:** report total tokens/duration and tokens/duration per successful first-attempt result; failed valid attempts remain in resource numerators.
+- **T063-RQ-20 — material exact-token gate:** when both profiles are globally quality qualified, exact ADAPTIVE tokens per success must improve by at least 10% to support the usage-efficiency-qualified outcome.
+
 ### MODIFIED
 
-- **T063-RQ-1 — clean successor run:** v6 is a new homogeneous six-arm run. Consumed v1/v2/v3/v4/v5 attempts are historical and excluded from every v6 score, metric and pilot decision.
-- **T063-RQ-2 — parent spawn receipt:** public live App Server notifications for the exact parent turn are authoritative for spawn cardinality/correlation. Exactly one unique logical `subAgentActivity(kind=Started)` item must be observed; `item/started` and `item/completed` notifications for the same item ID are one logical activity.
-- **T063-RQ-3 — completed parent snapshot:** `turn/completed` must preserve exact parent-turn identity and final `PARENT_SPAWNED` text and must not contradict the live correlation. The already-observed live `Started` item is **not** required to be duplicated in the completed snapshot.
-- **T063-RQ-4 — parent activity safety:** the live public window and the completed snapshot must contain no forbidden parent tool/item activity; another/different live `Started` child activity blocks fail-closed.
-- **T063-RQ-5 — launch continuity:** v5 `root-5` is retired after its consumed blocked run. v6 uses NEW failover root `AG | agent-governance | T063 | root-6`.
+- **T063-RQ-1 — clean successor run:** v7 is a new homogeneous 24-arm run. V1-v6 attempts are excluded from every v7 score, metric and pilot decision.
+- **T063-RQ-9 — first-attempt scoring:** valid quality failures are never rewritten, but they no longer convert a technically complete run into execution-invalid state.
+- **T063-RQ-10 — model-evidence attribution:** all fully measured children are model-quality evidence; PASS children remain per-child quality-preserving efficiency eligible, while aggregate cost-per-success includes resources spent on valid FAILs.
+- **T063-RQ-11 — run validity:** a run is execution-valid when all 24 scheduled child attempts complete with mandatory receipts; quality PASS/FAIL does not define run execution validity.
+- **T063-RQ-13 — policy boundary:** v7 may qualify or reject the frozen routing mapping only for this calibration; R007 global policy remains an Orchestrator decision after convergence.
 
 ### PRESERVED
 
-- **T063-RQ-6 — empty-rollout classifier:** same-child reattachment recognizes the exact observed family by requiring all of `thread/resume failed:`, `thread-store`, `failed to read session metadata`, `rollout at`, and `is empty`.
+- **T063-RQ-2 — parent spawn receipt:** public live App Server notifications for the exact parent turn remain authoritative for spawn cardinality/correlation.
+- **T063-RQ-3 — completed parent snapshot:** exact parent completion identity/final `PARENT_SPAWNED` text remain required; duplication of the live Started item remains unnecessary.
+- **T063-RQ-4 — parent activity safety:** forbidden/multiple/contradictory parent activity remains fail-closed.
+- **T063-RQ-6 — empty-rollout classifier:** same-child reattachment recognizes the exact authorized error family and is bounded to ten attempts.
 - **T063-RQ-7 — D063 measurement:** exact child identity, permission, parent residency, configured profile, exact usage/duration and reroute receipts remain mandatory.
-- **T063-RQ-8 — config-authoritative task/profile:** substantive child task and requested child model/reasoning remain frozen by Stage 5 configuration; the parent is transport-only.
-- **T063-RQ-9 — first-attempt scoring:** valid first attempts determine quality score; failures are never rewritten by reruns.
-- **T063-RQ-10 — model-evidence attribution:** only fully measured scored children are model-quality evidence; blocked/unscored attempts remain model-neutral.
-- **T063-RQ-11 — efficiency eligibility:** a valid PASS is eligible for quality-preserving efficiency analysis; a valid FAIL remains quality evidence but is not an efficiency-preserving observation.
+- **T063-RQ-8 — config-authoritative task/profile:** substantive child task and requested profile remain frozen by Stage 5 configuration; the parent is transport-only.
 - **T063-RQ-12 — read-only children:** scored workers remain read-only and measurement must not mutate tracked/global product state.
-- **T063-RQ-13 — no policy adoption:** the Executor produces evidence only; R007 remains an Orchestrator decision after convergence.
 
 ## Controlling Design
+
+### Scientific interpretation
+
+V7 is a **fixed-n replicated qualification calibration**, not a formal statistical non-inferiority trial.
+
+It uses repeated first-attempt observations to expose run-to-run instability and counterbalance arm order. It does not use p-values, adaptive sample expansion, outcome-conditioned reruns, or a population-level confidence claim. Four replicates are project-specific pilot policy, not an external standard.
+
+Quality is defined by the frozen deterministic/oracle semantics. CONTROL is a comparator, not the source of truth for acceptance.
 
 ### Routing topology
 
@@ -69,18 +87,67 @@ Historical T063 v1/v2/v3/v4/v5 reviews, handoffs and telemetry are provenance on
 Stage A — already governed
     COORDINATOR_DIRECT | DELEGATED | CONTRACT_FIXED
 
-T063 scored topology
+T063 v7 scored topology
     one fixed Human-visible root
-        -> one fresh exact read-only child per arm
-        -> three matched probe classes
+        -> fresh exact read-only parent per arm
+        -> exactly one fresh exact read-only child per arm
+        -> 4 replicate blocks
+        -> 3 frozen probe classes per block
         -> CONTROL versus ADAPTIVE profile only
 ```
 
-All scored probes are material/read-heavy `DELEGATED` units. The matched topology is `CONTRACT_FIXED` because topology is experimentally material.
+All scored probes are material/read-heavy `DELEGATED` units. The matched topology remains `CONTRACT_FIXED` because topology is experimentally material.
+
+### Frozen root and child matrix
+
+Root constant:
+
+```text
+gpt-5.6-sol / medium
+```
+
+Profiles:
+
+```text
+P1 ADAPTIVE  gpt-5.6-luna  / medium
+P1 CONTROL   gpt-5.6-sol   / medium
+P2 ADAPTIVE  gpt-5.6-terra / medium
+P2 CONTROL   gpt-5.6-sol   / medium
+P3 ADAPTIVE  gpt-5.6-terra / high
+P3 CONTROL   gpt-5.6-sol   / medium
+```
+
+No profile/runtime substitution is authorized after provider-backed execution begins.
+
+### Frozen 24-arm schedule
+
+```text
+Block 1
+  P1 ADAPTIVE -> CONTROL
+  P2 CONTROL  -> ADAPTIVE
+  P3 ADAPTIVE -> CONTROL
+
+Block 2
+  P1 CONTROL  -> ADAPTIVE
+  P2 ADAPTIVE -> CONTROL
+  P3 CONTROL  -> ADAPTIVE
+
+Block 3
+  P1 ADAPTIVE -> CONTROL
+  P2 CONTROL  -> ADAPTIVE
+  P3 ADAPTIVE -> CONTROL
+
+Block 4
+  P1 CONTROL  -> ADAPTIVE
+  P2 ADAPTIVE -> CONTROL
+  P3 CONTROL  -> ADAPTIVE
+```
+
+Each scheduled arm uses a fresh App Server and child. Mutable session state is not shared between trials. Immutable frozen source/oracle input may be reused.
 
 ### Config-authoritative child contract
 
-Before the measurement parent acts, the published Stage 5 candidate fixes substantive worker task and requested compute profile in App Server configuration. The parent may trigger exactly one child but does not select task semantics, model or reasoning.
+Before each measurement parent acts, the published Stage 5 candidate fixes substantive worker task and requested model/reasoning in App Server configuration. The parent may trigger exactly one child but does not select task semantics, model or reasoning.
 
 Public child correlation uses only public App Server item notifications:
 
@@ -88,56 +155,19 @@ Public child correlation uses only public App Server item notifications:
 subAgentActivity(kind=Started, agentThreadId=<exact child>)
 ```
 
-Internal experimental raw-response events are not passing evidence.
+Internal/raw response events are not passing evidence.
 
-### V6 public live parent window
+### Public live parent window
 
-For each exact parent turn, capture public `item/started` and `item/completed` notifications beginning immediately before the parent `turn/start`.
+For each exact parent turn, capture public `item/started` and `item/completed` notifications beginning immediately before parent `turn/start`.
 
-Filter the window to exact:
+Filter to exact parent thread/turn. Deduplicate Started `subAgentActivity` representations by public item ID. Require exactly one logical Started activity matching exact child and frozen task name; reject second/different/contradictory Started activity and forbidden parent item types.
 
-```text
-threadId == exact parent id
-turnId   == exact parent turn id
-```
-
-For `subAgentActivity(kind=Started)` items:
-
-1. require a non-empty public item `id`;
-2. deduplicate `item/started` and `item/completed` by that item ID;
-3. require exactly one unique logical Started activity;
-4. require its `agentThreadId` to equal the already-correlated exact child;
-5. require its normalized `agentPath` to equal the frozen expected task name;
-6. reject a second/different Started activity;
-7. reject contradictory representations of the same item ID.
-
-The live window must also contain none of:
-
-```text
-commandExecution
-fileChange
-mcpToolCall
-dynamicToolCall
-webSearch
-imageView
-imageGeneration
-```
-
-The completed parent turn:
-
-```text
-must have the exact parent turn id
-must provide final agent text == PARENT_SPAWNED
-must contain no forbidden parent item type
-must not contain a Started activity contradicting the live exact-child/task correlation
-need not duplicate the already-observed live Started activity
-```
-
-This is the only material v6 measurement change relative to v5.
+The completed parent turn must preserve exact identity and final `PARENT_SPAWNED`, contain no forbidden activity and not contradict the live correlation. It need not duplicate the live Started item.
 
 ### Same-child reattachment barrier
 
-After exact live child correlation, `thread/resume` may retry only the same child/params when the represented failure contains all of:
+After exact live child correlation, `thread/resume` may retry only the same child/params when the represented error contains all authorized empty-rollout markers:
 
 ```text
 thread/resume failed:
@@ -147,111 +177,167 @@ rollout at
 is empty
 ```
 
-Each retry MUST:
+Each retry waits 0.2 seconds, rechecks exact parent loaded residency immediately before retry, reuses the same child and creates no new provider turn. Maximum total attempts: 10.
+
+Any nonmatching error, parent residency loss or exhaustion blocks fail-closed.
+
+### Probe semantics
+
+#### P1 — exact Git evidence inventory
+
+For the frozen six-file set, return exact path, Git blob SHA, byte size from Git object metadata and frozen-HEAD existence. PASS requires exact oracle equality.
+
+#### P2 — static dependency/symbol map
+
+A dependency edge is only a static Python AST import edge between frozen in-scope source files. PASS requires exact edge-set equality, correct acyclicity and exact ownership of all six frozen symbols.
+
+#### P3 — adversarial independent review
+
+Use the published immutable runtime fixture containing exactly one frozen high-severity fail-open authority/profile defect. PASS requires detection of that defect, correct mechanism/severity/proof direction/minimal fix direction and no invented material finding.
+
+Frozen source/oracle baseline:
 
 ```text
-reuse same exact child id
-reuse same thread/resume parameters
-wait 0.2 seconds
-recheck exact parent loaded residency after the wait
-if parent absent -> BLOCK
-retry thread/resume for that same child
+69e910f329a2294c3b40df0f6ee983f9905f4677
 ```
 
-Maximum total `thread/resume` attempts: `10`.
+### First-attempt and continuation semantics
 
-The adapter MUST NOT replay `spawn_agent`, replay the parent turn, create another child, or create another provider turn. Reattachment RPC retries are adapter transport retries and MUST be counted separately from scored child attempts.
+Each scheduled arm has one quality attempt.
 
-Any nonmatching error, residency loss or exhaustion blocks fail-closed.
+A valid quality FAIL:
 
-### Model-evidence attribution
+- remains `execution_validity=VALID`;
+- has `failure_domain=WORKER_QUALITY`;
+- remains model-quality evidence;
+- is per-child efficiency-ineligible;
+- does not stop the schedule;
+- does not authorize a replacement or compensating scored call.
 
-A child enters `scored_children` only after all mandatory child/parent identity, permission, residency, configured-profile, stable-turn, exact-duration, exact-token-usage, reroute, contract-receipt and oracle-leak checks complete.
+A measurement/profile/runtime/permission/oracle-validity failure is not a quality result. It blocks the run and prevents compensating scored calls.
 
-For each scored child:
+### Absolute quality qualification
+
+Per profile/probe:
 
 ```text
-execution_validity = VALID
-model_quality_eligible = true
-failure_domain = null             when result_status == PASS
-failure_domain = WORKER_QUALITY   when result_status == FAIL
-model_efficiency_eligible = true  only when result_status == PASS
+QUALITY_QUALIFIED     = 4/4 first-attempt PASS
+QUALITY_NOT_QUALIFIED = 0-3/4 first-attempt PASS
 ```
 
-A valid FAIL remains first-attempt model-quality evidence and can disqualify adaptive routing. It is not treated as a quality-preserving efficiency observation.
-
-Attempts that fail before producing a fully measured scored-child snapshot are neither model-quality nor efficiency evidence. Their run-level blocker is classified as one of:
+Global profile status:
 
 ```text
-PROFILE_RESOLUTION
-MEASUREMENT_SURFACE
-MEASUREMENT_ADAPTER
-EXECUTION_VALIDITY
-UNCLASSIFIED_EXECUTION
+ADAPTIVE_QUALITY_QUALIFIED = all three ADAPTIVE probes 4/4 + no reroute/profile-integrity defect
+CONTROL_QUALITY_QUALIFIED  = all three CONTROL probes 4/4 + no reroute/profile-integrity defect
 ```
 
-A blocked or partial run has:
+Per-probe pair outcome is exactly one of:
 
 ```text
-run_execution_validity = INVALID
-run_model_comparison_eligible = false
-pilot_eligible = false
+BOTH_QUALIFIED
+ADAPTIVE_ONLY_QUALIFIED
+CONTROL_ONLY_QUALIFIED
+NEITHER_QUALIFIED
 ```
 
-A complete six-arm run is run-valid only when all six arms produce scored-child snapshots and the harness reaches `COMPLETED_SCORED`.
+CONTROL quality failure never changes a complete valid run into `EXECUTION_INVALID`.
+
+### Efficiency metrics
+
+For each probe/profile and globally record:
+
+```text
+pass_count
+total_tokens
+total_duration
+tokens_per_success   = total_tokens / pass_count when pass_count > 0
+duration_per_success = total_duration / pass_count when pass_count > 0
+```
+
+Valid failed attempts remain in resource numerators.
+
+Accepted-quality exact usage comparison is made only when both global profiles are quality qualified. The v7 material exact-token improvement floor is 10%:
+
+```text
+exact_token_improvement = 1 - (adaptive_tokens_per_success / control_tokens_per_success)
+```
+
+`>= 0.10` is material usage improvement for this pilot; `< 0.10` is not.
+
+Provider dollar/credit rates may be recorded descriptively but are not normative qualification constants and must not be presented as exact billed cost without complete billing telemetry.
+
+### Complete pilot decision taxonomy
+
+For a complete 24-arm execution-valid run, `pilot_decision` MUST be non-null and is exactly one of:
+
+- `QUALIFIED_PROFILE_AND_USAGE_EFFICIENCY` — ADAPTIVE 12/12; CONTROL 12/12; frozen lower-tier ADAPTIVE profiles resolve exactly with no reroute; no safety/authority/oracle/rework disqualifier; exact token improvement `>=10%`.
+- `QUALIFIED_PROFILE_ROUTING_ONLY` — ADAPTIVE 12/12; CONTROL 12/12; frozen lower-tier ADAPTIVE profiles resolve exactly with no reroute; exact token improvement `<10%`.
+- `ADAPTIVE_QUALITY_QUALIFIED_CONTROL_DEFICIENT` — ADAPTIVE 12/12 with intact profiles; CONTROL is not globally quality qualified. No accepted-baseline efficiency claim is permitted.
+- `NOT_QUALIFIED` — ADAPTIVE is not globally quality qualified or has a profile-integrity/reroute disqualifier, regardless of CONTROL.
+
+`pilot_decision=null` is reserved only for incomplete/blocked non-quality execution.
+
+### Run/model-evidence semantics
+
+A complete 24-child run has:
+
+```text
+run_execution_validity = VALID
+run_model_comparison_eligible = true
+pilot_eligible = true
+scored_child_quality_eligible_count = 24
+pilot_decision != null
+```
+
+Per-child quality FAILs do not create a run-level failure domain. A blocked/incomplete run has `run_execution_validity=INVALID`, `pilot_eligible=false`, `pilot_decision=null`, and an explicit non-quality blocker domain.
 
 ## Plan & Trace
 
 | Unit | Requirement / Design ref | Candidate artifact(s) | Required verification/evidence |
 | --- | --- | --- | --- |
-| v3 core harness | T063-RQ-7..12 | `evals/adaptive_worker_routing_v3/*`; v3 harness tests | deterministic oracle construction; D063 receipts; exact scoring |
-| v4 reattachment adapter | T063-RQ-6 | `evals/adaptive_worker_routing_v4/runner.py`; v4 adapter tests | exact classifier; same-child retry; residency-before-retry; bounded exhaustion |
-| v5 evidence adapter | T063-RQ-1,10,11 | `evals/adaptive_worker_routing_v5/runner.py`; v5 evidence tests | quality/efficiency eligibility; run validity; blocker-domain attribution |
-| v6 parent surface | T063-RQ-2..5 | `evals/adaptive_worker_routing_v6/runner.py`; `tests/test_t063_adaptive_worker_routing_v6_parent_surface.py` | live receipt dedupe/cardinality; wrong-child rejection; forbidden activity rejection; v5 regression |
-| P1 | T063-RQ-7..12 | published evaluation package | exact Git evidence oracle + complete D063 receipts |
-| P2 | T063-RQ-7..12 | published evaluation package | exact static-AST map oracle + complete D063 receipts |
-| P3 | T063-RQ-7..12 | published evaluation package | seeded-defect review oracle + complete D063 receipts |
-| terminal evidence | T063-RQ-1..13 | v6 telemetry + handoff JSON | six-arm validity, mutation audit, model-evidence attribution, scoring, pilot decision or exact blocker |
+| inherited v3 core | RQ-2..12 | `evals/adaptive_worker_routing_v3/*`; v3 tests | D063 receipts; frozen oracles; first-attempt quality |
+| inherited v4 reattach | RQ-6 | `evals/adaptive_worker_routing_v4/*`; v4 tests | exact classifier; same-child retry; residency; no new provider turn |
+| inherited v5 evidence | RQ-9..11 | `evals/adaptive_worker_routing_v5/*`; v5 tests | valid FAIL model evidence; eligibility taxonomy |
+| inherited v6 parent surface | RQ-2..4 | `evals/adaptive_worker_routing_v6/*`; v6 tests | live public dedupe/cardinality; completed-snapshot semantics |
+| v7 replication adapter | RQ-14..20 | `evals/adaptive_worker_routing_v7/*` | 24-arm schedule; replicate metadata; aggregate/decision semantics |
+| v7 conformance regressions | RQ-14..20 | `tests/test_t063_adaptive_worker_routing_v7_replication.py` | counterbalance; CONTROL-fail continuation; all decision states; run-validity semantics |
+| terminal evidence | all | v7 telemetry + handoff JSON | exact 24-arm accounting or exact blocker; profile quality; efficiency; pilot decision |
 
 ## Stage ownership and candidate boundary
 
-T063 is D068-mode work.
+T063 remains D068-mode work.
 
 ```text
-Stages 1-5 -> ChatGPT Orchestrator
-Stage 6    -> Agente de IA Ejecutor
+Stages 1-4 -> ChatGPT Orchestrator — COMPLETE by T063-R13
+Stage 5    -> ChatGPT Orchestrator — REQUIRED
+Stage 6    -> Agente de IA Ejecutor — NOT AUTHORIZED
 Stage 7    -> ChatGPT Orchestrator
 ```
 
 ## Published candidate freeze
 
-Authorized Stage 6 candidate:
+No Stage 6 candidate is yet authorized.
 
 ```text
-candidate_branch: test/t063-adaptive-worker-routing-requalification-v6
-candidate_head:   af2de380569285b63e33de3f53628cadcf4052b6
-candidate_base:   d5ff447d3ad162ddfc8afd8baadeac67154d7a6a
+candidate_branch: test/t063-adaptive-worker-routing-requalification-v7
+candidate_head:   NOT_YET_PUBLISHED
+candidate_base:   POST_DESIGN_DEVELOP_HEAD_TO_BE_FROZEN_AT_STAGE5
 ```
 
-No provider-backed call is authorized from another initial candidate HEAD.
-
-The candidate is exactly one commit ahead of its protected-base snapshot. It promotes the accepted v3/v4/v5 executable/test package without v5 terminal evidence and adds only the v6 adapter package plus its deterministic parent-surface regression test.
-
-The Orchestrator environment again could not clone GitHub because sandbox DNS resolution was unavailable. Static AST parsing of the new v6 Python material succeeded, but no local pytest/Ruff/compileall PASS is claimed. Stage 6 MUST execute all provider-free gates successfully before the first provider/model call.
+Stage 5 must materialize the complete v7 adapter and deterministic regressions, publish the exact candidate, then this section must be updated and readiness-reviewed before Human launch.
 
 ## Authorized scope
 
-The Executor may:
+No provider-backed Stage 6 execution is currently authorized.
 
-- synchronize/establish the exact authorized remote candidate safely;
-- run deterministic/provider-free pre-provider checks;
-- execute the published v6 evaluation;
-- diagnose failures;
-- make bounded represented technical repairs that preserve this Task Contract's semantics/Design;
-- perform technical Code Review & Verify;
-- persist and push authorized non-Markdown v6 telemetry/handoff evidence.
+During future authorized Stage 6, the Executor may only:
 
-A bounded repair may correct candidate mechanics only. Any change to probe semantics, oracle meaning, arm order, compute matrix, live parent-surface meaning, receipt strategy, retry contract, evidence-eligibility semantics, thresholds or pilot criteria requires Orchestrator re-entry.
+- establish the exact published candidate;
+- execute provider-free preflight/test/compile/lint gates;
+- execute the published fixed 24-arm evaluation;
+- diagnose failures and make only bounded represented mechanics-preserving repairs explicitly allowed by the later readiness authority;
+- persist authorized non-Markdown telemetry/handoff evidence.
 
 ## Explicit exclusions
 
@@ -259,275 +345,103 @@ The Executor MUST NOT:
 
 - edit/commit Markdown;
 - redesign T063 or change this Task Contract;
-- change frozen probe/oracle semantics or task messages;
-- change requested model/reasoning matrix after scored execution begins;
-- treat historical v1/v2/v3/v4/v5 results as v6 evidence;
-- silently rerun/rewrite a consumed invalid scored child;
-- convert an unscored execution/measurement block into model-quality evidence;
-- treat a valid quality FAIL as quality-preserving efficiency evidence;
+- change frozen probes/oracles/task messages;
+- change replicate count, schedule, profile matrix, thresholds or decision taxonomy;
+- stop or rerun because of a valid quality FAIL;
+- reuse v1-v6 attempts as v7 score data;
+- silently rerun/replace a consumed v7 quality result;
 - infer backend-served identity beyond D063;
 - use internal/raw response events as passing evidence;
 - weaken exact live parent/child correlation or permit multiple spawned children;
-- restore the v5 requirement that live `Started` activity must appear in `turn/completed`;
 - create substantial private/ephemeral controller, harness, fixture generator, oracle/grader, lifecycle controller or telemetry system absent from the candidate;
 - decide the global R007 routing policy.
 
 ## Invariants / constraints
 
-### Root/runtime launch profile
-
-The Human-facing D055 launch card is separate from the transport prompt. Frozen v6 launch profile:
-
-```text
-Executor:        Codex
-Surface:         Codex Desktop / native Windows
-Session:         NEW
-Coordinator-ID:  AG | agent-governance | T063 | root-6
-Root model:      gpt-5.6-sol
-Root reasoning:  medium
-Codex runtime:   exactly 0.153.4
-App Server:      exactly 0.153.4
-Auth category:   chatgpt
-```
-
-`root-6` is a same-work-unit failover after the consumed blocked v5 run and material adapter/Task Contract revision. It is not a concurrent second root.
-
-The Desktop-bundled `codex.exe` may satisfy the runtime requirement when its effective version is exactly `0.153.4`; no standalone CLI installation is required merely for interface use.
-
-### Frozen child matrix
-
-```text
-P1 ADAPTIVE  gpt-5.6-luna  / medium
-P1 CONTROL   gpt-5.6-sol   / medium
-P2 CONTROL   gpt-5.6-sol   / medium
-P2 ADAPTIVE  gpt-5.6-terra / medium
-P3 ADAPTIVE  gpt-5.6-terra / high
-P3 CONTROL   gpt-5.6-sol   / medium
-```
-
-No profile/runtime substitution is authorized after provider-backed execution begins. A required profile that cannot resolve exactly is `BLOCKED_PROFILE_RESOLUTION`.
-
-### Frozen arm order
-
-```text
-P1 ADAPTIVE -> CONTROL
-P2 CONTROL  -> ADAPTIVE
-P3 ADAPTIVE -> CONTROL
-```
-
-### Frozen source/oracle baseline
-
-```text
-69e910f329a2294c3b40df0f6ee983f9905f4677
-```
-
-### Historical evidence excluded from v6
-
-```text
-v1  3d8a9460988351383a90adfc6b76e2deff056504
-v2  3ff745a8d29e031ca818c1bc618b15a54e0cbf2b
-v3  746519abc6f159e959120f68d5c9f920d88d5797
-v4  4135a13ce8daa4f6b1fcabe45063364fbbdd16f1
-v5  3f9830a65a152ad595653961205e0ca52b9c5ccc
-```
-
-V5 consumed one parent turn and one child attempt. Its public exact-child correlation and same-child reattachment succeeded, but it produced no valid scored child because of the completed-snapshot duplication assumption. It remains historical measurement evidence only.
+- native Windows execution;
+- Codex runtime/App Server pin remains exactly `0.153.4` unless D077 authority changes prospectively before execution;
+- auth category `chatgpt`;
+- children and measurement parents remain exact read-only;
+- fresh App Server per scored arm;
+- no tracked/global mutation attributable to measurement;
+- no historical evidence enters v7 scoring;
+- no provider call before provider-free deterministic gates pass;
+- no outcome-conditioned sample extension or early success stopping.
 
 ## Executor process autonomy
 
-Inside the authorized Stage 6 envelope, the Executor owns mechanics and private execution organization under D041/D054, including CLI/API/SDK/shell choices and compatible native tools/workers.
-
-This Task Contract defines what, bounds, invariants, evidence and stop conditions. It does not prescribe private Executor topology unless that topology is experimentally or safety-material.
-
-## Probe semantics
-
-### P1 — exact Git evidence inventory
-
-For the frozen six-file set, each child returns exact path, Git blob SHA, byte size from Git object metadata and frozen-HEAD existence. PASS requires exact equality with the deterministic repository-owned oracle and exact frozen HEAD identity.
-
-### P2 — static dependency/symbol map
-
-`dependency edge` means only a static Python AST import edge between frozen in-scope source files. Dynamic/bootstrap/package-discovery/runtime-cache relationships and external imports are excluded. The child returns exact internal edge set, acyclicity and owners for the frozen six symbols. PASS requires exact oracle equality.
-
-### P3 — adversarial independent review
-
-Use the published semantic fixture generator to place one fresh runtime fixture outside the repository/worktree and outside Windows system temp. The location must be fresh and readable by the qualified read-only child. The fixture contains exactly one frozen material defect. PASS requires detection of that defect, correct mechanism/severity, proof direction and minimal fix direction without invented material findings.
-
-If P3 prepared input is unreadable, execution is invalid; do not rewrite/rerun a consumed first attempt without new durable authority.
-
-## D063 measurement requirements
-
-Every valid scored child requires:
-
-```text
-real exact parent/child correlation from public live subAgentActivity
-parent activePermissionProfile.id == :read-only
-non-contradictory legacy read-only projection
-continuous loaded-parent residency before/through child reattachment
-child parentThreadId == exact parent
-child activePermissionProfile.id == :read-only
-requested child model/reasoning from frozen Stage 5 config
-resolved configured child model/reasoning exact match
-exact non-estimated child-turn token usage
-exact child-turn duration
-exact-child reroute observation
-exact worker contract/task receipt
-no tracked/global mutation attributable to measurement
-```
-
-Persist separately at least:
-
-```text
-requested_profile
-resolved_thread_profile / resolved model+reasoning
-reroute_observed
-backend_served_profile_verified
-```
-
-`backend_served_profile_verified` remains `false` unless a separately qualified stronger receipt exists.
-
-Missing mandatory evidence is a measurement/execution-validity block, not worker-quality failure.
-
-## First-attempt scoring
-
-First-attempt quality is the scored result. Preserve valid failures.
-
-A valid ADAPTIVE first-attempt FAIL is model-quality evidence and makes the pilot `NOT_QUALIFIED`; it is never replaced by a retry. The v6 candidate does not authorize compensating scored reruns or diagnosis-only provider calls after a block.
-
-No indefinite retries and no compensating provider call after a measurement/execution block.
+Inside a future authorized Stage 6 envelope, the Executor owns mechanics and private execution organization under D041/D054. This Task Contract controls experiment semantics, profiles, schedule, evidence and stop conditions; private process autonomy cannot change them.
 
 ## D076 executable-materialization boundary
 
-Stage 6 may create/use small mechanical execution aids. Substantial new executable material absent from the published candidate requires STOP -> Orchestrator Stage 5 re-entry.
+```text
+small mechanical execution aid
+    -> Stage 6 may create/use it
 
-Terminal handoff MUST include:
+substantial new controller/harness/script/fixture-oracle implementation
+    -> STOP
+    -> Orchestrator Stage 5 re-entry
+```
+
+Required terminal audit fields:
 
 ```text
 ephemeral_artifacts: [...]
 executor_material_ephemeral_artifacts: []
 ```
 
-Any material or uncertain late-discovered executable artifact is a re-entry condition.
-
-## Pre-provider gates
-
-Before the first provider/model call, Stage 6 MUST verify:
-
-- exact candidate branch/HEAD and candidate base ancestry;
-- native Windows host;
-- effective Codex runtime exactly `0.153.4`;
-- App Server exactly `0.153.4`;
-- auth category `chatgpt`;
-- no unauthorized tracked candidate changes;
-- no custom/local agent-role ambiguity that could alter child instructions;
-- P3 runtime-root requirements can be satisfied;
-- all repository-native deterministic tests covering v3 harness, v4 adapter, v5 evidence and v6 parent-surface behavior pass;
-- Python compile verification for the published eval/test candidate passes;
-- repository-native lint for the changed candidate passes;
-- no newer stable Codex release requiring D077 re-entry has appeared.
-
-Any pre-provider gate failure blocks with zero new scored provider calls.
-
-## Version-sensitive launch gate
-
-Reviewed upstream state for v6 authority on 2026-09-11:
-
-```text
-qualified pin:              Codex/App Server 0.153.4
-current stable reviewed:    0.154.0
-newest observed prerelease: 0.155.0-alpha.3.9
-version disposition:        PIN_RETAINED
-newer stable than 0.154.0:  none at review time
-```
-
-Codex `0.154.0` retains the material live-item/history persistence distinction and does not remove the v5 blocker. The appearance of a prerelease does not extend D063 qualification or authorize runtime change.
-
-If a stable Codex release newer than `0.154.0` appears before the first provider-backed v6 call, STOP and return to Orchestrator for D077 relevance classification. Do not independently upgrade, downgrade or substitute the experiment runtime.
-
-## Scoring
-
-Compute from v6 only:
-
-```text
-control_pass_count / 3
-adaptive_pass_count / 3
-adaptive_first_attempt_failures
-adaptive_escalation_count = 0
-material_false_negative_count
-material_false_positive_count
-profile_resolution_failures
-control_exact_tokens_total
-adaptive_exact_tokens_total
-control_exact_duration_total
-adaptive_exact_duration_total
-root_rework_events_caused_by_children
-reattach_resume_attempts_total
-reattach_resume_retries_total
-scored_child_quality_eligible_count
-scored_child_efficiency_eligible_count
-run_model_comparison_eligible
-pilot_eligible
-```
-
-Run-level CONTROL/ADAPTIVE comparisons and a pilot decision require one complete clean six-arm run. Per-child valid quality evidence may remain informative in a partial run, but a partial run is not a matched model comparison and cannot produce a pilot decision.
-
-## Pilot decision
-
-Final `pilot_decision` is one of:
-
-- `QUALIFIED` — CONTROL 3/3 and ADAPTIVE 3/3 first-attempt PASS; no adaptive material false result/profile-resolution-invalidating reroute; complete D063 receipts; exact adaptive usage lower than control or a predeclared valid configured-cost normalization demonstrates lower compute; no offsetting material root rework or safety/authority incident.
-- `QUALIFIED_QUALITY_ONLY` — all quality/profile/measurement requirements pass but a valid savings/cost claim cannot be made; exact token/duration evidence still required.
-- `NOT_QUALIFIED` — a valid ADAPTIVE first attempt has a material quality regression/material false result or offsetting root rework.
-- `null` — run is blocked/incomplete; blocker classification is persisted separately and MUST NOT be presented as a pilot decision.
-
-A T063 pilot decision is evidence for later R007 convergence only; it is not itself global policy.
-
 ## Acceptance criteria
 
-- **AC-T063-1:** NEW `root-6`; exact root/runtime profile and all pre-provider gates pass before any scored execution.
-- **AC-T063-2:** one clean v6 six-arm run in frozen order; v1-v5 excluded.
+- **AC-T063-1:** exact v7 candidate identity, runtime/profile and all provider-free gates pass before first provider call.
+- **AC-T063-2:** one clean v7 run executes exactly the frozen 24-arm schedule unless a non-quality validity blocker stops it; v1-v6 are excluded.
 - **AC-T063-3:** every persisted scored child satisfies complete D063 receipts and remains read-only.
-- **AC-T063-4:** P1/P2/P3 satisfy frozen deterministic/oracle semantics without leakage.
-- **AC-T063-5:** live parent window contains exactly one unique Started activity matching the exact child/task; same logical item notifications are deduplicated by item ID; forbidden/multiple/contradictory parent activity blocks.
-- **AC-T063-6:** completed parent snapshot need not duplicate the live Started receipt but must preserve exact completion identity/final text and must not contradict the live correlation.
-- **AC-T063-7:** retry behavior is same-child/same-params only, bounded to the exact empty-rollout marker family, with parent residency checked immediately before every retry and separately counted.
-- **AC-T063-8:** telemetry distinguishes valid child quality evidence from execution/measurement blocks; no unscored block is attributed as model-quality evidence.
-- **AC-T063-9:** quality FAILs are retained as model-quality evidence and excluded from quality-preserving efficiency eligibility.
-- **AC-T063-10:** no score rewriting, unauthorized compensating provider calls, profile substitution, oracle leakage, D076 materialization violation or tracked/global mutation.
-- **AC-T063-11:** terminal handoff/telemetry are persisted and pushed with exact candidate/evidence identity and provider-call accounting.
+- **AC-T063-4:** P1/P2/P3 preserve frozen deterministic/oracle semantics without leakage.
+- **AC-T063-5:** live parent-window and completed-parent semantics remain exactly v6-qualified.
+- **AC-T063-6:** same-child reattachment remains bounded and separately counted without new provider turns.
+- **AC-T063-7:** valid quality FAILs are retained, do not stop the schedule, do not make the run execution-invalid and are never replaced.
+- **AC-T063-8:** complete valid runs compute per-probe/global quality states, quality-adjusted operational metrics and exactly one frozen non-null pilot decision.
+- **AC-T063-9:** CONTROL quality deficiency produces `ADAPTIVE_QUALITY_QUALIFIED_CONTROL_DEFICIENT` when ADAPTIVE is 12/12, not `BLOCKED_EXECUTION_INVALID`.
+- **AC-T063-10:** exact-token usage qualification is claimed only when both profiles are 12/12 and the predeclared 10% materiality floor is met.
+- **AC-T063-11:** no score rewriting, compensating provider calls, profile substitution, oracle leakage, D076 violation or tracked/global mutation occurs.
+- **AC-T063-12:** telemetry/handoff persist exact trial/replicate identity, provider/reattachment accounting, profile quality state, metrics and decision/blocker.
 
 ## Verification and trace requirements
 
 Orchestrator-owned semantic/conformance assets:
 
-- frozen P1/P2/P3 oracle construction and scoring in the published v3 package;
-- v4 exact empty-rollout/same-child retry regression tests;
-- v5 model-evidence attribution tests;
-- v6 live-parent-window/deduplication/forbidden-activity regression tests.
+- frozen P1/P2/P3 oracle construction/scoring;
+- inherited v4 reattachment regression tests;
+- inherited v5 model-evidence tests;
+- inherited v6 parent-surface tests;
+- new v7 schedule/taxonomy/aggregate conformance tests.
 
-Executor Stage 6 must execute and technically review those assets, may add only bounded supplementary technical verification, and must not change semantic oracle/evidence meaning without Orchestrator re-entry.
+Future Stage 6 must execute and technically review all designated assets before provider calls where feasible, plus compile/lint/preflight gates.
 
-Required evidence includes:
+Required v7 evidence includes:
 
-- deterministic provider-free test/compile/lint results before first provider call;
-- exact preflight runtime/profile/permission receipts;
-- one telemetry entry per fully measured scored child;
-- exact provider-attempt accounting including reattachment RPC retries separately;
-- live parent-surface validation outcome;
-- model-evidence eligibility fields and blocker domain;
+- exact provider-free verification results;
+- one telemetry item for every fully measured scheduled child;
+- replicate block/index and sequence identity;
+- requested/resolved profiles and reroute evidence;
+- exact token/duration evidence;
+- per-probe pass counts and pair taxonomy;
+- global ADAPTIVE/CONTROL quality status;
+- tokens/duration per success;
+- exact 10% token-improvement calculation when eligible;
+- run execution/model-comparison/pilot eligibility;
 - mutation/oracle-leak/D076 audit;
 - final technical review summary.
 
 ## Code Review & Verify obligations
 
-Before terminal `COMPLETED` or `BLOCKED`, the Executor must:
+Before terminal completion/block, the Executor must review represented candidate/repair state against this Task Contract and verify:
 
-- review the represented candidate/repair delta against this Task Contract;
-- verify no Stage 6 repair changed experiment semantics;
-- verify v4 repaired adapter behavior remains intact;
-- verify v5 evidence attribution remains internally consistent;
-- verify v6 live parent-surface semantics match R023/R10;
-- persist all required handoff fields under `docs/EXECUTOR-HANDOFFS.md`.
+- no Stage 6 repair changed experiment semantics;
+- inherited v4/v5/v6 semantics remain intact;
+- v7 schedule is exactly 24 arms and counterbalanced;
+- valid quality FAILs do not trigger early stop/replay;
+- decision taxonomy matches this contract exactly;
+- terminal evidence satisfies `docs/EXECUTOR-HANDOFFS.md`.
 
 ## Stop / escalation / SDD re-entry conditions
 
@@ -536,78 +450,60 @@ STOP rather than guess when any of these occurs:
 - candidate/base/branch identity cannot be established safely;
 - a material requirement, Design, Plan/Trace or acceptance defect/ambiguity is discovered;
 - a semantic oracle appears defective;
-- a required runtime/model/reasoning profile cannot be resolved exactly;
-- a mandatory D063 receipt is unavailable;
-- live parent activity cannot be represented with the public notification semantics above;
-- the empty-rollout condition does not match the authorized marker family;
+- required runtime/model/reasoning profile cannot resolve exactly;
+- mandatory D063 receipt is unavailable;
+- live parent surface cannot be represented under v6 semantics;
 - same-child retry barrier exhausts or parent residency is lost;
-- an execution-validity error cannot be represented without changing evidence semantics;
-- a D076-material executable artifact is missing from the candidate;
+- a D076-material executable artifact is missing;
 - a bounded repair would change approved semantics/Design;
 - a newer stable Codex release requires D077 re-entry;
-- a safety/security/permission/reproducibility invariant cannot be satisfied.
+- safety/security/permission/reproducibility invariant cannot be satisfied.
 
-Persist available evidence, perform no compensating scored call, and identify the earliest affected SDD stage before returning control.
+A valid `WORKER_QUALITY` FAIL is explicitly **not** a stop condition.
+
+## Version-sensitive launch gate
+
+Current design-time state remains:
+
+```text
+qualified pin:           Codex/App Server 0.153.4
+last reviewed stable:    0.154.0
+last reviewed prerelease:0.155.0-alpha.3.9
+disposition:             PIN_RETAINED at v6 convergence
+```
+
+Stage 5/readiness MUST revalidate current upstream state. A materially new stable release requires D077 relevance classification before Stage 6 authorization.
 
 ## Expected handoff / evidence
 
-The Executor MUST persist:
+Future authorized Executor must persist:
 
 ```text
-handoffs/T063-adaptive-worker-routing-telemetry-v6.json
-handoffs/T063-executor-handoff-v6.json
+handoffs/T063-adaptive-worker-routing-telemetry-v7.json
+handoffs/T063-executor-handoff-v7.json
 ```
-
-The handoff/telemetry must capture at least:
-
-- canonical authority and exact candidate identity;
-- pre-provider verification results;
-- represented Stage 6 repairs, if any;
-- exact provider and reattachment-RPC accounting;
-- per-child D063/profile/usage/duration/reroute/oracle results;
-- live parent-surface validation evidence;
-- per-child quality/efficiency eligibility;
-- run-level execution validity/model-comparison/pilot eligibility;
-- exact blocker/failure domain when incomplete;
-- mutation/oracle-leak review;
-- D076 ephemeral-artifact audit;
-- final pilot decision only when a complete clean six-arm run permits one.
 
 Do not persist private chain-of-thought.
 
 ## Terminal return shape
 
-Return exactly:
+When Stage 6 is later authorized, return exactly:
 
 ```text
 STATUS: COMPLETED | BLOCKED
-HANDOFF: handoffs/T063-executor-handoff-v6.json
-BRANCH: test/t063-adaptive-worker-routing-requalification-v6
+HANDOFF: handoffs/T063-executor-handoff-v7.json
+BRANCH: test/t063-adaptive-worker-routing-requalification-v7
 HEAD: <actual remote pushed HEAD>
 ```
 
 ## Human launch gate
 
 ```text
-launch_state: AUTHORIZED_AWAITING_HUMAN_START
+launch_state: NOT_AUTHORIZED
 ```
 
-ChatGPT MUST NOT start or directly control Codex. Human-mediated transport under D071 is required.
+No Human/Codex launch prompt is valid yet. Stage 5 candidate materialization and a fresh readiness review are required first.
 
 ## Thin transport invariant
 
-The Human-visible launch prompt is transport/bootstrap only. A compliant v6 transport contains only:
-
-```text
-Set the visible Codex chat title to exactly:
-AG | agent-governance | T063 | root-6
-
-Repository: https://github.com/ManuelBouza/agent-governance
-Session: NEW
-Task Contract: docs/tasks/T063-adaptive-worker-routing-requalification.md
-Authorized candidate: test/t063-adaptive-worker-routing-requalification-v6@af2de380569285b63e33de3f53628cadcf4052b6
-
-Synchronize canonical Git authority, load the repository instructions/checkpoint and the Task Contract, then execute that Task Contract exactly. Return only its defined terminal result.
-```
-
-D055 launch-profile information is presented to the Human separately. Do not duplicate matrix, parent-surface logic, retry logic, evidence schema, acceptance criteria, test runbook, version logic or stop conditions in the transport prompt.
+When launch is eventually authorized, the Human-visible transport prompt must remain bootstrap-only: coordinator identity, repository, Task Contract pointer and exact authorized candidate identity. It must not duplicate the 24-arm schedule, scoring, retry, acceptance or evidence semantics already persisted here.

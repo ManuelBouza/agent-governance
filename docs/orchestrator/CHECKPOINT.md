@@ -1,16 +1,15 @@
 # Orchestrator Checkpoint
 
-Checkpoint-ID: O270  
+Checkpoint-ID: O271  
 Date: 2026-09-11  
 Current-Objective: T063 — adaptive worker routing requalification  
-State: T063_V6_CONVERGED_INCONCLUSIVE_BASELINE_SPEC_DESIGN_REENTRY_REQUIRED  
+State: T063_V7_SPEC_DESIGN_PLAN_COMPLETE_STAGE5_REQUIRED  
 Active-Executor: none  
 Executor-Launch-State: NOT_AUTHORIZED  
-Coordinator-ID: `AG | agent-governance | T063 | root-6` — retired after consumed v6 six-arm run  
-Task-Contract: `docs/tasks/T063-adaptive-worker-routing-requalification.md` — v6 execution authority consumed; do not relaunch from its stale Human launch block  
-Current-Convergence-Review: `docs/reviews/T063-R12.md`  
-T063-V6-Candidate-Branch: `test/t063-adaptive-worker-routing-requalification-v6`  
-T063-V6-Candidate-HEAD: `af2de380569285b63e33de3f53628cadcf4052b6`  
+Coordinator-ID: none reserved — v7 Stage 6 has not been authorized  
+Task-Contract: `docs/tasks/T063-adaptive-worker-routing-requalification.md` — materially revised for v7; launch_state NOT_AUTHORIZED  
+Current-Design-Review: `docs/reviews/T063-R13.md`  
+Prior-Convergence-Review: `docs/reviews/T063-R12.md`  
 T063-V6-Evidence-HEAD: `276fa94cde6904c003482c8b527de7e8cda416d4`  
 Historical-T063-V5-Evidence-HEAD: `3f9830a65a152ad595653961205e0ca52b9c5ccc`  
 Historical-T063-V4-Evidence-HEAD: `4135a13ce8daa4f6b1fcabe45063364fbbdd16f1`  
@@ -23,114 +22,121 @@ Chat-Closure: KEEP_CURRENT_CHAT
 
 ## Canonical transition
 
-V6 completed all six prospectively frozen arms with valid D063/v6 execution receipts. The terminal evidence branch is exactly one evidence-only commit ahead of the authorized candidate and adds only the v6 telemetry and executor handoff JSON files.
+T063-R12 converged v6 as technically complete evidence with six execution-valid children but an inconclusive pilot taxonomy because root-equivalent CONTROL failed P3 quality while ADAPTIVE passed.
 
-Provider-free verification passed before execution:
+T063-R13 prospectively corrects that design defect. V7 separates execution validity, absolute profile quality, comparative quality and efficiency.
 
-```text
-candidate/base ancestry: PASS
-deterministic tests:     45 passed
-compileall:              PASS
-Ruff:                    PASS
-oracle preparation:      PASS
-stable release gate:     PASS
-```
+The v7 Task Contract is now normalized against the Maintainer Skill v4 template and freezes Specify / Design / Plan & Trace, but it is deliberately not executable until Stage 5 materialization and readiness review complete.
 
-Provider accounting:
+## V7 selected design
+
+V7 is a fixed-n replicated qualification calibration, not a formal statistical non-inferiority study.
+
+Frozen sample structure:
 
 ```text
-scored parent turns:       6
-scored child attempts:     6
-reattachment RPC retries:  6
-compensating attempts:     0
-diagnostic child attempts: 0
+4 replicate blocks
+3 probes per block
+2 profiles per probe
+= 24 scored child attempts on a complete valid run
 ```
 
-All six public live parent surfaces passed. All six children are `execution_validity=VALID` and model-quality eligible. Five are quality-preserving efficiency eligible.
+Arm order is counterbalanced so each profile runs first exactly twice per probe.
 
-## V6 quality outcome
-
-Observed first-attempt result:
+Profiles remain unchanged from v6:
 
 ```text
-P1 ADAPTIVE  Luna/Medium   PASS
-P1 CONTROL   Sol/Medium    PASS
-P2 CONTROL   Sol/Medium    PASS
-P2 ADAPTIVE  Terra/Medium  PASS
-P3 ADAPTIVE  Terra/High    PASS
-P3 CONTROL   Sol/Medium    FAIL
+P1 ADAPTIVE  Luna/Medium
+P1 CONTROL   Sol/Medium
+P2 ADAPTIVE  Terra/Medium
+P2 CONTROL   Sol/Medium
+P3 ADAPTIVE  Terra/High
+P3 CONTROL   Sol/Medium
 ```
 
-The P3 CONTROL result is a valid `WORKER_QUALITY` failure, not an execution/measurement failure. It contains one material false negative and one material false positive against the frozen P3 oracle.
+Historical v1-v6 attempts are excluded from v7 scoring.
 
-Aggregate descriptive metrics:
+## Quality and validity semantics
+
+Per profile/probe:
 
 ```text
-CONTROL pass count:        2/3
-ADAPTIVE pass count:       3/3
-CONTROL exact tokens:      84,985
-ADAPTIVE exact tokens:     84,547
-CONTROL exact duration:    104.161 s
-ADAPTIVE exact duration:   139.296 s
+QUALITY_QUALIFIED = 4/4 first-attempt PASS
 ```
 
-The 438-token raw adaptive reduction is not an accepted-quality savings claim because the failed CONTROL P3 arm is efficiency-ineligible.
+Global profile qualification requires 12/12 plus intact profile/reroute evidence.
 
-## Convergence diagnosis
-
-The published harness emitted:
+A valid `WORKER_QUALITY` FAIL:
 
 ```text
-BLOCKED_EXECUTION_INVALID
-CONTROL did not pass 3/3 first attempts; baseline invalid
+remains execution_validity=VALID
+remains model-quality evidence
+does not stop the fixed schedule
+does not authorize rerun/replacement
 ```
 
-Stage 7 does not adopt that run-level semantic diagnosis because every scored child is execution-valid. The blocker is a prospective specification/decision-taxonomy gap inherited from T054/T063: the frozen pilot enum requires CONTROL 3/3 for qualification but defines no explicit outcome for a complete valid run where CONTROL fails and ADAPTIVE passes.
+Only measurement/profile/runtime/permission/oracle-validity failures block execution.
 
-Canonical Stage 7 diagnosis:
+A complete 24-arm run is execution-valid regardless of quality PASS/FAIL composition and must produce a non-null pilot decision.
+
+## V7 pilot taxonomy
+
+Complete valid runs produce exactly one of:
 
 ```text
-INCONCLUSIVE_BASELINE / SPECIFICATION_DESIGN_GAP
+QUALIFIED_PROFILE_AND_USAGE_EFFICIENCY
+QUALIFIED_PROFILE_ROUTING_ONLY
+ADAPTIVE_QUALITY_QUALIFIED_CONTROL_DEFICIENT
+NOT_QUALIFIED
 ```
 
-Frozen v6 `pilot_decision` remains `null`. No post-hoc outcome is added.
+`pilot_decision=null` is reserved for incomplete/blocked non-quality execution.
 
-R007 remains `EVALUATING`; no global adaptive-routing policy is adopted.
+The accepted-quality exact-token materiality floor is prospectively fixed at 10% and is evaluated only when both global profiles are 12/12 quality qualified.
 
-## No rerun authority
+## Quality-adjusted operational metrics
 
-The v6 launch authority is consumed.
-
-Do not rerun P3 CONTROL, replay v6, substitute profiles, change thresholds or execute compensating provider calls. Repeating until CONTROL passes would condition the experiment on observed results and violate first-attempt/frozen-design semantics.
-
-Any successor requires fresh prospective authority.
-
-## Required re-entry
-
-Before any v7/provider-backed successor, ChatGPT Orchestrator must re-enter Specify / Design / Plan & Trace and freeze at least:
-
-1. the semantic outcome for valid CONTROL quality failure;
-2. whether the experiment is absolute accepted-quality gating, paired comparative/non-inferiority evaluation, or both;
-3. prospective stochastic-variance handling without outcome-conditioned reruns;
-4. repeated-trial/sample structure if repetition is used;
-5. decision taxonomy for all CONTROL/ADAPTIVE pass/fail combinations;
-6. accepted-quality efficiency eligibility rules;
-7. whether root-equivalent Sol/Medium remains the comparison baseline for P3 or a separately justified accepted-quality reference is needed.
-
-Historical v1-v6 results are planning/provenance evidence only for any future successor unless the new prospective design explicitly says otherwise before execution.
-
-## D077 state
-
-V6 launch-time evidence confirmed:
+V7 reports, per probe/profile and globally:
 
 ```text
-qualified pin:              0.153.4
-latest stable at execution: 0.154.0
-newest reviewed prerelease: 0.155.0-alpha.3.9
-disposition:                PIN_RETAINED
+pass_count
+total_tokens
+total_duration
+tokens_per_success
+duration_per_success
 ```
 
-No runtime/profile substitution occurred.
+Valid failed attempts remain in resource numerators. Provider dollar/credit pricing may be descriptive only and is not a normative v7 decision constant.
+
+## Statistical interpretation
+
+Four replicates are project-specific calibration policy selected to expose run-to-run instability and permit exact arm-order counterbalancing. V7 does not claim formal non-inferiority, population-level superiority or universal task-class generalization from this sample.
+
+If v7 qualifies, the next scientific step is broader task-distribution validation rather than repeated outcome-conditioned reruns of the same probes.
+
+## Preserved measurement substrate
+
+V7 must preserve:
+
+- D063 exact read-only/identity/profile/usage/duration/reroute receipts;
+- v4 same-child empty-rollout reattachment barrier;
+- v5 per-child model-evidence semantics;
+- v6 public live parent-surface cardinality/correlation semantics;
+- frozen P1/P2/P3 task messages and deterministic oracles;
+- frozen source/oracle baseline `69e910f329a2294c3b40df0f6ee983f9905f4677`;
+- D076 materialization boundary;
+- D077 version-sensitive launch gate.
+
+## Stage disposition
+
+```text
+Stages 1-4: COMPLETE
+Stage 5:     REQUIRED — ChatGPT Orchestrator
+Stage 6:     NOT AUTHORIZED
+Stage 7:     future Orchestrator convergence
+```
+
+No provider/model call is authorized for v7 at O271.
 
 ## Held and frozen work
 
@@ -138,20 +144,30 @@ T062/T023 remains on Human hold exactly as previously recorded. Do not execute i
 
 T058 remains frozen by explicit Human decision. Do not resume, integrate, clean or copy it without new explicit Human authorization.
 
+R007 remains `EVALUATING`; no global adaptive worker-routing policy is adopted.
+
 ## Next Chat Minimum Load
 
 After normal bootstrap (`develop`, `AGENTS.md`, this checkpoint):
 
-1. for T063, load `docs/reviews/T063-R12.md` first;
-2. load the active T063 Task Contract only as the historical v6 specification whose launch authority is consumed;
-3. load R007 and T054/T063 scoring authority when redesigning the outcome taxonomy;
-4. load D063/D076/D077 only if the successor still depends on those surfaces or a concrete conflict requires them;
-5. for creation/material revision/readiness review of any successor Task Contract, load the Maintainer Skill v4 template + usage reference;
-6. for T062 resumption, load its separate held-line authority instead;
+1. for T063 load `docs/reviews/T063-R13.md` first;
+2. load the active v7 Task Contract;
+3. load R12 only when v6 provenance/baseline-gap interpretation is needed;
+4. load R021/R022/R023/D063/D076/D077 only when implementation or a concrete conflict requires them;
+5. for material Task Contract revision/readiness review, load the Maintainer Skill v4 template + usage reference;
+6. for T062 resumption, load its separate held-line authority;
 7. do not reconstruct the frontier from prior chat/Project Memory.
 
 ## Next Action
 
-T063 remains the current objective, but no Executor launch is authorized.
+Materialize the complete v7 Stage 5 candidate from the post-design protected `develop` state:
 
-ChatGPT Orchestrator must now perform the prospective baseline-validity/outcome-taxonomy/statistical-design correction for a possible successor. Do not materialize or launch v7 until the revised Specify / Design / Plan & Trace authority is complete and internally consistent.
+1. promote the accepted v3-v6 executable/test package without historical terminal evidence;
+2. add a v7 adapter that freezes the 24-arm counterbalanced schedule, replicate metadata, aggregate quality/usage metrics, complete pilot taxonomy and correct run-validity semantics;
+3. add Orchestrator-owned deterministic v7 conformance regressions;
+4. perform remote/static validation and provider-free checks available to ChatGPT;
+5. revalidate D077 current upstream state;
+6. publish exact candidate branch/HEAD;
+7. revise the Task Contract candidate freeze and perform a fresh readiness review before any Human/Codex launch.
+
+Do not consume provider/model calls during Stage 5.
