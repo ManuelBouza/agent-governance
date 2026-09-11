@@ -1,17 +1,16 @@
 # Orchestrator Checkpoint
 
-Checkpoint-ID: O267  
+Checkpoint-ID: O268  
 Date: 2026-09-11  
 Current-Objective: T063 — adaptive worker routing requalification  
-State: T063_V5_STAGE6_AUTHORIZED_AWAITING_HUMAN_START  
-Active-Executor: none — Codex selected for pending Human launch  
-Executor-Launch-State: AUTHORIZED_AWAITING_HUMAN_CODEX_START  
-Coordinator-ID: `AG | agent-governance | T063 | root-5` — reserved NEW same-work-unit failover root; not yet started  
-Task-Contract: `docs/tasks/T063-adaptive-worker-routing-requalification.md`  
-Current-Launch-Review: `docs/reviews/T063-R9.md`  
-T063-V5-Candidate-Branch: `test/t063-adaptive-worker-routing-requalification-v5`  
-T063-V5-Candidate-HEAD: `94b5ec6dcf0d094c1a90f84b08e7ce1de483716f`  
-T063-V5-Candidate-Base: `b71cc3b23bedb2c3e361207497ebd96f1dc59e49`  
+State: T063_V5_CONVERGED_V6_STAGE5_REQUIRED  
+Active-Executor: none  
+Executor-Launch-State: NOT_AUTHORIZED  
+Coordinator-ID: `AG | agent-governance | T063 | root-5` — retired after consumed blocked v5 run  
+Task-Contract: `docs/tasks/T063-adaptive-worker-routing-requalification.md` — v5 execution authority consumed; material v6 revision required before relaunch  
+Current-Convergence-Review: `docs/reviews/T063-R10.md`  
+Current-Research: `docs/research/R023-T063-V5-LIVE-SPAWN-RECEIPT-PERSISTENCE-GAP.md`  
+Historical-T063-V5-Evidence-HEAD: `3f9830a65a152ad595653961205e0ca52b9c5ccc`  
 Historical-T063-V4-Evidence-HEAD: `4135a13ce8daa4f6b1fcabe45063364fbbdd16f1`  
 Historical-T063-V3-Evidence-HEAD: `746519abc6f159e959120f68d5c9f920d88d5797`  
 Historical-T063-V2-Evidence-HEAD: `3ff745a8d29e031ca818c1bc618b15a54e0cbf2b`  
@@ -22,109 +21,111 @@ Chat-Closure: KEEP_CURRENT_CHAT
 
 ## Canonical transition
 
-V4 executed from its authorized candidate and consumed one parent turn/one child attempt before blocking on the already-known empty-rollout reattachment race. The live runtime returned `thread-store internal error`; the published adapter incorrectly required the non-contiguous phrase `thread-store error`, so the authorized same-child retry barrier was not entered.
+V5 executed from the exact authorized candidate `94b5ec6dcf0d094c1a90f84b08e7ce1de483716f` and returned terminal evidence at `3f9830a65a152ad595653961205e0ca52b9c5ccc`.
 
-The Executor made a bounded represented Stage 6 repair limited to the v4 adapter and its regression test, changing the classifier marker to `thread-store` while preserving every other empty-rollout marker and the same-child/no-new-provider-turn invariant. Provider-free post-repair verification passed in the v4 environment and no provider call occurred after the repair.
+Remote verification established that terminal v5 is one commit ahead of the candidate and that the only Stage 6 additions are the required telemetry/handoff JSON files. No implementation, test, configuration or Markdown repair was made by the Executor.
 
-ChatGPT Orchestrator accepted that repair, but the consumed v4 attempt remains historical and unscored. V4 produced no valid scored child and no pilot decision. The block is measurement-adapter evidence, not worker-quality or root-model-quality evidence.
+The candidate passed all pre-provider gates, including 36 deterministic tests, compileall, Ruff, provider-free oracle preparation, exact native Windows runtime/App Server `0.153.4`, `chatgpt` auth, required profile resolution and clean tracked state.
 
-ChatGPT then re-entered Stage 5 and materialized a clean v5 successor that:
+V5 then consumed one P1 ADAPTIVE parent turn and one child attempt. The initial exact-child `thread/resume` encountered the known empty-rollout persistence race; the v4 same-child barrier retried once after the required delay and parent-residency check and reattached successfully without creating another child/provider turn.
 
-1. promotes the repaired v4 adapter/tests byte-for-byte;
-2. preserves the frozen v3 probes, oracles, task messages, arm order and compute matrix;
-3. adds explicit per-child and run-level model-evidence eligibility semantics;
-4. prevents blocked/unscored attempts from being represented as model-quality evidence;
-5. treats valid worker-quality FAILs as quality evidence but not quality-preserving efficiency evidence.
+The run subsequently blocked because the completed parent turn contained zero `subAgentActivity(kind=Started)` items even though the exact public live `Started` activity had already been observed and used to identify/rejoin the child.
 
-## Scientific candidate
+## V5 convergence
 
-Authorized v5 candidate:
+Accepted terminal classification:
 
 ```text
-branch: test/t063-adaptive-worker-routing-requalification-v5
-HEAD:   94b5ec6dcf0d094c1a90f84b08e7ce1de483716f
-base:   b71cc3b23bedb2c3e361207497ebd96f1dc59e49
+STATUS: BLOCKED
+terminal_classification: BLOCKED_EXECUTION_INVALID
+failure_domain: EXECUTION_VALIDITY
+run_execution_validity: INVALID
+run_model_comparison_eligible: false
+pilot_eligible: false
+pilot_decision: null
+scored_child_quality_eligible_count: 0
+scored_child_efficiency_eligible_count: 0
+profile_resolution_failures: 0
+root_model_failure_attributed: false
 ```
 
-The candidate is three commits ahead of its exact base. Its diff is limited to the published v3 evaluation package, repaired v4 adapter/tests and v5 evidence-attribution adapter/tests.
-
-The repaired v4 blobs in v5 exactly match terminal v4:
+Provider accounting:
 
 ```text
-evals/adaptive_worker_routing_v4/runner.py
-  9d1703dbe9c6fc0000112da2c9775f6e3c76b8d8
-
-tests/test_t063_adaptive_worker_routing_v4_adapter.py
-  e1cc19f22cddcbf1c73e89c1cb1e85fcc4206cb6
+scored_parent_turns:       1
+scored_child_attempts:     1
+reattach_resume_attempts:  2
+reattach_resume_retries:   1
+compensating_attempts:     0
+diagnostic_child_attempts: 0
 ```
 
-Historical v1/v2/v3/v4 results are excluded from v5 scoring.
+The v5 attempt is historical measurement evidence only. It is excluded from all future scoring and is not quality evidence for Luna, Terra or Sol.
 
-## Verification status
+## R023 finding
 
-The Orchestrator attempted to create an exact local checkout for provider-free execution, but the sandbox could not resolve `github.com`. No local deterministic execution result is claimed.
+R023 establishes that v5 imposed an unsupported duplicate-persistence assumption.
 
-Stage 6 therefore MUST run the candidate's deterministic/provider-free test, compile and lint gates before its first provider/model call. Any failure blocks with zero new scored calls.
+D063 requires real exact parent/child correlation. V5 obtained that correlation from the public live `subAgentActivity(kind=Started)` receipt. D063 does not require that same live receipt to be duplicated inside the completed parent-turn snapshot.
 
-Remote structural review completed:
+Official Codex `0.153.4` source shows that Multi-Agent V2 emits turn-item activity live while rollout/history persistence has separate semantics. `ItemStarted` is transient. Official `0.154.0` retains the same material persistence policy.
+
+D077 remains:
 
 ```text
-v5 branch identity:          VERIFIED
-v5 base ancestry:            VERIFIED
-candidate diff boundary:     VERIFIED
-repaired v4 blob identity:   VERIFIED
-v5 evidence tests present:   VERIFIED
+qualified pin:    0.153.4
+current stable:   0.154.0
+disposition:      PIN_RETAINED
+upgrade fixes v5 blocker: false
 ```
 
-## Model-evidence invariant
+If a stable release newer than `0.154.0` appears before the next provider-backed T063 call, stop and perform D077 relevance classification.
 
-Only fully measured entries in `scored_children` are valid model-quality evidence. A valid FAIL remains first-attempt worker-quality evidence. Only PASS children are eligible as quality-preserving efficiency observations.
+## Approved v6 Design
 
-A partial or blocked run is not a matched CONTROL/ADAPTIVE comparison and cannot yield a pilot decision. An unscored provider attempt is not converted into model-quality evidence merely because it consumed provider work.
+A clean v6 successor may change only parent-surface measurement semantics needed to remove the defective duplication assumption.
 
-Run-level blockers are classified separately as profile resolution, measurement surface, measurement adapter, execution validity or unclassified execution. Unknown execution-invalid states are not overclaimed as infrastructure failures.
-
-## D077 state
-
-Launch-time upstream revalidation on 2026-09-11 found:
+The public live notification window for the exact parent turn must establish:
 
 ```text
-qualified pin:              0.153.4
-latest stable:              0.154.0
-newest observed prerelease: 0.155.0-alpha.3.9
-newer stable than 0.154.0:  none
-D077 disposition:           PIN_RETAINED
+exactly one subAgentActivity(kind=Started)
+exact matching child id
+exact expected task/agent path
+no second/different Started child activity
+no forbidden parent tool/item activity
 ```
 
-If a stable release newer than `0.154.0` appears before the first v5 provider call, STOP and return to Orchestrator for relevance classification.
+The completed parent turn remains authoritative for exact completion identity and final `PARENT_SPAWNED` text, plus any durable items actually represented there. Absence of the already-observed live `Started` item in `turn/completed` must not independently invalidate the run.
 
-## Coordinator continuity
+Preserve byte-for-byte or semantically exact all unrelated v5 authority:
 
-V4 `root-4` is retired after a consumed blocked run plus material adapter/Task Contract revision. V5 uses NEW failover root:
+- frozen P1/P2/P3 probes and oracles;
+- task messages;
+- arm order and compute matrix;
+- config-authoritative child task/profile;
+- D063 receipts;
+- v4 same-child reattachment barrier;
+- first-attempt scoring;
+- v5 model-evidence eligibility semantics;
+- D076 boundary;
+- no raw/internal response events;
+- historical v1-v5 exclusion from successor scoring.
+
+## Stage state
+
+T063 v5 Stage 7 is complete.
+
+R023/T063-R10 complete the bounded successor Explore/Specify/Design/Plan authority for the parent-surface correction.
+
+Current state is Stage 5 re-entry:
 
 ```text
-AG | agent-governance | T063 | root-5
+ChatGPT Orchestrator -> materialize clean v6 candidate
+Executor Stage 6     -> NOT AUTHORIZED
+provider/model calls -> NOT AUTHORIZED
 ```
 
-This is a D060 failover due contaminated execution context/adapter migration, not a concurrent second root.
-
-## Launch profile
-
-Current D055 Human-facing launch card:
-
-```text
-Executor:        Codex
-Surface:         Codex Desktop / native Windows
-Session:         NEW
-Coordinator-ID:  AG | agent-governance | T063 | root-5
-Root model:      gpt-5.6-sol
-Root reasoning:  medium
-Codex runtime:   exactly 0.153.4
-App Server:      exactly 0.153.4
-Auth category:   chatgpt
-```
-
-The launch profile is not Task semantics and remains separate from the thin transport prompt.
+The v5 `root-5` launch authority is consumed and must not be reused.
 
 ## Held and frozen work
 
@@ -138,22 +139,23 @@ R007 remains `EVALUATING`; no global adaptive worker-routing policy is adopted.
 
 After normal bootstrap (`develop`, `AGENTS.md`, this checkpoint):
 
-1. for T063 launch/convergence, load `docs/tasks/T063-adaptive-worker-routing-requalification.md` first;
-2. load `docs/reviews/T063-R9.md` only for v4 convergence/v5 authorization rationale;
-3. load R022/R021/D063/D076/D077 only when the Task Contract references require deeper interpretation or a concrete conflict arises;
-4. for creation/material revision/readiness review of any source-product Task Contract, load the Maintainer Skill v4 template + usage reference;
+1. for T063 v6 Stage 5, load `docs/reviews/T063-R10.md` and R023 first;
+2. load the current T063 Task Contract only as the v5 structural/semantic baseline to be materially revised for v6;
+3. before revising/readiness-reviewing the Task Contract, load `maintainer-skill/references/TASK-CONTRACT-V4-TEMPLATE.md` and `TASK-CONTRACT-TEMPLATE-USAGE.md`;
+4. load R021/R022/D063/D076/D077 only when the v6 implementation or a concrete conflict requires deeper interpretation;
 5. for T062 resumption, load its separate held-line authority instead;
 6. do not reconstruct frontiers from prior chat/Project Memory.
 
 ## Next Action
 
-Before Human-mediated v5 launch:
+Materialize T063 v6 Stage 5 from current protected `develop`:
 
-1. revalidate `develop` and exact v5 candidate HEAD;
-2. revalidate that no stable Codex release newer than `0.154.0` has appeared;
-3. present the D055 launch card separately;
-4. give the Human only the thin transport prompt defined by the canonical T063 Task Contract.
+1. create a fresh v6 topic branch from current `develop`;
+2. promote the accepted v5 executable package without v5 terminal evidence;
+3. add the bounded live-parent-notification validator and deterministic regression coverage defined by R023/T063-R10;
+4. perform provider-free structural/static verification available to the Orchestrator environment;
+5. publish the coherent v6 candidate;
+6. materially revise the T063 Task Contract against the Maintainer Skill v4 template with the exact candidate branch/base/HEAD;
+7. perform readiness review and only then decide whether a new Human-mediated Codex launch is authorized.
 
-ChatGPT MUST NOT start or directly control Codex under D071.
-
-After the Human returns the Task Contract-defined terminal four-line result, ChatGPT performs remote verification and Stage 7 convergence.
+No provider-backed T063 call is authorized before completion of those steps.
