@@ -1,0 +1,352 @@
+{
+  "blocker": {
+    "code": "BLOCKED_EXECUTION_INVALID",
+    "message": "thread/resume failed: {'code': -32600, 'message': 'no rollout found for thread id 01a09262-2515-75a1-9fa5-25fdc82791ff'}"
+  },
+  "branch": "test/t063-adaptive-worker-routing-requalification-v7",
+  "candidate_head_before_execution": "5a1769fed3f93d86cbc2e72a6cc89d7a276089d6",
+  "earliest_required_reentry_stage": "Stage 2 Specify — classify whether public App Server 'no rollout found' belongs to an authorized safe same-child persistence family before any design or candidate change",
+  "ephemeral_artifacts": [
+    {
+      "classification": "small mechanical execution aid",
+      "lifecycle": "ignored, local, disposable, not committed",
+      "path": ".venv",
+      "purpose": "repository-native locked Python test/lint environment"
+    },
+    {
+      "classification": "small mechanical execution aid",
+      "lifecycle": "ignored, local, disposable, not committed",
+      "path": ".t063-uv-cache",
+      "purpose": "task-local uv dependency cache used because the sandbox denied the global cache"
+    },
+    {
+      "classification": "small mechanical test byproduct",
+      "lifecycle": "ignored, local, disposable, not committed",
+      "path": ".t063-pytest-root7 and pytest-cache-files-*",
+      "purpose": "sandbox-created pytest temp/cache directories; authoritative pytest verification was rerun outside the sandbox"
+    }
+  ],
+  "executor_material_ephemeral_artifacts": [],
+  "frozen_evaluation_head": "69e910f329a2294c3b40df0f6ee983f9905f4677",
+  "implementation_head_sha": "5a1769fed3f93d86cbc2e72a6cc89d7a276089d6",
+  "metrics": {
+    "adaptive_escalation_count": 0,
+    "adaptive_exact_duration_total": 134.953,
+    "adaptive_exact_tokens_total": 87091,
+    "adaptive_first_attempt_failures": 0,
+    "adaptive_pass_count": 3,
+    "adaptive_quality_qualified": false,
+    "control_exact_duration_total": 90.005,
+    "control_exact_tokens_total": 61240,
+    "control_pass_count": 2,
+    "control_quality_qualified": false,
+    "exact_token_improvement": null,
+    "material_false_negative_count": 0,
+    "material_false_positive_count": 0,
+    "observed_child_attempts": 5,
+    "per_probe": {
+      "P1": {
+        "ADAPTIVE": {
+          "attempt_count": 1,
+          "duration_per_success": 68.045,
+          "pass_count": 1,
+          "profile_integrity": true,
+          "tokens_per_success": 26375.0,
+          "total_duration": 68.045,
+          "total_tokens": 26375
+        },
+        "CONTROL": {
+          "attempt_count": 1,
+          "duration_per_success": 28.001,
+          "pass_count": 1,
+          "profile_integrity": true,
+          "tokens_per_success": 24984.0,
+          "total_duration": 28.001,
+          "total_tokens": 24984
+        },
+        "pair_outcome": "NEITHER_QUALIFIED"
+      },
+      "P2": {
+        "ADAPTIVE": {
+          "attempt_count": 1,
+          "duration_per_success": 43.156,
+          "pass_count": 1,
+          "profile_integrity": true,
+          "tokens_per_success": 36281.0,
+          "total_duration": 43.156,
+          "total_tokens": 36281
+        },
+        "CONTROL": {
+          "attempt_count": 1,
+          "duration_per_success": 62.004,
+          "pass_count": 1,
+          "profile_integrity": true,
+          "tokens_per_success": 36256.0,
+          "total_duration": 62.004,
+          "total_tokens": 36256
+        },
+        "pair_outcome": "NEITHER_QUALIFIED"
+      },
+      "P3": {
+        "ADAPTIVE": {
+          "attempt_count": 1,
+          "duration_per_success": 23.752,
+          "pass_count": 1,
+          "profile_integrity": true,
+          "tokens_per_success": 24435.0,
+          "total_duration": 23.752,
+          "total_tokens": 24435
+        },
+        "CONTROL": {
+          "attempt_count": 0,
+          "duration_per_success": null,
+          "pass_count": 0,
+          "profile_integrity": true,
+          "tokens_per_success": null,
+          "total_duration": 0,
+          "total_tokens": 0
+        },
+        "pair_outcome": "NEITHER_QUALIFIED"
+      }
+    },
+    "profile_resolution_failures": 0,
+    "profiles": {
+      "ADAPTIVE": {
+        "attempt_count": 3,
+        "duration_per_success": 44.984333,
+        "pass_count": 3,
+        "profile_integrity": true,
+        "tokens_per_success": 29030.333333,
+        "total_duration": 134.953,
+        "total_tokens": 87091
+      },
+      "CONTROL": {
+        "attempt_count": 2,
+        "duration_per_success": 45.0025,
+        "pass_count": 2,
+        "profile_integrity": true,
+        "tokens_per_success": 30620.0,
+        "total_duration": 90.005,
+        "total_tokens": 61240
+      }
+    },
+    "replicate_count": 4,
+    "root_rework_events_caused_by_children": 0,
+    "scheduled_child_attempts": 24,
+    "token_improvement_floor": 0.1
+  },
+  "model_evidence": {
+    "failure_domain": "EXECUTION_VALIDITY",
+    "pilot_eligible": false,
+    "root_model_failure_attributed": false,
+    "run_execution_validity": "INVALID",
+    "run_model_comparison_eligible": false,
+    "scored_child_efficiency_eligible_count": 5,
+    "scored_child_quality_eligible_count": 5,
+    "unscored_child_attempts_count_as_model_quality": false
+  },
+  "next_required_authority": "ChatGPT Orchestrator review/re-entry required before additional scored calls.",
+  "pilot_decision": null,
+  "pre_provider_verification": {
+    "candidate_base_ancestry": "PASS — 9fb55e8f36570f6b91d0a23720ccc6a62a9d0b90 is exactly one commit above a3c719ad862128e292c7313b39966fbbbe156799",
+    "candidate_initial_identity": "PASS — test/t063-adaptive-worker-routing-requalification-v7@9fb55e8f36570f6b91d0a23720ccc6a62a9d0b90",
+    "codex_runtime": "PASS — 0.153.4",
+    "compileall": "PASS — v3-v7 eval packages and designated tests",
+    "current_stable_release_gate": "PASS — official current stable remained 0.154.0 before first provider call",
+    "oracle_prepare": "PASS — P1/P2/P3 and task-message digests",
+    "pytest": "PASS — 55 passed",
+    "ruff": "PASS — changed v3-v7 candidate surface",
+    "stage6_repairs_committed_before_scoring": true
+  },
+  "provider_execution": {
+    "compensating_attempts": 0,
+    "diagnostic_child_attempts": 0,
+    "reattachment_rpc_retries": 5,
+    "scored_child_attempts": 6,
+    "scored_parent_turns": 6
+  },
+  "replication": {
+    "arm_order": [
+      [
+        "P1",
+        "ADAPTIVE",
+        "gpt-5.6-luna",
+        "medium"
+      ],
+      [
+        "P1",
+        "CONTROL",
+        "gpt-5.6-sol",
+        "medium"
+      ],
+      [
+        "P2",
+        "CONTROL",
+        "gpt-5.6-sol",
+        "medium"
+      ],
+      [
+        "P2",
+        "ADAPTIVE",
+        "gpt-5.6-terra",
+        "medium"
+      ],
+      [
+        "P3",
+        "ADAPTIVE",
+        "gpt-5.6-terra",
+        "high"
+      ],
+      [
+        "P3",
+        "CONTROL",
+        "gpt-5.6-sol",
+        "medium"
+      ],
+      [
+        "P1",
+        "CONTROL",
+        "gpt-5.6-sol",
+        "medium"
+      ],
+      [
+        "P1",
+        "ADAPTIVE",
+        "gpt-5.6-luna",
+        "medium"
+      ],
+      [
+        "P2",
+        "ADAPTIVE",
+        "gpt-5.6-terra",
+        "medium"
+      ],
+      [
+        "P2",
+        "CONTROL",
+        "gpt-5.6-sol",
+        "medium"
+      ],
+      [
+        "P3",
+        "CONTROL",
+        "gpt-5.6-sol",
+        "medium"
+      ],
+      [
+        "P3",
+        "ADAPTIVE",
+        "gpt-5.6-terra",
+        "high"
+      ],
+      [
+        "P1",
+        "ADAPTIVE",
+        "gpt-5.6-luna",
+        "medium"
+      ],
+      [
+        "P1",
+        "CONTROL",
+        "gpt-5.6-sol",
+        "medium"
+      ],
+      [
+        "P2",
+        "CONTROL",
+        "gpt-5.6-sol",
+        "medium"
+      ],
+      [
+        "P2",
+        "ADAPTIVE",
+        "gpt-5.6-terra",
+        "medium"
+      ],
+      [
+        "P3",
+        "ADAPTIVE",
+        "gpt-5.6-terra",
+        "high"
+      ],
+      [
+        "P3",
+        "CONTROL",
+        "gpt-5.6-sol",
+        "medium"
+      ],
+      [
+        "P1",
+        "CONTROL",
+        "gpt-5.6-sol",
+        "medium"
+      ],
+      [
+        "P1",
+        "ADAPTIVE",
+        "gpt-5.6-luna",
+        "medium"
+      ],
+      [
+        "P2",
+        "ADAPTIVE",
+        "gpt-5.6-terra",
+        "medium"
+      ],
+      [
+        "P2",
+        "CONTROL",
+        "gpt-5.6-sol",
+        "medium"
+      ],
+      [
+        "P3",
+        "CONTROL",
+        "gpt-5.6-sol",
+        "medium"
+      ],
+      [
+        "P3",
+        "ADAPTIVE",
+        "gpt-5.6-terra",
+        "high"
+      ]
+    ],
+    "counterbalanced": true,
+    "design": "FIXED_N_REPLICATED_ABSOLUTE_QUALITY_GATE",
+    "outcome_conditioned_reruns_authorized": false,
+    "replicate_count": 4,
+    "scheduled_child_attempts": 24
+  },
+  "schema_version": 3,
+  "stage6_repairs": [
+    {
+      "commit": "c259648701510e90ed61fdd641022f8898db6880",
+      "file": "evals/adaptive_worker_routing_v7/runner.py",
+      "kind": "bounded mechanics-preserving lint repair",
+      "summary": "rewrote the schedule-bound comparison without changing its truth condition"
+    },
+    {
+      "commit": "5a1769fed3f93d86cbc2e72a6cc89d7a276089d6",
+      "file": "evals/adaptive_worker_routing_v7/runner.py",
+      "kind": "bounded mechanics-preserving adapter repair",
+      "summary": "mapped the frozen schedule guard to ArmSpec.reasoning, the represented v3 field"
+    }
+  ],
+  "status": "BLOCKED",
+  "task_id": "T063",
+  "technical_review": {
+    "markdown_changed_by_harness": false,
+    "prior_blocked_run_reused_for_scoring": false,
+    "product_source_changed_by_harness": false,
+    "published_stage5_harness_used": true,
+    "raw_response_events_used": false,
+    "repairs_preserved_experiment_semantics": true,
+    "schedule_review": "PASS — 24 frozen counterbalanced arms",
+    "terminal_review": "BLOCKED correctly on a nonmatching reattachment error; no replay or compensating scored call",
+    "v4_v5_v6_semantics_preserved": true,
+    "v7_decision_taxonomy_review": "PASS by deterministic conformance tests; no pilot decision emitted for incomplete run"
+  },
+  "telemetry_path": "handoffs/T063-adaptive-worker-routing-telemetry-v7.json",
+  "terminal_classification": "BLOCKED_EXECUTION_INVALID"
+}
