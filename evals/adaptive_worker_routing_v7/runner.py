@@ -67,7 +67,7 @@ def _v7_execute_arm(client: Any, **kwargs: Any) -> dict[str, Any]:
 
     if _BASE_EXECUTE_ARM is None:
         raise base_config.ExecutionInvalid("T063 v7 underlying execute_arm adapter unavailable")
-    if _TRIAL_CURSOR >= len(ARM_ORDER):
+    if len(ARM_ORDER) <= _TRIAL_CURSOR:
         raise base_config.ExecutionInvalid("T063 v7 received more arms than frozen schedule")
     spec = kwargs.get("spec")
     if not isinstance(spec, ArmSpec):
