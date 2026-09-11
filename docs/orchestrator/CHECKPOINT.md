@@ -1,17 +1,18 @@
 # Orchestrator Checkpoint
 
-Checkpoint-ID: O266  
+Checkpoint-ID: O267  
 Date: 2026-09-11  
 Current-Objective: T063 — adaptive worker routing requalification  
-State: T063_V4_TASK_CONTRACT_CANONICAL_STAGE6_AUTHORIZED_AWAITING_HUMAN_START  
+State: T063_V5_STAGE6_AUTHORIZED_AWAITING_HUMAN_START  
 Active-Executor: none — Codex selected for pending Human launch  
 Executor-Launch-State: AUTHORIZED_AWAITING_HUMAN_CODEX_START  
-Coordinator-ID: `AG | agent-governance | T063 | root-4` — reserved NEW same-work-unit failover root; not yet started  
+Coordinator-ID: `AG | agent-governance | T063 | root-5` — reserved NEW same-work-unit failover root; not yet started  
 Task-Contract: `docs/tasks/T063-adaptive-worker-routing-requalification.md`  
-Current-Launch-Review: `docs/reviews/T063-R8.md`  
-T063-V4-Candidate-Branch: `test/t063-adaptive-worker-routing-requalification-v4`  
-T063-V4-Candidate-HEAD: `f06c8f48f7b1d59dff9fc117cca5b42453ad23e8`  
-T063-V4-Candidate-Base: `9da2b6fed64ded9af8d38f67cd53cd066abef838`  
+Current-Launch-Review: `docs/reviews/T063-R9.md`  
+T063-V5-Candidate-Branch: `test/t063-adaptive-worker-routing-requalification-v5`  
+T063-V5-Candidate-HEAD: `94b5ec6dcf0d094c1a90f84b08e7ce1de483716f`  
+T063-V5-Candidate-Base: `b71cc3b23bedb2c3e361207497ebd96f1dc59e49`  
+Historical-T063-V4-Evidence-HEAD: `4135a13ce8daa4f6b1fcabe45063364fbbdd16f1`  
 Historical-T063-V3-Evidence-HEAD: `746519abc6f159e959120f68d5c9f920d88d5797`  
 Historical-T063-V2-Evidence-HEAD: `3ff745a8d29e031ca818c1bc618b15a54e0cbf2b`  
 Historical-T063-V1-Evidence-HEAD: `3d8a9460988351383a90adfc6b76e2deff056504`  
@@ -21,109 +22,101 @@ Chat-Closure: KEEP_CURRENT_CHAT
 
 ## Canonical transition
 
-O265/R7 correctly authorized the scientific v4 candidate after the v3 empty-rollout reattachment race, but the active T063 Task Contract had not been normalized to carry the complete v4 execution authority. As a result, material execution semantics were duplicated into review/checkpoint prose and an oversized Human-visible transport prompt.
+V4 executed from its authorized candidate and consumed one parent turn/one child attempt before blocking on the already-known empty-rollout reattachment race. The live runtime returned `thread-store internal error`; the published adapter incorrectly required the non-contiguous phrase `thread-store error`, so the authorized same-child retry barrier was not entered.
 
-The Human identified that regression and required the v4 Task Contract to become the durable execution carrier and reusable template pattern.
+The Executor made a bounded represented Stage 6 repair limited to the v4 adapter and its regression test, changing the classifier marker to `thread-store` while preserving every other empty-rollout marker and the same-child/no-new-provider-turn invariant. Provider-free post-repair verification passed in the v4 environment and no provider call occurred after the repair.
 
-ChatGPT Orchestrator therefore performed a documentation-only authority repair with zero provider/model calls:
+ChatGPT Orchestrator accepted that repair, but the consumed v4 attempt remains historical and unscored. V4 produced no valid scored child and no pilot decision. The block is measurement-adapter evidence, not worker-quality or root-model-quality evidence.
 
-1. materialized `maintainer-skill/references/TASK-CONTRACT-V4-TEMPLATE.md`;
-2. materialized `maintainer-skill/references/TASK-CONTRACT-TEMPLATE-USAGE.md`;
-3. updated `maintainer-skill/STATUS.md` so the eventual Maintainer `SKILL.md` must use those references for every new/materially revised Task Contract;
-4. normalized `docs/tasks/T063-adaptive-worker-routing-requalification.md` as the complete canonical v4 Task Contract;
-5. added T063-R8 accepting the authority/transport correction without changing experiment semantics.
+ChatGPT then re-entered Stage 5 and materialized a clean v5 successor that:
 
-The Maintainer Skill remains `DESIGN-APPROVED / NOT YET RELEASED`; no premature `SKILL.md` was created.
-
-## Current T063 authority
-
-The active execution specification is now the Task Contract itself:
-
-```text
-docs/tasks/T063-adaptive-worker-routing-requalification.md
-```
-
-It carries the complete v4 durable authority, including:
-
-```text
-candidate freeze
-same-child empty-rollout reattach barrier
-frozen child matrix/order
-probe/oracle semantics
-D063 mandatory receipts
-D076 Stage 6 materialization boundary
-D077 version gate
-pre-provider gates
-scoring/pilot decision
-stop/re-entry conditions
-evidence/handoff schema
-terminal return shape
-Human launch state
-thin transport invariant
-```
-
-R7 remains the scientific v4 authorization/provenance review. R8 is the current authority-normalization review. The checkpoint records frontier only and MUST NOT become a substitute Task Contract.
+1. promotes the repaired v4 adapter/tests byte-for-byte;
+2. preserves the frozen v3 probes, oracles, task messages, arm order and compute matrix;
+3. adds explicit per-child and run-level model-evidence eligibility semantics;
+4. prevents blocked/unscored attempts from being represented as model-quality evidence;
+5. treats valid worker-quality FAILs as quality evidence but not quality-preserving efficiency evidence.
 
 ## Scientific candidate
 
-No scientific candidate change was made by this authority normalization:
+Authorized v5 candidate:
 
 ```text
-branch: test/t063-adaptive-worker-routing-requalification-v4
-HEAD:   f06c8f48f7b1d59dff9fc117cca5b42453ad23e8
-base:   9da2b6fed64ded9af8d38f67cd53cd066abef838
+branch: test/t063-adaptive-worker-routing-requalification-v5
+HEAD:   94b5ec6dcf0d094c1a90f84b08e7ce1de483716f
+base:   b71cc3b23bedb2c3e361207497ebd96f1dc59e49
 ```
 
-No additional provider/model call has occurred.
+The candidate is three commits ahead of its exact base. Its diff is limited to the published v3 evaluation package, repaired v4 adapter/tests and v5 evidence-attribution adapter/tests.
 
-Historical v1/v2/v3 results remain excluded from v4 scoring.
-
-## Task Contract template invariant
-
-For every new or materially revised source-product executable Task Contract, the Maintainer Skill Orchestrator route must use:
+The repaired v4 blobs in v5 exactly match terminal v4:
 
 ```text
-maintainer-skill/references/TASK-CONTRACT-V4-TEMPLATE.md
-maintainer-skill/references/TASK-CONTRACT-TEMPLATE-USAGE.md
+evals/adaptive_worker_routing_v4/runner.py
+  9d1703dbe9c6fc0000112da2c9775f6e3c76b8d8
+
+tests/test_t063_adaptive_worker_routing_v4_adapter.py
+  e1cc19f22cddcbf1c73e89c1cb1e85fcc4206cb6
 ```
 
-as structural starting point/readiness checklist.
+Historical v1/v2/v3/v4 results are excluded from v5 scoring.
 
-Historical Task Contracts need not be rewritten solely because the template exists. If a historical contract is materially revised for new execution authority, normalize it against the template before launch.
+## Verification status
 
-The template does not override `docs/TASK-CONTRACTS.md` or other canonical policy; it operationalizes those requirements and prevents authority from leaking into transport prompts.
+The Orchestrator attempted to create an exact local checkout for provider-free execution, but the sandbox could not resolve `github.com`. No local deterministic execution result is claimed.
 
-## Thin transport invariant
+Stage 6 therefore MUST run the candidate's deterministic/provider-free test, compile and lint gates before its first provider/model call. Any failure blocks with zero new scored calls.
 
-The Human-visible launch prompt is transport/bootstrap only.
-
-For T063 v4 it may contain only the minimum necessary to enter the correct governed state:
+Remote structural review completed:
 
 ```text
-Coordinator title
-canonical repository
-NEW session
-Task Contract path
-exact authorized candidate branch@HEAD
-load canonical Git authority and execute Task Contract
-return only Task Contract-defined terminal result
+v5 branch identity:          VERIFIED
+v5 base ancestry:            VERIFIED
+candidate diff boundary:     VERIFIED
+repaired v4 blob identity:   VERIFIED
+v5 evidence tests present:   VERIFIED
 ```
 
-D055 launch profile is shown to the Human separately.
+## Model-evidence invariant
 
-Do NOT duplicate experiment matrix, retry logic, evidence schema, exclusions, version runbook, acceptance criteria or stop conditions in the transport prompt.
+Only fully measured entries in `scored_children` are valid model-quality evidence. A valid FAIL remains first-attempt worker-quality evidence. Only PASS children are eligible as quality-preserving efficiency observations.
 
-If future execution requires a substantive instruction that is not already in Git, stop before launch and revise the Task Contract or another canonical authority.
+A partial or blocked run is not a matched CONTROL/ADAPTIVE comparison and cannot yield a pilot decision. An unscored provider attempt is not converted into model-quality evidence merely because it consumed provider work.
+
+Run-level blockers are classified separately as profile resolution, measurement surface, measurement adapter, execution validity or unclassified execution. Unknown execution-invalid states are not overclaimed as infrastructure failures.
+
+## D077 state
+
+Launch-time upstream revalidation on 2026-09-11 found:
+
+```text
+qualified pin:              0.153.4
+latest stable:              0.154.0
+newest observed prerelease: 0.155.0-alpha.3.9
+newer stable than 0.154.0:  none
+D077 disposition:           PIN_RETAINED
+```
+
+If a stable release newer than `0.154.0` appears before the first v5 provider call, STOP and return to Orchestrator for relevance classification.
+
+## Coordinator continuity
+
+V4 `root-4` is retired after a consumed blocked run plus material adapter/Task Contract revision. V5 uses NEW failover root:
+
+```text
+AG | agent-governance | T063 | root-5
+```
+
+This is a D060 failover due contaminated execution context/adapter migration, not a concurrent second root.
 
 ## Launch profile
 
-Current D055 Human-facing launch card remains:
+Current D055 Human-facing launch card:
 
 ```text
 Executor:        Codex
 Surface:         Codex Desktop / native Windows
 Session:         NEW
-Coordinator-ID:  AG | agent-governance | T063 | root-4
+Coordinator-ID:  AG | agent-governance | T063 | root-5
 Root model:      gpt-5.6-sol
 Root reasoning:  medium
 Codex runtime:   exactly 0.153.4
@@ -131,7 +124,7 @@ App Server:      exactly 0.153.4
 Auth category:   chatgpt
 ```
 
-This launch profile is not itself Task semantics and normally remains outside the transport prompt.
+The launch profile is not Task semantics and remains separate from the thin transport prompt.
 
 ## Held and frozen work
 
@@ -146,19 +139,20 @@ R007 remains `EVALUATING`; no global adaptive worker-routing policy is adopted.
 After normal bootstrap (`develop`, `AGENTS.md`, this checkpoint):
 
 1. for T063 launch/convergence, load `docs/tasks/T063-adaptive-worker-routing-requalification.md` first;
-2. load `docs/reviews/T063-R8.md` only for the transport/authority-normalization rationale;
-3. load R7/R022/R021/D063/D076/D077 only when the Task Contract references require deeper interpretation or a concrete conflict arises;
+2. load `docs/reviews/T063-R9.md` only for v4 convergence/v5 authorization rationale;
+3. load R022/R021/D063/D076/D077 only when the Task Contract references require deeper interpretation or a concrete conflict arises;
 4. for creation/material revision/readiness review of any source-product Task Contract, load the Maintainer Skill v4 template + usage reference;
 5. for T062 resumption, load its separate held-line authority instead;
 6. do not reconstruct frontiers from prior chat/Project Memory.
 
 ## Next Action
 
-After this authority change is integrated into `develop`, T063 v4 remains authorized for Human-mediated Stage 6 launch.
+Before Human-mediated v5 launch:
 
-Before launch, revalidate `develop`, exact candidate HEAD and D077 stable-release state.
-
-Then present the D055 launch card separately and give the Human only the thin transport prompt defined by the canonical T063 Task Contract.
+1. revalidate `develop` and exact v5 candidate HEAD;
+2. revalidate that no stable Codex release newer than `0.154.0` has appeared;
+3. present the D055 launch card separately;
+4. give the Human only the thin transport prompt defined by the canonical T063 Task Contract.
 
 ChatGPT MUST NOT start or directly control Codex under D071.
 
