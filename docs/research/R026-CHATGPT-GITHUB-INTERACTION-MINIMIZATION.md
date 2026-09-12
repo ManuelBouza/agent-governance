@@ -6,445 +6,293 @@ Decision-State: EVALUATING
 Opened: 2026-09-12  
 Last-Reviewed: 2026-09-12  
 Owner: ChatGPT Orchestrator  
-Scope: ChatGPT Orchestrator repository-read, authoring, publication, review-status, persistence and cross-chat transport surfaces for reducing logical GitHub interactions while preserving GitHub canonical authority, D061 freshness, branch protection and D066 workspace semantics  
-Question: How can Agent Governance minimize routine ChatGPT interactions with GitHub without weakening canonical Git authority, freshness, branch isolation, conflict detection, review traceability or the Human/Orchestrator/Executor ownership model?  
-Evaluation-Refs: desk research 2026-09-12; empirical qualification pending on a disposable repository such as `ManuelBouza/test_biblioteca` before normative adoption; see correction appendices for current ChatGPT Web surface and Library approval constraints  
+Scope: ChatGPT Orchestrator repository interaction minimization, with current effective scope narrowed by Human direction to GitHub write-path minimization only  
+Question: How can Agent Governance minimize routine ChatGPT write interactions with GitHub without weakening canonical Git authority, branch isolation, conflict detection, review traceability or the Human/Orchestrator/Executor ownership model?  
+Evaluation-Refs: desk research 2026-09-12; empirical Git Data publication exercised during R026; later Human corrections narrow current applicability  
 Decision-Ref: none  
 Supersedes: none  
 Superseded-By: none
 
-## Executive synthesis
+## Current effective scope
 
-R014/R015 and D066 already reduce **write amplification** by allowing local Git authoring plus bounded publication to GitHub. R026 extends that analysis to the full interaction budget: reads, bootstrap, publication, PR observation and cross-chat resume.
-
-The original desk-research architecture considered persistent local/Work Desktop and Library-assisted variants. Subsequent current-surface corrections narrow the actually testable architecture for Agent Governance in this chat to **ChatGPT Web only**:
+R026 was initially opened as a broader read/write interaction-minimization investigation. Human direction later narrowed the active problem:
 
 ```text
-GitHub
-  = canonical remote authority
+READS
+  remain direct from GitHub
 
-ChatGPT Web runtime workspace
-  = temporary working/cache surface when exact-ref materialization is possible
-
-GitHub Git Data publication
-  = bounded multi-file publication surface
-
-GitHub PR event task / webhook
-  = event-driven observation instead of polling
+WRITES
+  are the optimization target
 ```
 
-Library is excluded from the candidate path while it requires per-operation Human approval. Persistent user-local/Work Desktop repositories are also excluded from the current pilot because this project is operating in ChatGPT Web with no exposed PC-local repository.
-
-The optimization principle remains:
+The detailed historical investigation remains preserved in the R026 correction appendices and Git history. The current candidate architecture is intentionally simpler:
 
 ```text
-synchronize/materialize once
--> read and author in the web runtime many times
--> publish once/bounded
--> observe by event
--> verify once at convergence
+GitHub direct reads
+  -> exact refs/files/searches as needed
+
+ChatGPT reasoning / temporary sandbox when useful
+  -> prepare complete multi-file change set
+
+GitHub bounded publication
+  -> create_tree with all changed paths/content
+  -> create_commit with expected parent SHA
+  -> update_ref non-force
+  -> bounded verification
+
+PR
+  -> normal review/integration path
 ```
 
-The goal is not to remove GitHub from the workflow. GitHub remains canonical. The goal is to stop using GitHub as the per-file working filesystem.
+No current R026 proposal depends on Library, a PC-local repository, Work Desktop, repository snapshots, or GitHub Actions artifacts for the read path.
 
-R026 recommends an empirical qualification pilot before changing D066 or startup policy. The key current question is whether ChatGPT Web can materialize an exact repository snapshot into its runtime with sufficiently few remote operations, then publish a bounded change set safely through the connected GitHub tool surface.
+## Write amplification problem
 
-## Baseline from R014/R015/D066
-
-D066 already adopts this optimization direction:
+Per-file Contents API writes produce an undesirable shape:
 
 ```text
-bootstrap/verify topic branch
--> many local edits and Git operations
--> optional persistence
--> batched/final GitHub publication
--> PR/review/integration
+update file A -> remote mutation/commit
+update file B -> remote mutation/commit
+update file C -> remote mutation/commit
+...
 ```
 
-It therefore already rejects one GitHub content write per edit as the desired workflow.
+For an N-file documentation or specification change, this creates O(N) remote mutations and can create multiple intermediate commits that do not represent a complete coherent change set.
 
-R026 does not supersede D066. It asks whether current ChatGPT product surfaces can make the same pattern substantially cheaper on the **read side** and on **post-publication observation**.
-
-Important existing constraints remain unchanged:
-
-- GitHub is canonical repository and branch authority;
-- normal writes use a short-lived topic branch from exact intended `develop`;
-- no direct development writes to `develop` or `main`;
-- stale or ambiguous remote movement is fail-closed;
-- Library is not a Git remote or canonical authority and is excluded from the current candidate path;
-- the current surface is ChatGPT Web, so persistent user-local repository assumptions are excluded from the current pilot;
-- T058 remains frozen by Human decision and is not resumed by this research.
-
-## Evidence reviewed
-
-### OpenAI official documentation
-
-1. **Connecting GitHub to ChatGPT**  
-   https://help.openai.com/en/articles/11145903  
-   Reviewed 2026-09-12.
-
-   Material findings:
-
-   - GitHub repository content is retrieved on demand;
-   - the generic GitHub connection does not create a synchronized repository index;
-   - ChatGPT may issue multiple repository searches as needed;
-   - eligible Work users can create event-triggered tasks from GitHub pull-request activity, including PR open/close/readiness and, depending on trigger, reviews/comments, commit updates and completed merges;
-   - the public article describes the generic GitHub app as read-oriented and routes direct code submission to Codex.
-
-2. **ChatGPT Work and Codex**  
-   https://help.openai.com/en/articles/20001275  
-   Reviewed 2026-09-12.
-
-   Material findings:
-
-   - Work Desktop can open a local folder/project and use local files with permission;
-   - local Work chats run on the user's computer;
-   - Codex explicitly supports local folders, repositories, terminals and developer tools;
-   - Work and Codex remain distinct product surfaces.
-
-   Current-surface correction: these Desktop/Work capabilities are not assumed for the active Agent Governance workflow because the Human Owner confirms the project is operating in ChatGPT Web.
-
-3. **File storage and Library in ChatGPT**  
-   https://help.openai.com/en/articles/20001052  
-   Reviewed 2026-09-12.
-
-   Material findings:
-
-   - uploaded/generated files can persist in Library across chats;
-   - Library is a persistent file store rather than a Git remote;
-   - the public user documentation describes selecting/reusing Library files, but does not by itself establish a current agentic API for automated repository-snapshot materialization in every ChatGPT surface.
-
-   Current-surface correction: the Human Owner reports per-operation approval prompts for Library. R026 therefore excludes Library from the optimized candidate path.
-
-### GitHub and Git official documentation
-
-4. **GitHub REST API — Git trees**  
-   https://docs.github.com/en/rest/git/trees  
-   Reviewed 2026-09-12.
-
-   Material findings:
-
-   - one `create tree` request can contain multiple path entries;
-   - an entry may provide `content` directly, causing GitHub to create the blob for that path;
-   - `base_tree` allows changes to be applied over an existing tree;
-   - after tree creation, publication is completed by creating a commit and updating a reference;
-   - recursive tree reads can return a repository tree inventory in one response up to documented limits.
-
-5. **GitHub REST API — repository archive download**  
-   https://docs.github.com/en/rest/repos/contents#download-a-repository-archive-tar  
-   Reviewed 2026-09-12.
-
-   Material finding: GitHub exposes a tar archive for an exact ref, enabling whole-snapshot materialization without one content request per file when the active ChatGPT transport can consume the binary download.
-
-6. **Git — git-fetch**  
-   https://git-scm.com/docs/git-fetch  
-   Reviewed 2026-09-12.
-
-   Material finding: `git fetch` updates refs and downloads the objects needed to complete the requested histories, making a persistent clone an incremental cache rather than a repeated full repository download. This remains relevant engineering evidence, but a persistent local clone is not part of the current ChatGPT Web candidate path.
-
-### Specialized engineering evidence
-
-7. **GitHub Engineering — Git clone: a data-driven study on cloning behaviors**  
-   https://github.blog/open-source/git/git-clone-a-data-driven-study-on-cloning-behaviors/  
-   Reviewed 2026-09-12.
-
-8. **GitHub Engineering — Get up to speed with partial clone and shallow clone**  
-   https://github.blog/open-source/git/get-up-to-speed-with-partial-clone-and-shallow-clone/  
-   Reviewed 2026-09-12.
-
-9. **GitLab — Avoid the massive end-to-end tax of default full history clones**  
-   https://about.gitlab.com/blog/git-clone-override-policy/  
-   Published 2026-08-18; reviewed 2026-09-12.
-
-These sources remain useful for general repository-materialization tradeoffs, but the current pilot must test the concrete capabilities of ChatGPT Web rather than assume Desktop clone semantics.
-
-## Current ChatGPT runtime capability observation
-
-The active ChatGPT environment used for this research exposes a connected GitHub plugin with functions including, among others:
+GitHub's Git Data model supports a bounded alternative:
 
 ```text
-read:
-  fetch / fetch_file
-  fetch_commit
-  compare_commits
-  fetch_pr / fetch_pr_patch
-  fetch_blob
-
-write:
-  create_branch
-  create_tree
-  create_commit
-  update_ref
-  create_file / update_file / delete_file
-  create_pull_request
-  review / merge related actions
-```
-
-This runtime-specific write surface is broader than the generic public OpenAI GitHub-app article, which currently describes the standard GitHub connection as read-oriented. Therefore:
-
-```text
-public generic GitHub app documentation
-!= guaranteed schema of every installed ChatGPT GitHub plugin/runtime
-```
-
-Any adopted transport must qualify the **actual active tool schema**, not infer write capability from generic product documentation.
-
-The current research branch has already demonstrated successful multi-file publication using Git Data primitives in this runtime, but stale-ref/race and exact snapshot-materialization behavior still require dedicated qualification.
-
-## Problem decomposition
-
-The current interaction cost has four independent components.
-
-### 1. Bootstrap read amplification
-
-A cold chat normally needs at least:
-
-```text
-read develop HEAD
-read AGENTS.md at that HEAD
-read CHECKPOINT.md at that HEAD
-```
-
-Additional task/spec/research files then add more GitHub calls.
-
-The semantic requirement is to consume the exact current `develop` snapshot, not to fetch each file through a separate remote API invocation.
-
-### 2. Working-set read amplification
-
-GitHub connected access is on-demand and not a synchronized index. Searching and reading a repository directly through the connector can therefore generate one or more remote calls for each exploration step.
-
-This is appropriate for occasional repository questions, but inefficient for a repository that acts as the Orchestrator's continuously consulted source tree.
-
-### 3. Publication write amplification
-
-Per-file Contents API updates serialize repository mutation and normally create one commit per request. Git Data APIs permit a better shape:
-
-```text
-N changed text files
--> one tree request with N entries/content
--> one commit request
+N changed files
+-> one tree containing all changes
+-> one commit over the expected parent
 -> one ref update
 ```
 
-Thus N-file publication can be constant in logical mutation count instead of O(N).
+The number of publication mutations is therefore constant with respect to N.
 
-### 4. PR/status polling amplification
+## Evidence
 
-Repeatedly fetching a PR, comments, reviews, workflow state or merge state wastes calls when the desired action is simply "wake me when state changes". OpenAI's current GitHub/Work documentation exposes webhook-backed event-triggered PR tasks for eligible users.
+### GitHub official Git Data behavior
 
-## Proposed current architecture — Web Runtime, Publish Bounded, Observe by Event
+GitHub's Git Trees API supports creating a tree with multiple entries and a `base_tree`. Entries may carry content directly. A new commit can point to the resulting tree, and the branch ref can then be updated to that commit.
 
-### Plane A — ephemeral web-runtime working cache
+Relevant official documentation reviewed during R026:
 
-Preferred current target:
+- GitHub REST API — Git trees: https://docs.github.com/en/rest/git/trees
+- GitHub REST API — Git commits: https://docs.github.com/en/rest/git/commits
+- GitHub REST API — Git refs: https://docs.github.com/en/rest/git/refs
 
-```text
-ChatGPT Web
--> obtain exact GitHub ref/snapshot with bounded remote interaction
--> materialize it into the available runtime workspace
--> read/search/diff/edit there
-```
+### Current ChatGPT GitHub plugin capability
 
-The runtime workspace is a cache/working surface, never canonical authority, and must be treated as ephemeral unless persistence is explicitly proven.
-
-A new chat must still prove which remote commit its materialized state represents.
-
-### Plane B — bounded remote publication
-
-Preferred publication order:
-
-```text
-runtime diff/change set
--> revalidate expected remote topic HEAD/base
--> create Git tree from all changed paths
--> create one commit with expected parent
--> non-force ref update
--> verify resulting ref/tree/diff
-```
-
-The immediately testable connector path is:
+The active GitHub connector exposes the required primitives:
 
 ```text
 create_tree
 create_commit
 update_ref
+compare_commits
 ```
 
-with a final verification read.
+It also exposes per-file `create_file`, `update_file`, and `delete_file`, but those are not the preferred publication primitive for coherent multi-file changes when the Git Data route is available.
 
-### Plane C — event-driven PR observation
+### Empirical evidence gathered during R026
 
-After PR creation, replace routine polling with an event-triggered GitHub task where supported:
+R026 successfully used:
 
 ```text
-PR/review/comment/commit/merge event
--> ChatGPT task wakes
--> perform only the verification needed for that event
+create_tree
+-> create_commit
+-> update_ref(force=false)
 ```
 
-Polling remains a fallback when event triggers are unavailable or when a specific gate requires an immediate point-in-time read.
+to publish multiple R026 files as a single commit on its research topic branch.
 
-### Plane D — excluded persistence assumptions
+The same round-trip was independently exercised on the disposable repository `ManuelBouza/test_biblioteca`: a sandbox-prepared edit was published through the same three-mutation sequence and verified remotely. This demonstrates current connector compatibility with the bounded Git Data path.
 
-For the current surface:
+That disposable-repository pilot also explored snapshot/artifact read optimization. The Human Owner subsequently removed read optimization from scope. Those artifact results remain experimental evidence only and are not part of the current architecture.
+
+## Preferred write algorithm
+
+### Preconditions
+
+Before publication, ChatGPT must know:
 
 ```text
-Library
-  excluded because per-operation Human approval creates interaction amplification
-
-Work/Desktop user-local repository
-  excluded because the active product surface is ChatGPT Web
-
-cross-chat runtime persistence
-  not assumed until empirically qualified
+target repository
+target topic branch
+expected topic-branch HEAD SHA
+expected parent tree or commit tree
+complete intended change set
 ```
 
-## Connector-minimized current candidate
+Normal repository reads remain direct GitHub reads.
 
-The architecture to evaluate is:
+### Publication
+
+For text files that can be represented inline:
 
 ```text
-1. identify exact remote develop/topic SHA
-2. materialize one exact-ref repository snapshot or equivalent bounded working set into the ChatGPT Web runtime
-3. read/search/edit within that runtime without additional per-file GitHub reads
-4. revalidate expected remote topic state
-5. publish changed paths with create_tree + create_commit + update_ref
-6. create PR if needed
-7. observe by event where supported
-8. verify final remote state once
+1. create_tree(
+     base_tree = expected parent tree,
+     entries = all changed paths/content
+   )
+
+2. create_commit(
+     tree = new tree,
+     parent = expected topic HEAD
+   )
+
+3. update_ref(
+     branch = topic branch,
+     sha = new commit,
+     force = false
+   )
 ```
 
-The central unresolved capability is step 2: whether the current web tool/runtime combination can materialize a useful exact repository snapshot in a bounded way without Library and without a persistent user-local clone.
+This should represent the complete logical change in one commit.
 
-## Interaction-budget model
+### Verification
 
-R026 defines a **logical GitHub interaction** as one explicit remote operation initiated by the Orchestrator surface: one connector action, one bounded repository materialization operation, or one webhook-delivered event consumption. This metric intentionally does not pretend that one logical operation equals one HTTP packet.
-
-### Target — ChatGPT Web runtime
-
-Simple work unit target:
+After a successful ref update, perform a bounded remote verification such as:
 
 ```text
-remote identity/snapshot boundary: 1-2
-working-set reads/search:          0 remote after materialization
-intermediate authoring writes:     0 remote
-publication:                       3 mutations (tree/commit/ref)
-PR creation:                       1 when needed
-PR idle observation:               0 polling when webhook task available
-convergence verification:          1 bounded read
+compare expected base/head
+or
+fetch resulting commit/tree
 ```
 
-Expected target: roughly 5-7 logical remote interactions for the simple path, independent of the number of files read or edited after materialization.
+Verification should confirm:
 
-This is a design target, not an empirical claim. The pilot must determine whether the snapshot/materialization boundary is actually available from ChatGPT Web.
+- the topic ref points to the intended commit;
+- only intended paths changed;
+- no unintended deletion or replacement occurred;
+- the branch remains based on the expected lineage.
 
-## Safety and authority invariants
+## Stale-write safety
 
-Any adopted optimization must preserve all of the following:
+The design must fail closed when another actor moves the topic branch between preparation and publication.
+
+The expected parent SHA is therefore a concurrency token.
+
+Example:
 
 ```text
-GitHub remains canonical
-exact develop/topic SHA is recorded at synchronization/materialization
-runtime state never silently overrides remote movement
-normal writes target only the verified topic branch
-ref movement is non-force unless separately authorized
-stale/non-fast-forward publication fails closed
-PR remains the normal integration path to develop
-AGENTS/checkpoint are read from one exact snapshot
-runtime cache provenance is explicit
-no Human copy/paste terminal role becomes the default
-no per-operation Library approval becomes the transport mechanism
-T058 freeze remains intact
+expected topic HEAD = A
+
+ChatGPT creates candidate C with parent A
+
+another actor moves remote topic:
+A -> B
+
+ChatGPT attempts:
+B -> C with force=false
 ```
 
-## Qualification gaps
+Because C does not contain B, the non-force ref update should be rejected rather than overwrite B.
 
-The following points are not yet proven and block normative adoption.
+If this occurs, ChatGPT must re-read the new remote state and reconcile rather than force the ref.
 
-### Gap 1 — bounded web snapshot materialization
+## Interaction budget
 
-Need empirical answer:
+For one coherent publication work unit after the topic branch exists:
 
 ```text
-Can ChatGPT Web obtain and materialize an exact useful repository snapshot
-with a bounded number of GitHub interactions,
-without Library and without a user-local clone?
+GitHub reads:        direct/as needed; not optimized by R026
+
+publication writes:
+  create_tree:       1
+  create_commit:     1
+  update_ref:        1
+
+verification read:   1 bounded verification recommended
 ```
 
-### Gap 2 — Git Data stale-ref semantics
-
-Multi-file Git Data publication works in the current runtime, but the pilot must explicitly verify stale topic movement and fail-closed publication semantics.
-
-### Gap 3 — event-task coverage and payload sufficiency
-
-OpenAI documents PR event tasks, but the exact events/payloads available to this account/surface must be tested to determine which polling calls can truly be removed.
-
-### Gap 4 — cross-chat cost
-
-The current web runtime should be assumed ephemeral. Need to measure the cost of reconstructing the working cache at the beginning of a new chat and ensure the optimization remains worthwhile without Library.
-
-### Gap 5 — bootstrap semantic equivalence
-
-A later decision should state explicitly whether one verified exact-ref materialization plus runtime reads of AGENTS/CHECKPOINT is accepted as semantically equivalent to separate remote file reads for the Orchestrator cold-start contract.
-
-## Recommended empirical pilot
-
-Use a disposable repository such as `ManuelBouza/test_biblioteca`, not `agent-governance`, for capability qualification.
-
-Compare:
+Thus the publication mutation budget is:
 
 ```text
-M0 BASELINE
-  connector on-demand file reads + normal connector writes
-
-M1 WEB-RUNTIME / CONNECTOR-MINIMIZED
-  exact-ref bounded materialization into ChatGPT Web runtime
-  -> runtime reads/search/authoring
-  -> Git Data create_tree/commit/ref publication
+3 remote mutations independent of changed-file count
 ```
 
-Record at least:
+Branch creation and PR creation are lifecycle operations and are counted separately when needed.
+
+## Why this is preferable to per-file updates
+
+The bounded Git Data path provides four material advantages:
+
+1. **constant mutation count** for N changed files;
+2. **one coherent commit** instead of intermediate per-file commits;
+3. **better stale-write semantics** through an explicit expected parent and non-force ref movement;
+4. **cleaner verification** because the complete intended change has one commit boundary.
+
+## Out-of-scope read optimization
+
+By current Human direction, the following are not part of R026's active design:
 
 ```text
-logical GitHub interactions
-remote file-content reads
-remote mutations
-Human approval prompts
-changed-file count
-exact base/head identities
-stale-remote behavior
-final tree equivalence
-PR creation/observation calls
-cross-chat reconstruction cost
+Library persistence
+persistent PC/Work Desktop repository
+sandbox repository snapshot as read cache
+GitHub Actions artifact bootstrap
+archive-based repository materialization
+attempts to reduce ordinary GitHub file reads
 ```
 
-Minimum acceptance proposal:
+Reads continue directly against GitHub using the connector.
+
+## Remaining write-path qualification gaps
+
+Before a normative decision changes D066 or other governance policy, the following write cases should be qualified explicitly:
+
+### 1. Deletions
+
+Confirm the exact `create_tree` representation for deleting paths through the active connector wrapper.
+
+### 2. Renames
+
+Git trees represent a rename as deletion + addition at the tree level. Confirm expected diff quality and policy semantics.
+
+### 3. Binary files
+
+Inline text content is not sufficient for all binary changes. Qualify whether `create_blob(base64)` + `create_tree(sha)` is the appropriate bounded path.
+
+### 4. Payload limits
+
+Measure connector/GitHub practical limits for large multi-file trees and large inline content so the design has a deterministic fallback threshold.
+
+### 5. Stale-ref race
+
+Run an explicit two-writer race test on a disposable branch and confirm `update_ref(force=false)` rejects incompatible remote advancement.
+
+### 6. Verification contract
+
+Choose the minimum required post-write verification primitive for normal writes (`compare_commits`, commit/tree read, or another bounded read).
+
+## Acceptance target for a future normative decision
+
+A write-optimized transport should satisfy:
 
 ```text
-A. bootstrap/materialization requires a bounded remote synchronization cost
-B. normal exploration after materialization requires 0 per-file GitHub reads
-C. N-file publication is constant-count, not O(N)
-D. stale topic movement blocks publication fail-closed
-E. final remote tree exactly represents intended runtime state
-F. no direct write to develop/main is possible through the workflow
-G. Human terminal copy/paste is not required for the normal path
-H. PR idle waiting uses event notification where supported instead of polling
-I. normal repository operations do not require per-operation Library approval
+A. ordinary repository reads remain direct GitHub reads
+B. N-file text publication uses constant-count remote mutations
+C. the logical change is represented by one commit
+D. remote topic movement cannot be silently overwritten
+E. no direct development write targets develop/main
+F. post-publication verification proves exact intended change boundary
+G. per-file Contents API writes are fallback, not the default multi-file path
+H. no Library or PC-local dependency is introduced
 ```
 
-## Recommendation
+## Relationship to D066 and T058
 
-Proceed toward a **Web Runtime, Publish Bounded, Observe by Event** refinement, but do not adopt it normatively yet.
+R026 does not itself change D066.
 
-Preferred evaluation order:
+D066 remains the accepted authority until a later decision explicitly adopts a refined write transport. T058 remains frozen by Human decision and is not resumed by this research.
+
+R026's present recommendation is narrower than its initial investigation:
 
 ```text
-1. qualify bounded exact-ref materialization in ChatGPT Web
-2. qualify stale-safe multi-file create_tree + commit + non-force ref update
-3. qualify PR webhook/event task coverage
-4. measure interaction reduction against connector baseline
-5. measure cross-chat reconstruction cost
-6. only then decide whether D066 and the cold-start/bootstrap contract should be refined
+keep direct GitHub reads
+adopt/qualify bounded Git Data publication for writes
 ```
 
 ## Current disposition
@@ -452,13 +300,11 @@ Preferred evaluation order:
 ```text
 Research-State: COMPLETE
 Decision-State: EVALUATING
-Current surface: ChatGPT Web
-Library candidate: excluded
-Persistent user-local/Work Desktop candidate: excluded
-Remaining candidate: web-runtime connector-minimized workflow
+Current scope: WRITE MINIMIZATION ONLY
+Read path: DIRECT GITHUB
+Preferred candidate: create_tree -> create_commit -> update_ref(non-force)
 Normative change: none
 T058: remains frozen
-Recommended next action: Human-selected empirical qualification on disposable repository
 ```
 
-No downstream Task Contract or decision should rely on the proposed interaction budget until that empirical qualification is persisted and reviewed.
+The next empirical work should focus only on unresolved write semantics: deletion, rename, binary content, payload limits, stale-ref races, and final verification.
