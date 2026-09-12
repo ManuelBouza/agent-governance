@@ -9,7 +9,7 @@ Owner: ChatGPT Orchestrator
 Repository-Baseline: `develop@55aa9c7ae0975ebb24b3047bfcba342110b335ab`  
 Scope: optimize the ChatGPT Orchestrator + Codex Executor boundary for lower Codex token/credit consumption while moving repository-local work to the surface best suited to perform it  
 Question: What responsibility split, context strategy, model/effort/speed policy, delegation rule, and validation loop should Agent Governance use so ChatGPT and Codex complement each other without duplicating work or spending premium Codex compute unnecessarily?  
-Evaluation-Refs: D053; D054; D055; D057; D060; D065; D068; D075; D076; R007; R012; R017; R018; current OpenAI documentation and rate card; external empirical studies listed below  
+Evaluation-Refs: T066; D053; D054; D055; D057; D060; D065; D068; D075; D076; R007; R012; R017; R018; current OpenAI documentation and rate card; external empirical studies listed below  
 Decision-Ref: none  
 Supersedes: none  
 Superseded-By: none
