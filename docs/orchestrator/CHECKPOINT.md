@@ -1,20 +1,22 @@
 # Orchestrator Checkpoint
 
-Checkpoint-ID: O276  
+Checkpoint-ID: O277  
 Date: 2026-09-12  
 Current-Objective: T063 — adaptive worker routing requalification  
-State: T063_V8_READINESS_REVOKED_STAGE5_HARDENING_REQUIRED  
-Active-Executor: none  
-Executor-Launch-State: NOT_AUTHORIZED  
-Coordinator-ID: `AG | agent-governance | T063 | root-8` — reserved NEW same-work-unit successor root; not started or consumed  
+State: T063_V8_HARDENED_STAGE6_AUTHORIZED_AWAITING_HUMAN_START  
+Active-Executor: none — Codex selected for pending Human launch  
+Executor-Launch-State: AUTHORIZED_AWAITING_HUMAN_CODEX_START  
+Coordinator-ID: `AG | agent-governance | T063 | root-8` — reserved NEW same-work-unit successor root; not yet started  
 Task-Contract: `docs/tasks/T063-adaptive-worker-routing-requalification.md`  
 Current-Design-Review: `docs/reviews/T063-R16.md`  
-Current-Readiness-Revocation: `docs/reviews/T063-R18.md`  
+Current-Launch-Review: `docs/reviews/T063-R19.md`  
+Prior-Readiness-Revocation: `docs/reviews/T063-R18.md`  
 Withdrawn-Launch-Review: `docs/reviews/T063-R17.md`  
 Current-Research: `docs/research/R025-T063-V8-REATTACH-CLASSIFIER-HARDENING.md`  
-Prior-Research: `docs/research/R024-T063-V7-NO-ROLLOUT-REATTACH-RACE.md`  
+T063-V8-Candidate-Branch: `test/t063-adaptive-worker-routing-requalification-v8`  
+T063-V8-Candidate-HEAD: `afdae0050226d61a10269f63017e2fac99eef644`  
+T063-V8-Candidate-Base: `8b3cc5af3e70367eff6e55ebd416a554c8096763`  
 Withdrawn-V8-Candidate-HEAD: `83f38bd9813cfdd107486ad40d39df6335513ce8`  
-Withdrawn-V8-Candidate-Base: `621e9ae0d73378b1013699e8726b315128c95891`  
 T063-V7-Evidence-HEAD: `58e396c126e363428544b163cb2aa8c7e1ac8ed6`  
 T063-V7-Implementation-HEAD: `5a1769fed3f93d86cbc2e72a6cc89d7a276089d6`  
 Held-Work-Unit: T062 / T023 v15 Stage 6  
@@ -23,92 +25,160 @@ Chat-Closure: KEEP_CURRENT_CHAT
 
 ## Canonical transition
 
-O275 had authorized v8 candidate `83f38bd...` for Human-mediated Stage 6. Before launch, the Human requested external validation of the v8 persistence theory against official Codex source/documentation and specialized field evidence.
+O276 revoked the provisional O275 authorization after R025 established that candidate `83f38bd...` did not structurally constrain the represented no-rollout JSON-RPC error tightly enough.
 
-R025 confirmed the conceptual bounded same-child retry but found the provisional `ROLLOUT_NOT_FOUND_FOR_EXACT_CHILD` classifier too permissive for readiness. The withdrawn adapter matched the resume prefix plus exact child ID but did not structurally require the represented JSON-RPC mapping to have exactly code `-32600` and exactly the canonical no-rollout message.
-
-T063-R18 therefore revokes R17/O275 authorization before any Human Codex launch or v8 provider/model call.
+ChatGPT Orchestrator then completed D068 Stage 5 hardening and published a fresh exact candidate from the protected O276 base:
 
 ```text
-withdrawn candidate: test/t063-adaptive-worker-routing-requalification-v8@83f38bd9813cfdd107486ad40d39df6335513ce8
-provider/model calls under v8: 0
-Stage 6 authority: none
+branch: test/t063-adaptive-worker-routing-requalification-v8
+HEAD:   afdae0050226d61a10269f63017e2fac99eef644
+base:   8b3cc5af3e70367eff6e55ebd416a554c8096763
 ```
 
-## R025 external revalidation result
-
-Official Codex `rust-v0.153.4` source/tests establish:
-
-- a fresh persistent thread may expose a valid thread ID/path before rollout materialization;
-- `thread/resume` remains required for the D063 permission/profile receipt surface;
-- no-rollout is emitted after live-writer/SQLite/filesystem rollout resolution fails.
-
-Official issue evidence shows both short-lived startup races and persistent/unmaterialized cases with the same message family. Therefore `no rollout found` is not intrinsically transient.
-
-The supported interpretation is:
+The candidate is exactly one commit above the protected base and adds exactly 28 executable/test files:
 
 ```text
-exact public child correlation
-+ exact same-child thread/resume
-+ safely parsed error mapping
-+ code == -32600
-+ message == "no rollout found for thread id <exact child id>"
-=> bounded retryable availability condition inside the existing persistence barrier
-
-otherwise
-=> fail closed
+24 accepted v3-v7 package/test blobs
++ 4 hardened v8 adapter/test files
 ```
 
-The accepted R022 `EMPTY_ROLLOUT` class remains unchanged.
+No historical terminal telemetry/handoff JSON is promoted.
 
-## Required Stage 5 hardening
+T063-R19 accepts this hardened candidate for Human-mediated Stage 6. The withdrawn candidate `83f38bd...` remains prohibited launch authority.
 
-Materialize a clean v8 candidate that:
+No v8 provider/model call has been consumed.
 
-1. safely parses the represented JSON-RPC mapping from the flattened `AppServerError` without `eval`;
-2. requires integer code `-32600` exactly;
-3. requires exact message equality for the exact resumed child ID;
-4. rejects wrong code, message drift, malformed payload and wrong/missing child;
-5. preserves the R022 empty-rollout classifier;
-6. preserves one shared ten-attempt budget across both availability conditions;
-7. preserves `0.2s wait -> exact parent residency check -> identical same-child resume` for every retry;
-8. creates no respawn, parent replay, replacement child or provider/model quality turn;
-9. preserves v7 24-arm schedule, profiles, probes/oracles, quality/usage/pilot semantics;
-10. promotes no historical terminal telemetry/handoff JSON.
+## Hardened v8 persistence correction
 
-A new exact candidate HEAD and fresh readiness review are required before Stage 6 can be authorized again.
+After exact public child correlation, same-child `thread/resume` may retry only two accepted availability conditions:
 
-## Scientific continuity
+```text
+EMPTY_ROLLOUT
+ROLLOUT_NOT_FOUND_FOR_EXACT_CHILD
+```
 
-V8 remains one clean 24-arm fixed-n replicated qualification calibration:
+The no-rollout condition is accepted only when the flattened `AppServerError` safely parses as a mapping and satisfies exactly:
+
+```text
+method prefix == "thread/resume failed: "
+code type     == int
+code          == -32600
+message       == "no rollout found for thread id <exact child id>"
+```
+
+The published implementation uses `ast.literal_eval`, not `eval`.
+
+Wrong code, `bool`, message drift, malformed/non-mapping payload, wrong method prefix, wrong/missing child ID or unrelated `-32600` error is nonmatching and blocks fail-closed.
+
+Both accepted conditions share one maximum of ten total resume attempts. The budget does not reset across a mixed sequence.
+
+Every retry preserves:
+
+```text
+wait 0.2 seconds
+-> exact parent loaded-residency recheck
+-> identical thread/resume params object
+-> same exact child
+-> no spawn/parent replay/replacement/provider quality turn
+```
+
+Exhaustion is a persistence/materialization blocker and does not prove that the original no-rollout state was transient.
+
+## V8 experiment semantics
+
+V8 preserves the v7 fixed-n replicated qualification calibration:
 
 ```text
 4 replicate blocks
-3 probes
-2 profiles
-= 24 first-attempt scored children on a complete valid run
+3 frozen probes per block
+2 profiles per probe
+= 24 scored first-attempt children
 ```
 
-Frozen profiles/schedule/oracles/quality taxonomy remain unchanged from R16. V1-v7 evidence remains historical only and cannot enter v8 scoring.
+Frozen root:
+
+```text
+gpt-5.6-sol / medium
+```
+
+Frozen child profiles:
+
+```text
+P1 ADAPTIVE  gpt-5.6-luna  / medium
+P1 CONTROL   gpt-5.6-sol   / medium
+P2 ADAPTIVE  gpt-5.6-terra / medium
+P2 CONTROL   gpt-5.6-sol   / medium
+P3 ADAPTIVE  gpt-5.6-terra / high
+P3 CONTROL   gpt-5.6-sol   / medium
+```
+
+The counterbalanced schedule, v6 public parent surface, P1/P2/P3 oracle semantics, valid-quality-failure continuation, 4/4 per-probe and 12/12 global quality rules, quality-adjusted usage, 10% exact-token materiality floor and four-value pilot taxonomy remain unchanged.
+
+V1-v7 attempts are historical only and cannot enter v8 scoring.
+
+## Stage 5 verification/readiness
+
+Orchestrator verification completed without provider/model calls:
+
+```text
+candidate/base ancestry:             VERIFIED REMOTELY
+candidate commit count:              1
+candidate delta boundary:            VERIFIED — 28 files
+accepted v3-v7 blob reuse:           VERIFIED BY EXACT BLOB IDS USED IN TREE
+hardened runner blob:                bf5e5dc012b9bf81906b31177ed92c5e319d6858
+hardened test blob:                  b9851ca572286dce8d137c1fdf5b8bb0dd7dbfe2
+new runner AST parse:                PASS
+new test AST parse:                  PASS
+structured-classifier smoke matrix:  PASS
+GitHub automatic CI statuses:        none
+```
+
+The Orchestrator container could not resolve `github.com` for a full local checkout, so this checkpoint does **not** claim repository-native pytest, Ruff or compileall PASS.
+
+Stage 6 on native Windows MUST run all deterministic/provider-free tests, compile, lint, oracle and environment gates before the first provider/model call. Any gate failure blocks with zero new scored provider calls.
 
 ## D076 state
 
-The structured two-class persistence controller and its regression suite are material Stage 5 behavior. Stage 6 must not invent or broaden this classifier.
+The structured classifier and negative conformance suite are material Stage 5 behavior and are now present in the candidate. Stage 6 may not broaden or weaken their semantics.
 
 ## D077 state
 
+Post-candidate official release revalidation found:
+
 ```text
 qualified pin:              0.153.4
-latest stable reviewed:     0.154.0
+latest stable:              0.154.0
 latest stable tag:          rust-v0.154.0
+latest stable published:    2026-09-09
+newer stable than 0.154.0:  none
 version disposition:        PIN_RETAINED
 ```
 
-No reviewed stable release proves removal of the relevant persistence architecture. D063 remains qualified specifically on 0.153.4.
+R025 confirms reviewed later source retains the relevant rollout-resolution architecture. D063 remains qualified specifically on 0.153.4; v8 retains exactly Codex/App Server `0.153.4`.
+
+If a stable release newer than `0.154.0` appears before the first provider call, STOP for D077 relevance classification.
 
 ## Coordinator continuity
 
-`AG | agent-governance | T063 | root-8` was reserved under O275 but never launched. It remains unconsumed and may be retained if a hardened v8 candidate is later authorized.
+`AG | agent-governance | T063 | root-8` was reserved under the withdrawn launch but never started. It remains the correct NEW same-work-unit coordinator root for hardened v8.
+
+## Launch profile
+
+Current D055 Human-facing launch card:
+
+```text
+Executor:        Codex
+Surface:         Codex Desktop / native Windows
+Session:         NEW
+Coordinator-ID:  AG | agent-governance | T063 | root-8
+Root model:      gpt-5.6-sol
+Root reasoning:  medium
+Codex runtime:   exactly 0.153.4
+App Server:      exactly 0.153.4
+Auth category:   chatgpt
+```
+
+The launch profile is separate from the thin transport prompt.
 
 ## Held and frozen work
 
@@ -122,22 +192,23 @@ R007 remains `EVALUATING`; no global adaptive worker-routing policy is adopted.
 
 After normal bootstrap (`develop`, `AGENTS.md`, this checkpoint):
 
-1. load the active T063 Task Contract first;
-2. load R18 and R025 for current Stage 5 hardening authority;
-3. load R16/R024/R022 when deeper persistence/design provenance is required;
-4. load D063/D076/D077 when receipt, materialization or version constraints are at issue;
-5. for Task Contract material revision/readiness, load the Maintainer Skill v4 template + usage reference;
-6. do not reconstruct the frontier from prior chat/Project Memory.
+1. for T063 launch/convergence, load the active Task Contract first;
+2. load `docs/reviews/T063-R19.md` for hardened-v8 readiness;
+3. load R025/R18 when classifier/revocation provenance is needed;
+4. load R16/R024/R022/D063/D076/D077 only when deeper design, receipt, materialization or version interpretation is required;
+5. for material Task Contract revision/readiness, load Maintainer Skill v4 template + usage reference;
+6. for T062 resumption, load its separate held-line authority;
+7. do not reconstruct the frontier from prior chat/Project Memory.
 
 ## Next Action
 
-ChatGPT Orchestrator must complete D068 Stage 5:
+Before Human-mediated hardened-v8 launch:
 
-1. materialize a fresh hardened v8 candidate from current protected `develop` authority;
-2. replace the withdrawn textual/regex no-rollout classifier with safe structural parsing and exact code/message/child equality;
-3. add the R025 negative conformance cases;
-4. verify remote candidate ancestry/delta and any provider-free checks available without claiming unavailable pytest/Ruff results;
-5. perform D077 release revalidation;
-6. persist a new readiness review, exact candidate freeze and checkpoint before any Human launch.
+1. revalidate `develop` and exact candidate HEAD `afdae0050226d61a10269f63017e2fac99eef644`;
+2. revalidate that no stable Codex release newer than `0.154.0` has appeared;
+3. present the D055 launch card separately;
+4. give the Human only the thin transport prompt defined by the canonical T063 Task Contract.
 
-No provider/model call and no Codex Stage 6 launch is authorized at O276.
+ChatGPT MUST NOT start or directly control Codex.
+
+After the Human returns the Task Contract-defined terminal four-line result, ChatGPT performs remote verification and Stage 7 convergence.
