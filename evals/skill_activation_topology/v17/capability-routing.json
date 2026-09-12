@@ -1,0 +1,56 @@
+{
+  "candidate_ids": [
+    "B2",
+    "F2",
+    "G3"
+  ],
+  "capabilities": [
+    "consumer-lifecycle",
+    "source-maintainer",
+    "external-skill-trust"
+  ],
+  "derived_disposition_rule": [
+    "If observed activation or capability trace sets are non-empty, disposition is ROUTE.",
+    "Else if generic model evidence clarification_requested is true, disposition is ABSTAIN.",
+    "Else disposition is NONE."
+  ],
+  "dispositions": {
+    "ABSTAIN": {
+      "capability_truth": null,
+      "expected_activation": "empty set",
+      "meaning": "insufficient evidence; clarification/fail-closed required"
+    },
+    "NONE": {
+      "capability_truth": "empty set",
+      "expected_activation": "empty set"
+    },
+    "ROUTE": {
+      "capability_truth": "non-empty set",
+      "expected_activation": "topology projection of capability truth"
+    }
+  },
+  "e2e_conditioning": "Conditional execution accuracy denominator contains only cases whose same e2e observation satisfies exact routing correctness.",
+  "evaluation_id": "MG1-T023-EVALUATION-v17",
+  "identity": "MG1-T023-CAPABILITY-ROUTING-v2",
+  "multi_label": true,
+  "observation_authority": {
+    "activation_set": "successful host reads of candidate SKILL.md bodies only",
+    "capability_set": "successful host reads of candidate capability reference bodies only",
+    "model_self_report": "diagnostic only and never authoritative for activation/capability identity",
+    "shared_entrypoint_rule": "entrypoint activation alone is insufficient; capability-reference reads must exactly match capability truth for ROUTE cases"
+  },
+  "projection_rule": "Union mapped entrypoints for each canonical capability; deduplicate entrypoints.",
+  "routing_model_visible_fields": [
+    "clarification_requested",
+    "bounded_refusal",
+    "response_summary"
+  ],
+  "routing_model_visible_forbidden_meaning": [
+    "capability labels",
+    "entrypoint labels",
+    "candidate/topology identity",
+    "oracle labels",
+    "task success"
+  ],
+  "schema_version": "2.0.0"
+}

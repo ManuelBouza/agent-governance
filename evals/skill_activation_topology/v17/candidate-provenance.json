@@ -1,0 +1,65 @@
+{
+  "candidate_freeze_source": "5b025087bc7b6996f683a34fdd1ce441d3d6dd82",
+  "candidate_ids": [
+    "B2",
+    "F2",
+    "G3"
+  ],
+  "capability_source_epoch": "MG1-2026-09-06-v4",
+  "identity": "MG1-T023-CANDIDATE-PROVENANCE-v17",
+  "presentation_revision": "MG1-T023-PRESENTATIONS-v5",
+  "presentations_tree_source": "bdbcf3eb4b1b3acf74e8ec9c36d58400e60efda3",
+  "provenance_rule": "Every target is the exact immutable Git blob from v15 Freeze E; wording changes are forbidden.",
+  "schema_version": "1.0.0",
+  "source_manifest_blob": "527a3d63205d5805ca135e0bf9c74ce818a2e7fb",
+  "source_manifest_path": "evals/skill_activation_topology/candidate-hashes-v15.json",
+  "target_files": {
+    "evals/skill_activation_topology/v17/presentations/B2/agent-governance/SKILL.md": {
+      "git_blob": "1558c74a524b399b100b05dd6f1041011b8e1949",
+      "sha256": "1edc1070fc0ea65c4fe826c67cf4da89c50456f0bc0cbce61599d1ea200dc3fe",
+      "source_path": "evals/skill_activation_topology/presentations-v5/B2/agent-governance/SKILL.md"
+    },
+    "evals/skill_activation_topology/v17/presentations/F2/consumer-governance/SKILL.md": {
+      "git_blob": "64a16f403713bde80a8ebebcda9e31dbaa8fea53",
+      "sha256": "c8410a3f76c7ec2d29d95df178751e996ae8d405170304c136a5d7e4f9a2f204",
+      "source_path": "evals/skill_activation_topology/presentations-v5/F2/consumer-governance/SKILL.md"
+    },
+    "evals/skill_activation_topology/v17/presentations/F2/source-maintainer/SKILL.md": {
+      "git_blob": "13f064d186af528557d1e389e271aaa684122eb1",
+      "sha256": "b2c04992fd1162afdf2b341103a4054799c2130c627e87601f3d0627cbd0c132",
+      "source_path": "evals/skill_activation_topology/presentations-v5/F2/source-maintainer/SKILL.md"
+    },
+    "evals/skill_activation_topology/v17/presentations/G3/consumer-lifecycle/SKILL.md": {
+      "git_blob": "6b0261a2c677f72eb7efd88ad442eeb3b4b15bd8",
+      "sha256": "16259bf24f29c4b4786f4d80c1957c1b8c343a720ba6ed16c1426e77ad1e3825",
+      "source_path": "evals/skill_activation_topology/presentations-v5/G3/consumer-lifecycle/SKILL.md"
+    },
+    "evals/skill_activation_topology/v17/presentations/G3/external-skill-trust/SKILL.md": {
+      "git_blob": "308ea420ab9740b3c574a87cc436a5ea8b90f0c6",
+      "sha256": "3a5cbf42c51a2171c4024d79fcd9f819701602933ff3ba547766650d3847a685",
+      "source_path": "evals/skill_activation_topology/presentations-v5/G3/external-skill-trust/SKILL.md"
+    },
+    "evals/skill_activation_topology/v17/presentations/G3/source-maintainer/SKILL.md": {
+      "git_blob": "e00edee8b1a1bacbb47b01bad4492f8ddf954628",
+      "sha256": "c463a3e8d2ffdfee67ca09feb720ab3f720c16be9e63deec3d1ce60addca0d81",
+      "source_path": "evals/skill_activation_topology/presentations-v5/G3/source-maintainer/SKILL.md"
+    },
+    "evals/skill_activation_topology/v17/presentations/shared/consumer-lifecycle.md": {
+      "git_blob": "f3898d0770486e023d50d48e89091be8033fceec",
+      "sha256": "bbd42745f1e47c41f4643cf3d456f2f0186bc96d1f2a385768d58b9f98375b10",
+      "source_path": "evals/skill_activation_topology/presentations-v5/shared/consumer-lifecycle.md"
+    },
+    "evals/skill_activation_topology/v17/presentations/shared/external-skill-trust.md": {
+      "git_blob": "737223e1b61b1c9efc6e10264735355ad1576059",
+      "sha256": "a4bc7bd80a6ad7377d873f69a530b0fe4d4f481414c6a3a3eeb58a3be8d70e51",
+      "source_path": "evals/skill_activation_topology/presentations-v5/shared/external-skill-trust.md"
+    },
+    "evals/skill_activation_topology/v17/presentations/shared/source-maintainer.md": {
+      "git_blob": "68e5bb75bcff20a72638b22514e0a1ba68c6f8ac",
+      "sha256": "80a44c1c4cf5a2134d46be38c198d4b55d244f227e012765f5bcd15b627a657d",
+      "source_path": "evals/skill_activation_topology/presentations-v5/shared/source-maintainer.md"
+    }
+  },
+  "topologies_blob_source": "1adb4c156bb03e39dd9bf8c2443c501c82f31f5f",
+  "topology_revision": "MG1-T023-TOPOLOGIES-v4"
+}
