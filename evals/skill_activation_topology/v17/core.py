@@ -117,11 +117,9 @@ def validate_model_visible_instrumentation(instrumentation:dict[str,Any])->None:
     if set(e2e.get("required",[]))!=e2e_required or set(e2e.get("properties",{}))!=e2e_required:
         raise HarnessError("e2e schema field drift")
 
-def validate_freeze_i()->dict[str,Any]:
+def validate_frozen_baseline()->dict[str,Any]:
     missing=[p.relative_to(REPO_ROOT).as_posix() for p in FREEZE_I_REQUIRED if not p.is_file()]
     if missing: raise HarnessError(f"Freeze I required files missing: {missing}")
-    leaked=[p.relative_to(REPO_ROOT).as_posix() for p in FREEZE_I_FORBIDDEN if p.exists()]
-    if leaked: raise HarnessError(f"confirmatory assets exist before Freeze I: {leaked}")
     plan,routing,prov,topo,dev,inst=(load_json(p) for p in (ANALYSIS_PATH,ROUTING_PATH,PROVENANCE_PATH,TOPOLOGIES_PATH,DEVELOPMENT_PATH,INSTRUMENTATION_PATH))
     validate_topologies(topo); validate_model_visible_instrumentation(inst)
     if prov.get("candidate_freeze_source")!="5b025087bc7b6996f683a34fdd1ce441d3d6dd82": raise HarnessError("candidate Freeze E provenance drift")
@@ -137,4 +135,17 @@ def validate_freeze_i()->dict[str,Any]:
     if gate["logical_cases"]!=2 or gate["required_logical_passes"]!=2: raise HarnessError("synthetic canary must require 2/2 logical PASS")
     if "authoritative" in routing["observation_authority"]["model_self_report"].casefold() and not routing["observation_authority"]["model_self_report"].casefold().startswith("diagnostic"):
         raise HarnessError("model self-report cannot be routing authority")
-    return {"status":"PASS","evaluation_id":plan["evaluation_id"],"development_cases":90,"confirmatory_assets_present":False,"provider_model_calls":0}
+    return {"status":"PASS","evaluation_id":plan["evaluation_id"],"development_cases":90,"provider_model_calls":0}
+
+def validate_freeze_i()->dict[str,Any]:
+    result=validate_frozen_baseline()
+    leaked=[p.relative_to(REPO_ROOT).as_posix() for p in FREEZE_I_FORBIDDEN if p.exists()]
+    if leaked and len(leaked)!=len(FREEZE_I_FORBIDDEN):
+        raise HarnessError(f"incomplete confirmatory Freeze J boundary: {leaked}")
+    return {**result,"confirmatory_assets_present":bool(leaked)}
+
+def validate_preconfirmatory_freeze_i()->dict[str,Any]:
+    result=validate_frozen_baseline()
+    leaked=[p.relative_to(REPO_ROOT).as_posix() for p in FREEZE_I_FORBIDDEN if p.exists()]
+    if leaked: raise HarnessError(f"confirmatory assets exist before Freeze I: {leaked}")
+    return {**result,"confirmatory_assets_present":False}
