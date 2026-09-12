@@ -6,9 +6,9 @@ Decision-State: EVALUATING
 Opened: 2026-09-12  
 Last-Reviewed: 2026-09-12  
 Owner: ChatGPT Orchestrator  
-Scope: source-product Executor/Codex local Git and worktree governance; control compression at repository transaction boundaries; no change to active T062/O279 execution authority  
+Scope: source-product Executor/Codex local Git and worktree governance; control compression at repository transaction boundaries; no change to the active T062 frontier or its execution authority  
 Question: Can Agent Governance simplify control of Codex local Git by concentrating governance at entry, publication, and closure boundaries while preserving branch/worktree isolation, freshness, handoff identity, remote publication safety, and post-integration cleanup?  
-Evaluation-Refs: D041; D042; D048; D054; D058; D062; D064; D071; `docs/EXECUTOR-SESSION-WORKTREE-HYGIENE.md`; `docs/EXECUTOR-HANDOFFS.md`; `docs/TASK-CONTRACTS.md`; `docs/BRANCHING.md`; `docs/BRANCH-CLEANUP.md`; official OpenAI Codex safety guidance 2026-05-08; current Git `push` and `worktree` documentation  
+Evaluation-Refs: D041; D042; D048; D054; D058; D062; D064; D071; `docs/EXECUTOR-SESSION-WORKTREE-HYGIENE.md`; `docs/EXECUTOR-HANDOFFS.md`; `docs/TASK-CONTRACTS.md`; `docs/BRANCHING.md`; `docs/BRANCH-CLEANUP.md`; T060 contract/handoff; T053 contract/handoff; T063 contract; official OpenAI Codex safety guidance 2026-05-08; current Git `push` and `worktree` documentation  
 Decision-Ref: none  
 Supersedes: none  
 Superseded-By: none
@@ -47,6 +47,8 @@ G2 CLOSE
 ```
 
 This is primarily a **policy-compression and control-locality** opportunity, not a new Git transport architecture.
+
+A static evaluation of T060, T053 and T063 supports the model and shows that the existing Task Contract + handoff surfaces already carry the required Git identity/evidence fields. A new Git receipt is therefore not justified.
 
 No normative change is adopted by R027.
 
@@ -137,7 +139,7 @@ The target should not be fewer safety facts. The target should be **one canonica
 
 ### G0 — ENTRY / OPEN TRANSACTION
 
-Before the Executor enters writable task execution, establish once for the current work-unit session:
+Before the Executor enters writable task execution, establish once for the current work-unit session or re-entry boundary:
 
 ```text
 repository identity
@@ -218,6 +220,7 @@ A useful compression rule is to re-run the relevant gate when the facts that jus
 Candidate revalidation triggers include:
 
 - Executor session/worktree recovery or switch;
+- phase/re-entry boundary that reloads current authority;
 - topic branch/worktree identity change;
 - new remote publication checkpoint;
 - detected remote branch movement or unexpected fetch result;
@@ -228,27 +231,103 @@ Candidate revalidation triggers include:
 
 Routine `status`, `diff`, staging, local commits, amendments or test runs inside the same verified exclusive worktree are not by themselves reasons to repeat the complete remote/bootstrap gate.
 
-This distinction requires prospective validation before becoming normative because current D068/task-specific contracts may impose stricter freshness checks for particular scientific or security-sensitive flows.
+This distinction requires prospective validation before becoming normative because task-specific contracts may impose stricter freshness checks for scientific, release, recovery or security-sensitive flows.
 
-## 6. Expected gains
+## 6. Static compression evaluation
 
-### 6.1 Less instruction duplication
+R027 classified three representative existing work units without modifying their historical authority.
+
+| Sample | G0 generic | LOCAL | G1 generic | G2 | SPECIAL that must remain task-specific |
+| --- | --- | --- | --- | --- | --- |
+| T060 ordinary implementation/bugfix | base `develop`, expected implementation branch, canonical remote-derived verification state | edits/tests, `git diff --check`, ordinary local commits | persisted handoff, implementation HEAD/base/changed paths, final push and compact terminal HEAD | not defined in Task Contract | narrow T059 known-baseline exception; clean remote-derived worktree as an acceptance-specific full-suite precondition |
+| T053 coordinator continuity pilot | D042 before Phase 1; D042 + current-authority reload/reconciliation before Phase 2 | implementation, child orchestration, tests, local Git | explicit Phase-1 checkpoint publication and final publication/handoff | not defined in Task Contract | same-root NEW→CONTINUE hypothesis, Orchestrator phase barrier, fresh-child and one-writer telemetry |
+| T063 scientific qualification | synchronize canonical authority and establish exact authorized candidate | deterministic prechecks/evaluation mechanics inside frozen scope | terminal telemetry/handoff evidence on authorized branch | not defined in Task Contract | exact frozen candidate/base, schedule, probes/oracles, provider-call boundary, profile and retry semantics, no replay/replacement, measurement receipts |
+
+### 6.1 T060 finding
+
+T060 shows a normal task already mixes generic Git transaction facts with legitimate task-specific verification semantics.
+
+Generic facts such as base branch, expected topic branch, pushed HEAD and handoff identity belong naturally to G0/G1. Its clean remote-derived worktree requirement for the full-suite result is not merely a generic Git hygiene restatement: it is part of the task's qualification semantics and should remain `SPECIAL`.
+
+Therefore gate compression must not mechanically delete every mention of clean worktree or remote state from Task Contracts.
+
+### 6.2 T053 finding
+
+T053 proves that G0 cannot mean “run once for the lifetime of a Task ID.” Its Phase-2 `CONTINUE` deliberately repeats D042 and reloads current authority because canonical `develop` and the Orchestrator review may have changed between phases.
+
+This supports the event-triggered model:
+
+```text
+same root != same Git authority snapshot
+phase/re-entry event -> G0 revalidation
+```
+
+Its Phase-1 publication is an authorized intermediate checkpoint and therefore a task-specific D048 exception layered on the generic G1 semantics.
+
+### 6.3 T063 finding
+
+T063 demonstrates why specialized scientific controls must not be absorbed into generic Git governance.
+
+Its ordinary Git needs are small: establish the exact authorized candidate and later persist/publish exact evidence. Most of its contract complexity concerns frozen scientific semantics: exact candidate/base, schedule, profiles, oracles, provider boundaries, retry classifier, first-attempt scoring, no replay/replacement and exact measurement receipts.
+
+Those are `SPECIAL`, not “better Git checks.” A generic gate that attempted to encode them would become a competing scientific authority and make the normal path worse.
+
+## 7. Existing handoffs already cover the transaction facts
+
+The static field-coverage check is positive.
+
+T060's persisted handoff already records:
+
+```text
+task_id
+status
+branch
+implementation_head_sha
+base_branch
+base_sha
+files_changed
+verification commands/results
+git_status
+scope confirmation
+```
+
+T053's final handoff records the same core identity and additionally carries:
+
+```text
+canonical_develop_sha_at_phase_2
+phase_1_submitted_head_sha
+phase_2_authority_merge_sha
+D042 evidence per phase
+stale authority assumptions corrected
+one-writer/worktree evidence
+verification and final git_status
+```
+
+Therefore the candidate gates can be proven from existing Task Contract/handoff/workspace evidence. Creating another durable `git_transaction_receipt` would duplicate state and create a reconciliation problem without adding authority.
+
+Field coverage gap: **CLOSED for the sampled normal/continuity flows**.
+
+This does not imply that every future specialized workflow needs no additional evidence; specialized requirements remain in its Task/Operational Contract and handoff extensions.
+
+## 8. Expected gains
+
+### 8.1 Less instruction duplication
 
 Launch prompts and Task Contracts can point to named Git gates instead of restating overlapping branch/base/worktree/freshness rules.
 
-### 6.2 Lower context and reasoning overhead
+### 8.2 Lower context and reasoning overhead
 
 The Executor receives a small state machine rather than reconstructing policy from multiple partially overlapping passages.
 
-### 6.3 Fewer contradictory Git instructions
+### 8.3 Fewer contradictory Git instructions
 
 One canonical definition per boundary reduces drift between Task Contracts, handoff procedure, worktree hygiene and cleanup text.
 
-### 6.4 Better Executor autonomy
+### 8.4 Better Executor autonomy
 
 The Executor can use native Git efficiently without treating every local mutation as a Governance event, consistent with D041/D054.
 
-### 6.5 Stronger audit semantics
+### 8.5 Stronger audit semantics
 
 Named gates make it clearer which facts prove:
 
@@ -256,11 +335,11 @@ Named gates make it clearer which facts prove:
 - authorization to publish a final represented state;
 - authorization to retire branch/worktree state.
 
-### 6.6 No loss of independent defenses
+### 8.6 No loss of independent defenses
 
 Server-side branch protection, Git worktree safeguards, non-fast-forward push rejection, persisted handoffs and post-merge exact-head cleanup remain defense in depth rather than being collapsed into one fragile mechanism.
 
-## 7. What R027 does not recommend
+## 9. What R027 does not recommend
 
 R027 does not recommend:
 
@@ -274,10 +353,10 @@ R027 does not recommend:
 - treating Git's native worktree refusal as sufficient work-unit ownership proof;
 - merging G1 publication and G2 post-integration cleanup;
 - adding a second durable Git receipt that duplicates Task Contract/handoff fields;
-- changing active T062/O279 authority or consuming any T062 provider/model execution;
+- modifying or consuming the active T062 scientific frontier;
 - resuming frozen T058.
 
-## 8. External evidence
+## 10. External evidence
 
 ### OpenAI — boundary-oriented Codex safety
 
@@ -309,34 +388,41 @@ Source:
 
 For Agent Governance's normal D048 publication path, avoiding history rewrite is simpler than introducing forced-update mechanics.
 
-## 9. Evaluation gaps before a normative compression
+## 11. Remaining evaluation gaps before a normative compression
 
-The analytical model is stable, but adoption should remain `EVALUATING` until the following are checked prospectively:
+The analytical model and sampled field coverage are stable, but adoption should remain `EVALUATING` until the following are checked prospectively:
 
-1. **Field coverage:** prove that existing Task Contract + handoff/workspace fields can carry all G0/G1/G2 evidence without a new duplicated receipt.
-2. **Freshness equivalence:** map every existing freshness check to G0, G1, G2 or an explicit revalidation trigger; do not accidentally remove a distinct security/scientific requirement.
-3. **Prompt reduction:** compare representative current Executor launch/return flows against a gate-referenced version and quantify duplicated Git instructions/context.
-4. **Recovery behavior:** verify that same-task `CONTINUE`, root failover and worktree recovery correctly force G0 revalidation when local identity may have changed.
-5. **Specialized workflows:** confirm release/hotfix, explicit intermediate checkpoints, scientific frozen baselines and security-sensitive tasks can add stricter gates without weakening the normal model.
-6. **Cleanup continuity:** preserve D064 attached-closure semantics and exact-head branch retirement evidence.
-7. **No authority duplication:** ensure any deterministic helper validates existing authority/evidence instead of becoming a second acceptance authority.
+1. **Freshness equivalence:** map every existing generic freshness check to G0, G1, G2 or an explicit revalidation trigger; do not remove a distinct security/scientific requirement.
+2. **Prompt/policy reduction:** construct representative gate-referenced versions and measure actual duplicated instructions/context removed rather than assuming a token saving.
+3. **Recovery behavior:** verify that same-task `CONTINUE`, root failover and worktree recovery force G0 when local identity may have changed.
+4. **Broader specialized workflows:** confirm release/hotfix, explicit intermediate checkpoints and security-sensitive tasks can add stricter `SPECIAL` semantics without weakening the normal model.
+5. **Cleanup continuity:** preserve D064 attached-closure semantics and exact-head branch retirement evidence under the named G2 abstraction.
+6. **No authority duplication:** any deterministic helper may validate existing authority/evidence but must not become another acceptance authority.
 
-## 10. Recommended next step
+The earlier field-coverage gap is closed for the sampled normal/continuity flows; no new receipt is recommended.
+
+## 12. Recommended next step
 
 Do not create a new Git-control subsystem yet.
 
-First perform a **static compression evaluation** over representative existing Task/Operational Contracts and their handoffs:
+Perform a bounded **canonical-wording compression evaluation**:
 
 ```text
-current instructions/checks
-  -> classify each as G0 | LOCAL | G1 | G2 | SPECIAL
-  -> identify exact duplicates and distinct defenses
-  -> propose canonical gate wording
-  -> measure prompt/policy reduction
-  -> prove no invariant disappears
+existing generic Git requirements
+  -> map to G0 | G1 | G2
+existing task-specific requirements
+  -> retain as SPECIAL
+existing local mechanics
+  -> leave to Executor under D054
+
+then
+  -> draft one canonical gate specification
+  -> rewrite representative contracts/prompts hypothetically by reference
+  -> measure instruction/context reduction
+  -> prove invariant equivalence
 ```
 
-Use historical/closed work units for this evaluation; do not perturb the active T062/O279 scientific execution.
+Use historical/closed work units for this evaluation; do not perturb the active T062 scientific frontier.
 
 If that evaluation is positive, the likely normative change is a small canonical Executor Git transaction-boundary specification referenced by existing documents, not a command wrapper and not a new receipt protocol.
 
@@ -347,13 +433,14 @@ Research-State: COMPLETE
 Decision-State: EVALUATING
 Core finding: governance should compress local-Git control into named transaction boundaries, not micromanage Executor Git mechanics
 Candidate gates: G0 ENTRY -> autonomous LOCAL zone -> G1 PUBLISH -> G2 CLOSE
+Static samples: T060 normal; T053 continuity; T063 scientific SPECIAL
+Field coverage: sampled existing handoffs are sufficient; no new Git receipt recommended
 Independent controls preserved: D042, D048, D058, D062, D064, handoff identity, cleanup exact-head checks
-New durable receipt: NOT RECOMMENDED
-Active T062/O279: unchanged
+Active T062 frontier: unchanged / out of scope
 T058: remains frozen
 Normative change: none
 ```
 
 ### Integration sequencing note
 
-At the time R027 was opened, canonical `develop` contained registry entries through R025 while R026 existed on the still-open PR #371. R027 therefore reserves the next identifier but must not be made ready/integrated with a ledger that silently skips R026. Before R027 is ready for integration, reconcile `docs/RESEARCH-TRACEABILITY.md` against then-current canonical `develop`, preserving the integrated disposition of R026 and all later frontier changes.
+At the time R027 was opened, canonical `develop` contained registry entries through R025 while R026 existed on the still-open PR #371. R027 therefore reserves the next identifier but must not be made ready/integrated with a ledger that silently skips R026. Before R027 is ready for integration, reconcile `docs/RESEARCH-TRACEABILITY.md` against then-current canonical `develop`, preserving the durable disposition of R026 and all later frontier changes.
