@@ -59,7 +59,8 @@ See D057 for transition semantics and required metadata for new research.
 | R023 | `docs/research/R023-T063-V5-LIVE-SPAWN-RECEIPT-PERSISTENCE-GAP.md` | COMPLETE | NOT_REQUIRED | v5 terminal HEAD `3f9830a65a152ad595653961205e0ca52b9c5ccc`; `docs/reviews/T063-R10.md`; official Codex `0.153.4` and `0.154.0` source | none | V5 obtained the public live exact-child spawn receipt and successful same-child reattachment, then blocked because the adapter incorrectly required the live `Started` activity to be duplicated in the completed parent-turn snapshot. Official source confirms live item events and persisted history have distinct semantics; v6 validates spawn cardinality/correlation from the public live notification window. |
 | R024 | `docs/research/R024-T063-V7-NO-ROLLOUT-REATTACH-RACE.md` | COMPLETE | NOT_REQUIRED | v7 terminal HEAD `58e396c126e363428544b163cb2aa8c7e1ac8ed6`; `docs/reviews/T063-R15.md`; `docs/reviews/T063-R16.md` | none | V7 blocked after five valid PASS children because immediate exact-child `thread/resume` could not resolve a rollout. R024 classified this as an earlier persistence-visibility phase suitable only for bounded same-child retry. R025 subsequently narrows the no-rollout acceptance shape without rewriting the historical v7 diagnosis. |
 | R025 | `docs/research/R025-T063-V8-REATTACH-CLASSIFIER-HARDENING.md` | COMPLETE | NOT_REQUIRED | `docs/reviews/T063-R18.md`; `docs/reviews/T063-R19.md`; hardened v8 candidate `afdae0050226d61a10269f63017e2fac99eef644`; O277; `docs/reviews/T063-R20.md` | none | External revalidation confirms that identity may precede rollout materialization but `no rollout found` is not intrinsically transient. V8 hardened this classifier successfully; the live v8 run observed only the preserved `EMPTY_ROLLOUT` path before stopping on an unrelated self-attested transport-receipt mismatch. D077 remains `PIN_RETAINED`. |
-| R026 | `docs/research/R026-CHATGPT-GITHUB-INTERACTION-MINIMIZATION.md` | COMPLETE | EVALUATING | D048; D066; GitHub Git Data docs; `test_biblioteca` write-path qualification; PR `#371` | none | R026 does not replace the existing native-Git publication process. It qualifies adaptive ChatGPT Web write transport: direct per-file Contents writes for trivial independent changes, and Git Data tree/commit/ref batching when coherent multi-file publication reduces mutation cost or materially benefits from one-commit coherence. Reads remain direct from GitHub; normative adoption remains EVALUATING. |
+| R026 | `docs/research/R026-CHATGPT-GITHUB-INTERACTION-MINIMIZATION.md` | COMPLETE | DEFERRED | D048; D066; GitHub Git Data docs; `test_biblioteca` write-path qualification; PR `#371`; `docs/research/R026-HUMAN-DISPOSITION.md` | none | Adaptive ChatGPT Web write transport is technically qualified and Human-approved as a future direction. Reads remain direct from GitHub; direct Contents writes remain preferred for trivial independent text changes and Git Data batching for coherent multi-file publication when it lowers mutation cost or improves one-commit coherence. Implementation and normative adoption are deferred pending a future explicit Human authorization. |
+| R027 | `docs/research/R027-EXECUTOR-LOCAL-GIT-TRANSACTION-GATES.md` | COMPLETE | DEFERRED | deterministic Git/GitHub E2E qualification; Codex-host pilot; `docs/research/R027-CODEX-HOST-PILOT-FINAL-EVIDENCE.md`; `docs/research/R027-HUMAN-DISPOSITION.md`; PR `#375` | none | The G0/LOCAL/G1/G2 transaction-gate model is empirically qualified on the observed primary Codex adapter path and Human-approved as a future direction. The evidence retains the host model/effort self-observability limitation and the final prospective Human-authorization sequencing auditability gap. No normative policy is changed; implementation is deferred pending a future explicit Human authorization. |
 
 ## Live research frontier
 
@@ -128,86 +129,3 @@ T062 / T023 v15 RIQ-NBC
 ```
 
 T062 may not resume from the held state without a new explicit Human instruction followed by remote revalidation.
-
-## Completed/decided coordinator and T063 support research
-
-```text
-R006 — persistent Executor coordinator
-  COMPLETE / SUPERSEDED -> R013/D060 narrower task-scoped continuity
-
-R011 — coordinator identity / worktree hygiene
-  COMPLETE / DECIDED -> D058
-
-R012 — coordinator delegation policy
-  COMPLETE / DECIDED -> D065
-
-R013 — task-scoped coordinator continuity
-  COMPLETE / DECIDED -> D060
-
-R017 — coordinator direct-execution gate
-  COMPLETE / DECIDED -> D075
-
-R018 — Codex subagent/runtime revalidation
-  COMPLETE / NOT_REQUIRED
-  supporting evidence for D075/T063 prelaunch
-
-R019/R020 — T063 historical runtime/harness receipt research
-  COMPLETE / NOT_REQUIRED
-  R020 partially supersedes R019's V2 message-receipt mechanics
-
-R021 — T063 v3 config-authoritative receipt/version revalidation
-  COMPLETE / DECIDED -> D077
-
-R022 — T063 v3 empty-rollout reattach race
-  COMPLETE / NOT_REQUIRED
-
-R023 — T063 v5 live spawn receipt persistence gap
-  COMPLETE / NOT_REQUIRED
-
-R024 — T063 v7 no-rollout reattach race
-  COMPLETE / NOT_REQUIRED
-
-R025 — T063 v8 classifier hardening
-  COMPLETE / NOT_REQUIRED
-  adopted operationally by T063-R19/Task Contract without creating a new global decision
-```
-
-## Deferred/qualified dependencies
-
-```text
-R008/R009 -> D063
-  qualified version-sensitive exact read-only child measurement substrate
-
-R010
-  COMPLETE / DEFERRED
-  no global D055 Astra migration
-
-R014/R015 -> D066
-  qualified ChatGPT Orchestrator portable Git workspace/transport subset
-  explicit unresolved recovery/automatic-retirement gaps remain
-```
-
-D063 qualifies the child measurement substrate only. D065 establishes delegation obligation. D075 establishes only the coordinator-direct versus delegated/contract-fixed first gate. D077 governs upstream version-range revalidation. None of them adopts adaptive child compute routing, changes D055, establishes provider-signed backend identity, or authorizes a global savings claim. R007 remains EVALUATING after T063's frozen mapping fails qualification.
-
-## Required workflow for new research
-
-For each new material investigation:
-
-1. allocate the next stable `Rxxx` identifier;
-2. create the research artifact under `docs/research/` with D057 metadata;
-3. add/update its registry row in the same Markdown change set;
-4. record sources/evidence and distinguish volatile facts from durable analysis;
-5. if empirical validation is required, set `Decision-State: EVALUATING` and link the exact Task Contract/eval/review;
-6. if a decision is accepted, update the registry to `DECIDED` and link the exact `Dxxx` authority;
-7. if deferred/rejected/superseded, persist that disposition and reason/reference;
-8. update `docs/orchestrator/CHECKPOINT.md` only when the item is part of the live frontier.
-
-No material research may be relied on for a downstream Task Contract or normative change while existing only in chat.
-
-Version-sensitive external/vendor research is additionally subject to D077: compare the pinned/reference version, current stable, and higher relevant versions before promoting a version-dependent conclusion into consequential authority.
-
-## Provenance rule
-
-Do not rewrite a completed research artifact merely to align with a later conclusion. Preserve the original analysis, create or reference a successor when material evidence changes, and use the registry to express supersession/current disposition.
-
-For volatile vendor/model/pricing/regulatory facts, revalidate the source before a later decision and update `Last-Reviewed` metadata or create a successor research item.
