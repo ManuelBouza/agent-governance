@@ -1,0 +1,89 @@
+{
+  "authority_refs": [
+    {
+      "blob": "dd2e2d814aee8f682bde54f6d5d0d462d7e1de87",
+      "path": "AGENTS.md"
+    },
+    {
+      "blob": "52275ea8ef893c27aed7ed8419945a9be19ffa36",
+      "path": "docs/tasks/T066-r027-chatgpt-codex-efficiency-evaluation.md"
+    },
+    {
+      "blob": "6cc24810e9bf854c48e626a19e24d6374f454157",
+      "path": "docs/decisions/D079-lean-executor-qualification-and-adoption-boundary.md"
+    },
+    {
+      "blob": "1028feb9d382f378dd5d58612fd528aee89e6d74",
+      "path": "docs/research/R028-R027-DEEP-REVALIDATION-AND-LEAN-EXECUTOR.md"
+    },
+    {
+      "blob": "bd3cf4c40854b07c9928239189757ea99ed47f98",
+      "path": "docs/decisions/D052-specification-owned-conformance-test-authorship.md"
+    },
+    {
+      "blob": "7fdbbf832daafb24239a04c13386876d8fb8306f",
+      "path": "docs/decisions/D058-executor-coordinator-session-and-worktree-hygiene.md"
+    },
+    {
+      "blob": "df161bae80be4a391846c4abd4169e02996cdbf9",
+      "path": "docs/decisions/D077-version-sensitive-upstream-revalidation.md"
+    }
+  ],
+  "codex_effective_config_requirements": {
+    "agents.enabled": false,
+    "fast_mode": false,
+    "model_aliases_for_scored_arms": "forbidden; use explicit gpt-5.6-sol or gpt-5.6-terra identifiers",
+    "project_doc_max_bytes": 65536,
+    "reasoning_effort": "medium"
+  },
+  "experiment_constants": {
+    "children_used": 0,
+    "delegation_posture": "CONTRACT_FIXED",
+    "human_intervention": "none after scored arm launch except genuine D033 gate",
+    "max_scored_arms": 18,
+    "phase_gate_fail_closed": true,
+    "reasoning": "medium",
+    "root_local": true,
+    "speed": "standard"
+  },
+  "instruction_control": {
+    "block_if": [
+      "full instruction loading cannot be proven",
+      "matched-pair instruction sources differ",
+      "unexpected AGENTS.override.md or equivalent changes the envelope"
+    ],
+    "default_documented_project_budget_bytes": 32768,
+    "live_proof_required": [
+      "supported host readback shows effective project_doc_max_bytes >= 65536",
+      "supported host readback or log proves full root AGENTS.md was loaded without truncation",
+      "global/override instruction sources are inventoried and identical within each matched pair",
+      "any project-local override/fallback source is identical within each matched pair"
+    ],
+    "required_effective_project_budget_bytes": 65536,
+    "root_agents_blob": "dd2e2d814aee8f682bde54f6d5d0d462d7e1de87",
+    "root_agents_bytes": 34567,
+    "root_agents_path": "AGENTS.md",
+    "static_capacity_check": "65536 > 34567; no nested AGENTS file exists in evals/r027_efficiency at Freeze A"
+  },
+  "isolation": {
+    "exclusive_writable_worktree_per_arm": true,
+    "fixture_source": "Generate only the scheduled variant into the arm worktree from the frozen generator/oracle revision.",
+    "fresh_root_per_arm": true,
+    "other_arm_candidate_diff_access_forbidden": true,
+    "partner_result_ref_access_forbidden": true,
+    "shared_writable_branch_forbidden": true,
+    "terminal_then_retire": "Represent terminal result and retire the root before the next scored arm."
+  },
+  "measurement_preflight": {
+    "accounting_regime_must_remain_constant_after_first_scored_arm": true,
+    "credits": "direct exact receipt preferred; deterministic derivation permitted only after a single applicable rate card is prospectively selected",
+    "exact_per_arm_token_attribution_required": true,
+    "model_and_profile_proof_required": true,
+    "required_before_first_scored_arm": true,
+    "runtime_version_required": true,
+    "wall_clock_required": true
+  },
+  "schema_version": 1,
+  "scientific_branch": "test/r027-chatgpt-codex-efficiency-v1",
+  "screening_only": true
+}

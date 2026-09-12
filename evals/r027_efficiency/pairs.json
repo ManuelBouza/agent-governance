@@ -1,0 +1,8 @@
+{
+  "schema_version": 1,
+  "pair_files": [
+    "pairs/phase1.json",
+    "pairs/phase2.json",
+    "pairs/phase3.json"
+  ]
+}
