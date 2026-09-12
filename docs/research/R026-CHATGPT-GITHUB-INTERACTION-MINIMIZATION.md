@@ -1,4 +1,4 @@
-# R026 — ChatGPT/GitHub interaction minimization
+# R026 — ChatGPT Web adaptive GitHub write transport qualification
 
 Research-ID: R026  
 Research-State: COMPLETE  
@@ -6,305 +6,254 @@ Decision-State: EVALUATING
 Opened: 2026-09-12  
 Last-Reviewed: 2026-09-12  
 Owner: ChatGPT Orchestrator  
-Scope: ChatGPT Orchestrator repository interaction minimization, with current effective scope narrowed by Human direction to GitHub write-path minimization only  
-Question: How can Agent Governance minimize routine ChatGPT write interactions with GitHub without weakening canonical Git authority, branch isolation, conflict detection, review traceability or the Human/Orchestrator/Executor ownership model?  
-Evaluation-Refs: desk research 2026-09-12; empirical Git Data publication exercised during R026; later Human corrections narrow current applicability  
+Scope: qualification and selection of GitHub write transports for ChatGPT Web source-maintenance work; repository reads remain direct from GitHub  
+Question: Given the already-accepted D048/D066 publication model, when should ChatGPT Web use direct per-file GitHub writes versus Git Data batched publication?  
+Evaluation-Refs: D048; D066; GitHub official Git Data documentation; empirical R026 qualification in `ManuelBouza/test_biblioteca`; Human scope corrections 2026-09-12  
 Decision-Ref: none  
-Supersedes: none  
+Supersedes: earlier R026 interpretations that treated Git Data batching as a universal process optimization  
 Superseded-By: none
 
-## Current effective scope
+## Executive conclusion
 
-R026 was initially opened as a broader read/write interaction-minimization investigation. Human direction later narrowed the active problem:
+R026 does **not** establish a new universal optimization of the Agent Governance publication process.
+
+The repository already contains the relevant optimization intent:
+
+- **D048** requires a normal Executor task to keep work local and perform one planned final push of the complete topic-branch state.
+- **D066** already prefers batched/final GitHub publication and explicitly allows one represented multi-file tree/commit update instead of one GitHub commit per edit when the connected surface supports it.
+
+Therefore R026's actual contribution is narrower and surface-specific:
+
+> R026 empirically qualifies the current ChatGPT Web GitHub connector's Git Data write path and defines when that transport is preferable to direct per-file Contents API writes.
+
+The result is **adaptive transport selection**, not replacement of normal Git/Git-push workflows.
+
+## Current environment boundary
+
+For this research, the active Orchestrator surface is ChatGPT Web.
+
+The current operating assumptions are:
 
 ```text
 READS
-  remain direct from GitHub
+  direct GitHub connector reads
+
+AUTHORING
+  ChatGPT reasoning and temporary sandbox when useful
 
 WRITES
-  are the optimization target
+  select the cheapest safe GitHub transport for the intended change
 ```
 
-The detailed historical investigation remains preserved in the R026 correction appendices and Git history. The current candidate architecture is intentionally simpler:
+R026 does not depend on:
 
 ```text
-GitHub direct reads
-  -> exact refs/files/searches as needed
-
-ChatGPT reasoning / temporary sandbox when useful
-  -> prepare complete multi-file change set
-
-GitHub bounded publication
-  -> create_tree with all changed paths/content
-  -> create_commit with expected parent SHA
-  -> update_ref non-force
-  -> bounded verification
-
-PR
-  -> normal review/integration path
+ChatGPT Library
+PC-local repositories
+Work Desktop repositories
+snapshot/archive read caches
+GitHub Actions artifact bootstrap
 ```
 
-No current R026 proposal depends on Library, a PC-local repository, Work Desktop, repository snapshots, or GitHub Actions artifacts for the read path.
+Those earlier read-side explorations remain historical evidence only.
 
-## Write amplification problem
+## Existing process authority
 
-Per-file Contents API writes produce an undesirable shape:
+### D048 — Executor/Codex final publication
+
+D048 already defines the normal publication boundary for Executor work:
 
 ```text
-update file A -> remote mutation/commit
-update file B -> remote mutation/commit
-update file C -> remote mutation/commit
-...
+local implementation
+-> verification
+-> final local commits/handoff
+-> one planned final push
+-> remote verification
 ```
 
-For an N-file documentation or specification change, this creates O(N) remote mutations and can create multiple intermediate commits that do not represent a complete coherent change set.
+R026 does not replace `git push` in that path. A native Git push already transfers the repository state efficiently and preserves normal Git semantics.
 
-GitHub's Git Data model supports a bounded alternative:
+### D066 — Orchestrator batched publication intent
+
+D066 already states that Orchestrator source-maintenance work should avoid one remote GitHub mutation per local edit and, when the connected surface supports it, should publish a represented multi-file state as one batched tree/commit update.
+
+R026 therefore qualifies the concrete ChatGPT Web mechanism for that existing design intent.
+
+## Qualified ChatGPT Web write transports
+
+### Transport A — direct Contents API write
+
+Use the connector's direct `create_file`, `update_file`, or `delete_file` operation when the change is small and independent.
+
+For one text file:
 
 ```text
-N changed files
--> one tree containing all changes
--> one commit over the expected parent
--> one ref update
+1 changed file
+-> 1 remote mutation
 ```
 
-The number of publication mutations is therefore constant with respect to N.
+This is strictly cheaper in mutation count than Git Data batching, which requires three publication mutations.
 
-## Evidence
+### Transport B — Git Data batch
 
-### GitHub official Git Data behavior
-
-GitHub's Git Trees API supports creating a tree with multiple entries and a `base_tree`. Entries may carry content directly. A new commit can point to the resulting tree, and the branch ref can then be updated to that commit.
-
-Relevant official documentation reviewed during R026:
-
-- GitHub REST API — Git trees: https://docs.github.com/en/rest/git/trees
-- GitHub REST API — Git commits: https://docs.github.com/en/rest/git/commits
-- GitHub REST API — Git refs: https://docs.github.com/en/rest/git/refs
-
-### Current ChatGPT GitHub plugin capability
-
-The active GitHub connector exposes the required primitives:
+For a coherent multi-file change, ChatGPT Web can publish:
 
 ```text
 create_tree
-create_commit
-update_ref
-compare_commits
+-> create_commit(parent = expected topic HEAD)
+-> update_ref(force = false)
 ```
 
-It also exposes per-file `create_file`, `update_file`, and `delete_file`, but those are not the preferred publication primitive for coherent multi-file changes when the Git Data route is available.
+Text additions/modifications can be carried inline in `create_tree`; deletions use `sha: null`.
 
-### Empirical evidence gathered during R026
-
-R026 successfully used:
+For N inline text changes:
 
 ```text
-create_tree
+N files
+-> 3 publication mutations
+```
+
+The mutation count is constant with respect to N within the qualified request envelope.
+
+### Binary objects
+
+The current connector's direct file-write wrappers are UTF-8 text oriented. R026 qualified binary publication through:
+
+```text
+create_blob(base64)
+-> reference blob SHA from create_tree
 -> create_commit
 -> update_ref(force=false)
 ```
 
-to publish multiple R026 files as a single commit on its research topic branch.
+Each new binary blob that must be created adds one `create_blob` mutation before the common three-step publication path.
 
-The same round-trip was independently exercised on the disposable repository `ManuelBouza/test_biblioteca`: a sandbox-prepared edit was published through the same three-mutation sequence and verified remotely. This demonstrates current connector compatibility with the bounded Git Data path.
+## Adaptive selection rule
 
-That disposable-repository pilot also explored snapshot/artifact read optimization. The Human Owner subsequently removed read optimization from scope. Those artifact results remain experimental evidence only and are not part of the current architecture.
+The transport should be selected by both **cost** and **coherence**, not file count alone.
 
-## Preferred write algorithm
-
-### Preconditions
-
-Before publication, ChatGPT must know:
+### Normal default
 
 ```text
-target repository
-target topic branch
-expected topic-branch HEAD SHA
-expected parent tree or commit tree
-complete intended change set
+Executor / Codex with native Git
+  -> preserve D048 single final git push
+
+ChatGPT Web, one independent text file
+  -> direct Contents API write
+
+ChatGPT Web, coherent multi-file change
+  -> compare direct-write cost against Git Data batch
+  -> choose Git Data when it reduces mutations or when one-commit coherence materially matters
 ```
 
-Normal repository reads remain direct GitHub reads.
+### Mutation-count comparison for text files
 
-### Publication
+| Changed text files | Direct per-file writes | Git Data batch | Count-only preference |
+|---:|---:|---:|---|
+| 1 | 1 | 3 | direct write |
+| 2 | 2 | 3 | direct write unless atomic coherence matters |
+| 3 | 3 | 3 | choose by coherence/safety |
+| 4+ | N | 3 | Git Data batch |
 
-For text files that can be represented inline:
+This table is a transport-selection aid, not a hard governance threshold.
+
+A two-file change may still justify Git Data if the files must land as one coherent commit. Conversely, independent file updates should not be forced into a batch merely because batching is available.
+
+## Safety invariant for Git Data publication
+
+When Transport B is selected:
 
 ```text
-1. create_tree(
-     base_tree = expected parent tree,
-     entries = all changed paths/content
-   )
-
-2. create_commit(
-     tree = new tree,
-     parent = expected topic HEAD
-   )
-
-3. update_ref(
-     branch = topic branch,
-     sha = new commit,
-     force = false
-   )
+1. read and record expected topic-branch HEAD
+2. prepare complete intended change set
+3. create_tree against the expected parent tree
+4. create_commit with parent = expected topic HEAD
+5. update_ref(force = false)
+6. if ref movement is rejected, fail closed and reread/reconcile
+7. verify resulting branch ref
+8. for material multi-file changes, compare expected base/head paths
 ```
 
-This should represent the complete logical change in one commit.
+No R026 transport authorizes direct writes to `develop`, `main`, or another long-lived branch. D061 remains controlling.
 
-### Verification
+## Empirical qualification
 
-After a successful ref update, perform a bounded remote verification such as:
+R026 exercised the Git Data transport on the disposable repository `ManuelBouza/test_biblioteca`.
+
+Qualified results:
+
+- delete using `sha: null` — PASS;
+- rename represented as delete-old + add-new in one tree — PASS;
+- binary object using base64 `create_blob` plus tree SHA reference — PASS;
+- 64 inline text files in one `create_tree` — PASS;
+- three common publication mutations for that 64-file text batch — PASS;
+- explicit stale-ref race with `force=false` — PASS / HTTP 422 `Update is not a fast forward`;
+- losing stale candidate did not overwrite the concurrent winner — PASS;
+- bounded post-publication branch/diff verification — PASS.
+
+The detailed evidence is preserved in:
+
+`docs/research/R026-WRITE-PATH-EMPIRICAL-QUALIFICATION.md`
+
+## Payload boundary
+
+The 64-file test establishes only a proven lower bound for small inline text entries.
+
+GitHub's official Create Tree documentation does not publish a create-request ceiling that Agent Governance can safely promote to a governance constant. Therefore:
 
 ```text
-compare expected base/head
-or
-fetch resulting commit/tree
+64 small inline files = empirically proven
+exact maximum = NOT QUALIFIED
 ```
 
-Verification should confirm:
+If a runtime rejects a batch because of payload/connector limits, the caller must use a bounded fallback or split publication deliberately. It must not infer a permanent product-wide threshold from one connector/runtime version.
 
-- the topic ref points to the intended commit;
-- only intended paths changed;
-- no unintended deletion or replacement occurred;
-- the branch remains based on the expected lineage.
+## What R026 actually improves
 
-## Stale-write safety
+R026 improves the **transport choice available to ChatGPT Web**, not the already-efficient native Git process.
 
-The design must fail closed when another actor moves the topic branch between preparation and publication.
-
-The expected parent SHA is therefore a concurrency token.
-
-Example:
+It prevents two opposite inefficiencies:
 
 ```text
-expected topic HEAD = A
+inefficiency A:
+  N-file coherent ChatGPT Web change
+  -> N separate remote content commits
 
-ChatGPT creates candidate C with parent A
-
-another actor moves remote topic:
-A -> B
-
-ChatGPT attempts:
-B -> C with force=false
+inefficiency B:
+  trivial 1-file ChatGPT Web change
+  -> unnecessarily force create_tree + create_commit + update_ref
 ```
 
-Because C does not contain B, the non-force ref update should be rejected rather than overwrite B.
+The adaptive policy selects the simpler safe path for each case.
 
-If this occurs, ChatGPT must re-read the new remote state and reconcile rather than force the ref.
+## Non-goals
 
-## Interaction budget
+R026 does not propose:
 
-For one coherent publication work unit after the topic branch exists:
+- replacing native Executor/Codex `git push`;
+- changing D048's single-final-push boundary;
+- replacing D066 wholesale;
+- optimizing repository reads;
+- reviving T058;
+- making Library operationally required;
+- defining a universal batch-size ceiling;
+- weakening topic-branch freshness or branch-target controls.
 
-```text
-GitHub reads:        direct/as needed; not optimized by R026
+## Decision question
 
-publication writes:
-  create_tree:       1
-  create_commit:     1
-  update_ref:        1
+The remaining decision is not whether Git Data batching works; that is empirically qualified within the stated envelope.
 
-verification read:   1 bounded verification recommended
-```
+The remaining governance question is:
 
-Thus the publication mutation budget is:
+> Should D066 / the Orchestrator operating procedure explicitly encode adaptive ChatGPT Web write-transport selection, using direct Contents API writes for trivial independent changes and Git Data batching for coherent multi-file changes where batching provides lower mutation cost or stronger one-commit coherence?
 
-```text
-3 remote mutations independent of changed-file count
-```
-
-Branch creation and PR creation are lifecycle operations and are counted separately when needed.
-
-## Why this is preferable to per-file updates
-
-The bounded Git Data path provides four material advantages:
-
-1. **constant mutation count** for N changed files;
-2. **one coherent commit** instead of intermediate per-file commits;
-3. **better stale-write semantics** through an explicit expected parent and non-force ref movement;
-4. **cleaner verification** because the complete intended change has one commit boundary.
-
-## Out-of-scope read optimization
-
-By current Human direction, the following are not part of R026's active design:
-
-```text
-Library persistence
-persistent PC/Work Desktop repository
-sandbox repository snapshot as read cache
-GitHub Actions artifact bootstrap
-archive-based repository materialization
-attempts to reduce ordinary GitHub file reads
-```
-
-Reads continue directly against GitHub using the connector.
-
-## Remaining write-path qualification gaps
-
-Before a normative decision changes D066 or other governance policy, the following write cases should be qualified explicitly:
-
-### 1. Deletions
-
-Confirm the exact `create_tree` representation for deleting paths through the active connector wrapper.
-
-### 2. Renames
-
-Git trees represent a rename as deletion + addition at the tree level. Confirm expected diff quality and policy semantics.
-
-### 3. Binary files
-
-Inline text content is not sufficient for all binary changes. Qualify whether `create_blob(base64)` + `create_tree(sha)` is the appropriate bounded path.
-
-### 4. Payload limits
-
-Measure connector/GitHub practical limits for large multi-file trees and large inline content so the design has a deterministic fallback threshold.
-
-### 5. Stale-ref race
-
-Run an explicit two-writer race test on a disposable branch and confirm `update_ref(force=false)` rejects incompatible remote advancement.
-
-### 6. Verification contract
-
-Choose the minimum required post-write verification primitive for normal writes (`compare_commits`, commit/tree read, or another bounded read).
-
-## Acceptance target for a future normative decision
-
-A write-optimized transport should satisfy:
-
-```text
-A. ordinary repository reads remain direct GitHub reads
-B. N-file text publication uses constant-count remote mutations
-C. the logical change is represented by one commit
-D. remote topic movement cannot be silently overwritten
-E. no direct development write targets develop/main
-F. post-publication verification proves exact intended change boundary
-G. per-file Contents API writes are fallback, not the default multi-file path
-H. no Library or PC-local dependency is introduced
-```
-
-## Relationship to D066 and T058
-
-R026 does not itself change D066.
-
-D066 remains the accepted authority until a later decision explicitly adopts a refined write transport. T058 remains frozen by Human decision and is not resumed by this research.
-
-R026's present recommendation is narrower than its initial investigation:
-
-```text
-keep direct GitHub reads
-adopt/qualify bounded Git Data publication for writes
-```
-
-## Current disposition
+Until that is adopted explicitly:
 
 ```text
 Research-State: COMPLETE
 Decision-State: EVALUATING
-Current scope: WRITE MINIMIZATION ONLY
-Read path: DIRECT GITHUB
-Preferred candidate: create_tree -> create_commit -> update_ref(non-force)
-Normative change: none
+Evidence: QUALIFIED
+Universal process replacement: NO
+ChatGPT Web adaptive transport candidate: YES
 T058: remains frozen
 ```
-
-The next empirical work should focus only on unresolved write semantics: deletion, rename, binary content, payload limits, stale-ref races, and final verification.
