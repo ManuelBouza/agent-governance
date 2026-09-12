@@ -1,0 +1,787 @@
+{
+  "base_branch": "develop",
+  "base_sha": "8b3cc5af3e70367eff6e55ebd416a554c8096763",
+  "chatgpt_read_path": "handoffs/T063-executor-handoff-v8.json",
+  "code_review": {
+    "findings": [
+      {
+        "classification": "execution-validity blocker",
+        "description": "Scheduled arm 22 returned spawn_trigger_received=T063-RW-8e2df1b053569394880b48aaf6039f9a instead of the exact frozen trigger T063_TRIGGER_80baf0e9971d0eb80702df696a117f61.",
+        "disposition": "Stopped without replay, replacement, compensating scored call, or semantic repair. Orchestrator re-entry is required."
+      }
+    ],
+    "resolved_findings": [],
+    "reviewed_head_sha": "afdae0050226d61a10269f63017e2fac99eef644",
+    "summary": "Reviewed the exact 28-file published candidate and terminal evidence against T063-RQ-1..20. The candidate preserved the 24-arm counterbalanced schedule, structured two-condition reattachment classifier, shared retry budget, first-attempt quality continuation, frozen profiles/oracles, and pilot taxonomy. Execution blocked fail-closed on a transport-receipt mismatch at arm 22; no Stage 6 repair was authorized after provider-backed execution began.",
+    "upstream_reentry_required": true,
+    "upstream_reentry_stage": "Specify"
+  },
+  "delegation_posture": "CONTRACT_FIXED",
+  "dependencies_or_config_changes": [],
+  "files_changed": [
+    "handoffs/T063-adaptive-worker-routing-telemetry-v8.json",
+    "handoffs/T063-executor-handoff-v8.json"
+  ],
+  "git_status": "Only the two authorized untracked v8 JSON evidence files existed before terminal commit; no product, test, configuration, Markdown, or other tracked mutation was observed.",
+  "implementation_head_sha": "afdae0050226d61a10269f63017e2fac99eef644",
+  "implementation_summary": "Executed the exact published Stage 5 candidate without implementation repair. The fixed run stopped fail-closed at scheduled arm 22 after 21 fully measured children because the worker transport receipt did not match the frozen expected trigger.",
+  "material_triggers_considered": [
+    "contract-fixed provider-backed parent/child measurement topology",
+    "noisy execution and evidence collection",
+    "independent worker quality evaluation"
+  ],
+  "recommended_next_task": "ChatGPT Orchestrator Stage 7 review and Specify-stage re-entry for the observed transport receipt mismatch; no additional scored call is authorized.",
+  "requirement_trace": {
+    "T063-RQ-1": "Telemetry run_id is v8-only and historical evidence heads are excluded from scoring.",
+    "T063-RQ-2..4": "Public parent spawn/completion validation remained enforced for all attempted arms.",
+    "T063-RQ-6/6A": "22 ordered reattachment receipts used the exact published classifier; all observed retries were accepted EMPTY_ROLLOUT with one shared budget, exact-child reuse, parent-residency recheck, and no new provider turn.",
+    "T063-RQ-7..12": "Preflight passed D063/runtime/auth/profile/read-only checks; 21 completed child snapshots retained exact receipts, usage, duration, quality, and no mutation/oracle-leak evidence.",
+    "T063-RQ-14..20": "The frozen 24-arm counterbalanced schedule and aggregate taxonomy remained represented; execution stopped at arm 22, so run validity is INVALID and pilot_decision is null."
+  },
+  "sdd_profile": "ASSURED",
+  "stage6_repairs": [],
+  "task_contract_path": "docs/tasks/T063-adaptive-worker-routing-requalification.md",
+  "unresolved_issues": [
+    "The arm-22 worker reported a runtime-generated T063-RW transport token rather than the exact frozen T063_TRIGGER value, invalidating the run before completion.",
+    "Three scheduled arms lack complete valid measurements; the run is not model-comparison or pilot eligible."
+  ],
+  "verification": {
+    "commands": [
+      "git fetch origin --prune and exact candidate/base ancestry checks",
+      "codex --version; codex login status; codex doctor --json",
+      "uv run --locked python -m pytest <v3-v8 deterministic test files>",
+      "uv run --locked python -m compileall -q <v3-v8 eval/test candidate>",
+      "uv run --locked ruff check <v3-v8 eval/test candidate>",
+      "uv run --locked python -m evals.adaptive_worker_routing_v8 prepare <exact repo/runtime root>",
+      "official openai/codex release revalidation",
+      "uv run --locked python -m evals.adaptive_worker_routing_v8 run <exact authorized arguments>"
+    ],
+    "network_required": true,
+    "results": {
+      "candidate_identity": "PASS",
+      "compileall": "PASS",
+      "d077_latest_stable": "PASS - 0.154.0 remained latest stable; newer observed releases were prereleases",
+      "deterministic_tests": "PASS - 67 passed",
+      "oracle_preparation": "PASS",
+      "provider_run": "BLOCKED_EXECUTION_INVALID at scheduled arm 22 due exact transport-receipt mismatch",
+      "ruff": "PASS"
+    },
+    "runtime": {
+      "app_server": "0.153.4",
+      "auth_category": "chatgpt",
+      "codex_cli": "0.153.4",
+      "os": "native Windows",
+      "python": "3.13.14",
+      "uv": "0.11.32"
+    }
+  },
+  "adapter_reattachment_audit": [
+    {
+      "attempt_count": 2,
+      "child_id": "01a09437-21b3-7523-a943-84a91a45ac75",
+      "new_provider_turn_created": false,
+      "parent_id": "01a09436-f93f-75b2-8fbd-b4c778c5207f",
+      "parent_residency_rechecks": 1,
+      "retry_count": 1,
+      "retry_delay_seconds": 0.2,
+      "same_child_reused": true,
+      "shared_attempt_budget_max": 10,
+      "status": "PASS",
+      "total_retry_wait_seconds": 0.2,
+      "transient_error_class": "EMPTY_ROLLOUT",
+      "transient_error_classes": [
+        "EMPTY_ROLLOUT"
+      ]
+    },
+    {
+      "attempt_count": 2,
+      "child_id": "01a09437-dcef-7783-a899-8695e56b706a",
+      "new_provider_turn_created": false,
+      "parent_id": "01a09437-c571-7f33-915d-cfe64e86fd13",
+      "parent_residency_rechecks": 1,
+      "retry_count": 1,
+      "retry_delay_seconds": 0.2,
+      "same_child_reused": true,
+      "shared_attempt_budget_max": 10,
+      "status": "PASS",
+      "total_retry_wait_seconds": 0.2,
+      "transient_error_class": "EMPTY_ROLLOUT",
+      "transient_error_classes": [
+        "EMPTY_ROLLOUT"
+      ]
+    },
+    {
+      "attempt_count": 2,
+      "child_id": "01a09438-e300-7140-b2b7-8735964e2624",
+      "new_provider_turn_created": false,
+      "parent_id": "01a09438-cbc2-79a1-aeb4-97ca4d95f894",
+      "parent_residency_rechecks": 1,
+      "retry_count": 1,
+      "retry_delay_seconds": 0.2,
+      "same_child_reused": true,
+      "shared_attempt_budget_max": 10,
+      "status": "PASS",
+      "total_retry_wait_seconds": 0.2,
+      "transient_error_class": "EMPTY_ROLLOUT",
+      "transient_error_classes": [
+        "EMPTY_ROLLOUT"
+      ]
+    },
+    {
+      "attempt_count": 2,
+      "child_id": "01a09439-db35-70c2-b5fd-f46d7b9de34d",
+      "new_provider_turn_created": false,
+      "parent_id": "01a09439-bb96-7612-94c7-c87f2f2ab1be",
+      "parent_residency_rechecks": 1,
+      "retry_count": 1,
+      "retry_delay_seconds": 0.2,
+      "same_child_reused": true,
+      "shared_attempt_budget_max": 10,
+      "status": "PASS",
+      "total_retry_wait_seconds": 0.2,
+      "transient_error_class": "EMPTY_ROLLOUT",
+      "transient_error_classes": [
+        "EMPTY_ROLLOUT"
+      ]
+    },
+    {
+      "attempt_count": 2,
+      "child_id": "01a0943a-edc8-7cc2-99c0-6a6472d66acb",
+      "new_provider_turn_created": false,
+      "parent_id": "01a0943a-d8e9-7c23-9a97-8309626e1718",
+      "parent_residency_rechecks": 1,
+      "retry_count": 1,
+      "retry_delay_seconds": 0.2,
+      "same_child_reused": true,
+      "shared_attempt_budget_max": 10,
+      "status": "PASS",
+      "total_retry_wait_seconds": 0.2,
+      "transient_error_class": "EMPTY_ROLLOUT",
+      "transient_error_classes": [
+        "EMPTY_ROLLOUT"
+      ]
+    },
+    {
+      "attempt_count": 2,
+      "child_id": "01a0943b-7083-77b2-85e2-380de40b846b",
+      "new_provider_turn_created": false,
+      "parent_id": "01a0943b-5cb2-79d0-8ae8-1488f0083f13",
+      "parent_residency_rechecks": 1,
+      "retry_count": 1,
+      "retry_delay_seconds": 0.2,
+      "same_child_reused": true,
+      "shared_attempt_budget_max": 10,
+      "status": "PASS",
+      "total_retry_wait_seconds": 0.2,
+      "transient_error_class": "EMPTY_ROLLOUT",
+      "transient_error_classes": [
+        "EMPTY_ROLLOUT"
+      ]
+    },
+    {
+      "attempt_count": 2,
+      "child_id": "01a0943c-3d08-7730-80d0-4518dd4bfa21",
+      "new_provider_turn_created": false,
+      "parent_id": "01a0943c-23cd-7362-88ac-e243e3a6e677",
+      "parent_residency_rechecks": 1,
+      "retry_count": 1,
+      "retry_delay_seconds": 0.2,
+      "same_child_reused": true,
+      "shared_attempt_budget_max": 10,
+      "status": "PASS",
+      "total_retry_wait_seconds": 0.2,
+      "transient_error_class": "EMPTY_ROLLOUT",
+      "transient_error_classes": [
+        "EMPTY_ROLLOUT"
+      ]
+    },
+    {
+      "attempt_count": 2,
+      "child_id": "01a0943c-f3c4-70a0-9017-71bd975fc479",
+      "new_provider_turn_created": false,
+      "parent_id": "01a0943c-dfbd-7bb2-a8a7-f6476c185cf9",
+      "parent_residency_rechecks": 1,
+      "retry_count": 1,
+      "retry_delay_seconds": 0.2,
+      "same_child_reused": true,
+      "shared_attempt_budget_max": 10,
+      "status": "PASS",
+      "total_retry_wait_seconds": 0.2,
+      "transient_error_class": "EMPTY_ROLLOUT",
+      "transient_error_classes": [
+        "EMPTY_ROLLOUT"
+      ]
+    },
+    {
+      "attempt_count": 2,
+      "child_id": "01a0943d-932d-7833-8923-0fbd536966cd",
+      "new_provider_turn_created": false,
+      "parent_id": "01a0943d-75ad-7fe0-89c7-c8ce0ab2743c",
+      "parent_residency_rechecks": 1,
+      "retry_count": 1,
+      "retry_delay_seconds": 0.2,
+      "same_child_reused": true,
+      "shared_attempt_budget_max": 10,
+      "status": "PASS",
+      "total_retry_wait_seconds": 0.2,
+      "transient_error_class": "EMPTY_ROLLOUT",
+      "transient_error_classes": [
+        "EMPTY_ROLLOUT"
+      ]
+    },
+    {
+      "attempt_count": 2,
+      "child_id": "01a0943e-3030-70e0-8df4-cf26bf796c40",
+      "new_provider_turn_created": false,
+      "parent_id": "01a0943e-197f-7ca2-88d0-83c994e8bd1c",
+      "parent_residency_rechecks": 1,
+      "retry_count": 1,
+      "retry_delay_seconds": 0.2,
+      "same_child_reused": true,
+      "shared_attempt_budget_max": 10,
+      "status": "PASS",
+      "total_retry_wait_seconds": 0.2,
+      "transient_error_class": "EMPTY_ROLLOUT",
+      "transient_error_classes": [
+        "EMPTY_ROLLOUT"
+      ]
+    },
+    {
+      "attempt_count": 2,
+      "child_id": "01a0943f-a3f1-7231-ad50-84c6abe62aaf",
+      "new_provider_turn_created": false,
+      "parent_id": "01a0943f-8aac-7eb3-80bd-4acae3584b63",
+      "parent_residency_rechecks": 1,
+      "retry_count": 1,
+      "retry_delay_seconds": 0.2,
+      "same_child_reused": true,
+      "shared_attempt_budget_max": 10,
+      "status": "PASS",
+      "total_retry_wait_seconds": 0.2,
+      "transient_error_class": "EMPTY_ROLLOUT",
+      "transient_error_classes": [
+        "EMPTY_ROLLOUT"
+      ]
+    },
+    {
+      "attempt_count": 2,
+      "child_id": "01a09440-336f-7ce2-bc26-5ad0fa6bf6f4",
+      "new_provider_turn_created": false,
+      "parent_id": "01a09440-1089-7e00-82ad-efb4bdf1bff1",
+      "parent_residency_rechecks": 1,
+      "retry_count": 1,
+      "retry_delay_seconds": 0.2,
+      "same_child_reused": true,
+      "shared_attempt_budget_max": 10,
+      "status": "PASS",
+      "total_retry_wait_seconds": 0.2,
+      "transient_error_class": "EMPTY_ROLLOUT",
+      "transient_error_classes": [
+        "EMPTY_ROLLOUT"
+      ]
+    },
+    {
+      "attempt_count": 2,
+      "child_id": "01a09440-bb8d-78c1-844d-d27e37729b3b",
+      "new_provider_turn_created": false,
+      "parent_id": "01a09440-a44d-7773-8e92-6ee8e2902587",
+      "parent_residency_rechecks": 1,
+      "retry_count": 1,
+      "retry_delay_seconds": 0.2,
+      "same_child_reused": true,
+      "shared_attempt_budget_max": 10,
+      "status": "PASS",
+      "total_retry_wait_seconds": 0.2,
+      "transient_error_class": "EMPTY_ROLLOUT",
+      "transient_error_classes": [
+        "EMPTY_ROLLOUT"
+      ]
+    },
+    {
+      "attempt_count": 2,
+      "child_id": "01a09441-53d9-7e02-a977-53ec3271718d",
+      "new_provider_turn_created": false,
+      "parent_id": "01a09441-382b-7fc1-ab18-e867b3eab03a",
+      "parent_residency_rechecks": 1,
+      "retry_count": 1,
+      "retry_delay_seconds": 0.2,
+      "same_child_reused": true,
+      "shared_attempt_budget_max": 10,
+      "status": "PASS",
+      "total_retry_wait_seconds": 0.2,
+      "transient_error_class": "EMPTY_ROLLOUT",
+      "transient_error_classes": [
+        "EMPTY_ROLLOUT"
+      ]
+    },
+    {
+      "attempt_count": 2,
+      "child_id": "01a09442-2b1d-75b3-8972-409f4c88cb81",
+      "new_provider_turn_created": false,
+      "parent_id": "01a09442-1810-7943-9aee-416fb6590aa6",
+      "parent_residency_rechecks": 1,
+      "retry_count": 1,
+      "retry_delay_seconds": 0.2,
+      "same_child_reused": true,
+      "shared_attempt_budget_max": 10,
+      "status": "PASS",
+      "total_retry_wait_seconds": 0.2,
+      "transient_error_class": "EMPTY_ROLLOUT",
+      "transient_error_classes": [
+        "EMPTY_ROLLOUT"
+      ]
+    },
+    {
+      "attempt_count": 2,
+      "child_id": "01a09443-3fdf-7891-b902-2417121808eb",
+      "new_provider_turn_created": false,
+      "parent_id": "01a09443-2510-7c42-890f-2bfafc7b0eb4",
+      "parent_residency_rechecks": 1,
+      "retry_count": 1,
+      "retry_delay_seconds": 0.2,
+      "same_child_reused": true,
+      "shared_attempt_budget_max": 10,
+      "status": "PASS",
+      "total_retry_wait_seconds": 0.2,
+      "transient_error_class": "EMPTY_ROLLOUT",
+      "transient_error_classes": [
+        "EMPTY_ROLLOUT"
+      ]
+    },
+    {
+      "attempt_count": 2,
+      "child_id": "01a09444-2ac5-7bc1-b4b3-641c18774e90",
+      "new_provider_turn_created": false,
+      "parent_id": "01a09444-162d-7fc1-afd6-db72541cca04",
+      "parent_residency_rechecks": 1,
+      "retry_count": 1,
+      "retry_delay_seconds": 0.2,
+      "same_child_reused": true,
+      "shared_attempt_budget_max": 10,
+      "status": "PASS",
+      "total_retry_wait_seconds": 0.2,
+      "transient_error_class": "EMPTY_ROLLOUT",
+      "transient_error_classes": [
+        "EMPTY_ROLLOUT"
+      ]
+    },
+    {
+      "attempt_count": 2,
+      "child_id": "01a09444-9682-75a2-b872-9652bbe6fd47",
+      "new_provider_turn_created": false,
+      "parent_id": "01a09444-77c1-77c2-8ed6-9d45fd96dd69",
+      "parent_residency_rechecks": 1,
+      "retry_count": 1,
+      "retry_delay_seconds": 0.2,
+      "same_child_reused": true,
+      "shared_attempt_budget_max": 10,
+      "status": "PASS",
+      "total_retry_wait_seconds": 0.2,
+      "transient_error_class": "EMPTY_ROLLOUT",
+      "transient_error_classes": [
+        "EMPTY_ROLLOUT"
+      ]
+    },
+    {
+      "attempt_count": 2,
+      "child_id": "01a09445-2798-7742-8767-33d168946bda",
+      "new_provider_turn_created": false,
+      "parent_id": "01a09445-0ac1-7423-8f58-2557e11d0910",
+      "parent_residency_rechecks": 1,
+      "retry_count": 1,
+      "retry_delay_seconds": 0.2,
+      "same_child_reused": true,
+      "shared_attempt_budget_max": 10,
+      "status": "PASS",
+      "total_retry_wait_seconds": 0.2,
+      "transient_error_class": "EMPTY_ROLLOUT",
+      "transient_error_classes": [
+        "EMPTY_ROLLOUT"
+      ]
+    },
+    {
+      "attempt_count": 2,
+      "child_id": "01a09445-c065-7d12-bdea-577b7da2b1ed",
+      "new_provider_turn_created": false,
+      "parent_id": "01a09445-a9a5-7b20-add5-fc41fb5b9fc6",
+      "parent_residency_rechecks": 1,
+      "retry_count": 1,
+      "retry_delay_seconds": 0.2,
+      "same_child_reused": true,
+      "shared_attempt_budget_max": 10,
+      "status": "PASS",
+      "total_retry_wait_seconds": 0.2,
+      "transient_error_class": "EMPTY_ROLLOUT",
+      "transient_error_classes": [
+        "EMPTY_ROLLOUT"
+      ]
+    },
+    {
+      "attempt_count": 2,
+      "child_id": "01a09446-a74c-73a2-ac72-17f279b89acd",
+      "new_provider_turn_created": false,
+      "parent_id": "01a09446-8e6e-7383-8a19-0c226fc71384",
+      "parent_residency_rechecks": 1,
+      "retry_count": 1,
+      "retry_delay_seconds": 0.2,
+      "same_child_reused": true,
+      "shared_attempt_budget_max": 10,
+      "status": "PASS",
+      "total_retry_wait_seconds": 0.2,
+      "transient_error_class": "EMPTY_ROLLOUT",
+      "transient_error_classes": [
+        "EMPTY_ROLLOUT"
+      ]
+    },
+    {
+      "attempt_count": 2,
+      "child_id": "01a09447-1bf0-7443-8ea0-ef5ca12cf4c0",
+      "new_provider_turn_created": false,
+      "parent_id": "01a09447-05d3-7bc3-87ba-0fe7a52de7ab",
+      "parent_residency_rechecks": 1,
+      "retry_count": 1,
+      "retry_delay_seconds": 0.2,
+      "same_child_reused": true,
+      "shared_attempt_budget_max": 10,
+      "status": "PASS",
+      "total_retry_wait_seconds": 0.2,
+      "transient_error_class": "EMPTY_ROLLOUT",
+      "transient_error_classes": [
+        "EMPTY_ROLLOUT"
+      ]
+    }
+  ],
+  "blocker": {
+    "code": "BLOCKED_EXECUTION_INVALID",
+    "message": "worker contract/transport receipt mismatch: observed={'contract_nonce': '8e2df1b053569394880b48aaf6039f9a', 'task_message_sha256': '031c06d7544f6146901e633d4bceb8af0e15325c0124dc586e10f545aaadfe4a', 'spawn_trigger_received': 'T063-RW-8e2df1b053569394880b48aaf6039f9a'}, expected={'contract_nonce': '8e2df1b053569394880b48aaf6039f9a', 'task_message_sha256': '031c06d7544f6146901e633d4bceb8af0e15325c0124dc586e10f545aaadfe4a', 'spawn_trigger_received': 'T063_TRIGGER_80baf0e9971d0eb80702df696a117f61'}"
+  },
+  "branch": "test/t063-adaptive-worker-routing-requalification-v8",
+  "candidate_head_before_execution": "afdae0050226d61a10269f63017e2fac99eef644",
+  "ephemeral_artifacts": [],
+  "frozen_evaluation_head": "69e910f329a2294c3b40df0f6ee983f9905f4677",
+  "historical_evidence_heads": [
+    "3d8a9460988351383a90adfc6b76e2deff056504",
+    "3ff745a8d29e031ca818c1bc618b15a54e0cbf2b",
+    "746519abc6f159e959120f68d5c9f920d88d5797",
+    "4135a13ce8daa4f6b1fcabe45063364fbbdd16f1",
+    "3f9830a65a152ad595653961205e0ca52b9c5ccc",
+    "276fa94cde6904c003482c8b527de7e8cda416d4",
+    "58e396c126e363428544b163cb2aa8c7e1ac8ed6"
+  ],
+  "metrics": {
+    "adaptive_escalation_count": 0,
+    "adaptive_exact_duration_total": 385.416,
+    "adaptive_exact_tokens_total": 312372,
+    "adaptive_first_attempt_failures": 2,
+    "adaptive_pass_count": 9,
+    "adaptive_quality_qualified": false,
+    "control_exact_duration_total": 470.879,
+    "control_exact_tokens_total": 283867,
+    "control_pass_count": 9,
+    "control_quality_qualified": false,
+    "exact_token_improvement": null,
+    "material_false_negative_count": 2,
+    "material_false_positive_count": 2,
+    "observed_child_attempts": 21,
+    "per_probe": {
+      "P1": {
+        "ADAPTIVE": {
+          "attempt_count": 4,
+          "duration_per_success": 49.712,
+          "pass_count": 3,
+          "profile_integrity": true,
+          "tokens_per_success": 32919.0,
+          "total_duration": 149.136,
+          "total_tokens": 98757
+        },
+        "CONTROL": {
+          "attempt_count": 4,
+          "duration_per_success": 43.90425,
+          "pass_count": 4,
+          "profile_integrity": true,
+          "tokens_per_success": 25339.5,
+          "total_duration": 175.617,
+          "total_tokens": 101358
+        },
+        "pair_outcome": "CONTROL_ONLY_QUALIFIED"
+      },
+      "P2": {
+        "ADAPTIVE": {
+          "attempt_count": 4,
+          "duration_per_success": 41.86925,
+          "pass_count": 4,
+          "profile_integrity": true,
+          "tokens_per_success": 35097.5,
+          "total_duration": 167.477,
+          "total_tokens": 140390
+        },
+        "CONTROL": {
+          "attempt_count": 3,
+          "duration_per_success": 66.684,
+          "pass_count": 3,
+          "profile_integrity": true,
+          "tokens_per_success": 36348.666667,
+          "total_duration": 200.052,
+          "total_tokens": 109046
+        },
+        "pair_outcome": "ADAPTIVE_ONLY_QUALIFIED"
+      },
+      "P3": {
+        "ADAPTIVE": {
+          "attempt_count": 3,
+          "duration_per_success": 34.4015,
+          "pass_count": 2,
+          "profile_integrity": true,
+          "tokens_per_success": 36612.5,
+          "total_duration": 68.803,
+          "total_tokens": 73225
+        },
+        "CONTROL": {
+          "attempt_count": 3,
+          "duration_per_success": 47.605,
+          "pass_count": 2,
+          "profile_integrity": true,
+          "tokens_per_success": 36731.5,
+          "total_duration": 95.21,
+          "total_tokens": 73463
+        },
+        "pair_outcome": "NEITHER_QUALIFIED"
+      }
+    },
+    "profile_resolution_failures": 0,
+    "profiles": {
+      "ADAPTIVE": {
+        "attempt_count": 11,
+        "duration_per_success": 42.824,
+        "pass_count": 9,
+        "profile_integrity": true,
+        "tokens_per_success": 34708.0,
+        "total_duration": 385.416,
+        "total_tokens": 312372
+      },
+      "CONTROL": {
+        "attempt_count": 10,
+        "duration_per_success": 52.319889,
+        "pass_count": 9,
+        "profile_integrity": true,
+        "tokens_per_success": 31540.777778,
+        "total_duration": 470.879,
+        "total_tokens": 283867
+      }
+    },
+    "replicate_count": 4,
+    "root_rework_events_caused_by_children": 0,
+    "scheduled_child_attempts": 24,
+    "token_improvement_floor": 0.1
+  },
+  "model_evidence": {
+    "failure_domain": "EXECUTION_VALIDITY",
+    "pilot_eligible": false,
+    "root_model_failure_attributed": false,
+    "run_execution_validity": "INVALID",
+    "run_model_comparison_eligible": false,
+    "scored_child_efficiency_eligible_count": 18,
+    "scored_child_quality_eligible_count": 21,
+    "unscored_child_attempts_count_as_model_quality": false
+  },
+  "next_required_authority": "ChatGPT Orchestrator review/re-entry required before additional scored calls.",
+  "pilot_decision": null,
+  "provider_execution": {
+    "compensating_attempts": 0,
+    "diagnostic_child_attempts": 0,
+    "reattachment_rpc_retries": 22,
+    "scored_child_attempts": 22,
+    "scored_parent_turns": 22
+  },
+  "receipt_strategy": {
+    "child_context_receipt": "contract nonce + task digest + received trigger",
+    "child_correlation": "public subAgentActivity started item",
+    "child_reattachment": {
+      "max_total_attempts_shared_across_conditions": 10,
+      "method": "same-child bounded two-condition thread/resume persistence barrier",
+      "new_child_or_provider_turn_on_retry": false,
+      "parent_residency_rechecked_immediately_before_each_retry": true,
+      "retry_conditions": [
+        "EMPTY_ROLLOUT",
+        "ROLLOUT_NOT_FOUND_FOR_EXACT_CHILD"
+      ],
+      "retry_delay_seconds": 0.2,
+      "rollout_not_found_structural_requirements": {
+        "exact_child_id_required": true,
+        "json_rpc_code": -32600,
+        "message": "no rollout found for thread id <exact child id>",
+        "safe_literal_parse_required": true
+      }
+    },
+    "custom_agent_roles_allowed": false,
+    "raw_response_events_used": false,
+    "requested_profile": "thread/start.config agents defaults",
+    "spawn_model_reasoning_overrides_exposed": false,
+    "task_authority": "thread/start.config multi_agent_v2.subagent_developer_instructions"
+  },
+  "replication": {
+    "arm_order": [
+      [
+        "P1",
+        "ADAPTIVE",
+        "gpt-5.6-luna",
+        "medium"
+      ],
+      [
+        "P1",
+        "CONTROL",
+        "gpt-5.6-sol",
+        "medium"
+      ],
+      [
+        "P2",
+        "CONTROL",
+        "gpt-5.6-sol",
+        "medium"
+      ],
+      [
+        "P2",
+        "ADAPTIVE",
+        "gpt-5.6-terra",
+        "medium"
+      ],
+      [
+        "P3",
+        "ADAPTIVE",
+        "gpt-5.6-terra",
+        "high"
+      ],
+      [
+        "P3",
+        "CONTROL",
+        "gpt-5.6-sol",
+        "medium"
+      ],
+      [
+        "P1",
+        "CONTROL",
+        "gpt-5.6-sol",
+        "medium"
+      ],
+      [
+        "P1",
+        "ADAPTIVE",
+        "gpt-5.6-luna",
+        "medium"
+      ],
+      [
+        "P2",
+        "ADAPTIVE",
+        "gpt-5.6-terra",
+        "medium"
+      ],
+      [
+        "P2",
+        "CONTROL",
+        "gpt-5.6-sol",
+        "medium"
+      ],
+      [
+        "P3",
+        "CONTROL",
+        "gpt-5.6-sol",
+        "medium"
+      ],
+      [
+        "P3",
+        "ADAPTIVE",
+        "gpt-5.6-terra",
+        "high"
+      ],
+      [
+        "P1",
+        "ADAPTIVE",
+        "gpt-5.6-luna",
+        "medium"
+      ],
+      [
+        "P1",
+        "CONTROL",
+        "gpt-5.6-sol",
+        "medium"
+      ],
+      [
+        "P2",
+        "CONTROL",
+        "gpt-5.6-sol",
+        "medium"
+      ],
+      [
+        "P2",
+        "ADAPTIVE",
+        "gpt-5.6-terra",
+        "medium"
+      ],
+      [
+        "P3",
+        "ADAPTIVE",
+        "gpt-5.6-terra",
+        "high"
+      ],
+      [
+        "P3",
+        "CONTROL",
+        "gpt-5.6-sol",
+        "medium"
+      ],
+      [
+        "P1",
+        "CONTROL",
+        "gpt-5.6-sol",
+        "medium"
+      ],
+      [
+        "P1",
+        "ADAPTIVE",
+        "gpt-5.6-luna",
+        "medium"
+      ],
+      [
+        "P2",
+        "ADAPTIVE",
+        "gpt-5.6-terra",
+        "medium"
+      ],
+      [
+        "P2",
+        "CONTROL",
+        "gpt-5.6-sol",
+        "medium"
+      ],
+      [
+        "P3",
+        "CONTROL",
+        "gpt-5.6-sol",
+        "medium"
+      ],
+      [
+        "P3",
+        "ADAPTIVE",
+        "gpt-5.6-terra",
+        "high"
+      ]
+    ],
+    "counterbalanced": true,
+    "design": "FIXED_N_REPLICATED_ABSOLUTE_QUALITY_GATE",
+    "outcome_conditioned_reruns_authorized": false,
+    "replicate_count": 4,
+    "scheduled_child_attempts": 24
+  },
+  "schema_version": 3,
+  "status": "BLOCKED",
+  "task_id": "T063",
+  "technical_review": {
+    "markdown_changed_by_harness": false,
+    "prior_blocked_run_reused_for_scoring": false,
+    "product_source_changed_by_harness": false,
+    "published_stage5_harness_used": true,
+    "raw_response_events_used": false
+  },
+  "telemetry_path": "handoffs/T063-adaptive-worker-routing-telemetry-v8.json",
+  "terminal_classification": "BLOCKED_EXECUTION_INVALID"
+}
