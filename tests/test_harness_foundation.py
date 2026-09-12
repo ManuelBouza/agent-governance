@@ -124,11 +124,15 @@ def test_ruff_is_invokable_from_locked_environment(repo_root: Path) -> None:
     assert "ruff" in result.stdout.lower()
 
 
-def test_ruff_exclusions_protect_markdown_without_external_surfaces(repo_root: Path) -> None:
-    """Ruff must protect Markdown without naming external host state."""
+def test_ruff_exclusions_are_exact_and_freeze_f_safe(repo_root: Path) -> None:
+    """Ruff exclusions are closed and preserve the immutable Freeze F guard."""
 
     pyproject = tomllib.loads((repo_root / "pyproject.toml").read_text(encoding="utf-8"))
-    assert pyproject["tool"]["ruff"]["extend-exclude"] == ["**/*.md", ".venv"]
+    assert pyproject["tool"]["ruff"]["extend-exclude"] == [
+        "**/*.md",
+        ".venv",
+        "evals/skill_activation_topology/verify_v15_holdout_integrity.py",
+    ]
 
 
 def test_failures_identify_the_violated_invariant(repo_root: Path, tmp_path: Path) -> None:

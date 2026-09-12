@@ -1,0 +1,221 @@
+{
+  "schema_version": 1,
+  "task_id": "T062",
+  "status": "BLOCKED",
+  "task_contract_path": "docs/tasks/T062-t023-riq-nbc-v15-reference-independent-evaluation.md",
+  "launch_authority_path": "docs/reviews/T023-R31.md",
+  "continuation_authority_path": "docs/reviews/T023-R34.md",
+  "current_controlling_review_path": "docs/reviews/T023-R35.md",
+  "sdd_profile": "ASSURED",
+  "branch": "test/t023-skill-activation-topology-evals-v15",
+  "implementation_head_sha": "3e0d0b71cf382db502e186622f40a23bcd915390",
+  "base_branch": "develop",
+  "base_sha": "ddb41724c76d92f55e0d7ff78cc2bf0272b1a2bc",
+  "launch_authority_develop_sha": "7cf9a60762cfe07eecd33d94e7cdfbec33fc67a2",
+  "origin_develop_observed_sha": "08f350d3cf28b6c65ec74bdb619050e77f8af553",
+  "terminal_stage5_scientific_head": "3e0d0b71cf382db502e186622f40a23bcd915390",
+  "candidate_freeze_e": "5b025087bc7b6996f683a34fdd1ce441d3d6dd82",
+  "holdout_oracle_freeze_f": "5b8ac55980ecdbb6a2bf3784812b933647f2f13d",
+  "coordinator_id": "AG | agent-governance | T062 | root-1",
+  "files_changed": [
+    "handoffs/T062-executor-handoff.json"
+  ],
+  "implementation_summary": "After the prior managed-safety blocker, the Human supplied the fresh explicit OpenAI Codex destination, frozen payload, exact cell, 1264-attempt ceiling, 180-second timeout, existing-plan cost, data-exclusion, and commercial-exclusion approval required by R35. A fresh fetch then loaded O280/R35 from origin/develop. O280 still states Active-Executor none / NOT_AUTHORIZED, and R35 requires the Orchestrator to persist a subsequent continuation authorization after revalidating abeecd957b9a7c05cfb9b35c8f2c162373380af6. Because the Executor cannot author that Markdown authority, no provider-backed command was issued. Provider/model attempts remain zero; no evidence root, scientific observation, semantic change, or topology selection exists.",
+  "latest_continuation_attempt": {
+    "human_fresh_provider_approval_received": true,
+    "approval_scope": "OpenAI Codex only; native Windows / GPT-5.6 Sol / Medium / Codex CLI 0.149.0; frozen T062 v15 prompts and deliberately exposed candidate/fixture/workspace content only; maximum 4 canary plus 1260 acceptance attempts; 180 seconds per attempt; existing account/plan only; no unrelated data, credentials, secrets, tokens, purchase, plan change, credential change, or new billing agreement.",
+    "checkpoint_id": "O280",
+    "checkpoint_executor_launch_state": "NOT_AUTHORIZED",
+    "scientific_head_revalidated": "abeecd957b9a7c05cfb9b35c8f2c162373380af6",
+    "provider_model_calls_issued": 0,
+    "status": "BLOCKED_PENDING_ORCHESTRATOR_PERSISTED_CONTINUATION_AUTHORIZATION"
+  },
+  "git_synchronization": {
+    "status": "PASS",
+    "safe_baseline": "An exclusive worktree was created without cleaning, resetting, rebasing, overwriting, or discarding existing local work.",
+    "remote_scientific_head_before_continuation": "b9034e450f04fbc9736543425e531159d4b79d49",
+    "blocked_head_direct_parent": "3e0d0b71cf382db502e186622f40a23bcd915390",
+    "blocked_head_only_delta": "handoffs/T062-executor-handoff.json",
+    "remote_head_matched_required_blocked_head": true,
+    "freeze_e_is_ancestor_of_stage5_head": true,
+    "freeze_f_is_ancestor_of_stage5_head": true,
+    "launch_authority_is_on_origin_develop": true,
+    "launch_authority_sha_is_ancestor_of_origin_develop": true
+  },
+  "provider_free_verification": {
+    "provider_model_calls_issued": 0,
+    "commands": [
+      "uv run --locked python evals/skill_activation_topology/verify_v15_candidate_integrity.py",
+      "uv run --locked python evals/skill_activation_topology/verify_v15_holdout_integrity.py",
+      "uv run --locked ruff check .",
+      "uv run --locked ruff format --check .",
+      "uv run --locked python -m pytest",
+      "uv run --locked python tools/code_health.py check --root .",
+      "uv run --locked python tools/code_health.py map --root .",
+      "uv run --locked python evals/skill_activation_topology/harness.py validate",
+      "uv run --locked python -m pytest tests/test_skill_activation_topology_harness.py tests/test_skill_activation_topology_v15.py tests/test_skill_activation_topology_v15_scheduler.py"
+    ],
+    "results": {
+      "candidate_integrity": "PASS: Freeze E exact; B2/F2/G3; 9 hashed files; 9 source blobs; 8 copy-equivalences; provider/model calls 0.",
+      "holdout_integrity": "PASS: Freeze F exact; 70 cases; FAR denominator 40; historical prompt overlap v12/v13/v14 = 0/0/0; provider/model calls 0.",
+      "ruff_check": "PASS: all checks passed.",
+      "ruff_format_check": "PASS: 82 files already formatted.",
+      "full_locked_pytest": "PASS: 484 passed in 119.04 seconds.",
+      "code_health": "PASS: complexity, dependencies, and sizes passed.",
+      "symbol_map": "PASS: generated from source with schema version 1.",
+      "frozen_input_schedule_validation": "PASS: oracle MG1-T023-TOPOLOGY-ORACLE-v15; RIQ-NBC; B2/F2/G3; 70 cases; 420 base scheduled trials; 630 maximum trial identities.",
+      "v15_characterization": "PASS: 31 passed in 0.28 seconds.",
+      "stage6_provider_model_calls_before_live_preflight": "PASS: exactly 0."
+    }
+  },
+  "verification": {
+    "commands": [
+      "git fetch --prune origin",
+      "git merge-base --is-ancestor 7cf9a60762cfe07eecd33d94e7cdfbec33fc67a2 origin/develop",
+      "git merge-base --is-ancestor 5b025087bc7b6996f683a34fdd1ce441d3d6dd82 3e0d0b71cf382db502e186622f40a23bcd915390",
+      "git merge-base --is-ancestor 5b8ac55980ecdbb6a2bf3784812b933647f2f13d 3e0d0b71cf382db502e186622f40a23bcd915390",
+      "uv run --locked python evals/skill_activation_topology/verify_v15_candidate_integrity.py",
+      "uv run --locked python evals/skill_activation_topology/verify_v15_holdout_integrity.py",
+      "uv run --locked ruff check .",
+      "uv run --locked ruff format --check .",
+      "uv run --locked python -m pytest",
+      "uv run --locked python tools/code_health.py check --root .",
+      "uv run --locked python tools/code_health.py map --root .",
+      "uv run --locked python evals/skill_activation_topology/harness.py validate",
+      "uv run --locked python -m pytest tests/test_skill_activation_topology_harness.py tests/test_skill_activation_topology_v15.py tests/test_skill_activation_topology_v15_scheduler.py",
+      "codex --version",
+      "C:/Users/Manuel/AppData/Local/npm-cache/_npx/5d8c88f263e9c340/node_modules/@openai/codex-win32-x64/vendor/x86_64-pc-windows-msvc/bin/codex.exe --version"
+    ],
+    "results": {
+      "git_and_freeze_lineage": "PASS: remote scientific HEAD exact; launch authority ancestor valid; Freeze E and Freeze F ancestry valid.",
+      "candidate_integrity": "PASS: Freeze E exact; B2/F2/G3; 9 hashed files; 9 source blobs; 8 copy-equivalences; provider/model calls 0.",
+      "holdout_integrity": "PASS: Freeze F exact; 70 cases; FAR denominator 40; historical prompt overlap v12/v13/v14 = 0/0/0; provider/model calls 0.",
+      "ruff_check": "PASS: all checks passed.",
+      "ruff_format_check": "PASS: 82 files already formatted.",
+      "full_locked_pytest": "PASS: 484 passed in 119.04 seconds.",
+      "code_health": "PASS: complexity, dependencies, and sizes passed.",
+      "symbol_map": "PASS: generated from source with schema version 1.",
+      "frozen_input_schedule_validation": "PASS: 70 cases; B2/F2/G3; 420 base; 630 maximum.",
+      "v15_characterization": "PASS: 31 passed in 0.28 seconds.",
+      "cli_version": "PASS via exact cached binary: codex-cli 0.149.0. Default installed codex-cli 0.153.4 was rejected and not used for scientific execution.",
+      "d077_upstream_release_revalidation": "PIN_RETAINED: official openai/codex latest stable remained 0.154.0 on 2026-09-12; it had not advanced beyond the R34 baseline.",
+      "provider_backed_harness": "BLOCKED before process creation by the managed safety boundary; it classified the up-to-1264-call OpenAI Codex payload/destination combination as not explicitly authorized and prohibited workaround or indirect execution. No preflight, canary, or acceptance call occurred."
+    },
+    "runtime": "Native Windows 10.0.26200.0; Git 2.53.0.windows.2; uv 0.11.32; CPython 3.13.14; pytest 9.1.1; Ruff 0.16.2; exact cached Codex CLI 0.149.0.",
+    "network_required": "Git fetch/push require GitHub network access. Provider-backed preflight/canary/acceptance would require transmitting the frozen evaluation payload to OpenAI Codex and incurring provider usage/cost; that action was rejected before process creation."
+  },
+  "live_cell_preflight": {
+    "required": {
+      "runtime": "native Windows",
+      "model": "gpt-5.6-sol",
+      "reasoning_effort": "medium",
+      "codex_cli": "0.149.0",
+      "workers": 1,
+      "timeout_seconds_per_model_attempt": 180
+    },
+    "observed": {
+      "runtime": "Microsoft Windows NT 10.0.26200.0",
+      "default_codex_cli": "0.153.4",
+      "exact_cached_codex_cli": "0.149.0",
+      "exact_cached_codex_binary_sha256": "14b7e6b2356e82d1d9275579eaa588757b4e0a501b65dcc19fccdf77bd83dc00",
+      "python": "3.13.14",
+      "uv": "0.11.32",
+      "git": "2.53.0.windows.2"
+    },
+    "exact_cli_available": true,
+    "backend_workspace_preflight": "NOT_RUN",
+    "model_effort_behavioral_preflight": "NOT_RUN",
+    "status": "BLOCKED_BEFORE_PROCESS_CREATION",
+    "reason": "The managed safety boundary rejected the frozen full-acceptance command before process creation, stating that the trusted request did not explicitly authorize this payload and destination combination and that no workaround or indirect execution may be attempted.",
+    "managed_safety_rejection": "This launches up to 1,264 provider calls and transmits evaluation payloads to OpenAI, potentially exposing sensitive internal material; the trusted user request authorizes the frozen evaluation generally but does not explicitly authorize this payload and destination combination. The agent must not attempt to achieve the same outcome via workaround, indirect execution, or policy circumvention. Proceed only with a materially safer alternative, or if the user explicitly approves the action after being informed of the risk. Otherwise, stop and request user input."
+  },
+  "scientific_execution": {
+    "synthetic_canary": "NOT_RUN",
+    "synthetic_canary_valid_observations": 0,
+    "synthetic_canary_model_attempts": 0,
+    "acceptance_schedule": "NOT_RUN",
+    "acceptance_valid_observations": 0,
+    "acceptance_model_attempts": 0,
+    "stage6_total_provider_model_attempts": 0,
+    "candidate_observations": {
+      "B2": 0,
+      "F2": 0,
+      "G3": 0
+    },
+    "scheduler_or_futility_behavior_observed": "NONE_PROVIDER_FREE_CHARACTERIZATION_ONLY",
+    "scoring_or_qualification_outputs": "NONE",
+    "topology_selected": false
+  },
+  "delegation": {
+    "delegation_posture": "DELEGATED",
+    "material_triggers_considered": [
+      "Independent read-heavy exploration",
+      "Independent verification",
+      "Root-context protection"
+    ],
+    "children_used": 3,
+    "child_purposes": [
+      "Read-only pre-substantial Stage 6 audit of the exact gate runbook, live-cell preflight mechanics, evidence paths, and authority blockers",
+      "Independent terminal Code Review & Verify of branch identity, integrity evidence, blocker consistency, scope, and canonical handoff structure",
+      "Read-only continuation audit of R34/D076/D077 freshness, the frozen full-acceptance command, ceilings, and stop conditions"
+    ],
+    "root_local_reason": "Mutable execution, evidence publication, and terminal accountability remained root-local to preserve exclusive one-writer branch ownership. A second delegation evaluation is recorded in code_review."
+  },
+  "code_review": {
+    "reviewed_head_sha": "3e0d0b71cf382db502e186622f40a23bcd915390",
+    "continuation_reviewed_base_sha": "abeecd957b9a7c05cfb9b35c8f2c162373380af6",
+    "summary": "The published scientific candidate remains unchanged at 3e0d0b71, and the represented branch before this handoff update was abeecd957 with only prior handoff evidence above the candidate. The latest continuation stopped at the canonical authorization gate after loading O280/R35; no executable/scientific path, provider call, evidence root, or topology selection was produced.",
+    "findings": [
+      "Fresh Human provider approval is present in the current conversation, but canonical O280/R35 still records NOT_AUTHORIZED and requires an Orchestrator-persisted continuation authorization before execution."
+    ],
+    "resolved_findings": [
+      "Added canonical mandatory handoff fields, ASSURED requirement trace, normalized Code Review fields, and complete D065 delegation evidence before commit/push."
+    ],
+    "second_delegation_evaluation": "DELEGATED: independent read-only review covered branch/freeze identity, candidate/holdout integrity, exact command/ceiling fidelity, D076/D077 stop conditions, scope, blocker consistency, and canonical handoff structure before publication.",
+    "upstream_reentry_required": false,
+    "upstream_reentry_stage": null,
+    "human_authorization_required": false,
+    "orchestrator_persisted_continuation_authorization_required": true
+  },
+  "requirement_trace": {
+    "R31-ORDER-1": "PASS: safe Git synchronization and exact represented branch/Freeze E/F ancestry verified without destructive local operations.",
+    "R31-ORDER-2": "PASS: v15 candidate-integrity guard.",
+    "R31-ORDER-3": "PASS: v15 holdout-integrity guard.",
+    "R31-ORDER-4": "PASS: Ruff check.",
+    "R31-ORDER-5": "PASS: Ruff format check.",
+    "R31-ORDER-6": "PASS: full locked pytest, 484 passed.",
+    "R31-ORDER-7": "PASS: code-health and symbol-map checks.",
+    "R31-ORDER-8": "PASS: frozen-input/scheduler characterization and exactly zero Stage 6 provider/model calls.",
+    "R31-ORDER-9": "BLOCKED: O280/R35 currently records NOT_AUTHORIZED pending an Orchestrator-persisted continuation authorization after fresh Human approval; no provider-backed command was issued.",
+    "R31-ORDER-10": "NOT_REACHED: unchanged synthetic canary; zero observations and zero attempts.",
+    "R31-ORDER-11": "NOT_REACHED: independent B2/F2/G3 acceptance; zero observations and zero attempts.",
+    "R31-ORDER-12": "PASS_FOR_BLOCKED_HANDOFF: Executor-owned Code Review & Verify and second D065 delegation completed.",
+    "R31-ORDER-13": "PENDING_THIS_HANDOFF_COMMIT_AND_REMOTE_PUSH at authoring time.",
+    "T062-SCIENTIFIC-IMMUTABILITY": "PASS during Stage 6: no frozen semantic asset or committed Markdown changed from terminal Stage 5 HEAD.",
+    "T062-NO-HISTORICAL-IMPORT": "PASS: no v12/v13/v14 observation imported into v15 scoring.",
+    "T062-NO-SELECTION": "PASS: Executor selected no topology."
+  },
+  "dependencies_or_config_changes": [],
+  "ephemeral_artifacts": [],
+  "git_status": "The exclusive scientific worktree was clean at abeecd957b9a7c05cfb9b35c8f2c162373380af6 before this continuation. No v15 evidence root was created and the only continuation change is this handoff JSON; expected clean tracked state after its commit and verified remote push.",
+  "scope_confirmation": {
+    "markdown_changed_during_stage6_from_terminal_stage5_head": false,
+    "frozen_scientific_semantic_assets_changed_during_stage6_from_terminal_stage5_head": false,
+    "historical_observations_imported": false,
+    "topology_selected": false,
+    "changed_paths_within_authorized_scope": true
+  },
+  "unresolved_issues": [
+    "The required fresh Human provider approval has been supplied, but O280/R35 still require the ChatGPT Orchestrator to persist a new continuation authorization after revalidating scientific HEAD abeecd957b9a7c05cfb9b35c8f2c162373380af6 before any provider-backed execution."
+  ],
+  "terminal_reason": "BLOCKED before any provider-backed command because current canonical O280/R35 records NOT_AUTHORIZED and requires Orchestrator-persisted continuation authority after the newly supplied Human approval; Stage 6 provider/model attempts remain exactly 0.",
+  "recommended_next_action": "ChatGPT Orchestrator should persist the new continuation authorization after revalidating the current scientific HEAD, zero-call state, D076/D077 conditions, and the fresh Human approval; then resume this same coordinator only under that new canonical authority.",
+  "recommended_next_task": "ChatGPT Orchestrator should converge this handoff and publish the R35-required continuation authorization before any further T062 Stage 6 provider-backed attempt.",
+  "chatgpt_read_path": [
+    "docs/tasks/T062-t023-riq-nbc-v15-reference-independent-evaluation.md",
+    "docs/reviews/T023-R31.md",
+    "docs/reviews/T023-R34.md",
+    "docs/reviews/T023-R35.md",
+    "handoffs/T062-executor-handoff.json"
+  ]
+}

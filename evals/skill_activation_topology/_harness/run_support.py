@@ -1,34 +1,19 @@
-"""Execution scheduling and evidence state for the MG1 topology harness."""
+"""Execution state and sequential schedule support for the T023 v15 harness."""
 
 from __future__ import annotations
 
-import concurrent.futures
 from collections import Counter
-from collections.abc import Callable, Iterator
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
-from .aggregation import (
-    conditional_third_specs,
-    materiality_futility_certificate,
-    qualification_futility_certificate,
-)
 from .frozen_inputs import _load_json
-from .models import (
-    V12_CLASS_ORDER,
-    CapacityPause,
-    FrozenInputs,
-    HarnessError,
-    HostSurfaceDrift,
-    TrialSpec,
-)
+from .models import CapacityPause, FrozenInputs, HarnessError, HostSurfaceDrift, TrialSpec
 from .scheduling import all_possible_trials, validate_repetition
 from .storage import _json_dump, _jsonl_dump
 
 Observation = tuple[dict[str, Any], dict[str, Any]]
-ExecuteObservation = Callable[..., Observation | None]
 
 
 @dataclass
@@ -38,7 +23,7 @@ class RunContext:
     output: Path
     workspace_parent: Path
     metadata: dict[str, Any]
-    execute_observation: ExecuteObservation
+    execute_observation: Any
 
     def execute(self, spec: TrialSpec) -> Observation | None:
         validate_repetition(self.inputs, spec)
@@ -98,10 +83,12 @@ class RunContext:
         capacity: list[dict[str, Any]],
         completed: int,
     ) -> None:
+        method = self.inputs.oracle["trial_method"]
         self.metadata.update(
             status=status,
             stage_state=stage_state,
             completed_valid_observations=completed,
+            acceptance_model_attempts=len(attempts),
             capacity_event_count=len(capacity),
             updated_at=datetime.now(UTC).isoformat(),
         )
@@ -113,8 +100,10 @@ class RunContext:
                 "stage_state": stage_state,
                 "completed_valid_observations": completed,
                 "exhausted_observations": blocked or [],
+                "acceptance_model_attempts": len(attempts),
+                "acceptance_model_attempt_ceiling": method["maximum_acceptance_model_attempts"],
                 "capacity_event_count": len(capacity),
-                "acceptance_complete": status in {"COMPLETE", "BLOCKED_NO_REFERENCE"},
+                "acceptance_complete": status == "COMPLETE",
                 "partial_scoring_permitted": False,
             },
         )
@@ -146,59 +135,28 @@ class RunContext:
             ),
         }
 
-    def _submit_available(
-        self,
-        executor: concurrent.futures.ThreadPoolExecutor,
-        futures: dict[concurrent.futures.Future, TrialSpec],
-        pending: Iterator[TrialSpec],
-    ) -> None:
-        for _ in range(self.args.workers - len(futures)):
-            spec = next(pending, None)
-            if spec is not None:
-                futures[executor.submit(self.execute, spec)] = spec
-
-    @staticmethod
-    def _record_future(
-        future: concurrent.futures.Future,
-        spec: TrialSpec,
-        completed: set[str],
-        blocked: list[str],
-        host_drift: list[str],
-    ) -> bool:
-        try:
-            result = future.result()
-        except CapacityPause:
-            return True
-        except HostSurfaceDrift:
-            host_drift.append(spec.key)
-        else:
-            if result is None:
-                blocked.append(spec.key)
-            else:
-                completed.add(spec.key)
-                print(f"completed {len(completed)} {spec.key}", flush=True)
-        return False
-
     def execute_schedule(self, schedule: list[TrialSpec]) -> tuple[list[str], bool, list[str]]:
+        """Execute in exact frozen order; full acceptance is intentionally single-threaded."""
         completed = set(self.persisted_results())
-        pending = iter([spec for spec in schedule if spec.key not in completed])
         blocked: list[str] = []
         host_drift: list[str] = []
         capacity_pause = False
-        with concurrent.futures.ThreadPoolExecutor(max_workers=self.args.workers) as executor:
-            futures: dict[concurrent.futures.Future, TrialSpec] = {}
-            self._submit_available(executor, futures, pending)
-            while futures:
-                done, _ = concurrent.futures.wait(
-                    futures, return_when=concurrent.futures.FIRST_COMPLETED
-                )
-                for future in done:
-                    spec = futures.pop(future)
-                    capacity_pause |= self._record_future(
-                        future, spec, completed, blocked, host_drift
-                    )
-                if not blocked and not capacity_pause and not host_drift:
-                    self._submit_available(executor, futures, pending)
+        for spec in schedule:
+            if spec.key in completed:
+                continue
+            try:
+                result = self.execute(spec)
+            except CapacityPause:
+                capacity_pause = True
+                break
+            except HostSurfaceDrift:
+                host_drift.append(spec.key)
+                break
+            if result is None:
+                blocked.append(spec.key)
+                break
+            completed.add(spec.key)
+            print(f"completed {len(completed)} {spec.key}", flush=True)
         return blocked, capacity_pause, host_drift
 
     def stop_for_execution_state(
@@ -225,83 +183,3 @@ class RunContext:
         if reason is not None:
             value["reason"] = reason
         _json_dump(self.output / "selection.json", value)
-
-    def _store_certificate(self, candidate: str, certificate: dict[str, Any]) -> None:
-        self.terminal_candidates[candidate] = certificate
-        _json_dump(self.output / "futility-certificates" / f"{candidate}.json", certificate)
-
-    terminal_candidates: dict[str, dict[str, Any]] | None = None
-
-    def _base_pair(self, stage: str, case: dict[str, Any], candidate: str) -> int | None:
-        for repetition in (1, 2):
-            spec = TrialSpec(case, candidate, repetition)
-            stopped = self.stop_for_execution_state(
-                *self.execute_schedule([spec]),
-                f"{stage}_{case['id']}_{candidate}_INCOMPLETE",
-            )
-            if stopped is not None:
-                return stopped
-            certificate = qualification_futility_certificate(self.inputs, candidate, self.trials())
-            if certificate["terminal"]:
-                self._store_certificate(candidate, certificate)
-                break
-        return None
-
-    def _conditional_third(self, stage: str, case: dict[str, Any], candidate: str) -> int | None:
-        thirds = [
-            spec
-            for spec in conditional_third_specs(self.inputs, [candidate], self.trials())
-            if spec.case["id"] == case["id"]
-        ]
-        if not thirds:
-            return None
-        return self.stop_for_execution_state(
-            *self.execute_schedule(thirds),
-            f"{stage}_{case['id']}_{candidate}_THIRD_INCOMPLETE",
-        )
-
-    def _finalize_candidate(self, candidate: str, reference_metrics: dict[str, Any] | None) -> None:
-        certificate = qualification_futility_certificate(self.inputs, candidate, self.trials())
-        if not certificate["terminal"] and reference_metrics is not None:
-            certificate = materiality_futility_certificate(
-                self.inputs, candidate, self.trials(), reference_metrics
-            )
-        if certificate["terminal"]:
-            self._store_certificate(candidate, certificate)
-
-    def _candidate_case(
-        self,
-        stage: str,
-        case: dict[str, Any],
-        candidate: str,
-        reference_metrics: dict[str, Any] | None,
-    ) -> int | None:
-        if candidate in self.terminal_candidates:
-            return None
-        stopped = self._base_pair(stage, case, candidate)
-        if stopped is not None or candidate in self.terminal_candidates:
-            return stopped
-        stopped = self._conditional_third(stage, case, candidate)
-        if stopped is not None:
-            return stopped
-        self._finalize_candidate(candidate, reference_metrics)
-        return None
-
-    def adaptive_stage(
-        self, stage: str, candidates: list[str], reference_metrics: dict[str, Any] | None = None
-    ) -> int | None:
-        ordered_cases = sorted(
-            self.inputs.corpus["cases"],
-            key=lambda case: (V12_CLASS_ORDER.index(case["class"]), case["id"]),
-        )
-        for case_index, case in enumerate(ordered_cases):
-            offset = case_index % len(candidates)
-            for candidate in candidates[offset:] + candidates[:offset]:
-                stopped = self._candidate_case(stage, case, candidate, reference_metrics)
-                if stopped is not None:
-                    return stopped
-        return None
-
-    def __post_init__(self) -> None:
-        if self.terminal_candidates is None:
-            self.terminal_candidates = {}

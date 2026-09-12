@@ -1,10 +1,7 @@
-"""Extracted MG1 topology harness implementation."""
+"""Provider-free provenance and persisted observation evidence for T023 v15."""
 
 from __future__ import annotations
 
-import hashlib
-import json
-import subprocess
 import tempfile
 from datetime import UTC, datetime
 from pathlib import Path
@@ -34,61 +31,9 @@ from .storage import _json_dump
 from .trial_execution import run_trial
 
 
-def _holdout_rotation_evidence(inputs: FrozenInputs) -> dict[str, Any]:
-    relative = CORPUS_PATH.relative_to(REPO_ROOT).as_posix()
-    try:
-        change = subprocess.check_output(
-            ["git", "log", "-1", "--format=%H", "--", relative],
-            cwd=REPO_ROOT,
-            text=True,
-        ).strip()
-        prior_bytes = subprocess.check_output(
-            ["git", "show", f"{change}^:{relative}"], cwd=REPO_ROOT
-        )
-        prior = json.loads(prior_bytes)
-    except (subprocess.CalledProcessError, json.JSONDecodeError) as exc:
-        raise HarnessError("cannot resolve the frozen corpus v5 predecessor") from exc
-    current_cases = {case["id"]: case for case in inputs.corpus["cases"]}
-    prior_cases = {case["id"]: case for case in prior.get("cases", [])}
-    shared_ids = set(current_cases) & set(prior_cases)
-    rotated = {
-        key: value
-        for key, value in current_cases.get("WX00R", {}).items()
-        if key not in {"id", "prompt"}
-    }
-    exposed = {
-        key: value
-        for key, value in prior_cases.get("WX00", {}).items()
-        if key not in {"id", "prompt"}
-    }
-    valid = (
-        len(current_cases) == len(prior_cases) == 40
-        and set(current_cases) - set(prior_cases) == {"WX00R"}
-        and set(prior_cases) - set(current_cases) == {"WX00"}
-        and all(current_cases[case_id] == prior_cases[case_id] for case_id in shared_ids)
-        and rotated == exposed
-        and current_cases["WX00R"]["prompt"] != prior_cases["WX00"]["prompt"]
-    )
-    if not valid:
-        raise HarnessError("corpus v6 is not the frozen WX00-to-WX00R rotation of corpus v5")
-    return {
-        "status": "PASS",
-        "corpus_change_commit": change,
-        "prior_corpus_id": prior.get("corpus_id"),
-        "prior_sha256": hashlib.sha256(prior_bytes).hexdigest(),
-        "current_corpus_id": inputs.corpus["corpus_id"],
-        "current_sha256": _sha256(CORPUS_PATH),
-        "unchanged_case_count": len(shared_ids),
-        "retired_case_id": "WX00",
-        "replacement_case_id": "WX00R",
-        "semantic_fields_equal": True,
-        "prompt_changed": True,
-    }
-
-
 def build_deterministic_evidence(inputs: FrozenInputs) -> dict[str, Any]:
     candidates: dict[str, Any] = {}
-    with tempfile.TemporaryDirectory(prefix="t023-provenance-") as temporary:
+    with tempfile.TemporaryDirectory(prefix="t023-v15-provenance-") as temporary:
         root = Path(temporary)
         for candidate_id in inputs.oracle["candidate_ids"]:
             destination = root / candidate_id
@@ -115,14 +60,15 @@ def build_deterministic_evidence(inputs: FrozenInputs) -> dict[str, Any]:
             }
     return {
         "oracle_id": inputs.oracle["oracle_id"],
+        "strategy": inputs.oracle["strategy"],
         "capability_source_epoch": inputs.oracle["capability_source_epoch"],
         "presentation_revision": inputs.oracle["presentation_revision"],
         "corpus_id": inputs.oracle["corpus_id"],
         "trial_envelope_id": inputs.oracle["trial_envelope_id"],
         "execution_epoch": inputs.oracle["execution_epoch"],
+        "candidate_freeze_sha": inputs.oracle["candidate_freeze_sha"],
         "prior_acceptance_observations_imported": 0,
         "provider_model_calls_issued_during_deterministic_gate": 0,
-        "holdout_rotation": _holdout_rotation_evidence(inputs),
         "frozen_asset_sha256": {
             path.relative_to(REPO_ROOT).as_posix(): _sha256(path)
             for path in (ORACLE_PATH, CORPUS_PATH, TOPOLOGIES_PATH, MANIFEST_PATH, ENVELOPE_PATH)
@@ -130,6 +76,7 @@ def build_deterministic_evidence(inputs: FrozenInputs) -> dict[str, Any]:
         "full_deterministic_regression": "NOT_RUN",
         "profile_isolation_regression": "NOT_RUN",
         "consumer_source_independence_regression": "NOT_RUN",
+        "quality_gate": "NOT_RUN",
         "candidates": candidates,
     }
 
@@ -201,7 +148,6 @@ def execute_logical_observation(
             if exc.failure_class == "HOST_SURFACE_DRIFT":
                 terminal_drift = HostSurfaceDrift(str(exc), exc.raw)
         except HarnessError as exc:
-            # Setup failed before the model invocation; there is no observation to score.
             record.update(status="FAILED", failure_class="ATTEMPT_SETUP_ERROR", error=str(exc))
         else:
             record.update(status="VALID", structured=structured, raw=raw)
@@ -283,7 +229,7 @@ def _validate_resumed_workspace(
         or workspace_evidence.get("cleanup_result") != "REMOVED"
     )
     if invalid:
-        raise HarnessError(f"{spec.key}: resumed v12 workspace factory evidence mismatch")
+        raise HarnessError(f"{spec.key}: resumed v15 workspace factory evidence mismatch")
 
 
 def _validate_partial(
@@ -313,9 +259,7 @@ def _validate_partial(
     ):
         raise HarnessError(f"{spec.key}: resumed materialization identity mismatch")
     command = _validate_resumed_command(spec, raw.get("command"), model, effort)
-    fixture = raw.get("fixture_materialization", {})
-    _validate_fixture_evidence(inputs, spec.case, fixture)
-    isolation = raw.get("workspace_isolation", {})
+    _validate_fixture_evidence(inputs, spec.case, raw.get("fixture_materialization", {}))
     workspace = Path(command[command.index("--cd") + 1])
-    _validate_resumed_isolation(inputs, spec, isolation, workspace)
+    _validate_resumed_isolation(inputs, spec, raw.get("workspace_isolation", {}), workspace)
     _validate_resumed_workspace(spec, raw.get("workspace", {}), workspace)

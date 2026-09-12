@@ -1,6 +1,6 @@
 {
-  "schema_version": "1.0.0",
-  "envelope_id": "MG1-T023-TRIAL-ENVELOPE-v2",
+  "schema_version": "3.0.0",
+  "envelope_id": "MG1-T023-TRIAL-ENVELOPE-v3",
   "user_suffix": "Return only the required structured record.",
   "stimulus_rule": "The model-visible natural-language user turn is exactly the corpus prompt, two newlines, and user_suffix. No other evaluator prose may be appended or prepended.",
   "forbidden_added_terms_casefold": [
