@@ -6,6 +6,12 @@ Decision-State: NOT_REQUIRED
 Opened: 2026-09-12  
 Last-Reviewed: 2026-09-12  
 Owner: ChatGPT Orchestrator  
+Scope: T063 v8 external revalidation and exact-child no-rollout classifier hardening before Stage 6 readiness  
+Question: Is bounded same-child retry for `no rollout found` consistent with official Codex behavior, and what exact fail-closed classifier is required for v8?  
+Evaluation-Refs: `docs/reviews/T063-R18.md`; `docs/reviews/T063-R19.md`; hardened candidate `afdae0050226d61a10269f63017e2fac99eef644`  
+Decision-Ref: none  
+Supersedes: none  
+Superseded-By: none  
 Task: `docs/tasks/T063-adaptive-worker-routing-requalification.md`  
 Prior research: R022, R024  
 Measurement authority: D063  

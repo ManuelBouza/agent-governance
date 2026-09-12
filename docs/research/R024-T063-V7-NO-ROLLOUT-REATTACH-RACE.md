@@ -6,6 +6,12 @@ Decision-State: NOT_REQUIRED
 Opened: 2026-09-12  
 Last-Reviewed: 2026-09-12  
 Owner: ChatGPT Orchestrator  
+Scope: T063 v7 exact-child `thread/resume` no-rollout blocker and successor persistence-barrier semantics  
+Question: Does the v7 exact-child `no rollout found` blocker represent worker quality, invalid child identity, or a persistence-visibility phase suitable for bounded same-child retry?  
+Evaluation-Refs: `docs/reviews/T063-R15.md`; `docs/reviews/T063-R16.md`; v7 terminal HEAD `58e396c126e363428544b163cb2aa8c7e1ac8ed6`  
+Decision-Ref: none  
+Supersedes: none  
+Superseded-By: none  
 Task: `docs/tasks/T063-adaptive-worker-routing-requalification.md`  
 Prior adapter research: `docs/research/R022-T063-V3-EMPTY-ROLLOUT-REATTACH-RACE.md`  
 Prior parent-surface research: `docs/research/R023-T063-V5-LIVE-SPAWN-RECEIPT-PERSISTENCE-GAP.md`  
