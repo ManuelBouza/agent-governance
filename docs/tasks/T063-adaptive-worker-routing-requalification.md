@@ -3,7 +3,7 @@
 ## Identity
 
 - Task ID: `T063`
-- Status: `READY / NOT_AUTHORIZED_STAGE5_REQUIRED`
+- Status: `READY / AUTHORIZED_AWAITING_HUMAN_START`
 - Type: `read-only replicated matched-arm Executor/subagent evaluation`
 - SDD profile: `ASSURED`
 - Base branch: `develop`
@@ -13,6 +13,7 @@
 - Test-Authorship-Mode: `orchestrator-conformance`
 - Owner: ChatGPT Orchestrator (specification/oracle/acceptance and D068 Stage 5) / Agente de IA Ejecutor (Stage 6 execution/evidence) / Human Owner (final authority and Human-mediated launch)
 - Current design review: `docs/reviews/T063-R16.md`
+- Current readiness review: `docs/reviews/T063-R17.md`
 - Prior convergence: `docs/reviews/T063-R15.md`
 - Current blocker research: `docs/research/R024-T063-V7-NO-ROLLOUT-REATTACH-RACE.md`
 - Measurement authority: `docs/decisions/D063-qualified-codex-read-only-child-measurement-surface.md`
@@ -34,6 +35,7 @@ Load only the smallest controlling set needed for execution:
 - `AGENTS.md`;
 - this Task Contract;
 - `docs/reviews/T063-R16.md`;
+- `docs/reviews/T063-R17.md`;
 - `docs/reviews/T063-R15.md` only for v7 convergence/provenance;
 - `docs/research/R021-T063-V3-CONFIG-AUTHORITATIVE-WORKER-RECEIPTS.md`;
 - `docs/research/R022-T063-V3-EMPTY-ROLLOUT-REATTACH-RACE.md`;
@@ -48,7 +50,7 @@ Historical T054/T063 v1-v7 attempts are planning/provenance evidence only and MU
 ### MODIFIED
 
 - **T063-RQ-1 — clean successor run:** v8 is a new homogeneous 24-arm run; v1-v7 are excluded from every v8 score, metric and decision.
-- **T063-RQ-6 — same-child persistence barrier:** after exact public child correlation, reattachment may retry only the exact accepted `EMPTY_ROLLOUT` family or exact `ROLLOUT_NOT_FOUND_FOR_EXACT_CHILD`; both share one ten-attempt budget and all R022 residency/same-child/no-new-provider-turn invariants.
+- **T063-RQ-6 — same-child persistence barrier:** after exact public child correlation, reattachment may retry only the accepted exact `EMPTY_ROLLOUT` family or exact `ROLLOUT_NOT_FOUND_FOR_EXACT_CHILD`; both share one ten-attempt budget and all R022 residency/same-child/no-new-provider-turn invariants.
 - **T063-RQ-13 — policy boundary:** v8 can qualify/reject only this frozen calibration mapping; R007 global policy remains an Orchestrator decision after convergence.
 
 ### PRESERVED
@@ -76,7 +78,7 @@ Historical T054/T063 v1-v7 attempts are planning/provenance evidence only and MU
 
 V8 is a fixed-n replicated qualification calibration, not a formal population-level non-inferiority trial. Four replicates are project-specific pilot policy. There are no p-values, adaptive sample expansion, outcome-conditioned reruns, or population-level confidence claims.
 
-Quality is defined by the frozen deterministic/oracle semantics. CONTROL is a comparator, not the source of truth for acceptance.
+Quality is defined by frozen deterministic/oracle semantics. CONTROL is a comparator, not the source of truth for acceptance.
 
 ### Routing topology
 
@@ -263,6 +265,8 @@ exact_token_improvement = 1 - (adaptive_tokens_per_success / control_tokens_per_
 material floor          = 0.10
 ```
 
+Provider dollar/credit rates may be recorded descriptively but are not normative qualification constants and must not be presented as exact billed cost without complete billing telemetry.
+
 ### Complete pilot decision taxonomy
 
 For a complete 24-arm execution-valid run, `pilot_decision` MUST be exactly one of:
@@ -274,14 +278,24 @@ For a complete 24-arm execution-valid run, `pilot_decision` MUST be exactly one 
 
 `pilot_decision=null` is reserved for incomplete/blocked non-quality execution.
 
-A complete 24-child run has `run_execution_validity=VALID`, `run_model_comparison_eligible=true`, `pilot_eligible=true`, 24 quality-eligible children and non-null `pilot_decision`. An incomplete/blocked run is execution-invalid for run comparison, retains only fully measured child evidence, and has `pilot_decision=null`.
+A complete 24-child run has:
+
+```text
+run_execution_validity = VALID
+run_model_comparison_eligible = true
+pilot_eligible = true
+scored_child_quality_eligible_count = 24
+pilot_decision != null
+```
+
+An incomplete/blocked run is execution-invalid for run comparison, retains only fully measured child evidence, and has `pilot_decision=null`.
 
 ## Plan & Trace
 
 | Unit | Requirement / Design ref | Candidate artifact(s) | Required verification/evidence |
 | --- | --- | --- | --- |
 | inherited v3 core | RQ-2..12 | `evals/adaptive_worker_routing_v3/*`; v3 tests | D063 receipts; frozen oracles; first-attempt quality |
-| inherited v4-v6 measurement | RQ-2..12 | v4/v5/v6 packages/tests | original empty-rollout behavior; model evidence; live parent surface |
+| inherited v4-v6 measurement | RQ-2..12 | v4/v5/v6 packages/tests | empty-rollout behavior; model evidence; live parent surface |
 | inherited v7 replication | RQ-14..20 | v7 package/test at accepted implementation state | 24-arm schedule; trial metadata; aggregate/decision semantics |
 | v8 persistence adapter | modified RQ-6 / R024 | `evals/adaptive_worker_routing_v8/*` | two exact transient classes; exact child-id match; shared budget; residency/no-new-provider invariants |
 | v8 conformance regressions | modified RQ-6 | `tests/test_t063_adaptive_worker_routing_v8_reattach.py` | classification, id mismatch, mixed sequence, common exhaustion, ordering, fail-closed |
@@ -293,20 +307,38 @@ T063 is D068-mode work.
 
 ```text
 Stages 2-4 -> ChatGPT Orchestrator — COMPLETE by T063-R16
-Stage 5    -> ChatGPT Orchestrator — REQUIRED / NOT YET COMPLETE
-Stage 6    -> Agente de IA Ejecutor — NOT AUTHORIZED
+Stage 5    -> ChatGPT Orchestrator — COMPLETE by T063-R17
+Stage 6    -> Agente de IA Ejecutor — AUTHORIZED after Human launch
 Stage 7    -> ChatGPT Orchestrator
 ```
 
 ## Published candidate freeze
 
-No v8 Stage 6 candidate is authorized yet.
+Authorized Stage 6 candidate:
 
-Stage 5 MUST materialize a fresh v8 candidate from the post-R16 `develop` base, promoting the accepted v7 implementation substrate without v7 terminal JSON evidence and adding only the v8 adapter/tests required by R16. A later readiness review must persist exact candidate branch/HEAD/base before Stage 6 can be authorized.
+```text
+candidate_branch: test/t063-adaptive-worker-routing-requalification-v8
+candidate_head:   83f38bd9813cfdd107486ad40d39df6335513ce8
+candidate_base:   621e9ae0d73378b1013699e8726b315128c95891
+```
+
+No provider-backed call is authorized from another initial candidate HEAD.
+
+Remote verification establishes that this candidate is exactly one commit above the protected-base snapshot and contains exactly 28 executable/test files: 24 accepted v3-v7 blobs promoted from v7 implementation HEAD `5a1769fed3f93d86cbc2e72a6cc89d7a276089d6`, plus four v8 adapter/test files. Historical terminal JSON evidence is excluded.
+
+A bounded Stage 6 repair may correct represented mechanics/test/config defects only when it preserves this Task Contract's frozen experiment semantics. Any change to probes, oracles, sample size, schedule, profiles, thresholds, parent-surface semantics, either retry class, exact-child id requirement, shared retry budget, evidence taxonomy, quality rules or pilot-decision meaning requires Orchestrator re-entry.
 
 ## Authorized scope
 
-There is currently no Stage 6 execution authority. After a future readiness review, the Executor may only execute the exact published candidate, diagnose within this Design, make bounded represented mechanics-preserving repairs, run technical Code Review & Verify, and persist authorized non-Markdown v8 evidence.
+The Executor may:
+
+- synchronize/establish the exact authorized candidate safely;
+- execute all deterministic/provider-free pre-provider checks;
+- execute the published fixed 24-arm v8 evaluation;
+- diagnose failures;
+- make bounded represented mechanics-preserving repairs explicitly allowed above;
+- perform technical Code Review & Verify;
+- persist and push authorized non-Markdown v8 telemetry/handoff evidence.
 
 ## Explicit exclusions
 
@@ -317,7 +349,7 @@ The Executor MUST NOT:
 - change frozen probes/oracles/task messages;
 - change replicate count, schedule, profiles, thresholds or decision taxonomy;
 - change either retry class, exact-child id requirement, shared ten-attempt budget or retry ordering;
-- stop/replay/replace an arm because of a valid quality FAIL;
+- stop, replay or replace an arm because of a valid quality FAIL;
 - reuse v1-v7 attempts as v8 score data;
 - infer backend-served identity beyond D063;
 - use internal/raw response events as passing evidence;
@@ -328,7 +360,9 @@ The Executor MUST NOT:
 
 ## Invariants / constraints
 
-Prospective v8 launch profile remains:
+### Root/runtime launch profile
+
+The Human-facing D055 launch card is separate from the transport prompt. Frozen v8 launch profile:
 
 ```text
 Executor:        Codex
@@ -342,13 +376,21 @@ App Server:      exactly 0.153.4
 Auth category:   chatgpt
 ```
 
-`root-7` is retired after consumed v7 execution. `root-8` is a same-work-unit successor, not a concurrent root.
+V7 `root-7` is retired after consumed execution and material successor revision. `root-8` is a same-work-unit successor, not a concurrent second root.
 
-Other invariants: native Windows; fresh App Server per scored arm; exact read-only parent/child posture; no tracked/global mutation attributable to measurement; no historical evidence enters v8 scoring; no provider call before all provider-free gates pass; no outcome-conditioned sample extension or early-success stopping.
+Other invariants:
+
+- native Windows host;
+- fresh App Server per scored arm;
+- exact read-only parent/child permission posture;
+- no tracked/global mutation attributable to measurement;
+- no historical evidence enters v8 scoring;
+- no provider call before every provider-free gate passes;
+- no outcome-conditioned sample extension or early-success stopping.
 
 ## Executor process autonomy
 
-Inside a future authorized Stage 6 envelope, the Executor owns mechanics/private organization under D041/D054. It may not change material experiment semantics, measurement trust boundaries or stop conditions.
+Inside the authorized Stage 6 envelope, the Executor owns mechanics and private execution organization under D041/D054. This Task Contract controls experiment semantics, profiles, schedule, evidence and stop conditions; private process autonomy cannot change them.
 
 ## D076 executable-materialization boundary
 
@@ -361,87 +403,132 @@ substantial new controller/harness/script/fixture-oracle implementation
     -> Orchestrator Stage 5 re-entry
 ```
 
-Terminal handoff MUST include `ephemeral_artifacts` and `executor_material_ephemeral_artifacts`; any material or uncertain late artifact requires re-entry.
+Terminal handoff MUST include:
+
+```text
+ephemeral_artifacts: [...]
+executor_material_ephemeral_artifacts: []
+```
+
+Any material or uncertain late-discovered executable artifact requires re-entry.
 
 ## Pre-provider gates
 
-A future Stage 6 MUST verify before the first provider/model call:
+Before the first provider/model call, Stage 6 MUST verify successfully:
 
-- exact authorized candidate branch/HEAD/base ancestry;
+- exact candidate branch/HEAD and base ancestry;
 - native Windows host;
-- Codex runtime and App Server exactly `0.153.4`;
+- effective Codex runtime exactly `0.153.4`;
+- App Server exactly `0.153.4`;
 - auth category `chatgpt`;
 - no unauthorized tracked candidate changes;
-- no custom/local agent-role ambiguity affecting child instructions;
-- P3 runtime-root requirements;
-- all repository-native deterministic tests covering v3-v8;
-- Python compile verification for the published candidate;
-- repository-native Ruff/lint verification for changed candidate surface;
-- provider-free P1/P2/P3 oracle preparation;
-- no newer stable Codex release requiring D077 re-entry.
+- no custom/local agent-role ambiguity that could alter child instructions;
+- P3 runtime-root requirements can be satisfied;
+- all repository-native deterministic tests covering v3-v8 pass;
+- Python compile verification for the published eval/test candidate passes;
+- repository-native Ruff/lint verification for the changed candidate passes;
+- provider-free P1/P2/P3 oracle preparation passes;
+- no newer stable Codex release requiring D077 re-entry has appeared.
 
-Any gate failure returns `BLOCKED` with zero new scored provider calls.
+The Orchestrator readiness review did not execute repository-native pytest, Ruff or compileall and GitHub reports no automatic CI statuses for the candidate. Those gates are mandatory Stage 6 preconditions, not optional duplicate checks.
+
+Any pre-provider gate failure returns `BLOCKED` with zero new scored provider calls.
 
 ## Acceptance criteria
 
 - **AC-T063-1:** exact v8 candidate/runtime/profile and all provider-free gates pass before first provider call.
-- **AC-T063-2:** one clean v8 run executes the frozen 24-arm schedule unless a non-quality validity blocker stops it; v1-v7 are excluded.
+- **AC-T063-2:** one clean v8 run executes exactly the frozen 24-arm schedule unless a non-quality validity blocker stops it; v1-v7 are excluded.
 - **AC-T063-3:** every persisted scored child satisfies complete D063 receipts and remains read-only.
-- **AC-T063-4:** P1/P2/P3 preserve frozen oracle semantics without leakage.
-- **AC-T063-5:** live parent-window and completed-parent semantics remain v6-qualified.
+- **AC-T063-4:** P1/P2/P3 preserve frozen deterministic/oracle semantics without leakage.
+- **AC-T063-5:** live parent-window and completed-parent semantics remain exactly v6-qualified.
 - **AC-T063-6:** reattachment recognizes only `EMPTY_ROLLOUT` and exact-child `ROLLOUT_NOT_FOUND_FOR_EXACT_CHILD`, uses one shared ten-attempt budget, sleeps then rechecks parent residency before every retry, reuses exact child/params and creates no new provider turn.
 - **AC-T063-7:** id mismatch/missing id/unrecognized error, parent loss or exhaustion blocks fail-closed.
-- **AC-T063-8:** valid quality FAILs are retained, do not stop/replay the schedule and do not invalidate a technically complete run.
-- **AC-T063-9:** complete valid runs compute frozen quality/usage states and exactly one non-null pilot decision.
-- **AC-T063-10:** exact-token usage qualification is claimed only when both profiles are 12/12 and the 10% floor is met.
+- **AC-T063-8:** valid quality FAILs are retained, do not stop/replay the schedule and do not make a technically complete run execution-invalid.
+- **AC-T063-9:** complete valid runs compute per-probe/global quality states, quality-adjusted usage metrics and exactly one frozen non-null pilot decision.
+- **AC-T063-10:** exact-token usage qualification is claimed only when both profiles are 12/12 and the predeclared 10% materiality floor is met.
 - **AC-T063-11:** no score rewriting, compensating provider calls, profile substitution, oracle leakage, D076 violation or tracked/global mutation occurs.
 - **AC-T063-12:** telemetry/handoff persist exact trial/replicate identity, provider/reattachment accounting including ordered transient classes, quality states, usage metrics and decision/blocker.
 
 ## Verification and trace requirements
 
-Orchestrator-owned conformance assets include frozen P1/P2/P3 oracle construction/scoring, inherited v4-v7 regression tests, and new v8 persistence-barrier tests.
+Orchestrator-owned semantic/conformance assets:
+
+- frozen P1/P2/P3 oracle construction/scoring;
+- inherited v4 empty-rollout reattachment regression tests;
+- inherited v5 model-evidence tests;
+- inherited v6 parent-surface tests;
+- inherited v7 schedule/taxonomy/aggregate conformance tests;
+- v8 exact-child two-class persistence-barrier tests.
 
 V8-specific deterministic coverage MUST prove exact-child no-rollout classification, rejection of wrong/missing id, preservation of empty-rollout classification, mixed-class success under one budget, mixed-class ten-attempt exhaustion, `sleep -> parent residency -> retry` ordering, identical child/params reuse, no new provider turn, immediate nonmatching failure and parent-loss stop.
 
-Required terminal evidence includes provider-free verification, one telemetry item per fully measured child, replicate/trial identity, requested/resolved profiles/reroute evidence, exact token/duration evidence, per-probe/global quality states, quality-adjusted usage, run/pilot eligibility, exact provider-attempt and reattachment-RPC accounting, ordered reattachment classes, mutation/oracle-leak/D076 audit, and technical review summary.
+Required terminal evidence includes provider-free verification results; one telemetry item per fully measured scheduled child; replicate/trial identity; requested/resolved profiles and reroute evidence; exact token/duration evidence; per-probe/global quality states; quality-adjusted usage; exact token-improvement calculation when eligible; run/model-comparison/pilot eligibility; exact provider-attempt and reattachment-RPC accounting including ordered transient classes; mutation/oracle-leak/D076 audit; and final technical review summary.
 
 ## Code Review & Verify obligations
 
-Before terminal `COMPLETED` or `BLOCKED`, a future Executor must verify the represented candidate/repair delta against this contract, inherited v3-v7 semantics, exact 24-arm counterbalance, valid quality-FAIL continuation, v8 shared retry budget/id matching, frozen decision taxonomy, and required handoff evidence.
+Before terminal `COMPLETED` or `BLOCKED`, the Executor must:
+
+- review the represented candidate/repair delta against this Task Contract;
+- verify no Stage 6 repair changed experiment semantics;
+- verify inherited v3-v7 behavior remains intact;
+- verify v8 schedule is exactly 24 arms and counterbalanced;
+- verify valid quality FAILs do not trigger early stop/replay;
+- verify v8 two-class/shared-budget/id-match semantics;
+- verify decision taxonomy matches this contract exactly;
+- persist handoff evidence required by `docs/EXECUTOR-HANDOFFS.md`.
 
 ## Stop / escalation / SDD re-entry conditions
 
-STOP rather than guess when candidate identity is unsafe; a requirement/Design/Plan/acceptance defect appears; an oracle is defective; an exact runtime/profile cannot resolve; a mandatory D063 receipt is unavailable; parent activity cannot be represented under qualified public semantics; reattach error matches neither exact v8 transient class; exact child id does not match; shared retry budget exhausts; parent residency is lost; a D076-material artifact is missing; a bounded repair would change approved semantics; D077 requires re-entry; or a safety/permission/reproducibility invariant cannot be satisfied.
+STOP rather than guess when any of these occurs:
 
-A valid `WORKER_QUALITY` FAIL is explicitly not a stop condition.
+- candidate/base/branch identity cannot be established safely;
+- a material requirement, Design, Plan/Trace or acceptance defect/ambiguity is discovered;
+- a semantic oracle appears defective;
+- required runtime/model/reasoning profile cannot resolve exactly;
+- a mandatory D063 receipt is unavailable;
+- live parent activity cannot be represented under v6-qualified public semantics;
+- a reattachment error matches neither exact v8 transient class;
+- `ROLLOUT_NOT_FOUND_FOR_EXACT_CHILD` does not name the exact resumed child id;
+- the shared same-child retry budget exhausts or parent residency is lost;
+- a D076-material executable artifact is missing from the candidate;
+- a bounded repair would change approved semantics/Design;
+- a newer stable Codex release requires D077 re-entry;
+- a safety/security/permission/reproducibility invariant cannot be satisfied.
+
+A valid `WORKER_QUALITY` FAIL is explicitly **not** a stop condition.
+
+Persist available evidence, make no compensating scored call, and identify the earliest affected SDD stage before returning control.
 
 ## Version-sensitive launch gate
 
-Current provisional authority from R024:
+Reviewed official upstream state on 2026-09-12 after v8 candidate publication:
 
 ```text
 qualified pin:           Codex/App Server 0.153.4
-stable reviewed:         0.154.0
+current stable reviewed: 0.154.0
+current stable tag:      rust-v0.154.0
+newer stable observed:   none
 version disposition:     PIN_RETAINED
-upgrade fixes blocker:   false based on reviewed stable path
 ```
 
-Stage 5 readiness MUST revalidate official current stable state. D063 qualification is not automatically extended to later releases. If a newer stable becomes material, STOP for D077 classification.
+R024 establishes that 0.154.0 retains the relevant no-rollout persisted-read path. D063 qualification is not automatically extended to later releases. If a stable Codex release newer than `0.154.0` appears before the first v8 provider-backed call, STOP and return to Orchestrator for D077 relevance classification. Do not independently upgrade/downgrade/substitute the runtime.
 
 ## Expected handoff / evidence
 
-A future authorized Executor MUST persist:
+The Executor MUST persist:
 
 ```text
 handoffs/T063-adaptive-worker-routing-telemetry-v8.json
 handoffs/T063-executor-handoff-v8.json
 ```
 
+The evidence must capture at least canonical authority/candidate identity, pre-provider verification, represented Stage 6 repairs, exact provider/reattachment accounting and ordered transient classes, per-child receipts/results, replicate metadata, profile-quality/usage aggregates, model-evidence eligibility, blocker or pilot decision, mutation/oracle-leak review, and D076 ephemeral-artifact audit.
+
 Do not persist private chain-of-thought.
 
 ## Terminal return shape
 
-A future authorized run returns exactly:
+Return exactly:
 
 ```text
 STATUS: COMPLETED | BLOCKED
@@ -453,11 +540,25 @@ HEAD: <actual remote pushed HEAD>
 ## Human launch gate
 
 ```text
-launch_state: NOT_AUTHORIZED
+launch_state: AUTHORIZED_AWAITING_HUMAN_START
 ```
 
-ChatGPT MUST NOT start or directly control Codex. Human-mediated transport is required only after a future readiness review changes this state.
+ChatGPT MUST NOT start or directly control Codex. Human-mediated transport is required.
 
 ## Thin transport invariant
 
-No v8 transport prompt is authorized yet. When readiness is accepted, the Human-visible prompt must contain only Coordinator/session identity, canonical repository, this Task Contract pointer and exact authorized candidate branch/HEAD. Detailed experiment/retry/acceptance semantics remain canonical here, not in chat transport.
+The Human-visible launch prompt is transport/bootstrap only. A compliant v8 transport contains only:
+
+```text
+Set the visible Codex chat title to exactly:
+AG | agent-governance | T063 | root-8
+
+Repository: https://github.com/ManuelBouza/agent-governance
+Session: NEW
+Task Contract: docs/tasks/T063-adaptive-worker-routing-requalification.md
+Authorized candidate: test/t063-adaptive-worker-routing-requalification-v8@83f38bd9813cfdd107486ad40d39df6335513ce8
+
+Synchronize canonical Git authority, load the repository instructions/checkpoint and the Task Contract, then execute that Task Contract exactly. Return only its defined terminal result.
+```
+
+D055 launch-profile information is presented separately. Do not duplicate schedule, scoring, retry, acceptance, test runbook or evidence semantics in the transport prompt.
