@@ -40,7 +40,7 @@ See D057 for transition semantics and required metadata for new research.
 | R004 | `docs/research/MG1-V8-WINDOWS-SANDBOX-ROOT-CAUSE.md` | COMPLETE | SUPERSEDED | `docs/reviews/T023-R7.md`; successor MG1 host-preflight work | none | Root-cause analysis informed later host/workspace corrections; v8 restart authority is no longer current. |
 | R005 | `docs/research/MG1-V9-WINDOWS-TEMP-ACL-ANALYSIS.md` | COMPLETE | SUPERSEDED | T023 successor-method lineage; later MG1 reviews | none | ACL findings remain diagnostic evidence; the v9-specific remediation path has been superseded by later MG1 iterations. |
 | R006 | `docs/research/CODEX-PERSISTENT-EXECUTOR-COORDINATOR-RESEARCH.md` | COMPLETE | SUPERSEDED | `docs/tasks/T053-codex-persistent-executor-coordinator-pilot.md`; `docs/reviews/T053-R1.md`; R013 | `docs/decisions/D060-task-scoped-executor-coordinator-continuity.md` | T053's positive same-task continuity/context-locality evidence remains valid, but R006's broader cross-Task-Contract dossier-root recommendation is superseded. D060 adopts one Human-visible coordinator root per exact Task/Operational Contract. |
-| R007 | `docs/research/ADAPTIVE-SUBAGENT-COMPUTE-ROUTING-RESEARCH.md` | COMPLETE | EVALUATING | T054/T054-R1; D063; T063 Task Contract; R018-R025; T063-R10/R12/R15/R18/R19 | none | T054 was accepted but `NOT_QUALIFIED`. T063 v1-v7 produced no accepted routing decision; v8 is a clean replicated successor. Hardened v8 candidate `afdae0050226d61a10269f63017e2fac99eef644` is Stage 6 authorized under R19/O277, awaiting Human-mediated launch. No global adaptive worker-routing policy is adopted. |
+| R007 | `docs/research/ADAPTIVE-SUBAGENT-COMPUTE-ROUTING-RESEARCH.md` | COMPLETE | EVALUATING | T054/T054-R1; D063; T063 Task Contract; R018-R025; T063-R10/R12/R15/R18/R19/R20; v8 terminal HEAD `b4afbe30508ab44b275d66bad92695c5d3571a9d` | none | T054 was accepted but `NOT_QUALIFIED`. T063 v8 formally blocked incomplete with `pilot_decision=null`, but 21 valid first-attempt observations make the exact frozen ADAPTIVE mapping unable to satisfy its prospective 4/4-per-probe and 12/12-global gate; T063-R20 therefore closes that mapping as not qualified with no successor run. No global adaptive worker-routing policy is adopted; broader R007 research remains EVALUATING. |
 | R008 | `docs/research/CODEX-CHILD-OBSERVABILITY-SURFACE-RESEARCH.md` | COMPLETE | DECIDED | T055/T056/T057; `docs/reviews/T057-R1.md`; evidence PRs `#280`, `#284`, `#296` | `docs/decisions/D063-qualified-codex-read-only-child-measurement-surface.md` | T057 qualified the exact-child read-only/identity/usage/duration/reroute measurement surface. D063 adopts that bounded, version-sensitive substrate while preserving the backend-served identity boundary. |
 | R009 | `docs/research/CODEX-CHILD-SANDBOX-INHERITANCE-RESEARCH.md` | COMPLETE | DECIDED | T056/T057; `docs/reviews/T057-R1.md`; evidence PRs `#284`, `#296` | `docs/decisions/D063-qualified-codex-read-only-child-measurement-surface.md` | T057 empirically closed the exact-child `:read-only` provenance and continuous-parent-residency gate. D063 adopts the qualified surface subject to native version/capability revalidation. |
 | R010 | `docs/research/GPT6-ASTRA-EXECUTOR-LAUNCH-PROFILE-RESEARCH.md` | COMPLETE | DEFERRED | no empirical project evaluation yet | none | GPT-6 Astra is an official quality-first flagship and current Codex source supports it, but availability alone does not justify globally replacing Sol under D055. Global/default adoption remains deferred pending task-level/comparative evidence and host/account availability. |
@@ -58,7 +58,7 @@ See D057 for transition semantics and required metadata for new research.
 | R022 | `docs/research/R022-T063-V3-EMPTY-ROLLOUT-REATTACH-RACE.md` | COMPLETE | NOT_REQUIRED | v3 terminal HEAD `746519abc6f159e959120f68d5c9f920d88d5797`; v4 candidate `f06c8f48f7b1d59dff9fc117cca5b42453ad23e8`; `docs/reviews/T063-R7.md`; official Codex `0.153.4`, `0.154.0` and current-main source | none | V3 blocked because immediate exact-child `thread/resume` raced rollout metadata persistence. V4 adds a bounded same-child retry barrier with parent-residency recheck immediately before each retry, no new provider turn and fail-closed handling; the 0.153.4 qualified pin remains deliberate. |
 | R023 | `docs/research/R023-T063-V5-LIVE-SPAWN-RECEIPT-PERSISTENCE-GAP.md` | COMPLETE | NOT_REQUIRED | v5 terminal HEAD `3f9830a65a152ad595653961205e0ca52b9c5ccc`; `docs/reviews/T063-R10.md`; official Codex `0.153.4` and `0.154.0` source | none | V5 obtained the public live exact-child spawn receipt and successful same-child reattachment, then blocked because the adapter incorrectly required the live `Started` activity to be duplicated in the completed parent-turn snapshot. Official source confirms live item events and persisted history have distinct semantics; v6 validates spawn cardinality/correlation from the public live notification window. |
 | R024 | `docs/research/R024-T063-V7-NO-ROLLOUT-REATTACH-RACE.md` | COMPLETE | NOT_REQUIRED | v7 terminal HEAD `58e396c126e363428544b163cb2aa8c7e1ac8ed6`; `docs/reviews/T063-R15.md`; `docs/reviews/T063-R16.md` | none | V7 blocked after five valid PASS children because immediate exact-child `thread/resume` could not resolve a rollout. R024 classified this as an earlier persistence-visibility phase suitable only for bounded same-child retry. R025 subsequently narrows the no-rollout acceptance shape without rewriting the historical v7 diagnosis. |
-| R025 | `docs/research/R025-T063-V8-REATTACH-CLASSIFIER-HARDENING.md` | COMPLETE | NOT_REQUIRED | `docs/reviews/T063-R18.md`; `docs/reviews/T063-R19.md`; hardened v8 candidate `afdae0050226d61a10269f63017e2fac99eef644`; O277 | none | External revalidation confirms that identity may precede rollout materialization but `no rollout found` is not intrinsically transient. V8 therefore retries it only inside the exact correlated-child barrier when the represented error safely parses to code `-32600` and the exact canonical child-specific message. Hardened Stage 5 is accepted by R19; D077 remains `PIN_RETAINED`. |
+| R025 | `docs/research/R025-T063-V8-REATTACH-CLASSIFIER-HARDENING.md` | COMPLETE | NOT_REQUIRED | `docs/reviews/T063-R18.md`; `docs/reviews/T063-R19.md`; hardened v8 candidate `afdae0050226d61a10269f63017e2fac99eef644`; O277; `docs/reviews/T063-R20.md` | none | External revalidation confirms that identity may precede rollout materialization but `no rollout found` is not intrinsically transient. V8 hardened this classifier successfully; the live v8 run observed only the preserved `EMPTY_ROLLOUT` path before stopping on an unrelated self-attested transport-receipt mismatch. D077 remains `PIN_RETAINED`. |
 
 ## Live research frontier
 
@@ -72,36 +72,34 @@ R007 — adaptive subagent compute routing
 D063 — qualified exact-child measurement substrate
   qualified runtime: Codex/App Server 0.153.4
 
-R022 — empty-rollout reattach race
-  COMPLETE / NOT_REQUIRED
-  same-child bounded retry foundation
+R022/R023/R024/R025 — T063 measurement-adapter research
+  COMPLETE
+  persistence and public-parent measurement lineage retained as historical evidence
 
-R023 — live spawn receipt persistence gap
-  COMPLETE / NOT_REQUIRED
-  live public parent-window semantics
+T063 v8
+  candidate HEAD: afdae0050226d61a10269f63017e2fac99eef644
+  terminal evidence HEAD: b4afbe30508ab44b275d66bad92695c5d3571a9d
+  formal terminal: BLOCKED_EXECUTION_INVALID
+  formal pilot_decision: null
+  fully measured quality-evidence children: 21
+  ADAPTIVE valid results: 9/11 PASS
+  CONTROL valid results: 9/10 PASS
+  P1 ADAPTIVE: 3/4 PASS
+  P3 ADAPTIVE: 2/3 PASS with one scheduled arm remaining
+  frozen ADAPTIVE 4/4-per-probe + 12/12 global qualification: impossible
+  Stage 7: T063-R20 — frozen mapping NOT QUALIFIED; no successor run required
+  v8 continuation/v9: NOT AUTHORIZED
+  accepted-quality efficiency claim: unavailable
 
-R024 — v7 no-rollout reattach race
-  COMPLETE / NOT_REQUIRED
-  v7 terminal HEAD: 58e396c126e363428544b163cb2aa8c7e1ac8ed6
-  five fully measured PASS children; sixth child blocked before complete measurement
-  no v7 pilot decision
-
-R025 — v8 classifier hardening
-  COMPLETE / NOT_REQUIRED
-  no-rollout intrinsically transient: no
-  retryable only under exact correlated child + exact parsed -32600/message shape
-  withdrawn provisional v8 HEAD: 83f38bd9813cfdd107486ad40d39df6335513ce8
-  hardened v8 candidate HEAD: afdae0050226d61a10269f63017e2fac99eef644
-  readiness: T063-R19 ACCEPTED
-  checkpoint: O277
-  Stage 6: AUTHORIZED_AWAITING_HUMAN_START
-  provider/model calls under hardened v8: 0
-  version disposition: PIN_RETAINED on 0.153.4
+R007 disposition
+  global adaptive routing policy: NOT ADOPTED
+  broader research state: EVALUATING
+  materially different future mapping requires new prospective Human-selected objective
 ```
 
-T063 deliberately does not vary the D075 Stage-A delegation-worthiness decision. Its exact matched-arm topology is contract-fixed because topology is material to the experiment, while the selected probe units independently satisfy D065/D075 material-delegation eligibility. Only the child execution profile is the scored experimental variable.
+T063 deliberately did not vary the D075 Stage-A delegation-worthiness decision. Its exact matched-arm topology was contract-fixed because topology was material to the experiment, while the selected probe units independently satisfied D065/D075 material-delegation eligibility. Only the child execution profile was the scored experimental variable.
 
-Historical T063 terminal evidence remains excluded from hardened v8 scoring:
+Historical T063 terminal evidence remains historical and must not be silently pooled into a future scored experiment:
 
 ```text
 v1  3d8a9460988351383a90adfc6b76e2deff056504
@@ -111,9 +109,10 @@ v4  4135a13ce8daa4f6b1fcabe45063364fbbdd16f1
 v5  3f9830a65a152ad595653961205e0ca52b9c5ccc
 v6  276fa94cde6904c003482c8b527de7e8cda416d4
 v7  58e396c126e363428544b163cb2aa8c7e1ac8ed6
+v8  b4afbe30508ab44b275d66bad92695c5d3571a9d
 ```
 
-The withdrawn provisional v8 HEAD `83f38bd9813cfdd107486ad40d39df6335513ce8` is historical Stage 5 evidence only and is not launch authority.
+The withdrawn provisional v8 HEAD `83f38bd9813cfdd107486ad40d39df6335513ce8` remains historical Stage 5 evidence only and is not launch authority.
 
 ### Held T023/T062 scientific frontier
 
@@ -187,7 +186,7 @@ R014/R015 -> D066
   explicit unresolved recovery/automatic-retirement gaps remain
 ```
 
-D063 qualifies the child measurement substrate only. D065 establishes delegation obligation. D075 establishes only the coordinator-direct versus delegated/contract-fixed first gate. D077 governs upstream version-range revalidation. None of them adopts adaptive child compute routing, changes D055, establishes provider-signed backend identity, or authorizes a global savings claim. R007 remains EVALUATING through T063.
+D063 qualifies the child measurement substrate only. D065 establishes delegation obligation. D075 establishes only the coordinator-direct versus delegated/contract-fixed first gate. D077 governs upstream version-range revalidation. None of them adopts adaptive child compute routing, changes D055, establishes provider-signed backend identity, or authorizes a global savings claim. R007 remains EVALUATING after T063's frozen mapping fails qualification.
 
 ## Required workflow for new research
 
