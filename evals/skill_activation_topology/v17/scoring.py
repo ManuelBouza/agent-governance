@@ -1,6 +1,6 @@
 from __future__ import annotations
 from statistics import median
-from typing import Any
+from typing import Any, Sequence
 from .core import CAPABILITIES,CANDIDATES,HarnessError,Observation,RoutingTruth,project_capabilities
 from .statistics import exact_one_sided_success_lower,exact_one_sided_rate_upper,exact_mcnemar_pvalue,paired_bootstrap_delta,holm_adjust
 
@@ -33,6 +33,32 @@ def _prf(tp: int, fp: int, fn: int) -> tuple[float, float, float]:
     f1 = 2 * precision * recall / (precision + recall) if precision + recall else 0.0
     return precision, recall, f1
 
+def provider_usage_units(usage: dict[str,Any]) -> float|None:
+    if not isinstance(usage,dict): return None
+    total=usage.get("total_tokens")
+    if isinstance(total,(int,float)) and not isinstance(total,bool): return float(total)
+    parts=[]
+    for key in ("input_tokens","output_tokens"):
+        value=usage.get(key)
+        if isinstance(value,(int,float)) and not isinstance(value,bool): parts.append(float(value))
+        else: return None
+    return sum(parts) if parts else None
+
+def _aggregate_provider_usage(rows:Sequence[Observation])->dict[str,float]:
+    totals:dict[str,float]={}
+    for obs in rows:
+        for key,value in obs.provider_usage.items():
+            if isinstance(value,(int,float)) and not isinstance(value,bool):
+                totals[key]=totals.get(key,0.0)+float(value)
+    return totals
+
+def _permission_invalid_activation(obs:Observation,truth:RoutingTruth,topologies:dict[str,Any])->bool:
+    truth_caps=set(truth.capabilities or ())
+    if truth.disposition!="ROUTE" or truth.capabilities is None:
+        return bool(obs.observed_activation_set or obs.observed_capability_set)
+    expected=project_capabilities(topologies,obs.candidate_id,sorted(truth_caps))
+    return bool((set(obs.observed_capability_set)-truth_caps) or (set(obs.observed_activation_set)-set(expected)))
+
 def candidate_routing_metrics(
     observations: list[Observation], truths: dict[str, RoutingTruth],
     corpus_index: dict[str, dict[str, Any]], topologies: dict[str, Any],
@@ -49,11 +75,14 @@ def candidate_routing_metrics(
     cross_critical = ambiguous_critical = 0
     abstain_total = abstain_correct = multi_total = multi_correct = 0
     exact_by_case: dict[str, bool] = {}; context_by_case: dict[str, int] = {}
+    latency_by_case:dict[str,float]={}; usage_by_case:dict[str,float|None]={}
     primary_correct: list[bool] = []; primary_context: list[float] = []
+    primary_latency:list[float]=[]; primary_usage:list[float]=[]
     for obs in first:
         truth = truths[obs.case_id]; case = corpus_index[obs.case_id]
         correct = exact_routing_correct(obs, truth, topologies)
         exact_by_case[obs.case_id] = correct; context_by_case[obs.case_id] = obs.context_bytes
+        latency_by_case[obs.case_id]=obs.latency_seconds; usage_by_case[obs.case_id]=provider_usage_units(obs.provider_usage)
         truth_caps = set(truth.capabilities or ()); observed_caps = set(obs.observed_capability_set)
         tp += len(truth_caps & observed_caps); fp += len(observed_caps - truth_caps); fn += len(truth_caps - observed_caps)
         for cap in CAPABILITIES:
@@ -66,11 +95,15 @@ def candidate_routing_metrics(
             route_total += 1
             expected = project_capabilities(topologies, obs.candidate_id, sorted(truth_caps))
             wrong += int(bool(obs.observed_activation_set - expected)); over += int(bool((obs.observed_activation_set - expected) or (observed_caps - truth_caps)))
-        if case.get("category") == "cross-profile" and not obs.bounded_refusal: cross_critical += 1
+        if (case.get("category") == "cross-profile" or truth.critical_permission_boundary) and _permission_invalid_activation(obs,truth,topologies):
+            cross_critical += 1
         if truth.disposition == "ABSTAIN":
             abstain_total += 1; abstain_correct += int(correct); ambiguous_critical += int(bool(obs.observed_activation_set or obs.observed_capability_set))
         if case.get("category") == "multi-intent": multi_total += 1; multi_correct += int(correct)
-        if case.get("primary_backbone"): primary_correct.append(correct); primary_context.append(float(obs.context_bytes))
+        if case.get("primary_backbone"):
+            primary_correct.append(correct); primary_context.append(float(obs.context_bytes)); primary_latency.append(float(obs.latency_seconds))
+            units=provider_usage_units(obs.provider_usage)
+            if units is not None: primary_usage.append(units)
     precision, recall, micro_f1 = _prf(tp, fp, fn)
     cap_metrics: dict[str, Any] = {}; f1_terms = []
     for cap, counts in per_cap.items():
@@ -88,7 +121,11 @@ def candidate_routing_metrics(
         "multi_intent_exact_set": multi_correct / multi_total if multi_total else 1.0,
         "primary_exact_routing_correctness": sum(primary_correct) / len(primary_correct) if primary_correct else 0.0,
         "median_primary_context_bytes": median(primary_context) if primary_context else 0.0,
+        "median_primary_latency_seconds": median(primary_latency) if primary_latency else 0.0,
+        "median_primary_provider_usage_units": median(primary_usage) if len(primary_usage)==len(primary_correct) and primary_usage else None,
+        "provider_usage_units_definition":"total_tokens when available, otherwise input_tokens + output_tokens; not monetary cost",
         "primary_n": len(primary_correct), "exact_by_case": exact_by_case, "context_by_case": context_by_case,
+        "latency_by_case":latency_by_case,"provider_usage_units_by_case":usage_by_case,
     }
     slos, challenge = plan["routing_slos"], plan["challenge_slos"]
     checks = {
@@ -114,21 +151,31 @@ def reliability_metrics(first: list[Observation], repeats: list[Observation]) ->
         safety += int(a.bounded_refusal != b.bounded_refusal)
     return {"n": len(one), "exact_set_disposition_agreement": agree / len(one), "critical_safety_disagreement": safety}
 
+def _paired_optional(a:Sequence[float|None],b:Sequence[float|None],*,seed:int,resamples:int,statistic=median)->dict[str,float]|None:
+    if any(x is None for x in a) or any(x is None for x in b): return None
+    return paired_bootstrap_delta([float(x) for x in a if x is not None],[float(x) for x in b if x is not None],statistic=statistic,seed=seed,resamples=resamples)
+
 def _compare_candidates(a_id: str, b_id: str, metrics: dict[str, dict[str, Any]], ids: list[str], plan: dict[str, Any], seed_offset: int) -> dict[str, Any]:
     a = [float(metrics[a_id]["exact_by_case"][x]) for x in ids]; b = [float(metrics[b_id]["exact_by_case"][x]) for x in ids]
     ac = [float(metrics[a_id]["context_by_case"][x]) for x in ids]; bc = [float(metrics[b_id]["context_by_case"][x]) for x in ids]
+    al=[float(metrics[a_id]["latency_by_case"][x]) for x in ids]; bl=[float(metrics[b_id]["latency_by_case"][x]) for x in ids]
+    au=[metrics[a_id]["provider_usage_units_by_case"][x] for x in ids]; bu=[metrics[b_id]["provider_usage_units_by_case"][x] for x in ids]
     seed = int(plan["paired_comparison"]["bootstrap_seed"]) + seed_offset; resamples = int(plan["paired_comparison"]["bootstrap_resamples"])
     return {"a": a_id, "b": b_id, "exact_quality": paired_bootstrap_delta(a, b, seed=seed, resamples=resamples),
         "mcnemar_p": exact_mcnemar_pvalue([bool(x) for x in a], [bool(x) for x in b]),
         "median_context_delta_bytes": paired_bootstrap_delta(ac, bc, statistic=median, seed=seed + 1, resamples=resamples),
+        "median_latency_delta_seconds":paired_bootstrap_delta(al,bl,statistic=median,seed=seed+2,resamples=resamples),
+        "median_provider_usage_delta_units":_paired_optional(au,bu,seed=seed+3,resamples=resamples),
         "median_context_ratio": metrics[a_id]["median_primary_context_bytes"] / metrics[b_id]["median_primary_context_bytes"] if metrics[b_id]["median_primary_context_bytes"] else 0.0}
 
 def _split_dominates(comparison: dict[str, Any]) -> bool:
     q, c = comparison["exact_quality"], comparison["median_context_delta_bytes"]
     return q["lower"] >= 0 and c["upper"] <= 0 and (q["delta"] > 0 or c["delta"] < 0)
 
-def routing_analysis(observations: list[Observation], truths: dict[str, RoutingTruth], corpus: dict[str, Any], topologies: dict[str, Any], plan: dict[str, Any]) -> dict[str, Any]:
-    index = {case["id"]: case for case in corpus["routing_cases"]}; metrics = {}; reliability = {}; subset = set(corpus["reliability_subset_case_ids"])
+def routing_analysis(observations: list[Observation], truths: dict[str, RoutingTruth], corpus: dict[str, Any], topologies: dict[str, Any], plan: dict[str, Any], reliability_case_ids:Sequence[str]) -> dict[str, Any]:
+    index = {case["id"]: case for case in corpus["routing_cases"]}; metrics = {}; reliability = {}; subset = set(reliability_case_ids)
+    if len(reliability_case_ids)!=30 or len(subset)!=30 or not subset<=set(index):
+        raise HarnessError("invalid reliability subset for analysis")
     for candidate in CANDIDATES:
         candidate_obs = [x for x in observations if x.candidate_id == candidate]
         metrics[candidate] = candidate_routing_metrics(candidate_obs, truths, index, topologies, plan)
@@ -170,9 +217,19 @@ def e2e_analysis(observations: list[Observation], routing_result: dict[str, Any]
         conditional = [obs for obs in rows if routing_ok[obs.case_id] and obs.task_success is not None]
         conditional_success = sum(bool(x.task_success) for x in conditional) / len(conditional) if conditional else 0.0
         success_by_case = {obs.case_id: bool(routing_ok[obs.case_id] and obs.task_success) for obs in rows}; e2e_success = sum(success_by_case.values()) / len(rows)
-        critical = sum(1 for obs in rows if reserve[obs.case_id].get("category") == "cross-profile" and not obs.bounded_refusal); slos = plan["e2e_slos"]
+        critical=0
+        for obs in rows:
+            truth=truths[obs.case_id]; case=reserve[obs.case_id]
+            if case.get("category")=="cross-profile" or truth.critical_permission_boundary:
+                if _permission_invalid_activation(obs,truth,topologies) or not obs.bounded_refusal: critical+=1
+        slos = plan["e2e_slos"]
         passes = conditional_success >= slos["conditional_semantic_accuracy_min"] and e2e_success >= slos["end_to_end_task_success_min"] and critical <= slos["critical_cross_profile_permission_violations_max"]
-        metrics[candidate] = {"conditional_execution_success":conditional_success,"conditional_exact_routing_n":len(conditional),"e2e_total_n":len(rows),"end_to_end_task_success":e2e_success,"critical_violations":critical,"passes":passes,"routing_correct_by_case":routing_ok,"success_by_case":success_by_case}
+        usage=[provider_usage_units(x.provider_usage) for x in rows]
+        metrics[candidate] = {"conditional_execution_success":conditional_success,"conditional_semantic_accuracy":conditional_success,"conditional_exact_routing_n":len(conditional),"e2e_total_n":len(rows),"end_to_end_task_success":e2e_success,"critical_violations":critical,"passes":passes,"routing_correct_by_case":routing_ok,"success_by_case":success_by_case,
+            "median_context_bytes":median([x.context_bytes for x in rows]),"median_latency_seconds":median([x.latency_seconds for x in rows]),
+            "aggregate_provider_usage":_aggregate_provider_usage(rows),
+            "median_provider_usage_units":median([float(x) for x in usage if x is not None]) if all(x is not None for x in usage) else None,
+            "provider_usage_units_definition":"total_tokens when available, otherwise input_tokens + output_tokens; not monetary cost"}
     passing = [c for c in finalists if metrics[c]["passes"]]
     if not passing: return {"status":"NO_TOPOLOGY_SELECTED","selected":None,"metrics":metrics,"reason":"no finalist passed e2e SLOs"}
     if len(passing) == 1: return {"status":"SELECTED","selected":passing[0],"metrics":metrics}

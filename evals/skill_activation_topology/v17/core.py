@@ -51,6 +51,12 @@ def load_jsonl(path:Path)->list[dict[str,Any]]:
 
 def sha256_file(path:Path)->str: return hashlib.sha256(path.read_bytes()).hexdigest()
 
+def git_blob_sha_bytes(payload:bytes)->str:
+    header=f"blob {len(payload)}\0".encode("ascii")
+    return hashlib.sha1(header+payload).hexdigest()
+
+def git_blob_sha_file(path:Path)->str: return git_blob_sha_bytes(path.read_bytes())
+
 @dataclass(frozen=True)
 class RoutingTruth:
     case_id:str
@@ -117,14 +123,48 @@ def validate_model_visible_instrumentation(instrumentation:dict[str,Any])->None:
     if set(e2e.get("required",[]))!=e2e_required or set(e2e.get("properties",{}))!=e2e_required:
         raise HarnessError("e2e schema field drift")
 
+def validate_candidate_integrity(provenance:dict[str,Any],manifest:dict[str,Any],topologies:dict[str,Any])->None:
+    if provenance.get("source_manifest_blob")!="527a3d63205d5805ca135e0bf9c74ce818a2e7fb":
+        raise HarnessError("Freeze E candidate-hash manifest provenance drift")
+    targets=provenance.get("target_files")
+    if not isinstance(targets,dict) or not targets: raise HarnessError("candidate provenance target set missing")
+    expected_paths=set()
+    if set(manifest.get("candidates",{}))!=set(CANDIDATES): raise HarnessError("presentation manifest candidate set drift")
+    shared=manifest.get("shared_references",{})
+    if set(shared)!=set(CAPABILITIES): raise HarnessError("shared reference manifest drift")
+    expected_paths.update(shared.values())
+    for candidate_id in CANDIDATES:
+        entrypoints=manifest["candidates"][candidate_id].get("entrypoints",{})
+        if not entrypoints: raise HarnessError(f"{candidate_id}: no presentation entrypoints")
+        reverse={cap:set() for cap in CAPABILITIES}
+        for entrypoint,data in entrypoints.items():
+            expected_paths.add(data["skill_source"])
+            for cap in data.get("capabilities",[]):
+                if cap not in reverse: raise HarnessError(f"{candidate_id}: unknown manifest capability {cap}")
+                reverse[cap].add(entrypoint)
+        topo_mapping=topologies["candidates"][candidate_id]["capability_to_entrypoints"]
+        for cap in CAPABILITIES:
+            if reverse[cap]!=set(topo_mapping[cap]):
+                raise HarnessError(f"{candidate_id}: manifest/topology projection drift for {cap}")
+    if expected_paths!=set(targets):
+        raise HarnessError("candidate provenance target closure drift")
+    for rel,row in targets.items():
+        path=REPO_ROOT/rel
+        if not path.is_file(): raise HarnessError(f"candidate target missing: {rel}")
+        if sha256_file(path)!=row.get("sha256"): raise HarnessError(f"candidate sha256 drift: {rel}")
+        if git_blob_sha_file(path)!=row.get("git_blob"): raise HarnessError(f"candidate Git blob drift: {rel}")
+    if git_blob_sha_file(TOPOLOGIES_PATH)!=provenance.get("topologies_blob_source"):
+        raise HarnessError("topology bytes drift from Freeze E")
+
 def validate_frozen_baseline()->dict[str,Any]:
     missing=[p.relative_to(REPO_ROOT).as_posix() for p in FREEZE_I_REQUIRED if not p.is_file()]
     if missing: raise HarnessError(f"Freeze I required files missing: {missing}")
-    plan,routing,prov,topo,dev,inst=(load_json(p) for p in (ANALYSIS_PATH,ROUTING_PATH,PROVENANCE_PATH,TOPOLOGIES_PATH,DEVELOPMENT_PATH,INSTRUMENTATION_PATH))
+    plan,routing,prov,topo,manifest,dev,inst=(load_json(p) for p in (ANALYSIS_PATH,ROUTING_PATH,PROVENANCE_PATH,TOPOLOGIES_PATH,MANIFEST_PATH,DEVELOPMENT_PATH,INSTRUMENTATION_PATH))
     validate_topologies(topo); validate_model_visible_instrumentation(inst)
     if prov.get("candidate_freeze_source")!="5b025087bc7b6996f683a34fdd1ce441d3d6dd82": raise HarnessError("candidate Freeze E provenance drift")
     if prov.get("presentations_tree_source")!="bdbcf3eb4b1b3acf74e8ec9c36d58400e60efda3": raise HarnessError("candidate presentation tree provenance drift")
     if prov.get("topologies_blob_source")!="1adb4c156bb03e39dd9bf8c2443c501c82f31f5f": raise HarnessError("topology blob provenance drift")
+    validate_candidate_integrity(prov,manifest,topo)
     if sum(int(f["count"]) for f in dev.get("case_families",[]))!=90 or dev.get("confirmatory") is not False: raise HarnessError("development boundary drift")
     geometry={"candidates":3,"development_cases":90,"routing_confirmatory_cases":270,"primary_backbone_cases":240,"challenge_cases":30,"reliability_subset_cases":30,"e2e_reserve_cases":60,"max_e2e_finalists":2}
     if plan["geometry"]!=geometry: raise HarnessError("analysis geometry drift")

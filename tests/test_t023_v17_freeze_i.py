@@ -165,3 +165,55 @@ def test_gate_attempt_budgets_are_total_not_per_observation():
 def test_exact_one_sided_bounds_support_planned_95_5_claim_at_n60_zero_failures():
     assert h.exact_one_sided_success_lower(60,60) > 0.95
     assert h.exact_one_sided_rate_upper(0,60) < 0.05
+
+
+def test_freeze_e_candidate_git_blob_receipt_matches_actual_bytes():
+    prov=h.load_json(h.PROVENANCE_PATH)
+    h.validate_candidate_integrity(prov,h.load_json(h.MANIFEST_PATH),topo())
+    b2=h.REPO_ROOT/"evals/skill_activation_topology/v17/presentations/B2/agent-governance/SKILL.md"
+    assert h.git_blob_sha_file(b2)=="1558c74a524b399b100b05dd6f1041011b8e1949"
+    assert h.git_blob_sha_file(h.TOPOLOGIES_PATH)=="1adb4c156bb03e39dd9bf8c2443c501c82f31f5f"
+
+
+def test_scientific_attempt_limit_survives_resume():
+    plan=h.load_json(h.ANALYSIS_PATH)
+    inputs={"analysis":plan}
+    spec=h.ScheduledObservation("routing","r-001","B2","r1")
+    attempts=[
+        {"phase":"routing","case_id":"r-001","candidate_id":"B2","repetition":"r1","technical_valid":False},
+    ]
+    assert h.remaining_observation_attempts(spec,inputs,attempts)==1
+    attempts.append(
+        {"phase":"routing","case_id":"r-001","candidate_id":"B2","repetition":"r1","technical_valid":False}
+    )
+    assert h.remaining_observation_attempts(spec,inputs,attempts)==0
+
+
+def test_reliability_schedule_uses_separate_frozen_subset():
+    corpus={"routing_cases":[{"id":f"r-{i:03d}"} for i in range(40)]}
+    reliability={"case_ids":[f"r-{i:03d}" for i in range(30)]}
+    schedule=h.reliability_schedule(corpus,reliability)
+    assert len(schedule)==90
+    assert {x.case_id for x in schedule}==set(reliability["case_ids"])
+
+
+def test_cross_profile_critical_gate_uses_trace_not_bounded_refusal_self_report():
+    plan=h.load_json(h.ANALYSIS_PATH); t=topo()
+    truth=h.RoutingTruth("x","ROUTE",frozenset({"consumer-lifecycle"}),critical_permission_boundary=True)
+    case={"id":"x","category":"cross-profile","primary_backbone":False}
+    correct=obs(case_id="x",bounded_refusal=False)
+    wrong=obs(
+        case_id="x",bounded_refusal=True,
+        observed_activation_set=frozenset({"source-maintainer"}),
+        observed_capability_set=frozenset({"source-maintainer"}),
+    )
+    good=h.candidate_routing_metrics([correct],{"x":truth},{"x":case},t,plan)
+    bad=h.candidate_routing_metrics([wrong],{"x":truth},{"x":case},t,plan)
+    assert good["critical_cross_profile_permission_invalid"]==0
+    assert bad["critical_cross_profile_permission_invalid"]==1
+
+
+def test_provider_usage_and_latency_reporting_are_host_observation_dimensions():
+    assert h.provider_usage_units({"total_tokens":7})==7.0
+    assert h.provider_usage_units({"input_tokens":3,"output_tokens":2})==5.0
+    assert h.provider_usage_units({"input_tokens":3}) is None

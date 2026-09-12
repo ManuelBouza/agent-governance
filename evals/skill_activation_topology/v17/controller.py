@@ -2,9 +2,11 @@ from __future__ import annotations
 from pathlib import Path
 import tempfile
 from typing import Any, Sequence
-from .core import ANALYSIS_PATH, ROUTING_PATH, PROVENANCE_PATH, TOPOLOGIES_PATH, MANIFEST_PATH, INSTRUMENTATION_PATH, CORPUS_PATH, ORACLE_PATH, ENVELOPE_PATH, FREEZE_I_REQUIRED, CANDIDATES, HarnessError, Observation, RoutingTruth, ScheduledObservation, append_jsonl, dump_json, load_json, load_jsonl, sha256_file, validate_freeze_i
+from .core import ANALYSIS_PATH, ROUTING_PATH, PROVENANCE_PATH, TOPOLOGIES_PATH, MANIFEST_PATH, INSTRUMENTATION_PATH, CORPUS_PATH, ORACLE_PATH, ENVELOPE_PATH, RELIABILITY_PATH, FREEZE_I_REQUIRED, CANDIDATES, HarnessError, Observation, RoutingTruth, ScheduledObservation, append_jsonl, dump_json, load_json, load_jsonl, sha256_file, validate_freeze_i
 from .host import codex_version, context_bytes, derive_disposition, execute_codex, materialize_candidate, materialize_fixture
 from .scoring import routing_analysis, e2e_analysis
+
+SCIENTIFIC_PHASES={"routing","reliability","e2e"}
 
 class AttemptBudget:
 
@@ -33,8 +35,8 @@ class AttemptBudget:
 def routing_first_schedule(corpus: dict[str, Any]) -> list[ScheduledObservation]:
     return [ScheduledObservation('routing', case['id'], candidate, 'r1') for case in corpus['routing_cases'] for candidate in CANDIDATES]
 
-def reliability_schedule(corpus: dict[str, Any]) -> list[ScheduledObservation]:
-    subset = corpus['reliability_subset_case_ids']
+def reliability_schedule(corpus: dict[str, Any], reliability: dict[str, Any]) -> list[ScheduledObservation]:
+    subset = reliability.get('case_ids', [])
     allowed = {case['id'] for case in corpus['routing_cases']}
     if len(subset) != 30 or len(set(subset)) != 30 or (not set(subset) <= allowed):
         raise HarnessError('invalid reliability subset')
@@ -67,17 +69,38 @@ def _mode_for_phase(phase: str, case: dict[str, Any]) -> str:
         raise HarnessError(f'{phase} gate case must declare mode routing|e2e')
     return mode
 
-def run_one(spec: ScheduledObservation, *, inputs: dict[str, Any], case: dict[str, Any], budget: AttemptBudget, args: Any, attempt_log: Path) -> dict[str, Any]:
+def attempt_records_for(attempts: Sequence[dict[str, Any]], spec: ScheduledObservation) -> list[dict[str, Any]]:
+    return [
+        row for row in attempts
+        if row.get('phase') == spec.phase
+        and row.get('case_id') == spec.case_id
+        and row.get('candidate_id') == spec.candidate_id
+        and row.get('repetition') == spec.repetition
+    ]
+
+def observation_attempt_limit(spec: ScheduledObservation, inputs: dict[str, Any]) -> int:
+    if spec.phase in SCIENTIFIC_PHASES:
+        return int(inputs['analysis']['attempt_budget']['max_attempts_per_scientific_observation'])
+    return 2
+
+def remaining_observation_attempts(spec: ScheduledObservation, inputs: dict[str, Any], attempts: Sequence[dict[str, Any]]) -> int:
+    return max(0, observation_attempt_limit(spec, inputs)-len(attempt_records_for(attempts,spec)))
+
+def run_one(spec: ScheduledObservation, *, inputs: dict[str, Any], case: dict[str, Any], budget: AttemptBudget, args: Any, attempt_log: Path, attempts: list[dict[str, Any]]) -> dict[str, Any]:
     mode = _mode_for_phase(spec.phase, case)
     inst = inputs['instrumentation']['routing_only' if mode == 'routing' else 'e2e']
     suffix = inst['planning_suffix'] if mode == 'routing' else inst['execution_suffix']
     schema = inst['output_schema']
     prompt = case['prompt'].rstrip() + '\n\n' + suffix
-    max_attempts = int(inputs['analysis']['attempt_budget']['max_attempts_per_scientific_observation']) if spec.phase in {'routing', 'reliability', 'e2e'} else min(2, budget.remaining_gate_attempts(spec.phase))
-    if max_attempts <= 0:
-        raise HarnessError(f'no remaining {spec.phase} attempts')
+    prior = attempt_records_for(attempts,spec)
+    max_new = remaining_observation_attempts(spec,inputs,attempts)
+    if spec.phase in {'preflight','canary'}:
+        max_new=min(max_new,budget.remaining_gate_attempts(spec.phase))
+    if max_new <= 0:
+        raise HarnessError(f'observation attempt ceiling exhausted: {spec.key}')
     last: dict[str, Any] | None = None
-    for attempt in range(1, max_attempts + 1):
+    next_attempt=len(prior)+1
+    for offset in range(max_new):
         budget.consume(spec.phase)
         with tempfile.TemporaryDirectory(prefix=f't065-{spec.phase}-') as raw:
             workspace = Path(raw)
@@ -88,8 +111,9 @@ def run_one(spec: ScheduledObservation, *, inputs: dict[str, Any], case: dict[st
             activation = result.get('observed_activation_set', [])
             capabilities = result.get('observed_capability_set', [])
             clarification = bool(model.get('clarification_requested', False))
-            record = {'phase': spec.phase, 'case_id': case['id'], 'candidate_id': spec.candidate_id, 'repetition': spec.repetition, 'attempt': attempt, 'technical_valid': bool(result.get('technical_valid')), 'observed_disposition': derive_disposition(activation, capabilities, clarification), 'observed_activation_set': activation, 'observed_capability_set': capabilities, 'clarification_requested': clarification, 'bounded_refusal': bool(model.get('bounded_refusal', False)), 'task_success': model.get('task_success') if mode == 'e2e' else None, 'response_summary': model.get('response_summary'), 'context_bytes': context_bytes(workspace, result.get('read_paths', [])), 'latency_seconds': result.get('latency_seconds', 0.0), 'provider_usage': result.get('provider_usage', {}), 'trace_available': bool(result.get('trace_available')), 'returncode': result.get('returncode'), 'timed_out': bool(result.get('timed_out', False)), 'candidate_materialization': candidate_evidence, 'fixture_materialization': fixture_evidence}
+            record = {'phase': spec.phase, 'case_id': case['id'], 'candidate_id': spec.candidate_id, 'repetition': spec.repetition, 'attempt': next_attempt+offset, 'technical_valid': bool(result.get('technical_valid')), 'observed_disposition': derive_disposition(activation, capabilities, clarification), 'observed_activation_set': activation, 'observed_capability_set': capabilities, 'clarification_requested': clarification, 'bounded_refusal': bool(model.get('bounded_refusal', False)), 'task_success': model.get('task_success') if mode == 'e2e' else None, 'response_summary': model.get('response_summary'), 'context_bytes': context_bytes(workspace, result.get('read_paths', [])), 'latency_seconds': result.get('latency_seconds', 0.0), 'provider_usage': result.get('provider_usage', {}), 'trace_available': bool(result.get('trace_available')), 'returncode': result.get('returncode'), 'timed_out': bool(result.get('timed_out', False)), 'candidate_materialization': candidate_evidence, 'fixture_materialization': fixture_evidence}
             append_jsonl(attempt_log, record)
+            attempts.append(record)
             last = record
             if record['technical_valid']:
                 return record
@@ -129,12 +153,12 @@ def evaluate_behavioral_gate(phase: str, records: list[dict[str, Any]], cases: l
 
 def load_runtime_inputs() -> dict[str, Any]:
     validate_freeze_i()
-    required = (CORPUS_PATH, ORACLE_PATH, ENVELOPE_PATH)
+    required = (CORPUS_PATH, ORACLE_PATH, ENVELOPE_PATH, RELIABILITY_PATH)
     missing = [p.name for p in required if not p.is_file()]
     if missing:
         raise HarnessError(f'Freeze J runtime inputs missing: {missing}')
-    inputs = {'analysis': load_json(ANALYSIS_PATH), 'routing': load_json(ROUTING_PATH), 'provenance': load_json(PROVENANCE_PATH), 'topologies': load_json(TOPOLOGIES_PATH), 'manifest': load_json(MANIFEST_PATH), 'instrumentation': load_json(INSTRUMENTATION_PATH), 'corpus': load_json(CORPUS_PATH), 'oracle': load_json(ORACLE_PATH), 'envelope': load_json(ENVELOPE_PATH)}
-    inputs['hashes'] = {p.name: sha256_file(p) for p in (*FREEZE_I_REQUIRED, CORPUS_PATH, ORACLE_PATH, ENVELOPE_PATH)}
+    inputs = {'analysis': load_json(ANALYSIS_PATH), 'routing': load_json(ROUTING_PATH), 'provenance': load_json(PROVENANCE_PATH), 'topologies': load_json(TOPOLOGIES_PATH), 'manifest': load_json(MANIFEST_PATH), 'instrumentation': load_json(INSTRUMENTATION_PATH), 'corpus': load_json(CORPUS_PATH), 'oracle': load_json(ORACLE_PATH), 'envelope': load_json(ENVELOPE_PATH), 'reliability': load_json(RELIABILITY_PATH)}
+    inputs['hashes'] = {p.name: sha256_file(p) for p in (*FREEZE_I_REQUIRED, CORPUS_PATH, ORACLE_PATH, ENVELOPE_PATH, RELIABILITY_PATH)}
     return inputs
 
 def validate_live_cell(args: Any) -> None:
@@ -143,15 +167,20 @@ def validate_live_cell(args: Any) -> None:
     if args.timeout_seconds <= 0:
         raise HarnessError('timeout must be positive')
 
-def run_schedule(schedule: Sequence[ScheduledObservation], *, inputs: dict[str, Any], cases: dict[str, dict[str, Any]], budget: AttemptBudget, args: Any, output: Path, completed: set[str]) -> list[dict[str, Any]]:
+def run_schedule(schedule: Sequence[ScheduledObservation], *, inputs: dict[str, Any], cases: dict[str, dict[str, Any]], budget: AttemptBudget, args: Any, output: Path, completed: set[str], attempts: list[dict[str, Any]]) -> list[dict[str, Any]]:
     valid_path, attempt_path = (output / 'observations.jsonl', output / 'attempts.jsonl')
     emitted: list[dict[str, Any]] = []
     for spec in schedule:
         if spec.key in completed:
             continue
-        record = run_one(spec, inputs=inputs, case=cases[spec.case_id], budget=budget, args=args, attempt_log=attempt_path)
+        prior=attempt_records_for(attempts,spec)
+        recovered=next((row for row in reversed(prior) if row.get('technical_valid')),None)
+        if recovered is not None:
+            record=dict(recovered)
+        else:
+            record = run_one(spec, inputs=inputs, case=cases[spec.case_id], budget=budget, args=args, attempt_log=attempt_path, attempts=attempts)
         if not record['technical_valid']:
-            raise HarnessError(f'technical observation failure: {spec.key}')
+            raise HarnessError(f'technical observation failure after allowed attempts: {spec.key}')
         record['logical_key'] = spec.key
         append_jsonl(valid_path, record)
         emitted.append(record)
@@ -187,32 +216,32 @@ def run_full(args: Any) -> int:
     gate_cases = {case['id']: case for case in [*envelope['behavioral_preflight_cases'], *envelope['synthetic_canary_cases']]}
     preflight_schedule = [ScheduledObservation('preflight', case['id'], case['candidate_id'], 'p1') for case in envelope['behavioral_preflight_cases']]
     canary_schedule = [ScheduledObservation('canary', case['id'], case['candidate_id'], 'c1') for case in envelope['synthetic_canary_cases']]
-    run_schedule(preflight_schedule, inputs=inputs, cases=gate_cases, budget=budget, args=args, output=output, completed=completed)
+    run_schedule(preflight_schedule, inputs=inputs, cases=gate_cases, budget=budget, args=args, output=output, completed=completed, attempts=attempts)
     valid = load_jsonl(output / 'observations.jsonl')
     preflight = evaluate_behavioral_gate('preflight', valid, envelope['behavioral_preflight_cases'], inputs['analysis'])
     dump_json(output / 'preflight.json', preflight)
     if not preflight['passed']:
         raise HarnessError('behavioral preflight did not PASS')
-    run_schedule(canary_schedule, inputs=inputs, cases=gate_cases, budget=budget, args=args, output=output, completed=completed)
+    run_schedule(canary_schedule, inputs=inputs, cases=gate_cases, budget=budget, args=args, output=output, completed=completed, attempts=attempts)
     valid = load_jsonl(output / 'observations.jsonl')
     canary = evaluate_behavioral_gate('canary', valid, envelope['synthetic_canary_cases'], inputs['analysis'])
     dump_json(output / 'canary.json', canary)
     if not canary['passed']:
         raise HarnessError('synthetic canary did not achieve 2/2 logical PASS')
     cases = _case_map(inputs['corpus'])
-    run_schedule(routing_first_schedule(inputs['corpus']), inputs=inputs, cases=cases, budget=budget, args=args, output=output, completed=completed)
-    run_schedule(reliability_schedule(inputs['corpus']), inputs=inputs, cases=cases, budget=budget, args=args, output=output, completed=completed)
-    observations = [observation_from_record(r) for r in load_jsonl(output / 'observations.jsonl') if r['phase'] in {'routing', 'reliability', 'e2e'}]
+    run_schedule(routing_first_schedule(inputs['corpus']), inputs=inputs, cases=cases, budget=budget, args=args, output=output, completed=completed, attempts=attempts)
+    run_schedule(reliability_schedule(inputs['corpus'], inputs['reliability']), inputs=inputs, cases=cases, budget=budget, args=args, output=output, completed=completed, attempts=attempts)
+    observations = [observation_from_record(r) for r in load_jsonl(output / 'observations.jsonl') if r['phase'] in SCIENTIFIC_PHASES]
     truths = truths_from_oracle(inputs['oracle'])
-    routing_result = routing_analysis(observations, truths, inputs['corpus'], inputs['topologies'], inputs['analysis'])
+    routing_result = routing_analysis(observations, truths, inputs['corpus'], inputs['topologies'], inputs['analysis'], inputs['reliability']['case_ids'])
     dump_json(output / 'routing-analysis.json', routing_result)
     dump_json(output / 'finalists.json', {'status': routing_result['status'], 'finalists': routing_result['finalists']})
     if not routing_result['finalists']:
         metadata.update(status='COMPLETE_NO_TOPOLOGY_SELECTED', attempts_used=budget.used)
         dump_json(metadata_path, metadata)
         return 0
-    run_schedule(e2e_schedule(inputs['corpus'], routing_result['finalists']), inputs=inputs, cases=cases, budget=budget, args=args, output=output, completed=completed)
-    observations = [observation_from_record(r) for r in load_jsonl(output / 'observations.jsonl') if r['phase'] in {'routing', 'reliability', 'e2e'}]
+    run_schedule(e2e_schedule(inputs['corpus'], routing_result['finalists']), inputs=inputs, cases=cases, budget=budget, args=args, output=output, completed=completed, attempts=attempts)
+    observations = [observation_from_record(r) for r in load_jsonl(output / 'observations.jsonl') if r['phase'] in SCIENTIFIC_PHASES]
     final = e2e_analysis(observations, routing_result, truths, inputs['corpus'], inputs['topologies'], inputs['analysis'])
     dump_json(output / 'selection.json', final)
     metadata.update(status='COMPLETE', attempts_used=budget.used, selected_candidate=final.get('selected'))
