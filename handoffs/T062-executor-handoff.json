@@ -5,13 +5,14 @@
   "task_contract_path": "docs/tasks/T062-t023-riq-nbc-v15-reference-independent-evaluation.md",
   "launch_authority_path": "docs/reviews/T023-R31.md",
   "continuation_authority_path": "docs/reviews/T023-R34.md",
+  "current_controlling_review_path": "docs/reviews/T023-R35.md",
   "sdd_profile": "ASSURED",
   "branch": "test/t023-skill-activation-topology-evals-v15",
   "implementation_head_sha": "3e0d0b71cf382db502e186622f40a23bcd915390",
   "base_branch": "develop",
   "base_sha": "ddb41724c76d92f55e0d7ff78cc2bf0272b1a2bc",
   "launch_authority_develop_sha": "7cf9a60762cfe07eecd33d94e7cdfbec33fc67a2",
-  "origin_develop_observed_sha": "78cc870f4487412f16a53316d603c9863e18ca0b",
+  "origin_develop_observed_sha": "08f350d3cf28b6c65ec74bdb619050e77f8af553",
   "terminal_stage5_scientific_head": "3e0d0b71cf382db502e186622f40a23bcd915390",
   "candidate_freeze_e": "5b025087bc7b6996f683a34fdd1ce441d3d6dd82",
   "holdout_oracle_freeze_f": "5b8ac55980ecdbb6a2bf3784812b933647f2f13d",
@@ -19,7 +20,16 @@
   "files_changed": [
     "handoffs/T062-executor-handoff.json"
   ],
-  "implementation_summary": "Reloaded O279/R34 authority from origin/develop and revalidated the exact blocked scientific HEAD, its direct-parent/single-path delta, Freeze E/F ancestry, both v15 integrity guards, the frozen schedule, zero-call accounting, native Windows, and exact cached Codex CLI 0.149.0. Official upstream stable remained 0.154.0, so D077 retained the pin. The managed safety boundary then rejected the authorized full-acceptance harness command before process creation, stating that the request did not explicitly authorize the payload/destination combination and forbidding workaround or indirect execution. No backend/workspace/model preflight process, synthetic canary, or B2/F2/G3 acceptance observation was issued; no scientific semantic asset changed and no topology was selected.",
+  "implementation_summary": "After the prior managed-safety blocker, the Human supplied the fresh explicit OpenAI Codex destination, frozen payload, exact cell, 1264-attempt ceiling, 180-second timeout, existing-plan cost, data-exclusion, and commercial-exclusion approval required by R35. A fresh fetch then loaded O280/R35 from origin/develop. O280 still states Active-Executor none / NOT_AUTHORIZED, and R35 requires the Orchestrator to persist a subsequent continuation authorization after revalidating abeecd957b9a7c05cfb9b35c8f2c162373380af6. Because the Executor cannot author that Markdown authority, no provider-backed command was issued. Provider/model attempts remain zero; no evidence root, scientific observation, semantic change, or topology selection exists.",
+  "latest_continuation_attempt": {
+    "human_fresh_provider_approval_received": true,
+    "approval_scope": "OpenAI Codex only; native Windows / GPT-5.6 Sol / Medium / Codex CLI 0.149.0; frozen T062 v15 prompts and deliberately exposed candidate/fixture/workspace content only; maximum 4 canary plus 1260 acceptance attempts; 180 seconds per attempt; existing account/plan only; no unrelated data, credentials, secrets, tokens, purchase, plan change, credential change, or new billing agreement.",
+    "checkpoint_id": "O280",
+    "checkpoint_executor_launch_state": "NOT_AUTHORIZED",
+    "scientific_head_revalidated": "abeecd957b9a7c05cfb9b35c8f2c162373380af6",
+    "provider_model_calls_issued": 0,
+    "status": "BLOCKED_PENDING_ORCHESTRATOR_PERSISTED_CONTINUATION_AUTHORIZATION"
+  },
   "git_synchronization": {
     "status": "PASS",
     "safe_baseline": "An exclusive worktree was created without cleaning, resetting, rebasing, overwriting, or discarding existing local work.",
@@ -153,10 +163,10 @@
   },
   "code_review": {
     "reviewed_head_sha": "3e0d0b71cf382db502e186622f40a23bcd915390",
-    "continuation_reviewed_base_sha": "b9034e450f04fbc9736543425e531159d4b79d49",
-    "summary": "Independent review verified the exact represented remote HEAD and freeze ancestry, reran both integrity guards, confirmed zero tracked Stage 6 changes before the handoff, and found the provider-backed blocker and zero-call claims evidence-consistent. Provider-free execution remained within R31/T062/D054/D068 authority.",
+    "continuation_reviewed_base_sha": "abeecd957b9a7c05cfb9b35c8f2c162373380af6",
+    "summary": "The published scientific candidate remains unchanged at 3e0d0b71, and the represented branch before this handoff update was abeecd957 with only prior handoff evidence above the candidate. The latest continuation stopped at the canonical authorization gate after loading O280/R35; no executable/scientific path, provider call, evidence root, or topology selection was produced.",
     "findings": [
-      "The managed safety boundary rejected the frozen full-acceptance command before process creation, so the required backend/workspace/model behavioral preflight, 2/2 canary, and acceptance schedule are absent."
+      "Fresh Human provider approval is present in the current conversation, but canonical O280/R35 still records NOT_AUTHORIZED and requires an Orchestrator-persisted continuation authorization before execution."
     ],
     "resolved_findings": [
       "Added canonical mandatory handoff fields, ASSURED requirement trace, normalized Code Review fields, and complete D065 delegation evidence before commit/push."
@@ -164,7 +174,8 @@
     "second_delegation_evaluation": "DELEGATED: independent read-only review covered branch/freeze identity, candidate/holdout integrity, exact command/ceiling fidelity, D076/D077 stop conditions, scope, blocker consistency, and canonical handoff structure before publication.",
     "upstream_reentry_required": false,
     "upstream_reentry_stage": null,
-    "human_authorization_required": true
+    "human_authorization_required": false,
+    "orchestrator_persisted_continuation_authorization_required": true
   },
   "requirement_trace": {
     "R31-ORDER-1": "PASS: safe Git synchronization and exact represented branch/Freeze E/F ancestry verified without destructive local operations.",
@@ -175,7 +186,7 @@
     "R31-ORDER-6": "PASS: full locked pytest, 484 passed.",
     "R31-ORDER-7": "PASS: code-health and symbol-map checks.",
     "R31-ORDER-8": "PASS: frozen-input/scheduler characterization and exactly zero Stage 6 provider/model calls.",
-    "R31-ORDER-9": "BLOCKED: exact CLI 0.149.0 and the unchanged frozen run command were verified, but the managed safety boundary rejected process creation before backend/workspace/model behavioral preflight could execute.",
+    "R31-ORDER-9": "BLOCKED: O280/R35 currently records NOT_AUTHORIZED pending an Orchestrator-persisted continuation authorization after fresh Human approval; no provider-backed command was issued.",
     "R31-ORDER-10": "NOT_REACHED: unchanged synthetic canary; zero observations and zero attempts.",
     "R31-ORDER-11": "NOT_REACHED: independent B2/F2/G3 acceptance; zero observations and zero attempts.",
     "R31-ORDER-12": "PASS_FOR_BLOCKED_HANDOFF: Executor-owned Code Review & Verify and second D065 delegation completed.",
@@ -186,7 +197,7 @@
   },
   "dependencies_or_config_changes": [],
   "ephemeral_artifacts": [],
-  "git_status": "The exclusive scientific worktree was clean at b9034e450f04fbc9736543425e531159d4b79d49 before continuation. No v15 evidence root was created because process creation was rejected. The only continuation change is this handoff JSON; expected clean tracked state after its commit and verified remote push.",
+  "git_status": "The exclusive scientific worktree was clean at abeecd957b9a7c05cfb9b35c8f2c162373380af6 before this continuation. No v15 evidence root was created and the only continuation change is this handoff JSON; expected clean tracked state after its commit and verified remote push.",
   "scope_confirmation": {
     "markdown_changed_during_stage6_from_terminal_stage5_head": false,
     "frozen_scientific_semantic_assets_changed_during_stage6_from_terminal_stage5_head": false,
@@ -195,15 +206,16 @@
     "changed_paths_within_authorized_scope": true
   },
   "unresolved_issues": [
-    "The managed safety boundary requires a new explicit Human approval of the exact OpenAI Codex destination plus the frozen T062 v15 prompt/candidate/workspace payload combination and up-to-1264-attempt usage/cost before process creation."
+    "The required fresh Human provider approval has been supplied, but O280/R35 still require the ChatGPT Orchestrator to persist a new continuation authorization after revalidating scientific HEAD abeecd957b9a7c05cfb9b35c8f2c162373380af6 before any provider-backed execution."
   ],
-  "terminal_reason": "BLOCKED before process creation because the managed safety boundary rejected the frozen OpenAI Codex payload/destination combination and prohibited workaround or indirect execution; Stage 6 provider/model attempts remain exactly 0.",
-  "recommended_next_action": "Human Owner should explicitly approve the exact OpenAI Codex destination, frozen v15 prompts plus candidate/fixture/workspace content transmitted by the published harness, and up-to-1264-attempt existing-plan usage/cost, then continue the same T062 coordinator under preserved branch and zero-call evidence.",
-  "recommended_next_task": "ChatGPT Orchestrator should verify this remote BLOCKED handoff and obtain the managed boundary's required exact payload/destination/cost approval before any further T062 Stage 6 provider-backed attempt.",
+  "terminal_reason": "BLOCKED before any provider-backed command because current canonical O280/R35 records NOT_AUTHORIZED and requires Orchestrator-persisted continuation authority after the newly supplied Human approval; Stage 6 provider/model attempts remain exactly 0.",
+  "recommended_next_action": "ChatGPT Orchestrator should persist the new continuation authorization after revalidating the current scientific HEAD, zero-call state, D076/D077 conditions, and the fresh Human approval; then resume this same coordinator only under that new canonical authority.",
+  "recommended_next_task": "ChatGPT Orchestrator should converge this handoff and publish the R35-required continuation authorization before any further T062 Stage 6 provider-backed attempt.",
   "chatgpt_read_path": [
     "docs/tasks/T062-t023-riq-nbc-v15-reference-independent-evaluation.md",
     "docs/reviews/T023-R31.md",
     "docs/reviews/T023-R34.md",
+    "docs/reviews/T023-R35.md",
     "handoffs/T062-executor-handoff.json"
   ]
 }
