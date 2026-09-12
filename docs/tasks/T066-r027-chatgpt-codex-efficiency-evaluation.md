@@ -49,7 +49,8 @@ Controlling repository authority:
 - D065 / D075 — delegation/direct-execution policy, except where this experiment explicitly freezes scored-arm topology;
 - D068 — current source-maintenance control boundary and experimental-topology applicability exception;
 - D076 — material executable artifact boundary;
-- D077 — version-sensitive upstream revalidation.
+- D077 — version-sensitive upstream revalidation;
+- D079 — Lean Executor qualification and adoption boundary.
 
 ## Experimental authority boundary
 
@@ -329,13 +330,13 @@ First require 3/3 accepted outcomes in both arms, no semantic drift and no proto
 ```text
 STRONG_SIGNAL
   Lean Executor total Codex credits < CURRENT-BUNDLE total Codex credits
-  AND Lean Executor total tokens <= CURRENT-BUNDLE total tokens
+  AND Lean Executor total tokens <= CURRENT-BUNDLE total Codex tokens
   AND no extra aggregate rework turns
   AND Orchestrator subject-implementation materialization is eliminated
 
 ECONOMIC_SIGNAL
   Lean Executor total Codex credits <= 0.80 * CURRENT-BUNDLE total Codex credits
-  AND Lean Executor total tokens <= 1.25 * CURRENT-BUNDLE total tokens
+  AND Lean Executor total tokens <= 1.25 * CURRENT-BUNDLE total Codex tokens
   AND no more than one extra aggregate rework turn
   AND Orchestrator subject-implementation materialization is eliminated
 

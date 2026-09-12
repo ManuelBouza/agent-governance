@@ -9,8 +9,8 @@ Owner: ChatGPT Orchestrator
 Repository-Baseline: `develop@cd5dbafd25a6fd531f6852426b5417d7f42cfa46`  
 Scope: deeply revalidate R027 and the prospective T066 evaluation, actively search for alternatives, and optimize the ChatGPT + Codex architecture without adopting policy before empirical qualification  
 Question: Is R027's proposed responsibility split actually optimal once current model economics, instruction loading, subagent overhead, progressive verification and causal experimental design are considered, and how should T066 be changed before any scored execution?  
-Evaluation-Refs: T066; R027; R007; R010; R012; R017; R018; D053; D054; D055; D057; D060; D063; D065; D068; D075; D076; D077  
-Decision-Ref: none  
+Evaluation-Refs: T066; D079; R027; R007; R010; R012; R017; R018; D053; D054; D055; D057; D060; D063; D065; D068; D075; D076; D077  
+Decision-Ref: `docs/decisions/D079-lean-executor-qualification-and-adoption-boundary.md`  
 Supersedes: none  
 Superseded-By: none
 
