@@ -1,125 +1,113 @@
 # Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O285  
+Checkpoint-Sequence: O286  
 Date: 2026-09-12  
 Canonical-Branch: `develop`  
-Current-Work-Unit: T065 / T023 v17 — selective capability routing successor  
-State: T065_V17_READY_FOR_STAGE5_NEW_CHAT  
+Current-Work-Unit: T066 / R027-R028 — Lean Executor qualification screening  
+State: T066_V2_SELECTED_READY_FOR_STAGE5_NEW_CHAT  
 Active-Executor: none  
-Executor-Launch-State: NOT_AUTHORIZED  
-Task-Contract: `docs/tasks/T065-t023-selective-capability-routing-v17.md`  
-Current-Review: `docs/reviews/T023-R39.md`  
-Current-Decision: `docs/decisions/D078-selective-capability-routing-evaluation-boundary.md`  
-Scientific-Branch: `test/t023-selective-capability-routing-evals-v17`  
-Failed-Predecessor: `T064 / T023 v16`  
-Failed-Predecessor-Freeze-G: `2a1742b04af589166da6bf1bab9a74d0429af1d9`  
-Provider-Model-Calls-Consumed-v16: `0`  
-Scientific-Observations-v16: `0`  
+Executor-Launch-State: NOT_AUTHORIZED_PENDING_SEPARATE_HUMAN_LAUNCH  
+Task-Contract: `docs/tasks/T066-r027-chatgpt-codex-efficiency-evaluation.md`  
+Current-Research: `docs/research/R028-R027-DEEP-REVALIDATION-AND-LEAN-EXECUTOR.md`  
+Current-Decision: `docs/decisions/D079-lean-executor-qualification-and-adoption-boundary.md`  
+Prospective-Scientific-Branch: `test/r027-chatgpt-codex-efficiency-v1`  
+Scientific-Branch-State: NOT_CREATED  
+Provider-Model-Calls-Consumed-T066: `0`  
+Scored-Observations-T066: `0`  
+Prior-Frozen-Work-Unit: T065 / T023 v17  
+T065-Scientific-Branch: `test/t023-selective-capability-routing-evals-v17`  
+T065-Scientific-Branch-Head: `f1491dadd0f2327b58406d1d806a6632362b4639`  
+T065-Freeze-I: `5ad817f8f96489c38c5aeccce9d0334195d7e881`  
+T065-Freeze-J: NOT_PUBLISHED  
 Provider-Model-Calls-Consumed-v17: `0`  
 Scientific-Observations-v17: `0`  
-Freeze-I: NOT_PUBLISHED  
-Freeze-J: NOT_AUTHORED  
-Chat-Closure: NEW_CHAT_RECOMMENDED
+Chat-Closure: NEW_CHAT_REQUIRED
 
-## Completed
+## Human selection and frontier change
 
-T064 remains terminal `FAILED_STAGE5_METHODOLOGY_BEFORE_HOLDOUT`; its failed Freeze G is immutable and non-executable.
+On 2026-09-12 the Human Owner explicitly instructed the Orchestrator to freeze the current T065 execution, close the chat, and start a new chat implementing the accepted D079 Lean Executor qualification boundary.
 
-T065 / T023 v17 remains the accepted successor under R39 and D078. The v17 scientific branch exists remotely and contains no v17 scientific commit. During chat closure its empty/staging-only ref was refreshed by fast-forward from the earlier `5aab6f16490c76c6ca711349fe6f500c8d641c17` baseline to the then-current protected `develop` frontier; after this checkpoint merges, the closure procedure aligns that still-empty scientific branch to the resulting `develop` head.
+That instruction is the explicit Human selection contemplated by D079 for moving T066 v2 from a non-selected prospective evaluation to the active work unit. D079 itself is already `ACCEPTED`; the next work is its empirical qualification path through T066 v2. D068 remains the production ownership boundary unless later accepted evidence and Decision authority change it.
 
-No Freeze I candidate was published, no Freeze J holdout/oracle was authored, no Executor was launched, and no provider/model call or scientific observation was consumed. Any chat-local attempted construction that was not committed to GitHub is non-authoritative and must not be reconstructed from conversation history.
+## Frozen T065 state
 
-## Controlling references
+T065 / T023 v17 is intentionally frozen and is not the active frontier.
 
-- `docs/tasks/T065-t023-selective-capability-routing-v17.md`
-- `docs/reviews/T023-R39.md`
-- `docs/decisions/D078-selective-capability-routing-evaluation-boundary.md`
-- `docs/decisions/D068-source-maintenance-stage-refinement.md`
-- `docs/decisions/D076-stage6-ephemeral-executable-materialization-boundary.md`
-- v15 candidate-byte provenance only: Freeze E `5b025087bc7b6996f683a34fdd1ce441d3d6dd82`
-- T064 Freeze G `2a1742b04af589166da6bf1bab9a74d0429af1d9` only as failed-evidence provenance, never as executable authority
+Canonical retained state:
 
-## Retained v17 design
+- scientific branch: `test/t023-selective-capability-routing-evals-v17`;
+- published Freeze I: `5ad817f8f96489c38c5aeccce9d0334195d7e881`;
+- latest published post-Freeze-I technical-hardening head: `f1491dadd0f2327b58406d1d806a6632362b4639`;
+- Freeze J was not published;
+- no T065 Executor launch occurred;
+- provider/model calls consumed by v17 remain exactly `0`;
+- scientific observations consumed by v17 remain exactly `0`.
 
-```text
-capabilities: consumer-lifecycle / source-maintainer / external-skill-trust
-dispositions: ROUTE / NONE / ABSTAIN
-candidates: B2 / F2 / G3 unchanged
-development: 90 non-confirmatory cases
-routing confirmatory: 270 fresh cases
-reliability subset: 30 cases, one repeat
-end-to-end reserve: 60 fresh disjoint cases
-max finalists: 2
-primary SLOs: 0.95 / 0.05 corpus acceptance boundaries
-paired analysis + exact one-sided intervals
-routing non-inferiority margin: -0.02
-context materiality ratio: 0.85
-absolute prospective Stage 6 attempt ceiling: 1264
-```
+During the aborted pre-Freeze-J drafting, several standalone Git blobs were uploaded but no Freeze-J tree, commit, or branch-ref mutation was created from them. Those unreachable/unreferenced objects are non-authoritative repository garbage. They MUST NOT be reconstructed, adopted, or treated as Freeze J or retained scientific evidence.
 
-Candidate bytes still come only from pre-holdout v15 Freeze E:
+Do not resume, integrate, rewrite, clean up, or otherwise advance T065 unless the Human Owner explicitly re-selects it in a later chat. Its published commits remain immutable evidence of the work completed before the freeze.
 
-`5b025087bc7b6996f683a34fdd1ce441d3d6dd82`
+## Active authority
 
-## Mandatory v17 correction boundary
+Controlling references for the new active work unit:
 
-Before Freeze I:
+- `docs/decisions/D079-lean-executor-qualification-and-adoption-boundary.md`;
+- `docs/tasks/T066-r027-chatgpt-codex-efficiency-evaluation.md`;
+- `docs/research/R028-R027-DEEP-REVALIDATION-AND-LEAN-EXECUTOR.md`;
+- predecessor research `docs/research/R027-CHATGPT-CODEX-COST-EFFICIENT-RESPONSIBILITY-SPLIT.md` only where T066/R028 requires it;
+- D068 remains the current production source-maintenance boundary;
+- D077 controls version-sensitive upstream revalidation before consequential live launch;
+- D061/D062 continue to control branch targeting and protected-branch transport.
 
-- routing-only model-visible suffix/schema must be domain-neutral;
-- it must not enumerate capability/entrypoint/oracle labels;
-- it must not ask for task-success during routing-only trials;
-- activation/capability observation comes from host trace only;
-- disposition is derived from trace plus generic clarification evidence;
-- e2e uses a separate phase-specific result contract;
-- conditional execution success is conditioned on exact routing correctness;
-- preflight/canary require explicit behavioral PASS, with canary 2/2.
+D079 selects `R027+ / Lean Executor` as the architecture candidate for qualification. It does not itself activate Executor-first materialization as normal production policy, does not make Terra the normal implementation default, and authorizes no provider/model call.
 
-## Active remote artifacts
+## T066 retained screening boundary
 
-Scientific branch:
+T066 v2 is `READY_FOR_STAGE5` and `SCREENING_ONLY`.
 
-`test/t023-selective-capability-routing-evals-v17`
+The experiment isolates three questions in sequence:
 
-It has no authoritative v17 scientific material yet. A cold-start chat must verify that its HEAD still matches the protected `develop` frontier before the first scientific mutation. If it does not, inspect the minimum delta and restore a valid fresh-base relationship before materializing Freeze I; do not infer missing work from this chat.
+1. ownership boundary at equal `Sol / Medium / Standard` compute;
+2. `Terra / Medium / Standard` versus `Sol / Medium / Standard` after ownership is fixed to Executor materialization;
+3. integrated Lean Executor bundle versus the current D068 bundle on fresh matched work.
 
-## Open questions or blockers
+Stage 5 must remain provider-free. Before any scored arm it must publish and remotely verify coherent Freeze A containing the benchmark fixtures/pairs, deterministic Spec/Design/Plan envelopes, D052 acceptance oracles, scheduler/isolation guards, frozen counterbalanced order, progressive verification contract, scoring and usage/credit normalization, instruction-loading proof, runtime/model/rate-card receipts, contamination guards and provider-free integrity tests required by T066.
 
-There is no semantic blocker to beginning T065 Stage 5. The only required entry condition is the normal cold-start freshness verification of `develop`, the checkpoint, and the empty scientific branch.
-
-Stage 5 provider/model calls must remain exactly `0`. No Executor is authorized. Future Stage 6 still requires completed provider-free readiness, D077 revalidation, fresh Human provider/payload/usage authorization, and separate D055/D071 Human-mediated transport.
+No T066 scientific branch exists yet. No scored output exists. No Executor launch is authorized.
 
 ## Next Action
 
-ChatGPT Orchestrator shall execute T065 Stage 5 under D068:
+In the next chat, ChatGPT Orchestrator shall begin T066 v2 Stage 5 under D079:
 
-1. verify current `develop` and confirm the v17 scientific branch has no unexpected commits and a valid fresh-base relationship;
-2. materialize the corrected domain-neutral routing instrumentation plus the complete substantial Stage 6 harness/controller mechanics;
-3. provider-free verify and publish Freeze I;
-4. remotely re-read/verify Freeze I;
-5. only then author the fresh 270-case routing holdout, fresh disjoint 60-case e2e reserve, topology-independent oracle, 30-case reliability subset, trial envelope, and holdout/overlap guard;
-6. publish Freeze J;
-7. complete full provider-free repository verification;
-8. persist readiness review/checkpoint if all gates pass, otherwise persist the exact blocker;
-9. stop before any Executor launch.
+1. bootstrap from current protected `develop`, `AGENTS.md`, and this checkpoint;
+2. load T066 v2, D079 and R028 as the minimum active authority;
+3. revalidate the current protected base and confirm that `test/r027-chatgpt-codex-efficiency-v1` does not already exist with unexpected state;
+4. create the prospective scientific branch from the verified current `develop` frontier using the repository branch-target guard;
+5. materialize the complete provider-free T066 Freeze A required by the Task Contract, including the identical instruction-loading control and deterministic evaluation/scoring machinery;
+6. run provider-free verification and remotely re-read the published Freeze A;
+7. persist readiness or the exact blocker;
+8. stop before any scored Executor/provider/model execution.
+
+A later live launch requires separate Human authorization and all T066/D055/D077/D071 gates applicable at that time.
 
 ## Next Chat Minimum Load
 
 After normal bootstrap (`develop`, `AGENTS.md`, this checkpoint):
 
-1. load `docs/tasks/T065-t023-selective-capability-routing-v17.md`;
-2. load `docs/reviews/T023-R39.md`;
-3. load D078, D068 and D076;
-4. verify the remote v17 scientific branch and its HEAD;
-5. use v15 Freeze E only for authorized candidate/presentation/topology provenance;
-6. treat T064 Freeze G only as failed-evidence provenance, not executable authority;
-7. do not load prior chat history to reconstruct unpersisted work;
-8. do not launch an Executor or provider/model call during Stage 5.
+1. `docs/tasks/T066-r027-chatgpt-codex-efficiency-evaluation.md`;
+2. `docs/decisions/D079-lean-executor-qualification-and-adoption-boundary.md`;
+3. `docs/research/R028-R027-DEEP-REVALIDATION-AND-LEAN-EXECUTOR.md`;
+4. only the additional decisions/research explicitly required by those authorities or a concrete conflict;
+5. verify prospective scientific-branch existence/state directly from GitHub before creating or mutating it.
+
+Do not load prior chat history to reconstruct the frontier. Git/GitHub remains authoritative.
 
 ## Do Not Load Or Do
 
-- Do not resume T064 or modify failed Freeze G.
-- Do not resume T062/v15, T063, T058, or blocked T024.
-- Do not create a v17 confirmatory holdout before remote Freeze I verification.
-- Do not treat chat-local scratch work as canonical state.
-- Do not launch Codex/another Executor before a later explicit Stage 6 authorization.
+- Do not resume T065/T023 v17 without a new explicit Human selection.
+- Do not recover or reuse the unreferenced aborted Freeze-J blobs.
+- Do not treat D079 as production adoption of Executor materialization, Terra, Luna, Fast, subagents, thin-root `AGENTS.md`, Markdown ownership changes, or Astra routing.
+- Do not create scored T066 observations during Stage 5.
+- Do not launch Codex/another Executor or make provider/model calls before a later explicit launch authorization.
+- Do not mutate `develop` directly; use the verified topic-branch + PR path.
