@@ -34,46 +34,17 @@ ChatGPT Library
     while per-operation Human approval is required
 ```
 
-Therefore the effective R026 target architecture is:
-
-```text
-GitHub
-  = canonical remote authority and synchronization boundary
-
-persistent local repository / exact local snapshot
-  = normal read, search, diff and authoring surface
-
-GitHub Git Data publication
-  = bounded multi-file publication surface when direct Git transport is unavailable
-
-GitHub PR event task / webhook
-  = event-driven observation instead of polling
-```
+Therefore Library is removed entirely from the candidate optimized workflow.
 
 No Library operation is required by the candidate path.
 
 ## Effect on R026 modes
 
-The candidate comparison is narrowed to:
+The Library-dependent paths are excluded. The separate web-surface correction further narrows the current pilot to the ChatGPT Web runtime and removes Work-local assumptions.
 
-```text
-M0 BASELINE
-  connector on-demand file reads + normal connector writes
+Library is not part of any current candidate mode.
 
-M1 CONNECTOR-MINIMIZED
-  exact-ref repository materialization into the temporary workspace
-  local reads/search/authoring
-  Git Data create_tree/commit/ref publication
-
-M2 WORK-LOCAL
-  persistent local full clone in Work Desktop
-  one fetch boundary + local reads/authoring
-  direct Git publication if available, otherwise Git Data publication
-```
-
-Library is not part of M1 or M2.
-
-Cross-chat durability must come from a persistent Work-local repository or another future capability that does not require per-operation Human approval. If neither is available, R026 must accept ephemeral workspaces rather than reintroduce Library as an approval-heavy transport.
+Cross-chat durability must come from a future capability that does not require per-operation Human approval. Until one is qualified, R026 must accept ephemeral web runtime workspaces rather than reintroduce Library as an approval-heavy transport.
 
 ## Human-interaction metric correction
 
@@ -107,4 +78,4 @@ Reason: per-operation Human approval overhead
 Normative change: none
 ```
 
-The next empirical pilot should evaluate connector-minimized and Work-local modes without using Library.
+The next empirical pilot should not use Library.
