@@ -1,16 +1,18 @@
 # Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O286  
+Checkpoint-Sequence: O287  
 Date: 2026-09-12  
 Canonical-Branch: `develop`  
 Current-Work-Unit: T066 / R027-R028 — Lean Executor qualification screening  
 State: T066_V2_SELECTED_READY_FOR_STAGE5_NEW_CHAT  
+Next-ChatGPT-Effort: HIGH  
 Active-Executor: none  
 Executor-Launch-State: NOT_AUTHORIZED_PENDING_SEPARATE_HUMAN_LAUNCH  
 Task-Contract: `docs/tasks/T066-r027-chatgpt-codex-efficiency-evaluation.md`  
 Current-Research: `docs/research/R028-R027-DEEP-REVALIDATION-AND-LEAN-EXECUTOR.md`  
 Current-Decision: `docs/decisions/D079-lean-executor-qualification-and-adoption-boundary.md`  
+Orchestrator-Closure-Policy: `docs/decisions/D069-orchestrator-next-task-response-closure.md`  
 Prospective-Scientific-Branch: `test/r027-chatgpt-codex-efficiency-v1`  
 Scientific-Branch-State: NOT_CREATED  
 Provider-Model-Calls-Consumed-T066: `0`  
@@ -29,6 +31,16 @@ Chat-Closure: NEW_CHAT_REQUIRED
 On 2026-09-12 the Human Owner explicitly instructed the Orchestrator to freeze the current T065 execution, close the chat, and start a new chat implementing the accepted D079 Lean Executor qualification boundary.
 
 That instruction is the explicit Human selection contemplated by D079 for moving T066 v2 from a non-selected prospective evaluation to the active work unit. D079 itself is already `ACCEPTED`; the next work is its empirical qualification path through T066 v2. D068 remains the production ownership boundary unless later accepted evidence and Decision authority change it.
+
+## ChatGPT next-task effort refinement
+
+On 2026-09-12 the Human Owner refined the ChatGPT Orchestrator closure convention so that a concrete next ChatGPT task carries a qualitative `MEDIUM` or `HIGH` effort recommendation, without any wall-clock duration, timeout or minute-budget semantics.
+
+D069 and `docs/ORCHESTRATOR-CHECKPOINTS.md` carry that rule. It is separate from D055 Executor launch configuration and does not authorize the next task by itself.
+
+For the current frontier, T066 v2 Stage 5 is a substantial provider-free materialization and verification task with broad deterministic evaluation machinery and multiple controlling authorities. Its next ChatGPT recommendation is therefore `HIGH`.
+
+This refinement does not change the substantive T066 frontier, does not create the scientific branch, and authorizes no Executor/provider/model call.
 
 ## Frozen T065 state
 
@@ -50,7 +62,7 @@ Do not resume, integrate, rewrite, clean up, or otherwise advance T065 unless th
 
 ## Active authority
 
-Controlling references for the new active work unit:
+Controlling references for the active work unit:
 
 - `docs/decisions/D079-lean-executor-qualification-and-adoption-boundary.md`;
 - `docs/tasks/T066-r027-chatgpt-codex-efficiency-evaluation.md`;
@@ -59,6 +71,8 @@ Controlling references for the new active work unit:
 - D068 remains the current production source-maintenance boundary;
 - D077 controls version-sensitive upstream revalidation before consequential live launch;
 - D061/D062 continue to control branch targeting and protected-branch transport.
+
+D069 controls the Human-facing `Próxima Tarea` closure and its ChatGPT-only effort recommendation; it does not modify T066 execution authority.
 
 D079 selects `R027+ / Lean Executor` as the architecture candidate for qualification. It does not itself activate Executor-first materialization as normal production policy, does not make Terra the normal implementation default, and authorizes no provider/model call.
 
@@ -78,7 +92,17 @@ No T066 scientific branch exists yet. No scored output exists. No Executor launc
 
 ## Next Action
 
-In the next chat, ChatGPT Orchestrator shall begin T066 v2 Stage 5 under D079:
+In the next chat, ChatGPT Orchestrator shall begin T066 v2 Stage 5 under D079.
+
+Recommended ChatGPT configuration for that next task:
+
+```text
+ChatGPT Effort: HIGH
+```
+
+The effort recommendation has no fixed-duration semantics and is not the D055 Executor reasoning profile.
+
+Execution sequence:
 
 1. bootstrap from current protected `develop`, `AGENTS.md`, and this checkpoint;
 2. load T066 v2, D079 and R028 as the minimum active authority;
@@ -105,6 +129,8 @@ Do not load prior chat history to reconstruct the frontier. Git/GitHub remains a
 
 ## Do Not Load Or Do
 
+- Do not infer execution-time limits from `Next-ChatGPT-Effort`.
+- Do not confuse `Next-ChatGPT-Effort` with D055 Executor launch configuration.
 - Do not resume T065/T023 v17 without a new explicit Human selection.
 - Do not recover or reuse the unreferenced aborted Freeze-J blobs.
 - Do not treat D079 as production adoption of Executor materialization, Terra, Luna, Fast, subagents, thin-root `AGENTS.md`, Markdown ownership changes, or Astra routing.

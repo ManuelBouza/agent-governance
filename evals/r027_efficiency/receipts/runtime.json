@@ -1,0 +1,1 @@
+{"schema_version":1,"status":"REVALIDATE_AT_LIVE_LAUNCH","runtime_version":null,"client_version":null,"model_receipt":null,"reason":"Stage 5 is provider-free; host/runtime facts must be observed immediately before consequential launch.","launch_authorized":false}
