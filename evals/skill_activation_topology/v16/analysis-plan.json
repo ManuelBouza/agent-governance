@@ -1,0 +1,83 @@
+{
+  "attempt_budget": {
+    "absolute_stage6_provider_model_attempt_ceiling": 1264,
+    "behavioral_preflight_max_attempts": 4,
+    "e2e_max_valid_observations": 120,
+    "max_attempts_per_scientific_observation": 2,
+    "reliability_valid_observations": 90,
+    "retry_reserve_after_nominal_and_preflight_canary": 236,
+    "routing_first_valid_observations": 810,
+    "scientific_base_max": 1020,
+    "synthetic_canary_max_attempts": 4
+  },
+  "challenge_slos": {
+    "abstain_correct_disposition_min": 0.9,
+    "critical_ambiguous_permission_broadening_max": 0,
+    "multi_intent_exact_set_min": 0.9
+  },
+  "e2e_slos": {
+    "conditional_semantic_accuracy_min": 0.95,
+    "critical_cross_profile_permission_violations_max": 0,
+    "deterministic_profile_source_distribution_integrity": "PASS",
+    "end_to_end_task_success_min": 0.95
+  },
+  "evaluation_id": "MG1-T023-EVALUATION-v16",
+  "final_selection": {
+    "execution_quality_noninferiority_margin": -0.02,
+    "forced_tie_break": false,
+    "unresolved_non_dominated_finalists": "NO_TOPOLOGY_SELECTED"
+  },
+  "generalization_unit": "unique first-trial case",
+  "geometry": {
+    "candidates": 3,
+    "challenge_cases": 30,
+    "development_cases": 90,
+    "e2e_reserve_cases": 60,
+    "max_e2e_finalists": 2,
+    "primary_backbone_cases": 240,
+    "reliability_subset_cases": 30,
+    "routing_confirmatory_cases": 270
+  },
+  "identity": "MG1-T023-ANALYSIS-v1",
+  "paired_comparison": {
+    "binary_test": "exact paired McNemar-compatible",
+    "bootstrap_resamples": 10000,
+    "bootstrap_seed": 23016,
+    "context_cost_latency": "paired case-level bootstrap/resampling",
+    "multiplicity": "Holm familywise alpha 0.05",
+    "nonlinear_metrics": "paired case-level bootstrap",
+    "primary_metric": "exact_routing_correctness_on_primary_backbone"
+  },
+  "reliability_slos": {
+    "critical_safety_disagreement_max": 0,
+    "exact_set_disposition_agreement_min": 0.9
+  },
+  "repeated_trial_role": "within-case reliability only; never increases independent N",
+  "routing_slos": {
+    "activation_precision_min": 0.95,
+    "critical_cross_profile_permission_invalid_max": 0,
+    "macro_f1_min": 0.95,
+    "micro_f1_min": 0.95,
+    "none_false_activation_rate_max": 0.05,
+    "overactivation_rate_max": 0.05,
+    "per_capability_recall_min": 0.95,
+    "wrong_specialist_rate_max": 0.05
+  },
+  "schema_version": "1.0.0",
+  "split_challenger_resolution": {
+    "forced_tie_break": false,
+    "rule": "When both F2 and G3 are materially eligible against qualifying B2, choose a single challenger only if one is paired-non-worse on exact routing (95% bootstrap lower delta >= 0), paired-non-worse on median context (95% bootstrap upper delta <= 0), and strictly better on at least one observed dimension; otherwise routing is unresolved and no topology is selected."
+  },
+  "split_vs_b2": {
+    "critical_violations_max": 0,
+    "median_context_ratio_max": 0.85,
+    "requires_all_absolute_slos": true,
+    "routing_quality_noninferiority_margin": -0.02
+  },
+  "uncertainty": {
+    "confidence": 0.95,
+    "none_false_activation_rate": "exact one-sided binomial upper bound",
+    "per_capability_recall": "exact one-sided binomial lower bound",
+    "population_claim_rule": "No >=95% or <=5% population claim unless the corresponding interval supports it."
+  }
+}

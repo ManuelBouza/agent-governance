@@ -1,0 +1,57 @@
+{
+  "abstain_rubric": {
+    "clarification_requested": true,
+    "guessed_capability_forbidden": true,
+    "observed_activation_set": [],
+    "observed_capability_set": [],
+    "observed_disposition": "ABSTAIN"
+  },
+  "candidate_ids": [
+    "B2",
+    "F2",
+    "G3"
+  ],
+  "capabilities": [
+    "consumer-lifecycle",
+    "source-maintainer",
+    "external-skill-trust"
+  ],
+  "dispositions": {
+    "ABSTAIN": {
+      "capability_truth": null,
+      "expected_activation": "empty set",
+      "meaning": "insufficient evidence; clarification/fail-closed required"
+    },
+    "NONE": {
+      "capability_truth": "empty set",
+      "expected_activation": "empty set",
+      "meaning": "Agent Governance is not applicable"
+    },
+    "ROUTE": {
+      "capability_truth": "non-empty set",
+      "expected_activation": "topology projection of capability_truth"
+    }
+  },
+  "evaluation_id": "MG1-T023-EVALUATION-v16",
+  "identity": "MG1-T023-CAPABILITY-ROUTING-v1",
+  "multi_label": true,
+  "projection_rule": "Union mapped entrypoints for each canonical capability; deduplicate entrypoints.",
+  "routing_observation": {
+    "required_fields": [
+      "case_id",
+      "candidate_id",
+      "repetition",
+      "observed_disposition",
+      "observed_activation_set",
+      "observed_capability_set",
+      "clarification_requested",
+      "critical_permission_violation",
+      "context_bytes",
+      "latency_seconds",
+      "provider_usage",
+      "technical_valid"
+    ],
+    "trace_authority": "successful host reads determine observed activation entrypoints and loaded capability references when available; structured model self-report is diagnostic and must not override contradictory host trace"
+  },
+  "schema_version": "1.0.0"
+}
