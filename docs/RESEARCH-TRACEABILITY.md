@@ -60,7 +60,8 @@ See D057 for transition semantics and required metadata for new research.
 | R024 | `docs/research/R024-T063-V7-NO-ROLLOUT-REATTACH-RACE.md` | COMPLETE | NOT_REQUIRED | v7 terminal HEAD `58e396c126e363428544b163cb2aa8c7e1ac8ed6`; `docs/reviews/T063-R15.md`; `docs/reviews/T063-R16.md` | none | V7 blocked after five valid PASS children because immediate exact-child `thread/resume` could not resolve a rollout. R024 classified this as an earlier persistence-visibility phase suitable only for bounded same-child retry. R025 subsequently narrows the no-rollout acceptance shape without rewriting the historical v7 diagnosis. |
 | R025 | `docs/research/R025-T063-V8-REATTACH-CLASSIFIER-HARDENING.md` | COMPLETE | NOT_REQUIRED | `docs/reviews/T063-R18.md`; `docs/reviews/T063-R19.md`; hardened v8 candidate `afdae0050226d61a10269f63017e2fac99eef644`; O277; `docs/reviews/T063-R20.md` | none | External revalidation confirms that identity may precede rollout materialization but `no rollout found` is not intrinsically transient. V8 hardened this classifier successfully; the live v8 run observed only the preserved `EMPTY_ROLLOUT` path before stopping on an unrelated self-attested transport-receipt mismatch. D077 remains `PIN_RETAINED`. |
 | R026 | `docs/research/R026-CHATGPT-GITHUB-INTERACTION-MINIMIZATION.md` | COMPLETE | EVALUATING | D048; D066; GitHub Git Data docs; `test_biblioteca` write-path qualification; PR `#371` | none | R026 does not replace the existing native-Git publication process. It qualifies adaptive ChatGPT Web write transport: direct per-file Contents writes for trivial independent changes, and Git Data tree/commit/ref batching when coherent multi-file publication reduces mutation cost or materially benefits from one-commit coherence. Reads remain direct from GitHub; normative adoption remains EVALUATING. |
-| R027 | `docs/research/R027-CHATGPT-CODEX-COST-EFFICIENT-RESPONSIBILITY-SPLIT.md` | COMPLETE | EVALUATING | T066; D053/D054/D055/D060/D065/D068/D075/D076; current OpenAI Chat/Work/Codex, prompting, AGENTS.md, subagent, speed and rate-card guidance; OpenAI Harness Engineering; Lulla 2026; Gloaguen 2026; Terminus-4B; FastContext | none | R027 is now under prospective qualification through T066. T066 isolates ownership first, compute second, then compares the integrated bundle; no global D068/D055/delegation/Markdown change is adopted by creating the evaluation. |
+| R027 | `docs/research/R027-CHATGPT-CODEX-COST-EFFICIENT-RESPONSIBILITY-SPLIT.md` | COMPLETE | EVALUATING | T066; R028; D053/D054/D055/D060/D065/D068/D075/D076; OpenAI Chat/Work/Codex, prompting, AGENTS.md, subagent, speed and rate-card guidance; OpenAI Harness Engineering; external empirical context-efficiency studies | none | R027's authority split remains under prospective qualification. R028 deep-revalidates its economics and experimental method; no global D068/D055/delegation/Markdown change is adopted. |
+| R028 | `docs/research/R028-R027-DEEP-REVALIDATION-AND-LEAN-EXECUTOR.md` | COMPLETE | EVALUATING | R027; T066 v2; R007; R010; D055/D057/D060/D063/D065/D068/D075/D076/D077; current OpenAI model/rate-card/AGENTS.md/speed/subagent guidance; OpenAI Harness Engineering; external empirical context/specialist-agent studies | none | R028 retains R027's semantic-authority split but optimizes it as Lean Executor: T066 becomes fail-cheap screening, ECAW is the primary Codex economic endpoint, ChatGPT materialization load is tracked separately, current root instruction-budget risk is explicit, and thin-context/Luna/subagent/Fast/Markdown mechanisms remain separate qualifications before any integrated normative package. |
 
 ## Live research frontier
 
@@ -115,6 +116,35 @@ v8  b4afbe30508ab44b275d66bad92695c5d3571a9d
 ```
 
 The withdrawn provisional v8 HEAD `83f38bd9813cfdd107486ad40d39df6335513ce8` remains historical Stage 5 evidence only and is not launch authority.
+
+### R027/R028 — ChatGPT + Codex efficiency frontier
+
+```text
+R027
+  COMPLETE / EVALUATING
+  responsibility-split hypothesis retained
+
+R028
+  COMPLETE / EVALUATING
+  Lean Executor deep revalidation
+
+T066 v2
+  screening-only
+  Stage 5: NOT_STARTED
+  scientific branch: NOT_CREATED
+  Executor launch: NOT_AUTHORIZED
+  provider/model calls: 0
+  scored observations: 0
+
+Normative adoption
+  D068 change: none
+  D055 change: none
+  D065/delegation change: none
+  root AGENTS.md change: none
+  Markdown ownership change: none
+```
+
+T066 v2 screens ownership first, compute second and the integrated Lean Executor bundle third. Positive screening evidence can justify a separate independent confirmatory Task Contract; it cannot directly promote R027/R028 into policy.
 
 ### Held T023/T062 scientific frontier
 
