@@ -8,7 +8,7 @@ Last-Reviewed: 2026-09-12
 Owner: ChatGPT Orchestrator  
 Scope: ChatGPT Orchestrator repository-read, authoring, publication, review-status, persistence and cross-chat transport surfaces for reducing logical GitHub interactions while preserving GitHub canonical authority, D061 freshness, branch protection and D066 workspace semantics  
 Question: How can Agent Governance minimize routine ChatGPT interactions with GitHub without weakening canonical Git authority, freshness, branch isolation, conflict detection, review traceability or the Human/Orchestrator/Executor ownership model?  
-Evaluation-Refs: desk research 2026-09-12; empirical qualification pending on a disposable repository such as `ManuelBouza/test_biblioteca` before normative adoption  
+Evaluation-Refs: desk research 2026-09-12; empirical qualification pending on a disposable repository such as `ManuelBouza/test_biblioteca` before normative adoption; see correction appendices for current ChatGPT Web surface and Library approval constraints  
 Decision-Ref: none  
 Supersedes: none  
 Superseded-By: none
@@ -17,30 +17,29 @@ Superseded-By: none
 
 R014/R015 and D066 already reduce **write amplification** by allowing local Git authoring plus bounded publication to GitHub. R026 extends that analysis to the full interaction budget: reads, bootstrap, publication, PR observation and cross-chat resume.
 
-The strongest target architecture is:
+The original desk-research architecture considered persistent local/Work Desktop and Library-assisted variants. Subsequent current-surface corrections narrow the actually testable architecture for Agent Governance in this chat to **ChatGPT Web only**:
 
 ```text
 GitHub
-  = canonical remote authority and synchronization boundary
+  = canonical remote authority
 
-persistent local repository / exact local snapshot
-  = normal read, search, diff and authoring surface
+ChatGPT Web runtime workspace
+  = temporary working/cache surface when exact-ref materialization is possible
 
 GitHub Git Data publication
-  = bounded multi-file publication surface when direct Git transport is unavailable
+  = bounded multi-file publication surface
 
 GitHub PR event task / webhook
   = event-driven observation instead of polling
-
-ChatGPT Library
-  = optional durability/backup snapshot plane, not the hot read path
 ```
 
-The optimization principle is:
+Library is excluded from the candidate path while it requires per-operation Human approval. Persistent user-local/Work Desktop repositories are also excluded from the current pilot because this project is operating in ChatGPT Web with no exposed PC-local repository.
+
+The optimization principle remains:
 
 ```text
-synchronize once
--> read and author locally many times
+synchronize/materialize once
+-> read and author in the web runtime many times
 -> publish once/bounded
 -> observe by event
 -> verify once at convergence
@@ -48,7 +47,7 @@ synchronize once
 
 The goal is not to remove GitHub from the workflow. GitHub remains canonical. The goal is to stop using GitHub as the per-file working filesystem.
 
-R026 recommends a future qualification pilot before changing D066 or startup policy. The key unqualified point is whether ChatGPT Work Desktop can perform the required local Git synchronization/authoring mechanics without Human terminal mediation. OpenAI documents local-folder access for Work and explicit repository/terminal access for Codex, but does not in the reviewed Work documentation explicitly guarantee the exact Git command surface required by this Orchestrator design.
+R026 recommends an empirical qualification pilot before changing D066 or startup policy. The key current question is whether ChatGPT Web can materialize an exact repository snapshot into its runtime with sufficiently few remote operations, then publish a bounded change set safely through the connected GitHub tool surface.
 
 ## Baseline from R014/R015/D066
 
@@ -57,7 +56,7 @@ D066 already adopts this optimization direction:
 ```text
 bootstrap/verify topic branch
 -> many local edits and Git operations
--> optional Library persistence
+-> optional persistence
 -> batched/final GitHub publication
 -> PR/review/integration
 ```
@@ -72,7 +71,8 @@ Important existing constraints remain unchanged:
 - normal writes use a short-lived topic branch from exact intended `develop`;
 - no direct development writes to `develop` or `main`;
 - stale or ambiguous remote movement is fail-closed;
-- Library is not a Git remote or canonical authority;
+- Library is not a Git remote or canonical authority and is excluded from the current candidate path;
+- the current surface is ChatGPT Web, so persistent user-local repository assumptions are excluded from the current pilot;
 - T058 remains frozen by Human decision and is not resumed by this research.
 
 ## Evidence reviewed
@@ -102,6 +102,8 @@ Important existing constraints remain unchanged:
    - Codex explicitly supports local folders, repositories, terminals and developer tools;
    - Work and Codex remain distinct product surfaces.
 
+   Current-surface correction: these Desktop/Work capabilities are not assumed for the active Agent Governance workflow because the Human Owner confirms the project is operating in ChatGPT Web.
+
 3. **File storage and Library in ChatGPT**  
    https://help.openai.com/en/articles/20001052  
    Reviewed 2026-09-12.
@@ -111,6 +113,8 @@ Important existing constraints remain unchanged:
    - uploaded/generated files can persist in Library across chats;
    - Library is a persistent file store rather than a Git remote;
    - the public user documentation describes selecting/reusing Library files, but does not by itself establish a current agentic API for automated repository-snapshot materialization in every ChatGPT surface.
+
+   Current-surface correction: the Human Owner reports per-operation approval prompts for Library. R026 therefore excludes Library from the optimized candidate path.
 
 ### GitHub and Git official documentation
 
@@ -136,7 +140,7 @@ Important existing constraints remain unchanged:
    https://git-scm.com/docs/git-fetch  
    Reviewed 2026-09-12.
 
-   Material finding: `git fetch` updates refs and downloads the objects needed to complete the requested histories, making a persistent clone an incremental cache rather than a repeated full repository download.
+   Material finding: `git fetch` updates refs and downloads the objects needed to complete the requested histories, making a persistent clone an incremental cache rather than a repeated full repository download. This remains relevant engineering evidence, but a persistent local clone is not part of the current ChatGPT Web candidate path.
 
 ### Specialized engineering evidence
 
@@ -144,19 +148,15 @@ Important existing constraints remain unchanged:
    https://github.blog/open-source/git/git-clone-a-data-driven-study-on-cloning-behaviors/  
    Reviewed 2026-09-12.
 
-   Material finding: for a developer focused on one reasonably sized repository, GitHub's study recommends a full clone followed by normal full fetches; shallow and some partial-clone patterns can make later fetch behavior worse or trigger additional object retrieval.
-
 8. **GitHub Engineering — Get up to speed with partial clone and shallow clone**  
    https://github.blog/open-source/git/get-up-to-speed-with-partial-clone-and-shallow-clone/  
    Reviewed 2026-09-12.
-
-   Material finding: blobless partial clones can reduce initial transfer for very large repositories, but missing blob access creates later on-demand downloads. For a repeatedly accessed repository, a normal full clone remains the simpler cache unless repository size justifies the tradeoff.
 
 9. **GitLab — Avoid the massive end-to-end tax of default full history clones**  
    https://about.gitlab.com/blog/git-clone-override-policy/  
    Published 2026-08-18; reviewed 2026-09-12.
 
-   Material finding: clone strategy should be selected based on repository size/lifecycle because unnecessary history transfer has client, network and server cost. This supports measuring actual Agent Governance repository characteristics instead of adopting shallow/partial clone mechanically.
+These sources remain useful for general repository-materialization tradeoffs, but the current pilot must test the concrete capabilities of ChatGPT Web rather than assume Desktop clone semantics.
 
 ## Current ChatGPT runtime capability observation
 
@@ -189,7 +189,7 @@ public generic GitHub app documentation
 
 Any adopted transport must qualify the **actual active tool schema**, not infer write capability from generic product documentation.
 
-The currently exposed `create_tree` wrapper accepts generic tree elements, while GitHub's official endpoint supports `content` inline. This combination is a promising N-file batching primitive, but the wrapper's exact accepted element shape must be empirically exercised before D066 is changed to require it.
+The current research branch has already demonstrated successful multi-file publication using Git Data primitives in this runtime, but stale-ref/race and exact snapshot-materialization behavior still require dedicated qualification.
 
 ## Problem decomposition
 
@@ -232,39 +232,29 @@ Thus N-file publication can be constant in logical mutation count instead of O(N
 
 Repeatedly fetching a PR, comments, reviews, workflow state or merge state wastes calls when the desired action is simply "wake me when state changes". OpenAI's current GitHub/Work documentation exposes webhook-backed event-triggered PR tasks for eligible users.
 
-## Proposed architecture — Read Local, Publish Bounded, Observe by Event
+## Proposed current architecture — Web Runtime, Publish Bounded, Observe by Event
 
-### Plane A — persistent local read/authoring cache
+### Plane A — ephemeral web-runtime working cache
 
-Preferred target:
-
-```text
-ChatGPT Work Desktop
--> open persistent local repository folder
--> one remote synchronization boundary
--> all AGENTS/checkpoint/spec/research/source reads local
--> local search/diff/edit operations
-```
-
-The local repository is a cache/working copy, never canonical authority.
-
-A new chat must still prove which remote commit it represents. The intended bootstrap semantic becomes:
+Preferred current target:
 
 ```text
-synchronize current develop from GitHub once
--> record exact develop SHA
--> read AGENTS.md and CHECKPOINT.md from that exact local commit
--> continue local reads while the work unit remains bound to that snapshot
+ChatGPT Web
+-> obtain exact GitHub ref/snapshot with bounded remote interaction
+-> materialize it into the available runtime workspace
+-> read/search/diff/edit there
 ```
 
-This can satisfy the existing cold-start intent with one logical remote synchronization instead of one remote call per bootstrap file, provided the local Git synchronization mechanics are empirically qualified.
+The runtime workspace is a cache/working surface, never canonical authority, and must be treated as ephemeral unless persistence is explicitly proven.
+
+A new chat must still prove which remote commit its materialized state represents.
 
 ### Plane B — bounded remote publication
 
 Preferred publication order:
 
 ```text
-local diff/change set
+runtime diff/change set
 -> revalidate expected remote topic HEAD/base
 -> create Git tree from all changed paths
 -> create one commit with expected parent
@@ -272,9 +262,7 @@ local diff/change set
 -> verify resulting ref/tree/diff
 ```
 
-When direct local Git push is safely available to the Orchestrator surface, a normal push may be even cheaper as one logical transport operation. However Work documentation reviewed here does not explicitly establish the exact local terminal/Git execution guarantee needed to adopt that path.
-
-Therefore the immediately testable connector fallback is the Git Data sequence:
+The immediately testable connector path is:
 
 ```text
 create_tree
@@ -296,102 +284,59 @@ PR/review/comment/commit/merge event
 
 Polling remains a fallback when event triggers are unavailable or when a specific gate requires an immediate point-in-time read.
 
-### Plane D — Library as optional durability, not hot path
+### Plane D — excluded persistence assumptions
 
-D066's Library snapshot model remains useful for cross-chat recovery where the runtime supports the required operations. R026 recommends removing Library from the normal read path when Work Desktop can expose a persistent local repository directly.
-
-Reason:
+For the current surface:
 
 ```text
-persistent local repository
-  already contains .git + working tree + cache
+Library
+  excluded because per-operation Human approval creates interaction amplification
 
-Library archive round trip
-  adds package/upload/materialize/extract/validate steps
+Work/Desktop user-local repository
+  excluded because the active product surface is ChatGPT Web
+
+cross-chat runtime persistence
+  not assumed until empirically qualified
 ```
 
-Library remains valuable as:
+## Connector-minimized current candidate
 
-- backup/portable checkpoint;
-- cross-device or non-Work fallback;
-- recovery artifact when local workspace persistence cannot be guaranteed.
-
-This recommendation does not invalidate R014/R015. It changes the preferred hot path only if the Work-local capability is qualified.
-
-## Connector-only fallback when persistent local Work is unavailable
-
-A second architecture can reduce calls without assuming a persistent desktop clone:
+The architecture to evaluate is:
 
 ```text
-1. fetch exact remote develop HEAD/tree once
-2. download/materialize one exact-ref repository archive
-3. read/search/edit locally in the temporary workspace
-4. publish changed paths with create_tree + create_commit + update_ref
-5. verify once
+1. identify exact remote develop/topic SHA
+2. materialize one exact-ref repository snapshot or equivalent bounded working set into the ChatGPT Web runtime
+3. read/search/edit within that runtime without additional per-file GitHub reads
+4. revalidate expected remote topic state
+5. publish changed paths with create_tree + create_commit + update_ref
+6. create PR if needed
+7. observe by event where supported
+8. verify final remote state once
 ```
 
-This changes repository materialization from O(number of files read) connector calls into one snapshot download plus bounded publication.
-
-Limits:
-
-- archive materialization does not contain `.git` history by itself;
-- exact commit identity must be carried separately;
-- the active ChatGPT surface must support the binary archive download safely;
-- direct Git history operations are weaker than a persistent full clone unless a local repository is reconstructed.
-
-Therefore archive mode is a fallback, not the preferred long-lived mode.
+The central unresolved capability is step 2: whether the current web tool/runtime combination can materialize a useful exact repository snapshot in a bounded way without Library and without a persistent user-local clone.
 
 ## Interaction-budget model
 
-R026 defines a **logical GitHub interaction** as one explicit remote operation initiated by the Orchestrator surface: one connector action, one Git synchronization command such as fetch/push, one archive download, or one webhook-delivered event consumption. This metric intentionally does not pretend that one Git command equals one HTTP packet.
+R026 defines a **logical GitHub interaction** as one explicit remote operation initiated by the Orchestrator surface: one connector action, one bounded repository materialization operation, or one webhook-delivered event consumption. This metric intentionally does not pretend that one logical operation equals one HTTP packet.
 
-### Target — warm persistent local repository
+### Target — ChatGPT Web runtime
 
-Normal work unit after initial clone:
-
-```text
-bootstrap synchronization:       1
-bootstrap file reads:            0 remote
-working-set reads/search:        0 remote
-intermediate authoring writes:   0 remote
-publication:                     1 direct push
-  OR connector fallback:         3 mutations (tree/commit/ref)
-PR creation:                     1
-PR idle observation:             0 polling when webhook task available
-convergence verification:        1 bounded read
-```
-
-Expected target:
+Simple work unit target:
 
 ```text
-direct-Git qualified path:       about 3-4 logical remote interactions/work unit
-connector publication fallback:  about 5-6 logical remote interactions/work unit
+remote identity/snapshot boundary: 1-2
+working-set reads/search:          0 remote after materialization
+intermediate authoring writes:     0 remote
+publication:                       3 mutations (tree/commit/ref)
+PR creation:                       1 when needed
+PR idle observation:               0 polling when webhook task available
+convergence verification:          1 bounded read
 ```
 
-The count is independent of the number of files locally read or edited.
+Expected target: roughly 5-7 logical remote interactions for the simple path, independent of the number of files read or edited after materialization.
 
-### Target — cold/ephemeral archive fallback
-
-```text
-remote identity read:            1
-exact snapshot archive:          1
-working-set reads/search:        0 remote
-publication:                     3 mutations
-PR creation:                     1
-convergence verification:        1
-```
-
-Expected target: about 7 logical interactions for the simple path, again independent of local file count.
-
-These are design targets, not empirical claims.
-
-## Why not use shallow clone by default
-
-The optimization target is repeated use of one source repository, not disposable CI.
-
-Shallow/treeless clones may reduce initial bytes but can increase later fetch/object-request costs and remove history required for ordinary Git analysis. GitHub engineering specifically recommends a full clone for a developer repeatedly focused on one reasonably sized repository.
-
-For Agent Governance the pilot should first measure repository size. Use a blobless partial clone only if repository size materially justifies it. Do not equate "smaller initial clone" with "fewer long-term GitHub interactions."
+This is a design target, not an empirical claim. The pilot must determine whether the snapshot/materialization boundary is actually available from ChatGPT Web.
 
 ## Safety and authority invariants
 
@@ -399,78 +344,63 @@ Any adopted optimization must preserve all of the following:
 
 ```text
 GitHub remains canonical
-exact develop/topic SHA is recorded at synchronization
-local state never silently overrides remote movement
+exact develop/topic SHA is recorded at synchronization/materialization
+runtime state never silently overrides remote movement
 normal writes target only the verified topic branch
 ref movement is non-force unless separately authorized
 stale/non-fast-forward publication fails closed
 PR remains the normal integration path to develop
 AGENTS/checkpoint are read from one exact snapshot
-local cache provenance is explicit
+runtime cache provenance is explicit
 no Human copy/paste terminal role becomes the default
+no per-operation Library approval becomes the transport mechanism
 T058 freeze remains intact
 ```
-
-A cached copy may reduce reads only while its exact represented remote SHA is known. It cannot replace remote freshness checks when a decision depends on current remote state.
 
 ## Qualification gaps
 
 The following points are not yet proven and block normative adoption.
 
-### Gap 1 — Work local Git mechanics
-
-Official documentation proves Work Desktop local-folder access, but the reviewed material does not explicitly prove that the Orchestrator can independently execute the exact Git fetch/status/diff/commit/push workflow required here.
+### Gap 1 — bounded web snapshot materialization
 
 Need empirical answer:
 
 ```text
-Can ChatGPT Work Desktop, without Human terminal mediation,
-operate a local repository with the Git mechanics required by D061/D066?
+Can ChatGPT Web obtain and materialize an exact useful repository snapshot
+with a bounded number of GitHub interactions,
+without Library and without a user-local clone?
 ```
 
-### Gap 2 — plugin create_tree inline-content compatibility
+### Gap 2 — Git Data stale-ref semantics
 
-GitHub officially supports `content` entries in `create tree`; the active ChatGPT GitHub wrapper must be tested with multiple paths in one call and verified to produce the exact intended tree.
+Multi-file Git Data publication works in the current runtime, but the pilot must explicitly verify stale topic movement and fail-closed publication semantics.
 
 ### Gap 3 — event-task coverage and payload sufficiency
 
 OpenAI documents PR event tasks, but the exact events/payloads available to this account/surface must be tested to determine which polling calls can truly be removed.
 
-### Gap 4 — Library surface requalification
+### Gap 4 — cross-chat cost
 
-R014 qualified programmatic Library snapshot behavior in an earlier runtime. The current public Library documentation and this chat's exposed tools do not establish the same agentic API surface. D066's portable mode remains historically qualified, but any new implementation depending on programmatic Library operations should revalidate the current runtime before use.
+The current web runtime should be assumed ephemeral. Need to measure the cost of reconstructing the working cache at the beginning of a new chat and ensure the optimization remains worthwhile without Library.
 
 ### Gap 5 — bootstrap semantic equivalence
 
-A later decision should state explicitly whether:
-
-```text
-one verified fetch of exact develop
-+ local read of AGENTS/CHECKPOINT from that fetched commit
-```
-
-is accepted as semantically equivalent to separate remote file reads for the Orchestrator cold-start contract.
-
-R026 recommends that equivalence if the fetch/local-integrity pilot passes.
+A later decision should state explicitly whether one verified exact-ref materialization plus runtime reads of AGENTS/CHECKPOINT is accepted as semantically equivalent to separate remote file reads for the Orchestrator cold-start contract.
 
 ## Recommended empirical pilot
 
 Use a disposable repository such as `ManuelBouza/test_biblioteca`, not `agent-governance`, for capability qualification.
 
-Compare three modes against the same synthetic multi-file work unit:
+Compare:
 
 ```text
 M0 BASELINE
   connector on-demand file reads + normal connector writes
 
-M1 CONNECTOR-MINIMIZED
-  one exact-ref snapshot/archive + local reads
-  Git Data create_tree/commit/ref publication
-
-M2 WORK-LOCAL
-  persistent local full clone in Work Desktop
-  one fetch boundary + local reads/authoring
-  direct Git publication if available, otherwise Git Data publication
+M1 WEB-RUNTIME / CONNECTOR-MINIMIZED
+  exact-ref bounded materialization into ChatGPT Web runtime
+  -> runtime reads/search/authoring
+  -> Git Data create_tree/commit/ref publication
 ```
 
 Record at least:
@@ -479,52 +409,56 @@ Record at least:
 logical GitHub interactions
 remote file-content reads
 remote mutations
-Human interventions
+Human approval prompts
 changed-file count
 exact base/head identities
 stale-remote behavior
 final tree equivalence
 PR creation/observation calls
-cross-chat resume behavior
+cross-chat reconstruction cost
 ```
 
 Minimum acceptance proposal:
 
 ```text
-A. warm bootstrap requires <= 1 logical remote synchronization
-B. normal local exploration requires 0 per-file GitHub reads
+A. bootstrap/materialization requires a bounded remote synchronization cost
+B. normal exploration after materialization requires 0 per-file GitHub reads
 C. N-file publication is constant-count, not O(N)
 D. stale topic movement blocks publication fail-closed
-E. final remote tree exactly represents intended local state
+E. final remote tree exactly represents intended runtime state
 F. no direct write to develop/main is possible through the workflow
 G. Human terminal copy/paste is not required for the normal path
 H. PR idle waiting uses event notification where supported instead of polling
+I. normal repository operations do not require per-operation Library approval
 ```
 
 ## Recommendation
 
-Proceed toward a **Read Local, Publish Bounded, Observe by Event** transport refinement of D066, but do not adopt it normatively yet.
+Proceed toward a **Web Runtime, Publish Bounded, Observe by Event** refinement, but do not adopt it normatively yet.
 
-Preferred order of evaluation:
+Preferred evaluation order:
 
 ```text
-1. qualify Work Desktop persistent local repository + Git mechanics
-2. qualify multi-file create_tree(content) + commit + non-force ref update
+1. qualify bounded exact-ref materialization in ChatGPT Web
+2. qualify stale-safe multi-file create_tree + commit + non-force ref update
 3. qualify PR webhook/event task coverage
-4. measure actual interaction reduction against connector baseline
-5. only then decide whether D066 and the cold-start/bootstrap contract should be refined
+4. measure interaction reduction against connector baseline
+5. measure cross-chat reconstruction cost
+6. only then decide whether D066 and the cold-start/bootstrap contract should be refined
 ```
-
-If Work-local Git mechanics fail qualification, retain the same architecture with the connector-minimized archive/cache mode as fallback. If event tasks are unavailable, keep bounded point-in-time PR reads rather than introducing unsafe assumptions.
 
 ## Current disposition
 
 ```text
 Research-State: COMPLETE
 Decision-State: EVALUATING
+Current surface: ChatGPT Web
+Library candidate: excluded
+Persistent user-local/Work Desktop candidate: excluded
+Remaining candidate: web-runtime connector-minimized workflow
 Normative change: none
 T058: remains frozen
 Recommended next action: Human-selected empirical qualification on disposable repository
 ```
 
-No downstream Task Contract or decision should rely on the proposed interaction budgets until that empirical qualification is persisted and reviewed.
+No downstream Task Contract or decision should rely on the proposed interaction budget until that empirical qualification is persisted and reviewed.
