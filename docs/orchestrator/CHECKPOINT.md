@@ -1,19 +1,21 @@
 # Orchestrator Checkpoint
 
-Checkpoint-ID: O272  
-Date: 2026-09-11  
+Checkpoint-ID: O273  
+Date: 2026-09-12  
 Current-Objective: T063 — adaptive worker routing requalification  
-State: T063_V7_STAGE6_AUTHORIZED_AWAITING_HUMAN_START  
-Active-Executor: none — Codex selected for pending Human launch  
-Executor-Launch-State: AUTHORIZED_AWAITING_HUMAN_CODEX_START  
-Coordinator-ID: `AG | agent-governance | T063 | root-7` — reserved NEW same-work-unit failover root; not yet started  
-Task-Contract: `docs/tasks/T063-adaptive-worker-routing-requalification.md`  
-Current-Design-Review: `docs/reviews/T063-R13.md`  
-Current-Launch-Review: `docs/reviews/T063-R14.md`  
-Prior-Convergence-Review: `docs/reviews/T063-R12.md`  
-T063-V7-Candidate-Branch: `test/t063-adaptive-worker-routing-requalification-v7`  
-T063-V7-Candidate-HEAD: `9fb55e8f36570f6b91d0a23720ccc6a62a9d0b90`  
-T063-V7-Candidate-Base: `a3c719ad862128e292c7313b39966fbbbe156799`  
+State: T063_V7_BLOCKED_ACCEPTED_STAGE2_SUCCESSOR_REENTRY_REQUIRED  
+Active-Executor: none  
+Executor-Launch-State: NOT_AUTHORIZED  
+Coordinator-ID: none active — `AG | agent-governance | T063 | root-7` retired after consumed v7 execution  
+Task-Contract: `docs/tasks/T063-adaptive-worker-routing-requalification.md` — v7 execution authority is consumed; successor revision required  
+Current-Convergence-Review: `docs/reviews/T063-R15.md`  
+Current-Blocker-Research: `docs/research/R024-T063-V7-NO-ROLLOUT-REATTACH-RACE.md`  
+Prior-Launch-Review: `docs/reviews/T063-R14.md`  
+Prior-Design-Review: `docs/reviews/T063-R13.md`  
+T063-V7-Initial-Candidate-HEAD: `9fb55e8f36570f6b91d0a23720ccc6a62a9d0b90`  
+T063-V7-Implementation-HEAD: `5a1769fed3f93d86cbc2e72a6cc89d7a276089d6`  
+T063-V7-Evidence-HEAD: `58e396c126e363428544b163cb2aa8c7e1ac8ed6`  
+T063-V7-Evidence-Branch: `test/t063-adaptive-worker-routing-requalification-v7`  
 T063-V6-Evidence-HEAD: `276fa94cde6904c003482c8b527de7e8cda416d4`  
 Historical-T063-V5-Evidence-HEAD: `3f9830a65a152ad595653961205e0ca52b9c5ccc`  
 Historical-T063-V4-Evidence-HEAD: `4135a13ce8daa4f6b1fcabe45063364fbbdd16f1`  
@@ -26,125 +28,156 @@ Chat-Closure: KEEP_CURRENT_CHAT
 
 ## Canonical transition
 
-O271 completed T063 v7 Specify / Design / Plan & Trace after v6 exposed the missing CONTROL-quality-failure taxonomy.
-
-ChatGPT Orchestrator then completed D068 Stage 5 and published the exact v7 candidate:
+Human launched the O272-authorized v7 Task Contract through NEW Codex root-7 and returned:
 
 ```text
-branch: test/t063-adaptive-worker-routing-requalification-v7
-HEAD:   9fb55e8f36570f6b91d0a23720ccc6a62a9d0b90
-base:   a3c719ad862128e292c7313b39966fbbbe156799
+STATUS: BLOCKED
+HANDOFF: handoffs/T063-executor-handoff-v7.json
+BRANCH: test/t063-adaptive-worker-routing-requalification-v7
+HEAD: 58e396c126e363428544b163cb2aa8c7e1ac8ed6
 ```
 
-Remote comparison verifies the candidate is exactly one commit ahead of the post-design protected-base snapshot and adds exactly 24 executable/test files: exact accepted v3-v6 package/test blobs plus the v7 package and regression test. Historical v1-v6 terminal evidence is excluded.
+ChatGPT Orchestrator remotely verified the returned branch/HEAD, handoff, telemetry and execution delta and completed Stage 7 convergence in T063-R15.
 
-## V7 experiment semantics
+V7 is accepted only as correctly blocked historical execution evidence. Its executable candidate and JSON evidence are not integrated into `develop`.
 
-V7 is a fixed-n replicated qualification calibration, not a formal population-level non-inferiority trial.
+## V7 verified execution result
 
-Complete run:
+Pre-provider gates reported by Stage 6:
 
 ```text
-4 replicate blocks
-3 frozen probes per block
-2 profiles per probe
-= 24 scored first-attempt children
+candidate/base ancestry: PASS
+Codex runtime:           0.153.4 PASS
+App Server:              0.153.4 PASS
+stable-release gate:     PASS
+compileall:              PASS
+pytest:                  55 passed
+Ruff:                    PASS
+oracle prepare:          PASS
 ```
 
-The schedule is prospectively counterbalanced so each arm runs first exactly twice per probe.
-
-Profiles remain:
+Stage 6 represented two pre-scoring adapter repairs:
 
 ```text
-P1 ADAPTIVE  Luna/Medium
-P1 CONTROL   Sol/Medium
-P2 ADAPTIVE  Terra/Medium
-P2 CONTROL   Sol/Medium
-P3 ADAPTIVE  Terra/High
-P3 CONTROL   Sol/Medium
+c259648701510e90ed61fdd641022f8898db6880
+5a1769fed3f93d86cbc2e72a6cc89d7a276089d6
 ```
 
-Root remains the fixed experimental constant `gpt-5.6-sol / medium`.
+Remote review accepted both as D076-bounded mechanics-preserving changes. Initial candidate -> implementation head changes only two lines in `evals/adaptive_worker_routing_v7/runner.py`.
 
-A valid `WORKER_QUALITY` FAIL remains execution-valid quality evidence, does not stop the fixed schedule and cannot be replaced/rerun. Only non-quality measurement/profile/runtime/permission/oracle-validity failures block execution.
-
-Per profile/probe quality qualification requires 4/4 PASS; global profile qualification requires 12/12 plus intact profile/reroute evidence.
-
-Complete valid-run pilot decisions are exactly:
+Implementation head -> terminal evidence head adds only:
 
 ```text
-QUALIFIED_PROFILE_AND_USAGE_EFFICIENCY
-QUALIFIED_PROFILE_ROUTING_ONLY
-ADAPTIVE_QUALITY_QUALIFIED_CONTROL_DEFICIENT
-NOT_QUALIFIED
+handoffs/T063-adaptive-worker-routing-telemetry-v7.json
+handoffs/T063-executor-handoff-v7.json
 ```
 
-`pilot_decision=null` is reserved for incomplete/blocked non-quality execution.
+## V7 partial provider/model evidence
 
-Exact accepted-quality token efficiency uses a predeclared 10% materiality floor only when both global profiles are 12/12.
-
-## Stage 5 verification
-
-Completed by Orchestrator without provider/model calls:
+Six scheduled parent/child attempts were consumed. Five reached complete D063 measurement and all five were PASS:
 
 ```text
-candidate/base ancestry:        VERIFIED REMOTELY
-candidate delta boundary:       VERIFIED — 24 files
-v3-v6 accepted blob reuse:      VERIFIED REMOTELY
-new v7 Python AST parse:        PASS
-v7 pure-logic smoke checks:     PASS
-schedule/counterbalance shape:  PASS
+P1 ADAPTIVE PASS
+P1 CONTROL  PASS
+P2 CONTROL  PASS
+P2 ADAPTIVE PASS
+P3 ADAPTIVE PASS
 ```
 
-The Orchestrator sandbox could not resolve `github.com` for a fresh checkout and does not contain Ruff. Therefore no repository-native pytest/Ruff/compileall PASS is claimed at readiness.
+The sixth scheduled arm was P3 CONTROL. It produced an exact public child correlation but its first `thread/resume` failed before a fully measured child snapshot existed:
 
-Stage 6 MUST run every required provider-free test/compile/lint/oracle/preflight gate on native Windows before the first provider/model call. Failure of any pre-provider gate blocks with zero scored provider calls.
+```text
+thread/resume failed: {'code': -32600, 'message': 'no rollout found for thread id <exact child id>'}
+```
 
-No provider/model call was consumed during v7 Stage 1-5/readiness work.
+No replay, replacement spawn, diagnostic child attempt or compensating scored call followed.
+
+V7 model-evidence disposition remains:
+
+```text
+run_execution_validity: INVALID
+run_model_comparison_eligible: false
+pilot_eligible: false
+scored_child_quality_eligible_count: 5
+scored_child_efficiency_eligible_count: 5
+root_model_failure_attributed: false
+pilot_decision: null
+```
+
+The five PASS children are historical observations only. They do not qualify ADAPTIVE, CONTROL, efficiency, or R007 and must not be combined with a successor run.
+
+## Blocker classification
+
+R024 classifies the blocker as:
+
+```text
+SAME_CHILD_ROLLOUT_DISCOVERY_VISIBILITY_RACE
+```
+
+At qualified Codex 0.153.4, `thread-store` emits `no rollout found for thread id ...` when the exact thread cannot yet resolve a rollout through live-writer, SQLite or filesystem surfaces.
+
+This is an earlier persistence-visibility phase of the R022 same-child race:
+
+```text
+ROLLOUT_NOT_FOUND -> EMPTY_ROLLOUT -> PERSISTED_READ_READY
+```
+
+The classification is retry-safe only inside the already-correlated exact-child barrier. It is not a generic rule that every no-rollout/thread-not-found error is transient.
+
+## Successor requirement
+
+Earliest affected SDD stage:
+
+```text
+Stage 2 — Specify
+```
+
+A clean successor must prospectively extend the same-child persistence barrier to exactly two retryable classes:
+
+```text
+EMPTY_ROLLOUT
+ROLLOUT_NOT_FOUND_FOR_EXACT_CHILD
+```
+
+Required invariants:
+
+```text
+exact correlated child id must match the no-rollout error
+same child and same resume params
+same parent
+sleep before every retry
+parent residency rechecked immediately before every retry
+one shared maximum of 10 total resume attempts across both transient classes
+mixed no-rollout -> empty-rollout sequences do not reset the budget
+no spawn replay
+no parent turn replay
+no new provider/model turn
+all other errors fail closed
+```
+
+The successor must be a fresh homogeneous 24-arm run. V7 observations are excluded from successor scoring.
+
+All other v7 scientific semantics remain frozen pending explicit successor specification: four replicate blocks, counterbalanced 24-arm schedule, root Sol/Medium, child profile matrix, probes/oracles, valid quality-failure continuation, absolute 4/4 and 12/12 quality gates, 10% exact-token materiality floor and four-state pilot-decision taxonomy.
 
 ## D077 state
 
-Post-publication readiness revalidation found:
+Revalidated on 2026-09-12:
 
 ```text
-qualified pin:              0.153.4
-latest stable:              0.154.0
-newest observed prerelease: 0.155.0-alpha.3.9
-newer stable than 0.154.0:  none
-disposition:                PIN_RETAINED
+qualified pin:   0.153.4
+latest stable:   0.154.0
+disposition:     PIN_RETAINED
 ```
 
-If a stable Codex release newer than `0.154.0` appears before the first v7 provider call, STOP for Orchestrator relevance classification.
+Codex 0.154.0 retains the `no rollout found for thread id ...` persisted-read path. Current stable therefore does not demonstrate a fix and D063 qualification is not extended.
+
+Revalidate again before any future provider-backed successor launch.
 
 ## Coordinator continuity
 
-V6 `root-6` is retired after its consumed run and material design/harness successor revision.
+V7 root-7 is retired because it consumed provider-backed work and ended blocked.
 
-V7 uses NEW same-work-unit failover root:
-
-```text
-AG | agent-governance | T063 | root-7
-```
-
-This is not a concurrent second root.
-
-## Launch profile
-
-Current D055 Human-facing launch card:
-
-```text
-Executor:        Codex
-Surface:         Codex Desktop / native Windows
-Session:         NEW
-Coordinator-ID:  AG | agent-governance | T063 | root-7
-Root model:      gpt-5.6-sol
-Root reasoning:  medium
-Codex runtime:   exactly 0.153.4
-App Server:      exactly 0.153.4
-Auth category:   chatgpt
-```
-
-The launch profile is separate from the Task Contract semantics and separate from the thin transport prompt.
+No successor coordinator/root is reserved yet. A future successor launch requires a NEW same-work-unit failover root selected only after successor Stage 5/readiness is complete.
 
 ## Held and frozen work
 
@@ -158,23 +191,26 @@ R007 remains `EVALUATING`; no global adaptive worker-routing policy is adopted.
 
 After normal bootstrap (`develop`, `AGENTS.md`, this checkpoint):
 
-1. for T063 launch/convergence, load the active Task Contract first;
-2. load `docs/reviews/T063-R14.md` for v7 readiness rationale;
-3. load R13 when the replicated design/taxonomy needs deeper interpretation;
-4. load R12/R021/R022/R023/D063/D076/D077 only when provenance, implementation detail or a concrete conflict requires them;
-5. for material Task Contract revision/readiness review, load the Maintainer Skill v4 template + usage reference;
-6. for T062 resumption, load its separate held-line authority;
-7. do not reconstruct the frontier from prior chat/Project Memory.
+1. for T063 successor work, load T063-R15 and R024 first;
+2. load the active v7 Task Contract as the preserved baseline to revise, not as executable launch authority;
+3. for material Task Contract revision/readiness, load `maintainer-skill/references/TASK-CONTRACT-V4-TEMPLATE.md` and `TASK-CONTRACT-TEMPLATE-USAGE.md`;
+4. load R022 for the existing empty-rollout barrier semantics and R023 only if parent-surface provenance is needed;
+5. load R13/R14 only when the replicated design/readiness rationale requires deeper interpretation;
+6. load D063/D076/D077 when a concrete measurement/materialization/version conflict requires them;
+7. for T062 resumption, load its separate held-line authority;
+8. do not reconstruct the frontier from prior chat or Project Memory.
 
 ## Next Action
 
-Before Human-mediated v7 launch:
+T063 successor is NOT authorized for Stage 6.
 
-1. revalidate `develop` and exact v7 candidate HEAD;
-2. revalidate that no stable Codex release newer than `0.154.0` has appeared;
-3. present the D055 launch card separately;
-4. give the Human only the thin transport prompt defined by the canonical T063 Task Contract.
+ChatGPT Orchestrator next performs Stage 2-4 successor revision:
 
-ChatGPT MUST NOT start or directly control Codex.
+1. preserve the v7 scientific design and clean-run requirement;
+2. revise RQ-6 from empty-rollout-only to the two-class exact-child persistence barrier defined by R024;
+3. add exact conformance cases for exact-child no-rollout, wrong-ID rejection, mixed-class common-budget retry and exhaustion;
+4. assign a clean successor version/branch and new evidence paths;
+5. complete Plan & Trace;
+6. only then perform D068 Stage 5 candidate materialization and readiness review.
 
-After the Human returns the Task Contract-defined terminal four-line result, ChatGPT performs remote verification and Stage 7 convergence.
+No additional T063 provider/model call is authorized until that successor authority is persisted, materialized, readiness-reviewed and Human-launched.
