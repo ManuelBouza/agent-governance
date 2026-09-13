@@ -93,7 +93,9 @@ def main() -> int:
         for relative in destinations:
             if not (repo / relative).exists():
                 missing_destinations.append(f"{item_id}:{relative}")
-    add_check(checks, "preservation-destinations-exist", not missing_destinations, missing_destinations)
+    add_check(
+        checks, "preservation-destinations-exist", not missing_destinations, missing_destinations
+    )
 
     root_path = repo / profile["root_path"]
     root_text = root_path.read_text(encoding="utf-8")
