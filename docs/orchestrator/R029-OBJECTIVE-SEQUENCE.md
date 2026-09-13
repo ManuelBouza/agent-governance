@@ -1,6 +1,6 @@
 # R029 Incremental Session Sequence
 
-Status: ACTIVE  
+Status: COMPLETE_AWAITING_HUMAN_DECISION  
 Parent-Research: `docs/research/R029-AGENTS-SKILL-ARCHITECTURE-REFACTOR-RESEARCH.md`  
 Authority: Human Owner clarified incremental same-chat execution on 2026-09-13  
 Lifecycle: one persistent R029 ChatGPT Orchestrator objective with bounded session subtasks  
@@ -30,7 +30,7 @@ R029-S1 -> Human gate -> R029-S2 -> Human gate -> ... -> R029-S10
 | R029-S7 | ACCEPTED | `durable-work-checkpoint` candidate | S1-S3 accepted | `docs/orchestrator/R029-S7-DURABLE-WORK-CHECKPOINT-CANDIDATE.md` | Generic durable-resume semantics separated from D027/D067/checkpoint rules; disposition is `KEEP_CANDIDATE` | MEDIUM | SINGLE_EXECUTION |
 | R029-S8 | ACCEPTED | `executor-launch-handoff` candidate | S1-S3 accepted | `docs/orchestrator/R029-S8-EXECUTOR-LAUNCH-HANDOFF-CANDIDATE.md` | Reusable transport/session/handoff separated from repository-specific authority; disposition is `KEEP_CANDIDATE` | MEDIUM | SINGLE_EXECUTION |
 | R029-S9 | ACCEPTED | Workspace-isolation placement | S4 and S8 accepted | `docs/orchestrator/R029-S9-WORKSPACE-ISOLATION-PLACEMENT.md` | Workspace isolation classified with explicit parent/dependency and anti-sprawl rationale; disposition is `INTERNAL_ROUTE` | MEDIUM | SINGLE_EXECUTION |
-| R029-S10 | NOT_STARTED | Candidate-topology synthesis and evaluation plan | S1-S9 accepted | One bounded candidate topology plus pre-decision evaluation plan | Topology/evaluation plan coherent; no adoption occurs | HIGH | SINGLE_EXECUTION |
+| R029-S10 | COMPLETE_AWAITING_HUMAN_DECISION | Candidate-topology synthesis and evaluation plan | S1-S9 accepted | `docs/orchestrator/R029-S10-CANDIDATE-TOPOLOGY-EVALUATION-PLAN.md` | Topology/evaluation plan coherent; no adoption occurs | HIGH | SINGLE_EXECUTION |
 
 ## Completed subtasks
 
@@ -63,24 +63,24 @@ Accepted 2026-09-13. Durable output: `docs/orchestrator/R029-S9-WORKSPACE-ISOLAT
 
 S9 classifies workspace isolation as `INTERNAL_ROUTE` under `executor-launch-handoff`, with `repository-change-control`/repository-local policy as the dependency for branch/base/integration/retirement semantics. Workspace isolation is reusable but normally subordinate to delegated writable-execution attribution and continuation safety, so a standalone top-level Skill would add routing/context overhead without a sufficiently distinct independent intent.
 
-## Remaining subtask intent
+### R029-S10 — Candidate-topology synthesis and evaluation plan
+Completed analytically 2026-09-13. Durable output: `docs/orchestrator/R029-S10-CANDIDATE-TOPOLOGY-EVALUATION-PLAN.md`.
 
-- S10 synthesizes accepted results and the pre-decision evaluation plan.
+S10 synthesizes the accepted R029 result into a candidate architecture consisting of a lean always-loaded root, the existing one-top-level Maintainer Skill with internal Orchestrator/Executor routes, five retained transverse candidates, workspace isolation as an internal `executor-launch-handoff` route with `repository-change-control` dependency, host-specific mechanics adapters only where needed, and deterministic references/scripts/CI. It also defines a pre-decision evaluation plan covering static authority/coverage trace, trigger/anti-trigger routing, progressive-disclosure/context burden, cold-start reconstruction, adversarial authority preservation, host parity and anti-sprawl robustness.
 
-## Session and Human gates
+No architecture adoption, root rewrite, Skill implementation, Executor launch, provider/model call, scored observation or T066 mutation occurred.
 
-```text
-subtask complete
--> persist result and checkpoint
--> stop material work for that session
--> Human Owner reviews/selects next subtask
--> later session resumes this same chat
--> revalidate current develop/checkpoint
--> execute only the selected subtask
-```
+## Human Decision Gate
 
-After R029-S10, stop at a Human decision gate. Any normative architecture Decision Record, provider/model qualification, root refactor, Skill creation, or implementation requires separate authorization.
+All ten analytical subtasks are complete. R029 remains `Decision-State: EVALUATING` until the Human Owner explicitly chooses among later disposition paths such as:
+
+- accept the candidate topology for a later normative architecture decision/implementation plan;
+- request bounded revision or additional evaluation;
+- reject the candidate topology;
+- retain the research without adopting it.
+
+A Human decision does not itself authorize implementation unless the resulting next objective explicitly does so under a new authorized work unit/chat as required by D067.
 
 ## Global prohibitions
 
-Until separately authorized: do not change role/stage/Markdown/oracle/execution-mechanics ownership; do not rewrite root `AGENTS.md`; do not create/package/install/release transverse Skills; do not split the Maintainer Skill by role; do not launch an Executor; do not consume provider/model calls; do not promote R029 into normative policy; do not start the next subtask automatically; do not mutate the unselected T066 scientific branch.
+Until separately authorized: do not change role/stage/Markdown/oracle/execution-mechanics ownership; do not rewrite root `AGENTS.md`; do not create/package/install/release transverse Skills; do not split the Maintainer Skill by role; do not launch an Executor; do not consume provider/model calls; do not promote R029 into normative policy automatically; do not mutate the unselected T066 scientific branch.
