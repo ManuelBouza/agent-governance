@@ -262,3 +262,26 @@ R014/R015 -> D066
 ```
 
 D063 qualifies the child measurement substrate only. D065 establishes delegation obligation. D075 establishes only the coordinator-direct versus delegated/contract-fixed first gate. D077 governs upstream version-range revalidation. None of them adopts adaptive child compute routing, changes D055, establishes provider-signed backend identity, or authorizes a global savings claim. R007 remains EVALUATING after T063's frozen mapping fails qualification.
+
+## Required workflow for new research
+
+For each new material investigation:
+
+1. allocate the next stable `Rxxx` identifier;
+2. create the research artifact under `docs/research/` with D057 metadata;
+3. add/update its registry row in the same Markdown change set;
+4. record sources/evidence and distinguish volatile facts from durable analysis;
+5. if empirical validation is required, set `Decision-State: EVALUATING` and link the exact Task Contract/eval/review;
+6. if a decision is accepted, update the registry to `DECIDED` and link the exact `Dxxx` authority;
+7. if deferred/rejected/superseded, persist that disposition and reason/reference;
+8. update `docs/orchestrator/CHECKPOINT.md` only when the item is part of the live frontier.
+
+No material research may be relied on for a downstream Task Contract or normative change while existing only in chat.
+
+Version-sensitive external/vendor research is additionally subject to D077: compare the pinned/reference version, current stable, and higher relevant versions before promoting a version-dependent conclusion into consequential authority.
+
+## Provenance rule
+
+Do not rewrite a completed research artifact merely to align with a later conclusion. Preserve the original analysis, create or reference the successor when material evidence changes, and use the registry to express supersession/current disposition.
+
+For volatile vendor/model/pricing/regulatory facts, revalidate the source before a later decision and update `Last-Reviewed` metadata or create a successor research item.
