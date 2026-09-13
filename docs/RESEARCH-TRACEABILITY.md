@@ -3,7 +3,7 @@
 Status: CURRENT  
 Owner: ChatGPT Orchestrator  
 Controlling decision: `docs/decisions/D057-research-decision-traceability.md`  
-Last-Registry-Review: 2026-09-12
+Last-Registry-Review: 2026-09-13
 
 ## Purpose
 
@@ -62,8 +62,24 @@ See D057 for transition semantics and required metadata for new research.
 | R026 | `docs/research/R026-CHATGPT-GITHUB-INTERACTION-MINIMIZATION.md` | COMPLETE | EVALUATING | D048; D066; GitHub Git Data docs; `test_biblioteca` write-path qualification; PR `#371` | none | R026 does not replace the existing native-Git publication process. It qualifies adaptive ChatGPT Web write transport: direct per-file Contents writes for trivial independent changes, and Git Data tree/commit/ref batching when coherent multi-file publication reduces mutation cost or materially benefits from one-commit coherence. Reads remain direct from GitHub; normative adoption remains EVALUATING. |
 | R027 | `docs/research/R027-CHATGPT-CODEX-COST-EFFICIENT-RESPONSIBILITY-SPLIT.md` | COMPLETE | EVALUATING | T066; R028; D079; D053/D054/D055/D060/D065/D068/D075/D076; OpenAI Chat/Work/Codex, prompting, AGENTS.md, subagent, speed and rate-card guidance; OpenAI Harness Engineering; external empirical context-efficiency studies | `docs/decisions/D079-lean-executor-qualification-and-adoption-boundary.md` | R027 remains predecessor evidence for the responsibility-split hypothesis. D079 selects the R027+ Lean Executor architecture for qualification but does not adopt it as production policy; the production conclusion remains EVALUATING through T066 and any required confirmation. |
 | R028 | `docs/research/R028-R027-DEEP-REVALIDATION-AND-LEAN-EXECUTOR.md` | COMPLETE | EVALUATING | R027; T066 v2; D079; R007; R010; D055/D057/D060/D063/D065/D068/D075/D076/D077; current OpenAI model/rate-card/AGENTS.md/speed/subagent guidance; OpenAI Harness Engineering; external empirical context/specialist-agent studies | `docs/decisions/D079-lean-executor-qualification-and-adoption-boundary.md` | D079 accepts R028's qualification/adoption boundary and selects Lean Executor as the official candidate architecture. D068 and other production policies remain unchanged; final production disposition remains EVALUATING pending T066 screening, independent confirmation and any required mechanism-level evidence. |
+| R029 | `docs/research/R029-AGENTS-SKILL-ARCHITECTURE-REFACTOR-RESEARCH.md` | COMPLETE | EVALUATING | no empirical evaluation yet; pre-decision preservation/routing/context/cross-host gates defined by R029 | none | R029 classifies the overloaded root `AGENTS.md` and identifies a candidate lean-root + Maintainer-domain + small transverse-capability architecture. No root/Skill implementation or normative adoption is authorized; next step requires explicit Human-selected evaluation/design work. |
 
 ## Live research frontier
+
+### R029 — AGENTS.md / Skill architecture refactor
+
+```text
+R029
+  COMPLETE / EVALUATING
+  root AGENTS.md refactor: NOT AUTHORIZED
+  new transverse Skill implementation: NOT AUTHORIZED
+  decision adoption: none
+  provider/model calls: 0
+  scored observations: 0
+  next gate: Human-selected evaluation/design objective
+```
+
+R029 is research evidence only. It identifies repository change control and upstream version revalidation as the strongest reusable transverse-capability candidates, while research traceability, durable checkpointing, and executor launch/handoff retain stronger Agent Governance adapter boundaries. Workspace isolation remains an initial sub-route/reference candidate rather than an automatically separate top-level Skill.
 
 ### T063 — adaptive worker routing requalification
 

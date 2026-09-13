@@ -1,81 +1,109 @@
 # Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O291  
+Checkpoint-Sequence: O293  
 Date: 2026-09-13  
 Canonical-Branch: `develop`  
-Current-Work-Unit: D080/D069 closure repair — waiting for next Human-selected objective  
-State: WAITING_FOR_NEXT_OBJECTIVE  
-Next-Action: In a fresh ChatGPT chat, perform only the normal bootstrap from current `develop`, read `AGENTS.md` and this checkpoint, then wait for the Human Owner to provide the next objective before loading objective-specific authority or beginning material work.  
+Current-Work-Unit: R029 — incremental Skill-architecture evaluation sequence  
+State: HANDOFF_READY  
+Next-Objective: `R029-O1 — Root preservation-map audit`  
+Next-Action: After PR #391 is integrated, start a fresh ChatGPT Orchestrator chat and execute only R029-O1. Do not begin R029-O2 or any later objective automatically.  
 Next-ChatGPT-Effort: MEDIUM  
-Execution-Shape-Policy: `docs/decisions/D080-orchestrator-execution-shape-control.md`  
-Closure-Policy: `docs/decisions/D069-orchestrator-next-task-response-closure.md`  
-Prospective-T066-Stage5-Plan: `docs/orchestrator/T066-STAGE5-EXECUTION-SHAPE.md`  
-Prospective-T066-Stage5-ChatGPT-Effort: HIGH  
-Prospective-T066-Stage5-Execution-Shape: MULTI_EXECUTION  
-Prospective-T066-Stage5-Execution-Sequence: `T066-S5-E1 -> T066-S5-E2 -> T066-S5-E3 -> T066-S5-E4`  
+Next-Execution-Shape: SINGLE_EXECUTION  
+Objective-Sequence: `docs/orchestrator/R029-OBJECTIVE-SEQUENCE.md`  
+Current-Research: `docs/research/R029-AGENTS-SKILL-ARCHITECTURE-REFACTOR-RESEARCH.md`  
+Current-Research-State: COMPLETE / EVALUATING  
+Current-Decision: none  
 Active-Executor: none  
-Executor-Launch-State: NOT_AUTHORIZED_PENDING_SEPARATE_HUMAN_LAUNCH  
-Task-Contract: `docs/tasks/T066-r027-chatgpt-codex-efficiency-evaluation.md`  
-Current-Research: `docs/research/R028-R027-DEEP-REVALIDATION-AND-LEAN-EXECUTOR.md`  
-Current-Decision: `docs/decisions/D079-lean-executor-qualification-and-adoption-boundary.md`  
-T066-Scientific-Branch: `test/r027-chatgpt-codex-efficiency-v1`  
-T066-Scientific-Branch-State: PREEXISTING_DIVERGED_UNCONSUMED_CONFLICT  
-T066-Scientific-Branch-Head: `dc8fd229bf403fbc2085ee906740f0cad63cbd43`  
-T066-Scientific-Branch-Merge-Base-With-Develop: `6d4a698832cf08bded0351b0046fe5b2bf38b1c0`  
-T066-Scientific-Branch-Relation-To-Bootstrap-Develop: `ahead 5 / behind 1`  
-T066-Scientific-Branch-PR: none found  
-Provider-Model-Calls-Consumed-By-This-Repair: `0`  
-Scored-Observations-Created-By-This-Repair: `0`  
-Prior-Frozen-Work-Unit: T065 / T023 v17  
-T065-Scientific-Branch: `test/t023-selective-capability-routing-evals-v17`  
-T065-Scientific-Branch-Head: `f1491dadd0f2327b58406d1d806a6632362b4639`  
-Provider-Model-Calls-Consumed-v17: `0`  
-Scientific-Observations-v17: `0`  
+Executor-Launch-State: NOT_AUTHORIZED  
+R029-Provider-Model-Calls: `0`  
+R029-Scored-Observations: `0`  
+Prior-Unselected-T066-Scientific-Branch: `test/r027-chatgpt-codex-efficiency-v1`  
+Prior-Unselected-T066-Scientific-Branch-State: PREEXISTING_DIVERGED_UNCONSUMED_CONFLICT  
 Chat-Closure: NEW_CHAT_RECOMMENDED
 
 ## Completed
 
-D080/D069 now require every qualifying Agent Governance project response to end with `Próxima Tarea` and exactly one `ChatGPT Effort: MEDIUM | HIGH`. The effort configures the next required ChatGPT intervention regardless of same-chat/cross-chat routing or intervening Human/Executor gates. `Execution Shape` remains conditional on a concrete material ChatGPT task.
+The Human Owner selected a research-only objective to determine how the overloaded source-product instruction architecture can be refactored toward a leaner root `AGENTS.md` plus progressively disclosed domain/transverse capabilities without promoting a decision or implementing the refactor.
 
-The Human Owner clarified after O290 that no successor material objective is selected yet. The prior T066 reconciliation selection is therefore withdrawn from the frontier. T066 remains blocked by its pre-existing divergent scientific branch, but that reconciliation is not the selected next objective.
+R029 is analytically complete and remains `Decision-State: EVALUATING`. It records the external evidence, current-root semantic inventory, candidate lean-root/Maintainer/transverse-capability architecture, and pre-decision safety/evaluation gates.
 
-No T066 scientific-branch mutation, Stage 5 materialization, Executor/Codex launch, provider/model call or scored observation was performed by this closure correction.
+The Human Owner then determined that the follow-up was too broad for one ChatGPT session. Under D067, the follow-up has therefore been decomposed into ten independent short Human objectives in:
 
-## Open Question / Blocker
+`docs/orchestrator/R029-OBJECTIVE-SEQUENCE.md`
 
-The pre-existing T066 branch conflict remains unresolved and continues to block new T066 Stage 5 materialization if T066 is selected later:
+Each objective:
+
+- is executed in its own fresh ChatGPT Orchestrator chat;
+- has one observable completion gate and durable output;
+- has its own D080 execution-shape classification;
+- returns to a Human gate before any successor begins;
+- does not automatically authorize the next objective.
+
+The selected immediate successor is:
 
 ```text
-develop
-  -> T066 Stage 5 remains blocked by unresolved branch-state conflict
-
-test/r027-chatgpt-codex-efficiency-v1@dc8fd229...
-  -> pre-existing divergent Freeze A materialization / no PR found
+R029-O1 — Root preservation-map audit
+ChatGPT Effort: MEDIUM
+Execution Shape: SINGLE_EXECUTION
 ```
 
-No disposition of that branch is currently selected.
+O1 is limited to auditing/classifying preservation coverage for the current root `AGENTS.md`. It does not design the lean root, decide Skill topology, rewrite `AGENTS.md`, create Skills, or run provider/model evaluation.
+
+No Executor/Codex launch, provider/model call, scored observation, root `AGENTS.md` mutation, Skill implementation, normative decision, or T066 scientific-branch mutation was performed in this predecessor chat.
+
+## Persisted objective sequence
+
+```text
+R029-O1  Root preservation-map audit
+R029-O2  Lean-root responsibility contract
+R029-O3  Maintainer Skill domain boundary
+R029-O4  repository-change-control candidate
+R029-O5  upstream-version-revalidation candidate
+R029-O6  research-evidence-traceability candidate
+R029-O7  durable-work-checkpoint candidate
+R029-O8  executor-launch-handoff candidate
+R029-O9  Workspace-isolation placement
+R029-O10 Candidate-topology synthesis and evaluation plan
+          -> HUMAN DECISION GATE
+```
+
+O1 is `SELECTED_NEXT`; O2-O10 remain `NOT_STARTED`. Later objectives become only eligible after their prerequisites are durably completed and the Human Owner explicitly selects them.
 
 ## Next Action
 
-Stop this predecessor chat under D067 after integrating this frontier correction.
+Integrate PR #391 if its final Markdown diff remains coherent and preserves the research-only boundary.
 
-In a fresh chat, perform only the normal bootstrap from current `develop`: read current `develop`, `AGENTS.md`, and this checkpoint. Do not infer or begin any material objective from backlog, prior chat, T066 state or Project Memory. After bootstrap, wait for the Human Owner to state the next objective.
+Then retire this predecessor chat under D067. In a fresh successor chat, perform the normal bootstrap from current `develop`, verify the expected canonical identities, load the O1 minimum context, and execute **only R029-O1**.
 
-## Next Chat Minimum Load
+Do not execute O1 in this predecessor chat.
 
-After normal bootstrap (`develop`, `AGENTS.md`, this checkpoint), load no objective-specific project history until the Human Owner supplies the next objective. Once supplied, derive the minimum additional load from the current checkpoint and controlling authority for that objective.
+## Next Chat Minimum Load — R029-O1
 
-Do not reconstruct authority from prior chat history. Git/GitHub remains authoritative.
+After normal bootstrap (`develop`, `AGENTS.md`, this checkpoint), load only:
+
+- `docs/orchestrator/R029-OBJECTIVE-SEQUENCE.md` — R029-O1 section and global execution rules;
+- `docs/research/R029-AGENTS-SKILL-ARCHITECTURE-REFACTOR-RESEARCH.md` — current semantic inventory/classification baseline;
+- current root `AGENTS.md` — authoritative material being audited.
+
+Load D067/D080 only if a lifecycle/execution-shape conflict must be resolved. Do not preload the Maintainer Skill contract or individual transverse-candidate context during O1 unless a concrete classification conflict requires it.
+
+## R029-O1 completion gate
+
+O1 completes only when every material semantic unit in the current root `AGENTS.md` has exactly one explicit preservation classification/destination, with duplicate, ambiguous, conflicting, or uncovered semantics recorded explicitly rather than silently resolved.
+
+The durable O1 result must be persisted before the Human Owner is asked whether to select R029-O2.
 
 ## Do Not Load Or Do
 
-- Do not infer T066 reconciliation, T066 Stage 5, T065 resume or any backlog item as the next objective.
-- Do not begin material work before the Human Owner explicitly supplies the next objective.
-- Do not consume, merge, reset, rename, delete or overwrite `test/r027-chatgpt-codex-efficiency-v1` without a later explicit Human-selected objective and canonical revalidation.
-- Do not treat the branch's existing Freeze A commits as accepted merely because they exist.
-- Do not omit `ChatGPT Effort` from qualifying project-response closure merely because the next objective is not yet selected or because a new chat is required.
-- Do not invent `Execution Shape` while no concrete material ChatGPT task exists.
-- Do not infer fixed minute budgets, timeout guarantees, token ceilings or provider session-duration claims from effort or execution shape.
-- Do not launch Codex/another Executor or make provider/model calls without later explicit authorization.
-- Do not mutate `develop` directly; use the verified topic/scientific-branch + PR path required by the active workflow.
+- Do not begin R029-O2 through R029-O10 in the O1 chat.
+- Do not treat the objective sequence as automatic authorization for later objectives.
+- Do not treat R029 findings as an accepted architecture decision.
+- Do not rewrite root `AGENTS.md` from R029/O1.
+- Do not author, package, install, or release new transverse Skills.
+- Do not split the approved Maintainer Skill into role-named ChatGPT/Codex top-level Skills.
+- Do not change D052/D053/D054/D055/D065/D066/D068/D076/D077 or current file/Markdown ownership implicitly through this evaluation sequence.
+- Do not launch Codex/another Executor or consume provider/model calls without later explicit authority.
+- Do not infer T066 reconciliation, T066 Stage 5, T065 resume, or another backlog item as selected work.
+- Do not consume, merge, reset, rename, delete, or overwrite `test/r027-chatgpt-codex-efficiency-v1` without a later explicit Human-selected objective and canonical revalidation.
+- Do not mutate `develop` directly; use the verified topic-branch + PR path required by the active workflow.
