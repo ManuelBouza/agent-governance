@@ -1,94 +1,99 @@
 # Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O311  
+Checkpoint-Sequence: O312  
 Date: 2026-09-13  
 Canonical-Branch: `develop`  
-Predecessor-Work-Unit: R030 — Orchestrator `go` approval protocol research  
-Predecessor-Objective-Status: OBJECTIVE_COMPLETE  
-State: HANDOFF_READY  
-Chat-Closure: HANDOFF_READY  
-Human-Selected-Next-Objective: Execute the R029-S10 pre-decision evaluation as one coherent evaluation objective: exercise the candidate Skill architecture against its defined coverage, routing, progressive-disclosure, cold-start, authority-preservation and anti-sprawl criteria; produce a durable decision-readiness disposition; do not adopt or implement the candidate architecture during this objective.  
-Bootstrap-Anchor-HEAD: `d61f5c3bc5dbefd5ad70be85ecac4a98117cbbd4`  
-Bootstrap-Expected-HEAD-Semantics: the exact expected canonical `develop` HEAD is supplied by the predecessor transport prompt after this HANDOFF_READY checkpoint is integrated; do not compare the successor against this checkpoint's own pre-integration anchor as though it were the final canonical HEAD.  
-Next-Chat-Minimum-Load: `AGENTS.md`; `docs/orchestrator/CHECKPOINT.md`; `docs/decisions/D067-objective-scoped-orchestrator-chat-lifecycle.md`; `docs/decisions/D080-orchestrator-execution-shape-control.md`; `docs/decisions/D081-execution-flow-grouping-and-in-cycle-experimentation.md`; `docs/research/R029-AGENTS-SKILL-ARCHITECTURE-REFACTOR-RESEARCH.md`; `docs/orchestrator/R029-S10-CANDIDATE-TOPOLOGY-EVALUATION-PLAN.md`; load R029 S1-S9 artifacts only when a concrete evaluation trace or conflict requires them; load R030 only if a concrete interaction-policy conflict requires it  
-Next-ChatGPT-Effort: HIGH  
-Next-Execution-Shape: SINGLE_EXECUTION  
-Current-Research: `docs/research/R030-ORCHESTRATOR-GO-APPROVAL-PROTOCOL.md`  
-Current-Research-State: COMPLETE  
-Current-Research-Decision-State: EVALUATING  
-Normative-Go-Protocol-Adopted: no  
-Go-Protocol-Implementation-Authorized: no  
+Current-Work-Unit: R029 pre-decision candidate-topology evaluation  
+State: ACTIVE  
+Chat-Closure: KEEP_CURRENT_CHAT  
+R029-Evaluation-State: BLOCKED_PENDING_EVIDENCE  
+R029-Decision-State: EVALUATING  
+R029-Evaluation-Evidence: `docs/orchestrator/R029-PRE-DECISION-EVALUATION.md`  
+Provider-Model-Call-State: NOT_AUTHORIZED  
 Active-Executor: none  
 Executor-Launch-State: NOT_AUTHORIZED  
-Provider-Model-Call-State: NOT_AUTHORIZED  
-R029-Evaluation-State: SELECTED_NOT_STARTED  
-R029-Decision-State: EVALUATING  
-T066-Stage5-Prospective-Execution-Shape: SINGLE_EXECUTION  
+Next-ChatGPT-Effort: HIGH  
+Next-Execution-Shape: MULTI_EXECUTION  
+Immediate-Next-Execution-Unit: `E2` host-parity evaluation, but only after the Human gate below is explicitly authorized  
+Execution-Plan: `docs/orchestrator/R029-PRE-DECISION-EVALUATION.md` section `Execution-shape reclassification caused by the gate`  
+Next-Action: Human Owner must separately decide whether to authorize an evaluation-only runnable candidate representation and the provider/model calls required for the frozen ChatGPT/Codex host-parity corpus. Until then, stop; do not simulate host evidence.  
+Next-Chat-Minimum-Load: `AGENTS.md`; `docs/orchestrator/CHECKPOINT.md`; `docs/decisions/D067-objective-scoped-orchestrator-chat-lifecycle.md`; `docs/decisions/D080-orchestrator-execution-shape-control.md`; `docs/decisions/D081-execution-flow-grouping-and-in-cycle-experimentation.md`; `docs/research/R029-AGENTS-SKILL-ARCHITECTURE-REFACTOR-RESEARCH.md`; `docs/orchestrator/R029-S10-CANDIDATE-TOPOLOGY-EVALUATION-PLAN.md`; `docs/orchestrator/R029-PRE-DECISION-EVALUATION.md`; load R029 S1-S9 only for a concrete trace/conflict  
 T066-Stage5-State: NOT_STARTED  
 Prior-Unselected-T066-Scientific-Branch: `test/r027-chatgpt-codex-efficiency-v1`  
 Prior-Unselected-T066-Scientific-Branch-State: PREEXISTING_DIVERGED_UNCONSUMED_CONFLICT
 
-## Completed predecessor objective
+## Completed provider-free evaluation unit
 
-R030 is complete as research evidence and remains `Decision-State: EVALUATING`. Its proposed `go` mechanism is not normative policy and is not implemented.
+The Human Owner selected the R029-S10 pre-decision evaluation with `ChatGPT Effort: HIGH` and initial `Execution Shape: SINGLE_EXECUTION`.
 
-The earlier D081 execution-flow rule remains controlling: trace/decomposition subtasks are not automatically execution units, and related work remains grouped when no material dependency, gate, failure-domain or durable-resumption boundary requires separation.
+Bootstrap verified the exact expected `develop` HEAD `9a84ddb985675501569523cde2c8faed97ad9538`, checkpoint O311 and `HANDOFF_READY` state before material work. The provider-free evaluation then executed the S10 strata as one coherent flow.
 
-## Selected successor objective
+Durable results are in `docs/orchestrator/R029-PRE-DECISION-EVALUATION.md`:
 
-The Human Owner selected continuation of the R029 architecture line by executing the pre-decision evaluation plan defined in R029-S10.
+- all 79 audited S1 semantic units remain covered (`39 ROOT + 20 ROOT+ROUTE + 20 ROUTE`), with no missing or duplicated treatment IDs and no delete-without-replacement unit;
+- the five retained transverse candidates have distinct positive/negative trigger centers, postconditions and authority boundaries in the static contract corpus;
+- the current root `AGENTS.md` baseline is 34,567 bytes and the candidate demonstrates substantial structural offloading, while exact future root/Skill-catalog/context bytes remain unmeasurable before materialization;
+- cold-start/frontier and adversarial authority-preservation cases pass statically and fail closed by contract;
+- anti-sprawl analysis continues to justify exactly five top-level transverse candidates, with workspace isolation subordinate to `executor-launch-handoff` and dependent on repository-change/local policy only where needed;
+- no provider/model observation was simulated or claimed.
 
-The successor must treat the evaluation strata/scenarios as trace units inside one coherent evaluation execution unless a real material gate is discovered. Do not recreate the former one-subtask-per-execution pattern.
+The provider-free evidence does not identify a topology defect requiring revision.
 
-The evaluation objective is evidence generation only. It must not:
+## Material gate and execution-shape reclassification
 
-- rewrite or slim root `AGENTS.md`;
-- create/package/install/release transverse Skills;
-- alter the approved Maintainer Skill contract;
-- adopt a normative architecture Decision merely because the candidate performs well;
-- launch Codex/Executor or consume provider/model calls without a separate explicit authorization;
-- mutate T066 or its retained scientific branch.
+R029-S10 also requires actual ChatGPT/Codex host-parity evidence when model/host routing behavior is evaluated. The current authority forbids provider/model calls and forbids creating/installing the candidate Skills.
 
-Where R029-S10 defines host-parity/provider-dependent evaluation, the successor must not simulate evidence. Execute all authorized provider-free evaluation, identify the exact remaining gated evidence if any, and stop at the applicable Human/provider gate rather than claiming unsupported completion.
+This is a real D080/D081 dependency/authorization gate. The initial `SINGLE_EXECUTION` therefore reclassifies prospectively for the remaining objective:
 
-## Evaluation completion condition
+```text
+E1  provider-free evaluation
+    -> COMPLETE
 
-The successor must durably produce an evidence-backed disposition that answers, at minimum:
+G1  Human authorization for evaluation-only candidate representation + provider/model calls
+    -> NOT AUTHORIZED
 
-1. whether all 79 audited root semantic units remain covered with zero authority/safety loss;
-2. whether the five transverse candidates have distinct trigger/anti-trigger and postcondition boundaries;
-3. whether the candidate materially reduces always-loaded/duplicated context without hidden authority gaps;
-4. whether cold-start/frontier reconstruction remains fail-closed;
-5. whether adversarial attempts to turn Skills into authority are rejected;
-6. whether anti-sprawl constraints still justify exactly the retained top-level candidate set;
-7. whether ChatGPT/Codex host parity is sufficiently evidenced under current authority or remains a separately gated requirement;
-8. whether the candidate is `READY_FOR_NORMATIVE_DECISION`, `REVISE_BEFORE_DECISION`, or `BLOCKED_PENDING_EVIDENCE`.
+E2  frozen paired ChatGPT/Codex host-parity evaluation
+    -> NOT STARTED
 
-A `READY_FOR_NORMATIVE_DECISION` disposition is not itself adoption. Any normative promotion still requires a separate explicit Human/normative decision.
+E3  convergence of host evidence with A-G and final decision-readiness disposition
+    -> NOT STARTED
+```
 
-## Successor bootstrap verification
+Current durable disposition is `BLOCKED_PENDING_EVIDENCE`, not `REVISE_BEFORE_DECISION` and not `READY_FOR_NORMATIVE_DECISION`.
 
-Before material evaluation work, the successor MUST:
+## Exact pending evidence
 
-1. fetch current `develop` HEAD from GitHub;
-2. read current `AGENTS.md` and `docs/orchestrator/CHECKPOINT.md` from that exact `develop`;
-3. compare observed `develop` HEAD and checkpoint sequence with the exact expected values carried by the predecessor transport prompt;
-4. verify this checkpoint remains `HANDOFF_READY` for the R029 pre-decision evaluation objective;
-5. load the minimum controlling references listed above;
-6. load R029 S1-S9 only as needed for a concrete trace/conflict;
-7. if a material mismatch exists, stop as `BOOTSTRAP_MISMATCH` rather than silently reconciling it.
+The host-parity gate must use one frozen candidate representation and persist:
 
-## Preserved frontier
+1. exact root/routing metadata or separately authorized evaluation fixture;
+2. exact ChatGPT host/model/version and Codex/Executor host/model/version;
+3. paired candidate-positive, anti-trigger, domain-composition and ambiguity scenarios covering all five candidates;
+4. observed primary and composed routes;
+5. semantic authority/postcondition outcomes, not only Skill-name selection;
+6. false-positive/false-negative ledger;
+7. zero authority/safety violations;
+8. durable provider/model evidence linked to R029 without automatic normative promotion.
 
-R030 remains research-only and does not become policy by being present in this checkpoint.
+The minimum frozen 12-pair parity subset is defined in `docs/orchestrator/R029-PRE-DECISION-EVALUATION.md`.
 
-T066 remains unselected and not started. Its pre-existing scientific branch conflict remains unconsumed. No Executor/provider/model call is authorized by this handoff.
+## Preserved boundaries
 
-## Do Not Do In This Predecessor Chat
+- R029 remains research/evaluation only; no architecture is adopted.
+- Root `AGENTS.md` remains unchanged.
+- No transverse Skill has been created, packaged, installed, published or activated.
+- Maintainer Skill contract remains unchanged.
+- No Executor/Codex session has been launched.
+- Provider/model calls remain `0` for this evaluation.
+- T066 Stage 5 remains unselected/not started and its retained scientific branch remains unconsumed.
+- R030 remains research-only and unimplemented.
 
-- Do not execute the R029 evaluation here.
-- Do not adopt or implement the R029 candidate architecture here.
-- Do not adopt or implement R030 here.
-- Do not launch Executor/Codex or consume provider/model calls.
-- Do not start T066 Stage 5 or mutate its retained branch.
+## Do Not Do Before Human Gate
+
+- Do not simulate ChatGPT/Codex host-parity evidence.
+- Do not create/install evaluation or production Skills without separate explicit authority.
+- Do not consume provider/model calls or launch an Executor without separate explicit authority.
+- Do not convert `BLOCKED_PENDING_EVIDENCE` into normative adoption.
+- Do not rewrite/slim `AGENTS.md`.
+- Do not start T066 Stage 5 or mutate `test/r027-chatgpt-codex-efficiency-v1`.
+- Do not adopt or implement R030.
