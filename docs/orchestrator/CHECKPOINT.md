@@ -1,73 +1,95 @@
 # Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O306  
+Checkpoint-Sequence: O307  
 Date: 2026-09-13  
 Canonical-Branch: `develop`  
-Current-Work-Unit: R029 — incremental Skill-architecture evaluation  
-State: WAITING_FOR_NEXT_OBJECTIVE  
-Current-Objective: `R029 — evaluate the Skill-architecture refactor without adopting or implementing it`  
-Objective-Status: OBJECTIVE_COMPLETE  
-Human-Disposition: `ACCEPTED_AS_BASIS_FOR_LATER_NORMATIVE_DECISION`  
-Accepted-Subtasks: `R029-S1`, `R029-S2`, `R029-S3`, `R029-S4`, `R029-S5`, `R029-S6`, `R029-S7`, `R029-S8`, `R029-S9`, `R029-S10`  
-Completed-Artifact: `docs/orchestrator/R029-S10-CANDIDATE-TOPOLOGY-EVALUATION-PLAN.md`  
-Current-Research: `docs/research/R029-AGENTS-SKILL-ARCHITECTURE-REFACTOR-RESEARCH.md`  
-Current-Research-State: COMPLETE / EVALUATING  
-Current-Decision: none  
-Next-Action: Wait for the Human Owner to provide a materially new objective. Do not infer or start a normative architecture Decision, root refactor, Skill implementation, D080 refinement, T066 work, Executor launch, or provider/model evaluation automatically.  
+Predecessor-Work-Unit: R029 — incremental Skill-architecture evaluation  
+Predecessor-Objective-Status: OBJECTIVE_COMPLETE  
+State: HANDOFF_READY  
+Chat-Closure: HANDOFF_READY  
+Human-Selected-Next-Objective: Formalize and apply execution-flow refinement so trace/decomposition subtasks are not automatically execution units, related subtasks are grouped into one execution when no material gate requires separation, and Human-requested in-cycle changes may be applied locally as explicitly experimental adaptations without breaking the active task flow; at cycle close, experimental adaptations are evaluated against the objective/acceptance evidence and only successful ones may be promoted through an explicit normative decision and later materialization.  
+Expected-Canonical-HEAD: `f281cd0c62515c6f2b03e70df1902f544dde83c2`  
+Next-Chat-Minimum-Load: `AGENTS.md`; `docs/orchestrator/CHECKPOINT.md`; `docs/decisions/D067-objective-scoped-orchestrator-chat-lifecycle.md`; `docs/decisions/D080-orchestrator-execution-shape-control.md`; load R029 artifacts only if a concrete conflict requires them  
+Next-ChatGPT-Effort: HIGH  
+Next-Execution-Shape: SINGLE_EXECUTION  
 Active-Executor: none  
 Executor-Launch-State: NOT_AUTHORIZED  
-R029-Provider-Model-Calls: `0`  
-R029-Scored-Observations: `0`  
 Prior-Unselected-T066-Scientific-Branch: `test/r027-chatgpt-codex-efficiency-v1`  
-Prior-Unselected-T066-Scientific-Branch-State: PREEXISTING_DIVERGED_UNCONSUMED_CONFLICT  
-Chat-Closure: WAITING_FOR_NEXT_OBJECTIVE
+Prior-Unselected-T066-Scientific-Branch-State: PREEXISTING_DIVERGED_UNCONSUMED_CONFLICT
 
-## Completed objective
+## Completed predecessor objective
 
-The Human Owner accepted the complete R029 candidate topology at the O305 Human Decision Gate on 2026-09-13 as the basis for a possible later normative architecture decision.
+R029 is complete. The Human Owner accepted its candidate topology only as the basis for a possible later normative architecture decision. R029 remains `Decision-State: EVALUATING`; no root `AGENTS.md` rewrite, transverse Skill implementation, Executor/provider/model call, scored observation or T066 mutation was authorized.
 
-This resolves the R029 objective. It does **not** itself create a normative Decision Record or authorize implementation.
+## Successor objective semantics
 
-Accepted candidate topology:
+The successor must distinguish three levels that must not be conflated:
 
 ```text
-lean always-loaded AGENTS.md
-  + one Agent-Governance Maintainer Skill
-       -> Orchestrator route
-       -> Executor route
-  + repository-change-control
-  + upstream-version-revalidation
-  + research-evidence-traceability
-  + durable-work-checkpoint
-  + executor-launch-handoff
-       -> workspace-isolation internal route/reference
-            -> repository-change-control / local repository policy dependency
-  + host-specific adapters/references where mechanics differ
-  + deterministic scripts / CI / narrow references
+subtask / trace unit
+    != execution unit
+    != normative decision
 ```
 
-The acceptance preserves these boundaries:
+### 1. Execution grouping
 
-- R029 remains `Decision-State: EVALUATING` because D057 requires an accepted normative artifact before `DECIDED`;
-- root `AGENTS.md` has not been rewritten;
-- no transverse Skill has been created, packaged, installed or released;
-- the approved Maintainer Skill has not been split by role;
-- no Executor/Codex session or provider/model call was launched;
-- no T066 work or scientific-branch mutation occurred.
+Multiple consecutive subtasks SHOULD normally remain inside one execution when they share the same authority, context and invariants and no earlier result must become a controlling prerequisite through a material freeze, verification, revalidation, Human acceptance, distinct failure-domain boundary or durable-resumption gate.
 
-## D067 closure state
+Do not manufacture execution boundaries merely because trace IDs or analytical subtasks exist. A materially small task may still require multiple executions when a real gate exists; a task spanning many files/subtasks may remain one execution when it is one coherent bounded unit.
 
-R029 is `OBJECTIVE_COMPLETE`. Because the Human Owner has not yet supplied the next materially new objective, this chat is `WAITING_FOR_NEXT_OBJECTIVE`.
+### 2. In-cycle experimental adaptation
 
-A later objective supplied to this completed chat must be used only to construct a fail-closed successor bootstrap. This chat must not execute that new objective itself.
+If the Human Owner requests a change while an authorized execution/cycle is in progress, do not automatically terminate the objective, create a new chat, or promote the change into policy.
 
-## Do Not Load Or Do
+When the requested change is compatible with the active objective and authority envelope, it may be applied locally as an explicit `EXPERIMENTAL_IN_CYCLE` adaptation. The adaptation must be durably traceable enough to identify:
 
-- Do not treat Human acceptance of the R029 candidate as a normative architecture Decision.
-- Do not create the normative architecture Decision Record automatically.
-- Do not rewrite root `AGENTS.md` or create/package/install/release transverse Skills.
-- Do not launch Codex/another Executor or consume provider/model calls.
-- Do not mutate T066 or its unselected scientific branch.
-- Do not begin any materially new objective in this chat; follow D067 successor-bootstrap semantics.
-- Do not mutate `develop` directly; use topic branch + PR.
+- what changed and why;
+- which execution/cycle it affected;
+- which prior assumption/rule remained unchanged versus locally varied;
+- what evidence will determine whether the adaptation helped, harmed or remained inconclusive;
+- that the adaptation is not yet normative authority.
+
+A change that materially alters the Human objective, authority/ownership, accepted specification/Design, safety envelope, or controlling acceptance meaning remains a stop/re-entry/new-objective boundary; `EXPERIMENTAL_IN_CYCLE` must not be used to bypass those gates.
+
+### 3. End-of-cycle promotion gate
+
+At the end of the relevant cycle, evaluate each experimental adaptation against the controlling objective, acceptance criteria and observed evidence.
+
+```text
+experimental adaptation
+    -> evidence at cycle close
+    -> retain / revise / reject / recommend promotion
+    -> explicit Human/normative decision if promotion is desired
+    -> materialize only after that decision authorizes it
+```
+
+Successful local experimentation does not automatically become product policy. Normative promotion must remain explicit and durable under the applicable research/decision traceability rules.
+
+## Successor bootstrap verification
+
+Before material work, the successor MUST:
+
+1. fetch current `develop` HEAD from GitHub;
+2. read current `AGENTS.md` from that `develop`;
+3. read current `docs/orchestrator/CHECKPOINT.md`;
+4. compare observed HEAD/checkpoint with the expected bootstrap identities above;
+5. read D067 and D080;
+6. load no additional history unless the checkpoint or a concrete conflict requires it;
+7. if a material mismatch exists, stop as `BOOTSTRAP_MISMATCH` rather than silently reconciling it.
+
+## Authorized successor scope
+
+The successor may formalize the execution-grouping and in-cycle experimental-adaptation rule and integrate the smallest coherent documentation/decision changes needed to make it durable.
+
+It must preserve the distinction between execution geometry and ChatGPT reasoning effort. It must not introduce minute/token/time budgets.
+
+It may apply the resulting rule prospectively to future planned work, including T066 Stage 5 geometry, but MUST NOT start T066 Stage 5 materialization, create its scientific branch, launch Executor/Codex, consume provider/model calls or mutate the preexisting unselected T066 branch unless separately authorized.
+
+## Do Not Do In This Predecessor Chat
+
+- Do not execute the successor objective here.
+- Do not modify D080 or other normative policy here beyond this successor bootstrap.
+- Do not start T066 work.
+- Do not launch an Executor or consume provider/model calls.
+- Do not treat `EXPERIMENTAL_IN_CYCLE` as authority to bypass specification, ownership, safety, Human or acceptance gates.
