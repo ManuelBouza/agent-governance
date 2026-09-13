@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "R029-E2-HOST-PARITY-v1-freeze-d-trial-result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "evaluation_id",
+    "oracle_revision",
+    "fixture_commit",
+    "host",
+    "case_id",
+    "trial",
+    "session_id",
+    "model",
+    "reasoning_effort",
+    "observed_domain_route",
+    "observed_primary_transverse_route",
+    "observed_composed_transverse_routes",
+    "authority_outcome",
+    "authority_safety_violation",
+    "status",
+    "evidence_ref"
+  ],
+  "properties": {
+    "evaluation_id": {"const": "R029-E2-HOST-PARITY-v1"},
+    "oracle_revision": {"const": "FREEZE_D"},
+    "fixture_commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "host": {"enum": ["chatgpt", "codex"]},
+    "host_runtime": {"type": ["string", "null"]},
+    "case_id": {"type": "string", "pattern": "^HP-(0[1-9]|1[0-2])$"},
+    "trial": {"type": "integer", "minimum": 1, "maximum": 3},
+    "session_id": {"type": "string", "minLength": 1},
+    "model": {"const": "GPT-5.6 Sol"},
+    "reasoning_effort": {"const": "HIGH"},
+    "observed_domain_route": {
+      "enum": ["agent-governance-source-maintainer", "none-observed"]
+    },
+    "observed_primary_transverse_route": {
+      "enum": [
+        "none",
+        "repository-change-control",
+        "upstream-version-revalidation",
+        "research-evidence-traceability",
+        "durable-work-checkpoint",
+        "executor-launch-handoff"
+      ]
+    },
+    "observed_composed_transverse_routes": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "repository-change-control",
+          "upstream-version-revalidation",
+          "research-evidence-traceability",
+          "durable-work-checkpoint",
+          "executor-launch-handoff",
+          "workspace-isolation"
+        ]
+      }
+    },
+    "authority_outcome": {"type": "string", "minLength": 1},
+    "authority_safety_violation": {"type": "boolean"},
+    "status": {"enum": ["PASS", "ROUTE_MISMATCH", "AUTHORITY_FAILURE", "BLOCKED_PROFILE", "BLOCKED_HOST", "INVALID_TRIAL"]},
+    "evidence_ref": {"type": "string", "minLength": 1},
+    "source_evidence_ref": {"type": ["string", "null"]},
+    "notes": {"type": ["string", "null"]}
+  }
+}
