@@ -1,18 +1,18 @@
 # Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O303  
+Checkpoint-Sequence: O304  
 Date: 2026-09-13  
 Canonical-Branch: `develop`  
 Current-Work-Unit: R029 — incremental Skill-architecture evaluation  
-State: HUMAN_REVIEW_GATE  
+State: HUMAN_DECISION_GATE  
 Current-Objective: `R029 — evaluate the Skill-architecture refactor without adopting or implementing it`  
-Accepted-Subtasks: `R029-S1`, `R029-S2`, `R029-S3`, `R029-S4`, `R029-S5`, `R029-S6`, `R029-S7`, `R029-S8`  
-Completed-Subtask: `R029-S9 — Workspace-isolation placement`  
-Completed-Artifact: `docs/orchestrator/R029-S9-WORKSPACE-ISOLATION-PLACEMENT.md`  
-Completed-Disposition: `INTERNAL_ROUTE`  
-Candidate-Next-Subtask: `R029-S10 — Candidate-topology synthesis and evaluation plan`  
-Next-Action: Human Owner reviews R029-S9. Do not execute R029-S10 unless explicitly accepted/selected for a later work session of this same chat.  
+Accepted-Subtasks: `R029-S1`, `R029-S2`, `R029-S3`, `R029-S4`, `R029-S5`, `R029-S6`, `R029-S7`, `R029-S8`, `R029-S9`  
+Completed-Subtask: `R029-S10 — Candidate-topology synthesis and evaluation plan`  
+Completed-Artifact: `docs/orchestrator/R029-S10-CANDIDATE-TOPOLOGY-AND-EVALUATION-PLAN.md`  
+Completed-Disposition: `CANDIDATE_TOPOLOGY_READY_FOR_HUMAN_DECISION`  
+Candidate-Next-Subtask: none  
+Next-Action: Human Owner reviews the complete R029 candidate topology and chooses `ADOPT_FOR_DESIGN`, `REVISE_AND_REEVALUATE`, or `REJECT_TOPOLOGY`. Do not create a normative Decision, rewrite `AGENTS.md`, implement Skills, launch an Executor, consume provider/model calls, or mutate T066 without separate explicit authorization.  
 Next-ChatGPT-Effort: HIGH  
 Session-Sequence: `docs/orchestrator/R029-OBJECTIVE-SEQUENCE.md`  
 Current-Research: `docs/research/R029-AGENTS-SKILL-ARCHITECTURE-REFACTOR-RESEARCH.md`  
@@ -28,64 +28,72 @@ Chat-Closure: KEEP_CURRENT_CHAT_ACTIVE
 
 ## Completed
 
-The Human Owner accepted R029-S8 and explicitly selected R029-S9 in this same ChatGPT chat.
+The Human Owner accepted R029-S9 and explicitly selected R029-S10 in this same ChatGPT chat.
 
-R029-S9 was executed from `develop@54b7350b49d6b412e1a9e8395f8f8358140b72d6` using accepted S4/S8 context plus D058 and `docs/EXECUTOR-SESSION-WORKTREE-HYGIENE.md`.
+R029-S10 was executed from `develop@097a15a41326d914a07f3eb6122df8caa5194f4e` using the accepted S1-S9 analytical chain.
 
-S9 result:
+S10 result:
 
-- reusable workspace-isolation intent: bind one delegated writable work unit to one exclusive attributable writable surface, detect collisions/ambiguous local state before mutation, preserve that attribution through continuation, and retire the surface safely after its review/integration lifecycle;
-- the distinguishing trigger is delegated writable-execution attribution and continuation safety, not generic Git/worktree usage;
-- standalone transverse Skill promotion is rejected as unnecessary routing/context proliferation;
-- primary placement is `executor-launch-handoff` as an internal route/reference because S8 already owns executor/session binding, launch readiness, continuation ambiguity and durable return lifecycle;
-- `repository-change-control` remains the dependency/reference for branch/base/integration and repository-local retirement constraints;
-- Agent Governance retains D058/D060, exact worktree/coordinator invariants, primary-checkout convergence, ACTIVE/RETAIN/REVIEW/DELETE vocabulary, branch cleanup and D054 mechanics ownership domain-side;
-- analytical disposition: `INTERNAL_ROUTE`;
-- no root rewrite, Skill implementation, Executor/provider/model call, normative adoption or T066 mutation occurred.
+- synthesizes one bounded candidate topology consisting of a lean always-loaded root, the existing one-top-level Maintainer Skill with Orchestrator/Executor internal routes, and five transverse candidate capabilities;
+- retained transverse candidates are `repository-change-control`, `upstream-version-revalidation`, `research-evidence-traceability`, `durable-work-checkpoint`, and `executor-launch-handoff`;
+- workspace isolation remains an internal route/reference under `executor-launch-handoff`, consuming `repository-change-control`/repository-local policy when branch/base/integration/retirement semantics are needed;
+- the lean root preserves the S2 pre-routing responsibility contract and all S1 semantics remain mandatory/reachable;
+- Agent Governance-specific decisions, stages, Task Contracts, checkpoint/research schemas, release/branch rules, testing architecture and adapters remain Maintainer/domain-side;
+- transverse Skills remain authority-neutral and host-neutral at the semantic level;
+- progressive disclosure loads domain adapters/references and deterministic/host mechanics only when required;
+- anti-sprawl rules reject generic coding/testing/Git/Markdown/role-named Skills and standalone workspace-isolation;
+- S10 defines a future pre-decision/pre-implementation evaluation plan covering semantic preservation, pre-routing safety, routing precision, authority leakage, context efficiency, portability, no-Skill degradation, composition/non-overlap and maintainability;
+- analytical result: `CANDIDATE_TOPOLOGY_READY_FOR_HUMAN_DECISION`;
+- no root rewrite, Skill implementation, Executor/provider/model call, scored observation, normative adoption or T066 mutation occurred.
 
-The S9 completion gate is satisfied analytically and durably. It now awaits Human review/acceptance before S10 becomes selectable.
+R029's planned S1-S10 analytical sequence is complete.
 
-## Current Human gate
-
-The Human Owner should review/accept or request correction of `docs/orchestrator/R029-S9-WORKSPACE-ISOLATION-PLACEMENT.md`.
-
-If accepted, the candidate next session is:
-
-```text
-R029-S10 — Candidate-topology synthesis and evaluation plan
-ChatGPT Effort: HIGH
-Execution Shape: SINGLE_EXECUTION
-```
-
-S10 is not selected automatically merely because S9 completed.
-
-## Candidate next-session scope — only if Human selects S10
-
-S10 synthesizes accepted S1-S9 results into one bounded candidate topology and pre-decision evaluation plan. It must reconcile lean-root responsibilities, Maintainer/domain boundaries, retained transverse candidates, S9 internal routing, progressive disclosure, host adapters, anti-sprawl rules, and evaluation criteria/prompts/trace checks. It must not adopt or implement the architecture.
-
-S10 must not rewrite `AGENTS.md`, implement/package/install Skills, launch an Executor, consume provider/model calls, create scored observations, promote R029 into normative policy, or mutate T066.
-
-After S10 completion, stop at the R029 Human Decision Gate. Any normative Decision Record or implementation requires separate Human authorization.
-
-## Session rule
+## Candidate topology
 
 ```text
-subtask complete
--> persist result and checkpoint
--> stop material work for that session
--> Human Owner reviews/selects next subtask
--> later session resumes this same chat
--> revalidate current develop/checkpoint
--> execute only the selected subtask
+Lean always-loaded AGENTS.md
+│
+├── Agent Governance Maintainer Skill
+│   ├── Orchestrator route
+│   └── Executor route
+│
+├── repository-change-control
+├── upstream-version-revalidation
+├── research-evidence-traceability
+├── durable-work-checkpoint
+└── executor-launch-handoff
+    └── workspace-isolation [internal route/reference]
+         └── consumes repository-change-control/repository-local policy as needed
 ```
+
+This topology is not accepted policy yet.
+
+## Human Decision Gate
+
+The Human Owner must now choose one direction:
+
+```text
+ADOPT_FOR_DESIGN
+    -> accept the topology direction
+    -> separately authorize normative Decision/design/evaluation/implementation work
+
+REVISE_AND_REEVALUATE
+    -> identify the topology assumption(s) to change
+    -> persist a bounded R029 revision before any adoption
+
+REJECT_TOPOLOGY
+    -> retain the current architecture
+    -> no implementation follows from R029
+```
+
+No choice is implied by completion of S10.
 
 ## Do Not Load Or Do
 
-- Do not begin R029-S10 until the Human Owner explicitly selects it.
-- Do not treat R029 findings as an accepted architecture decision.
+- Do not treat R029 findings as an accepted architecture Decision.
 - Do not rewrite root `AGENTS.md` or author/package/install/release transverse Skills.
 - Do not split the approved Maintainer Skill by role or change accepted ownership decisions implicitly.
 - Do not launch Codex/another Executor or consume provider/model calls.
-- Do not create scored provider/model observations as part of R029.
+- Do not create scored provider/model observations without separately authorized evaluation work.
 - Do not mutate the unselected T066 scientific branch.
-- Do not mutate `develop` directly; use topic branch + PR.
+- Do not mutate `develop` directly; any later authorized work must use the applicable topic-branch/PR workflow.
