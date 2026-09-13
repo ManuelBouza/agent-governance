@@ -10,8 +10,8 @@ Coordinator-ID: `AG | agent-governance | T067 | root-1`
 Base branch: `develop`  
 Controlling policy: D058, D059, D060, D064, `docs/OPERATION-CONTRACTS.md`, `docs/BRANCHING.md`, `docs/BRANCH-CLEANUP.md`, `docs/EXECUTOR-SESSION-WORKTREE-HYGIENE.md`  
 Contract-authoring branch: `docs/op072-t067-post-integration-closure`  
-Contract-authoring PR: `PENDING`  
-Durable receipt anchor: `PENDING`
+Contract-authoring PR: `#427`  
+Durable receipt anchor: GitHub PR `#427`
 
 ## Objective
 
@@ -66,14 +66,14 @@ Any accessible local branch/worktree attributable to T067 may be removed only af
 ### Target B — OP072 contract-authoring branch
 
 ```text
-PR: PENDING
+PR: #427
 base: develop
 head branch: docs/op072-t067-post-integration-closure
 ```
 
-Before OP072 execution, this contract MUST be updated before merge with the actual authoring PR number and durable receipt anchor. At execution time derive the exact final reviewed `head_sha` and integration commit from that merged PR. OP072 may retire its own authoring branch only when that PR is merged into `develop` and the current remote branch head equals the reviewed PR head, or the branch is already absent.
+At execution time derive the exact final reviewed `head_sha` and integration commit from merged PR #427. OP072 may retire its own authoring branch only when PR #427 is merged into `develop` and the current remote branch head equals that reviewed PR head, or the branch is already absent.
 
-If the current branch differs from the merged PR reviewed head, preserve it and return `BLOCKED`/`BLOCKED_REVIEW`; never move it backward to manufacture eligibility.
+If the current branch differs from merged PR #427 `head_sha`, preserve it and return `BLOCKED`; never move it backward to manufacture eligibility.
 
 ## Explicit exclusions
 
@@ -92,10 +92,10 @@ Before the first mutation:
 
 - synchronize canonical GitHub remote and establish a safe current `develop == origin/develop` bootstrap baseline without discarding local/uncommitted work;
 - reload current `AGENTS.md`, because the governing T067 integrated change modified it;
-- load this OP072 contract from current canonical `develop` after its authoring PR is merged;
-- verify the durable receipt anchor can accept a top-level GitHub comment;
+- load this OP072 contract from current canonical `develop` after PR #427 is merged;
+- verify PR #427 can accept a top-level GitHub receipt comment;
 - verify PR #426 is merged into `develop` and its reviewed head/integration identity matches Target A;
-- verify the OP072 authoring PR is merged into `develop` and derive its exact reviewed head/integration identity for Target B;
+- verify PR #427 is merged into `develop` and derive its exact reviewed head/integration identity for Target B;
 - re-read every present target remote branch and require exact reviewed-head equality before deletion;
 - inspect accessible target local branches/worktrees for dirty, unique, ambiguous or unrepresented state;
 - preserve every ambiguous or unique item;
@@ -112,7 +112,7 @@ The Executor may:
 - remove evidence-safe T067/OP072 local branches and worktrees actually accessible in the execution environment;
 - prune stale remote-tracking/worktree metadata after live surfaces are safely retired;
 - safely synchronize the designated accessible primary checkout to current `develop == origin/develop` without discarding unrepresented work;
-- publish exactly one final durable OP072 receipt to the integrated OP072 authoring PR.
+- publish exactly one final durable OP072 receipt to PR #427.
 
 ## Forbidden operations
 
@@ -134,13 +134,13 @@ Do not:
 
 `DONE` requires:
 
-- PR #426 and the OP072 authoring PR confirmed merged into `develop`;
+- PR #426 and PR #427 confirmed merged into `develop`;
 - remote Target A and Target B absent;
 - all accessible T067/OP072 local target branches/worktrees safely absent;
 - no unrelated branch/worktree deleted;
 - designated accessible primary checkout on current `develop`, equal to current `origin/develop`, tracked clean;
 - no tracked repository-content mutation produced by OP072;
-- final durable receipt successfully published to the OP072 authoring PR;
+- final durable receipt successfully published to PR #427;
 - coordinator identity remains `AG | agent-governance | T067 | root-1`.
 
 If remote retirement succeeds but an inaccessible target checkout/local branch cannot be verified, return `PARTIAL` and record it in the durable receipt. If target identity, branch head or unique work is ambiguous, return `BLOCKED` and preserve it.
@@ -159,7 +159,7 @@ Stop without destructive compensation if:
 
 ## Durable receipt
 
-Before OP072 is merged, replace the pending authoring PR/receipt values above with the actual PR identity. Publish one final top-level comment to that merged PR using exactly:
+Publish one final top-level comment to PR #427 using exactly:
 
 ```text
 OP072_STATUS: DONE | BLOCKED | PARTIAL
@@ -188,7 +188,7 @@ Return only:
 
 ```text
 STATUS: DONE | BLOCKED | PARTIAL
-RECEIPT: <integrated OP072 authoring PR URL>
+RECEIPT: https://github.com/ManuelBouza/agent-governance/pull/427
 COORDINATOR: AG | agent-governance | T067 | root-1
 ```
 
