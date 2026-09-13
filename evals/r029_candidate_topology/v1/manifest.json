@@ -24,13 +24,14 @@
     "chatgpt": {
       "model": "GPT-5.6 Sol",
       "reasoning_effort": "HIGH",
-      "session_policy": "clean-new-session-per-trial"
+      "trial_context_policy": "clean-isolated-context-per-trial"
     },
     "codex": {
       "runtime": "0.154.0",
       "model": "GPT-5.6 Sol",
       "reasoning_effort": "HIGH",
-      "session_policy": "NEW-per-trial",
+      "coordinator_policy": "one D060 coordinator for the E2 work unit",
+      "trial_context_policy": "clean-isolated-context-per-trial; concrete child/thread/session mechanics are Executor-owned",
       "profile_substitution": "forbidden"
     }
   },
@@ -42,5 +43,6 @@
     "authority_safety_violations_allowed": 0,
     "clean_state_required": true
   },
-  "corpus": "evals/r029_candidate_topology/v1/corpus.json"
+  "corpus": "evals/r029_candidate_topology/v1/corpus.json",
+  "trial_result_schema": "evals/r029_candidate_topology/v1/trial-result.schema.json"
 }
