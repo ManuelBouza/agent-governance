@@ -35,6 +35,7 @@ The current checkpoint is Markdown owned by ChatGPT and SHOULD remain compact. I
 - `Open-Questions-Or-Blockers` — only unresolved items that constrain what can happen next;
 - `Next-Action` — one explicit next permitted action or ordered immediate sequence;
 - `Next-ChatGPT-Effort` — `MEDIUM` or `HIGH` when `Next-Action` is a concrete ChatGPT Orchestrator task;
+- `Next-Execution-Shape` — `SINGLE_EXECUTION` or `MULTI_EXECUTION` when `Next-Action` is a concrete ChatGPT Orchestrator task;
 - `Next-Chat-Minimum-Load` — exact files a cold ChatGPT session should read after `AGENTS.md` and the checkpoint;
 - `Do-Not-Load-Or-Do` — optional guardrails that prevent unnecessary context expansion or premature work;
 - `Chat-Closure` — `KEEP_CURRENT_CHAT`, `ELIGIBLE`, or `NEW_CHAT_RECOMMENDED`.
@@ -42,6 +43,8 @@ The current checkpoint is Markdown owned by ChatGPT and SHOULD remain compact. I
 The checkpoint MAY include other compact routing fields when required, but it MUST NOT become a second decision log or task specification.
 
 `Next-ChatGPT-Effort` is a qualitative Human-facing recommendation for the next ChatGPT Orchestrator task. It has no wall-clock, timeout or minute-budget semantics and is separate from the D055 Executor launch profile. Use `MEDIUM` as the normal bounded-work default and `HIGH` when the next ChatGPT task requires materially deeper or longer reasoning, substantial research/synthesis, broad reconciliation, or multiple consequential verification steps. Omit the field when there is no concrete next ChatGPT task to configure.
+
+`Next-Execution-Shape` is the D080 qualitative task-geometry classification for the next ChatGPT Orchestrator task. It has no wall-clock, timeout, token-ceiling or provider-session semantics and is independent from both `Next-ChatGPT-Effort` and D055. Use `SINGLE_EXECUTION` when one bounded coherent execution unit is sufficient; use `MULTI_EXECUTION` when material dependency/gate/failure-isolation/durable-resumption geometry requires ordered bounded units. When `MULTI_EXECUTION` controls cold-start resumption, the checkpoint SHALL identify the immediate unit and either the compact ordered sequence or the exact authoritative artifact that defines it.
 
 ## What belongs in the checkpoint
 
@@ -54,6 +57,8 @@ Persist facts such as:
 - a material unresolved Human Owner decision;
 - the next action after a merge or review;
 - the recommended `MEDIUM`/`HIGH` ChatGPT effort for a concrete next Orchestrator task;
+- the selected `SINGLE_EXECUTION`/`MULTI_EXECUTION` geometry for a concrete next Orchestrator task;
+- when `MULTI_EXECUTION` applies, the immediate execution unit and sufficient durable routing to the ordered plan;
 - minimum controlling files required by the next ChatGPT session.
 
 ## What does not belong
@@ -79,13 +84,14 @@ When the Human Owner starts a new chat with the minimal continuation prompt, Cha
 3. read `docs/orchestrator/CHECKPOINT.md`;
 4. load only `Next-Chat-Minimum-Load` and directly controlling remote artifacts;
 5. compare the checkpoint's `Next-ChatGPT-Effort` recommendation with the configured ChatGPT effort when that surface is Human-selectable; if they differ, report the mismatch before material execution rather than silently treating the recommendation as already applied;
-6. verify that any referenced active branch/PR/handoff still exists and has not advanced unexpectedly;
-7. if it advanced, inspect the minimum delta and reconcile the checkpoint before mutation;
-8. continue from `Next-Action` without asking the Human Owner to re-explain completed work.
+6. read `Next-Execution-Shape`; when it is `MULTI_EXECUTION`, verify the ordered plan/immediate-unit routing and confirm that all preceding unit gates represented by the checkpoint have actually passed;
+7. verify that any referenced active branch/PR/handoff still exists and has not advanced unexpectedly;
+8. if it advanced, inspect the minimum delta and reconcile the checkpoint before mutation;
+9. continue from `Next-Action` without asking the Human Owner to re-explain completed work.
 
 If the checkpoint is missing, contradictory, obviously stale, or references unavailable remote state, ChatGPT stops normal mutation and reconstructs the frontier from the smallest authoritative Git evidence available. It then refreshes the checkpoint before continuing.
 
-The effort recommendation does not itself authorize the next objective. Human selection, D067 lifecycle rules and all existing task/stage gates remain controlling.
+The effort recommendation and execution-shape classification do not themselves authorize the next objective. Human selection, D067 lifecycle rules and all existing task/stage gates remain controlling.
 
 ## Refresh procedure
 
@@ -99,7 +105,9 @@ A refresh SHOULD occur after:
 - PR integration that changes what is allowed next;
 - new blocking Human Owner decisions;
 - intentional chat closure;
-- a material change to the concrete next ChatGPT task that changes its recommended `MEDIUM`/`HIGH` effort.
+- a material change to the concrete next ChatGPT task that changes its recommended `MEDIUM`/`HIGH` effort;
+- a material execution-shape reclassification;
+- completion/failure of a `MULTI_EXECUTION` unit when that changes the immediate next unit or its prerequisites.
 
 A refresh is not required for every reply or every intermediate tool call.
 
@@ -113,7 +121,8 @@ When the checkpoint must change solely because a prior PR has just merged, ChatG
 
 - the current chat has completed a coherent work unit;
 - repository state contains everything a new chat needs;
-- the checkpoint names the next action, recommended ChatGPT effort when applicable, and minimum load;
+- the checkpoint names the next action, recommended ChatGPT effort when applicable, execution shape when applicable, and minimum load;
+- a `MULTI_EXECUTION` next task identifies its immediate unit and durable ordered-plan routing;
 - no active requirement exists only in chat;
 - continuing to accumulate conversation context offers no material benefit.
 
@@ -125,7 +134,7 @@ When the checkpoint must change solely because a prior PR has just merged, ChatG
 
 When `NEW_CHAT_RECOMMENDED`, ChatGPT tells the Human Owner clearly that this chat can be closed and the next interaction should use a new chat.
 
-The Human-facing closure follows D069 and includes the canonical next task plus `ChatGPT Effort: MEDIUM|HIGH` when the next task is a ChatGPT Orchestrator task.
+The Human-facing closure follows D069 and includes the canonical next task plus `ChatGPT Effort: MEDIUM|HIGH` and `Execution Shape: SINGLE_EXECUTION|MULTI_EXECUTION` when the next task is a ChatGPT Orchestrator task. For `MULTI_EXECUTION`, identify the immediate execution unit when known.
 
 Minimal restart prompt:
 
@@ -144,7 +153,7 @@ Executor handoffs and Orchestrator checkpoints solve different problems:
 
 When an executor handoff is the current frontier, the checkpoint points to it; it does not copy the complete handoff.
 
-`Next-ChatGPT-Effort` never replaces or presets the D055 Executor model/reasoning profile recorded for an Executor launch.
+`Next-ChatGPT-Effort` and `Next-Execution-Shape` never replace or preset the D055 Executor model/reasoning/session profile recorded for an Executor launch.
 
 ## Relationship to consumer Governance
 
