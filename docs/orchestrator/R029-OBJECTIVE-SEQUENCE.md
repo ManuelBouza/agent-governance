@@ -1,22 +1,22 @@
 # R029 Incremental Session Sequence
 
-Status: COMPLETE_ADOPT_FOR_DESIGN  
+Status: COMPLETE_REJECT_TOPOLOGY  
 Parent-Research: `docs/research/R029-AGENTS-SKILL-ARCHITECTURE-REFACTOR-RESEARCH.md`  
 Authority: Human Owner clarified incremental same-chat execution on 2026-09-13  
 Lifecycle: one persistent R029 ChatGPT Orchestrator objective with bounded session subtasks  
-Decision-State: EVALUATING  
-Human-Disposition: `ADOPT_FOR_DESIGN`  
+Decision-State: REJECTED  
+Human-Disposition: `REJECT_TOPOLOGY`  
 Disposition-Artifact: `docs/orchestrator/R029-HUMAN-DISPOSITION.md`
 
 ## Execution rule
 
 R029 remained one Human objective in this ChatGPT chat. Only one material subtask was executed per work session. Each subtask was persisted and returned to a Human review gate before its successor was selected.
 
-R029 does not authorize a root `AGENTS.md` rewrite, Skill implementation, normative decision, Executor/Codex launch, provider/model evaluation, or T066 work.
+R029 did not authorize a root `AGENTS.md` rewrite, Skill implementation, normative decision, Executor/Codex launch, provider/model evaluation, or T066 work.
 
 ```text
 R029-S1 -> Human gate -> R029-S2 -> Human gate -> ... -> R029-S10
-         -> HUMAN DECISION GATE -> ADOPT_FOR_DESIGN
+         -> HUMAN DECISION GATE -> REJECT_TOPOLOGY
 ```
 
 ## Subtask registry
@@ -52,22 +52,22 @@ Lean always-loaded AGENTS.md
          └── consumes repository-change-control/repository-local policy as needed
 ```
 
-Supporting deterministic scripts/CI/references and host adapters remain conditional implementation/reference surfaces, not authority sources.
+Supporting deterministic scripts/CI/references and host adapters remain historical candidate surfaces, not authority sources.
 
 ## Human disposition
 
-On 2026-09-13 the Human Owner selected `ADOPT_FOR_DESIGN`.
+On 2026-09-13 the Human Owner selected `REJECT_TOPOLOGY`, explicitly superseding the previously recorded `ADOPT_FOR_DESIGN` disposition before any downstream design or implementation occurred.
 
-This accepts the candidate topology as the direction for a later architecture/design objective. It does not itself create normative product authority or authorize implementation. The durable disposition is `docs/orchestrator/R029-HUMAN-DISPOSITION.md`.
+The synthesized topology is therefore not adopted. The current Agent Governance instruction/Skill architecture remains controlling. The durable disposition is `docs/orchestrator/R029-HUMAN-DISPOSITION.md`.
 
-R029 has no remaining subtask. Any normative architecture Decision, detailed design, evaluation execution, root refactor, Skill creation, or implementation requires a separate explicit Human objective.
+R029 has no remaining subtask. A future attempt to revisit this topology requires a new explicit Human objective that acknowledges and supersedes the rejection.
 
-## Evaluation requirement before implementation
+## Evaluation record
 
-S10 defines the required future evidence categories: semantic preservation, root pre-routing safety, Skill routing precision, authority-leakage/adversarial behavior, progressive-disclosure/context efficiency, cross-host portability, no-Skill degradation, composition/non-overlap and maintainability/change locality.
+S10 defined potential future evidence categories including semantic preservation, root pre-routing safety, Skill routing precision, authority-leakage/adversarial behavior, progressive-disclosure/context efficiency, cross-host portability, no-Skill degradation, composition/non-overlap and maintainability/change locality.
 
-R029 itself performed no provider/model evaluation and created no scored observations.
+Those evaluation requirements remain historical design evidence only. R029 performed no provider/model evaluation and created no scored observations.
 
-## Global prohibitions still active
+## Final boundary
 
-Until separately authorized: do not change role/stage/Markdown/oracle/execution-mechanics ownership; do not rewrite root `AGENTS.md`; do not create/package/install/release transverse Skills; do not split the Maintainer Skill by role; do not launch an Executor; do not consume provider/model calls; do not treat `ADOPT_FOR_DESIGN` as a normative architecture Decision; do not mutate the unselected T066 scientific branch.
+R029 is closed with `Decision-State: REJECTED`. Do not rewrite root `AGENTS.md`, create/package/install/release transverse Skills, launch an Executor, consume provider/model calls, or mutate T066 on the basis of R029. Existing accepted architecture and ownership decisions remain controlling.
