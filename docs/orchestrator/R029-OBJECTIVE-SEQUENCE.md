@@ -24,8 +24,8 @@ R029-S1 -> Human gate -> R029-S2 -> Human gate -> ... -> R029-S10
 | R029-S1 | ACCEPTED | Root preservation-map audit | R029 integrated | `docs/orchestrator/R029-S1-ROOT-PRESERVATION-MAP.md` | Every current root semantic unit has exactly one preservation classification/destination | MEDIUM | SINGLE_EXECUTION |
 | R029-S2 | ACCEPTED | Lean-root responsibility contract | S1 accepted | `docs/orchestrator/R029-S2-LEAN-ROOT-RESPONSIBILITY-CONTRACT.md` | Every retained root responsibility is pre-routing justified and omitted detail remains explicitly reachable | MEDIUM | SINGLE_EXECUTION |
 | R029-S3 | ACCEPTED | Maintainer Skill domain boundary | S1-S2 accepted | `docs/orchestrator/R029-S3-MAINTAINER-DOMAIN-BOUNDARY.md` | Source-maintenance-specific workflows are separated from transverse candidate seams without splitting the approved Maintainer Skill by role | MEDIUM | SINGLE_EXECUTION |
-| R029-S4 | COMPLETE_AWAITING_HUMAN_REVIEW | `repository-change-control` candidate | S1-S3 accepted | `docs/orchestrator/R029-S4-REPOSITORY-CHANGE-CONTROL-CANDIDATE.md` | Reusable intent and non-overlap are explicit; disposition is `KEEP_CANDIDATE` | MEDIUM | SINGLE_EXECUTION |
-| R029-S5 | NOT_STARTED | `upstream-version-revalidation` candidate | S1-S3 accepted | Candidate contract, triggers/anti-triggers, adapter boundary, analytical disposition | Generalizable semantics separated from D077/Agent-Governance policy | MEDIUM | SINGLE_EXECUTION |
+| R029-S4 | ACCEPTED | `repository-change-control` candidate | S1-S3 accepted | `docs/orchestrator/R029-S4-REPOSITORY-CHANGE-CONTROL-CANDIDATE.md` | Reusable intent and non-overlap are explicit; disposition is `KEEP_CANDIDATE` | MEDIUM | SINGLE_EXECUTION |
+| R029-S5 | COMPLETE_AWAITING_HUMAN_REVIEW | `upstream-version-revalidation` candidate | S1-S3 accepted | `docs/orchestrator/R029-S5-UPSTREAM-VERSION-REVALIDATION-CANDIDATE.md` | Generalizable semantics separated from D077/Agent-Governance policy; disposition is `KEEP_CANDIDATE` | MEDIUM | SINGLE_EXECUTION |
 | R029-S6 | NOT_STARTED | `research-evidence-traceability` candidate | S1-S3 accepted | Generic capability vs Agent Governance adapter map and disposition | Reusable provenance semantics separated from `Rxxx`/`Dxxx` conventions | MEDIUM | SINGLE_EXECUTION |
 | R029-S7 | NOT_STARTED | `durable-work-checkpoint` candidate | S1-S3 accepted | Generic cold-start/frontier capability vs Agent Governance checkpoint adapter map and disposition | Generic durable-resume semantics separated from D027/D067/checkpoint rules | MEDIUM | SINGLE_EXECUTION |
 | R029-S8 | NOT_STARTED | `executor-launch-handoff` candidate | S1-S3 accepted | Generic launch/handoff capability vs Agent Governance Task Contract/D055 adapter map and disposition | Reusable transport/session/handoff separated from repository-specific authority | MEDIUM | SINGLE_EXECUTION |
@@ -44,13 +44,15 @@ Accepted 2026-09-13. Durable output: `docs/orchestrator/R029-S2-LEAN-ROOT-RESPON
 Accepted 2026-09-13. Durable output: `docs/orchestrator/R029-S3-MAINTAINER-DOMAIN-BOUNDARY.md`.
 
 ### R029-S4 — `repository-change-control` candidate
-Completed analytically 2026-09-13. Durable output: `docs/orchestrator/R029-S4-REPOSITORY-CHANGE-CONTROL-CANDIDATE.md`.
+Accepted 2026-09-13. Durable output: `docs/orchestrator/R029-S4-REPOSITORY-CHANGE-CONTROL-CANDIDATE.md`. Disposition: `KEEP_CANDIDATE`.
 
-S4 classifies the candidate `KEEP_CANDIDATE`: repository mutation/change-path control has reusable intent, distinct positive/negative triggers, a concrete durable postcondition, and host-neutral semantics with ChatGPT/Codex mechanics adapters. Agent Governance's branch/release/stage/ownership policy remains domain-side. Workspace-isolation final placement remains deferred to S9.
+### R029-S5 — `upstream-version-revalidation` candidate
+Completed analytically 2026-09-13. Durable output: `docs/orchestrator/R029-S5-UPSTREAM-VERSION-REVALIDATION-CANDIDATE.md`.
+
+S5 classifies the candidate `KEEP_CANDIDATE`: version-sensitive upstream revalidation has reusable intent, distinct triggers, explicit evidence/postconditions, a fail-closed authority boundary, and host-neutral semantics. D077 disposition vocabulary, D063 qualification relationships, project pins, launch gates and research lifecycle remain Agent-Governance-specific adapter material.
 
 ## Remaining subtask intent
 
-- S5 independently evaluates `upstream-version-revalidation`.
 - S6 independently evaluates `research-evidence-traceability`.
 - S7 independently evaluates `durable-work-checkpoint`.
 - S8 independently evaluates `executor-launch-handoff`.
