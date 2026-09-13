@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "task_id": "T067",
+  "status": "DONE",
+  "task_contract_path": "docs/tasks/T067-r029-d082-materialization-and-qualification.md",
+  "sdd_profile": "ASSURED",
+  "branch": "refactor/r029-d082-materialization",
+  "implementation_head_sha": "3907419370947e41150eb401a3e557f1177dfa0c",
+  "base_branch": "develop",
+  "base_sha": "758b92cf38af9bc06e4717b1206dafb8e5d82e9e",
+  "candidate_identity": {
+    "authorized_replacement_launch_head": "2127381406078cbf4a31d8f4b5b76fcf7d687d58",
+    "candidate_checkpoint_head": "308d6ad09b756fb30878e9a4658eaf309cabd998",
+    "stage5_reentry_correction_anchor": "a3c8c00cb2f0ecb5ce1c077ffa43614b94d3998f",
+    "checkpoint_is_launch_ancestor": true,
+    "correction_is_checkpoint_ancestor": true,
+    "protected_base_merge_base_matches": true,
+    "post_checkpoint_diff": ["docs/tasks/T067-r029-d082-materialization-and-qualification.md"]
+  },
+  "files_changed": [
+    "evals/r029_materialization/stage6-qualification.json",
+    "handoffs/T067-executor-handoff.json"
+  ],
+  "implementation_summary": "Continued from the exact corrected Stage 5 launch HEAD, reran deterministic and repository-wide verification, refreshed persisted measurements, and replaced the attempt-1 BLOCKED handoff. No further implementation repair was required.",
+  "verification": {
+    "commands": [
+      "git fetch --prune origin",
+      "git merge-base --is-ancestor 308d6ad09b756fb30878e9a4658eaf309cabd998 2127381406078cbf4a31d8f4b5b76fcf7d687d58",
+      "git merge-base --is-ancestor a3c8c00cb2f0ecb5ce1c077ffa43614b94d3998f 308d6ad09b756fb30878e9a4658eaf309cabd998",
+      "uv run --locked python tools/r029_materialization_qualify.py --root . --output evals/r029_materialization/stage6-qualification.json",
+      "uv run --locked python -m pytest tests/test_r029_materialization.py",
+      "uv run --locked ruff check .",
+      "uv run --locked ruff format --check .",
+      "uv run --locked python tools/code_health.py check",
+      "uv run --locked python -m pytest",
+      "git diff --check"
+    ],
+    "results": {
+      "identity": "PASS: launch/checkpoint/correction ancestry and exact protected base verified; only T067 freeze metadata follows the checkpoint.",
+      "qualification": "PASS: all 18 checks; 79/79 preserved with ROOT=39, ROOT+ROUTE=20, ROUTE=20; zero missing destinations or duplicate owners.",
+      "measurements": "PASS: root=11496 bytes, baseline=34567, delta=-23071; catalog=2799; conditional loads=21420..63447; max hops=4; normative families=17.",
+      "cold_start": "PASS: both docs/ORCHESTRATOR-CHECKPOINTS.md and docs/orchestrator/CHECKPOINT.md are rooted and tested.",
+      "topology_residuals": "PASS: one Maintainer/two routes, exactly five transverse Skills, workspace isolation internal, parity NOT_ESTABLISHED, Maintainer 21/36 informational/unscored, no fresh trials.",
+      "focused_tests": "PASS: 3 passed in 0.79s.",
+      "ruff": "PASS: lint clean; 83 files formatted.",
+      "code_health": "PASS: complexity, dependencies, and sizes.",
+      "full_suite": "PASS: 527 passed in 146.87s.",
+      "diff_scope": "PASS: no whitespace errors, no Executor Markdown edits, no T066 paths, no provider trials."
+    },
+    "runtime": "Windows; Git 2.53.0.windows.2; uv 0.11.32; CPython 3.13.14; pytest 9.1.1; Ruff 0.16.2.",
+    "network_required": "Only canonical fetch and push."
+  },
+  "requirement_trace": {
+    "T067-A1/A2/A3/A4": "PASS: 79-unit 39/20/20 preservation, one Maintainer with two routes, exactly five transverse Skills, workspace isolation internal.",
+    "T067-A5/A6": "PASS: frozen qualification assets execute and refreshed measurements are persisted.",
+    "T067-A7/A8/A9": "PASS: production routing corpus passes; 21/36 stays unscored, parity stays NOT_ESTABLISHED, historical 36/36 reused without rerun.",
+    "T067-P1/P2/P3": "PASS: authority unchanged; pre-routing/cold-start safety is Skill-independent; deterministic checks ran without Skill activation.",
+    "T067-P4/P5/P6": "PASS: source/consumer separation and domain decisions preserved; attempt-1 evidence remains in Git history.",
+    "T067-P7/P8": "PASS: progressive-disclosure metrics have single normative ownership; T066 untouched/not started.",
+    "AC-T067-1/2/3": "PASS: preservation, topology, and frozen activation boundaries.",
+    "AC-T067-4/5/6": "PASS: both cold-start anchors, measured burden/hops, deterministic focused and full suites.",
+    "AC-T067-7/8": "PASS: residual integrity and evidence economy.",
+    "AC-T067-9/10": "PASS: Stage 6 boundary respected and T066 isolated."
+  },
+  "code_review": {
+    "reviewed_head_sha": "3907419370947e41150eb401a3e557f1177dfa0c",
+    "summary": "Reviewed requirement/Design/PRESERVED fidelity, authority and topology, activation boundaries, cold-start/no-Skill behavior, reference reachability, normative ownership, measurements, residuals, scope, and D076. The corrected candidate resolves attempt 1 without semantic drift; all gates pass.",
+    "findings": [],
+    "resolved_findings": ["The Orchestrator restored and froze the checkpoint-policy anchor; the previously failing unchanged reference-integrity test now passes."],
+    "upstream_reentry_required": false,
+    "upstream_reentry_stage": null
+  },
+  "ephemeral_artifacts": [],
+  "dependencies_or_config_changes": [],
+  "git_status": "Clean after handoff-only commit; verified before push.",
+  "unresolved_issues": [],
+  "recommended_next_task": "ChatGPT Orchestrator may perform T067 E4 Stage 7 convergence and integration.",
+  "chatgpt_read_path": [
+    "docs/tasks/T067-r029-d082-materialization-and-qualification.md",
+    "handoffs/T067-executor-handoff.json",
+    "evals/r029_materialization/stage6-qualification.json"
+  ]
+}

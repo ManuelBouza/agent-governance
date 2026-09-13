@@ -1,0 +1,36 @@
+{
+  "schema_version": "1.0.0",
+  "task": "T067",
+  "decision": "D082",
+  "comparison_basis": [
+    "docs/orchestrator/R029-S4-REPOSITORY-CHANGE-CONTROL-CANDIDATE.md",
+    "docs/orchestrator/R029-S5-UPSTREAM-VERSION-REVALIDATION-CANDIDATE.md",
+    "docs/orchestrator/R029-S6-RESEARCH-EVIDENCE-TRACEABILITY-CANDIDATE.md",
+    "docs/orchestrator/R029-S7-DURABLE-WORK-CHECKPOINT-CANDIDATE.md",
+    "docs/orchestrator/R029-S8-EXECUTOR-LAUNCH-HANDOFF-CANDIDATE.md",
+    "docs/orchestrator/R029-S9-WORKSPACE-ISOLATION-PLACEMENT.md",
+    "docs/orchestrator/R029-E2-HOST-PARITY-FREEZE-D.md",
+    "docs/orchestrator/R029-E3-CONVERGENCE.md"
+  ],
+  "overall_disposition": "MATERIALLY_EQUIVALENT",
+  "fresh_36_codex_trials_required": false,
+  "capabilities": {
+    "repository-change-control": {"trigger_center":"controlled tracked mutation/change-path selection","anti_trigger_preserved":true,"authority_boundary_preserved":true,"material_semantic_change":false},
+    "upstream-version-revalidation": {"trigger_center":"consequential version-specific external reliance","anti_trigger_preserved":true,"authority_boundary_preserved":true,"material_semantic_change":false},
+    "research-evidence-traceability": {"trigger_center":"durable provenance/freshness lineage for consequential evidence","anti_trigger_preserved":true,"authority_boundary_preserved":true,"material_semantic_change":false},
+    "durable-work-checkpoint": {"trigger_center":"resumable authoritative frontier across context boundaries","anti_trigger_preserved":true,"authority_boundary_preserved":true,"material_semantic_change":false},
+    "executor-launch-handoff": {"trigger_center":"bounded delegated executor launch/return lifecycle","anti_trigger_preserved":true,"authority_boundary_preserved":true,"material_semantic_change":false},
+    "workspace-isolation": {"placement":"internal reference under executor-launch-handoff","material_semantic_change":false}
+  },
+  "evidence_reuse": {
+    "codex_transverse_historical": "36/36 PASS; zero route mismatch; zero authority/safety failure",
+    "disposition": "REUSE_AS_REGRESSION_EVIDENCE",
+    "reason": "Production names/descriptions restate the adopted S4-S9 trigger, anti-trigger, postcondition, authority, and workspace-placement semantics without changing their scored routing meaning."
+  },
+  "preserved_residuals": {
+    "chatgpt_codex_empirical_parity": "NOT_ESTABLISHED",
+    "chatgpt_empirical_trials": "0/36",
+    "chatgpt_half": "WAIVED_BY_HUMAN",
+    "maintainer_historical_observation": "21/36 observed; informational/unscored; not qualification"
+  }
+}
