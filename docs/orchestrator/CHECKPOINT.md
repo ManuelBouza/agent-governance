@@ -1,18 +1,15 @@
 # Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O303  
+Checkpoint-Sequence: O304  
 Date: 2026-09-13  
 Canonical-Branch: `develop`  
 Current-Work-Unit: R029 — incremental Skill-architecture evaluation  
-State: HUMAN_REVIEW_GATE  
+State: HUMAN_SELECTION_GATE  
 Current-Objective: `R029 — evaluate the Skill-architecture refactor without adopting or implementing it`  
-Accepted-Subtasks: `R029-S1`, `R029-S2`, `R029-S3`, `R029-S4`, `R029-S5`, `R029-S6`, `R029-S7`, `R029-S8`  
-Completed-Subtask: `R029-S9 — Workspace-isolation placement`  
-Completed-Artifact: `docs/orchestrator/R029-S9-WORKSPACE-ISOLATION-PLACEMENT.md`  
-Completed-Disposition: `INTERNAL_ROUTE`  
+Accepted-Subtasks: `R029-S1`, `R029-S2`, `R029-S3`, `R029-S4`, `R029-S5`, `R029-S6`, `R029-S7`, `R029-S8`, `R029-S9`  
 Candidate-Next-Subtask: `R029-S10 — Candidate-topology synthesis and evaluation plan`  
-Next-Action: Human Owner reviews R029-S9. Do not execute R029-S10 unless explicitly accepted/selected for a later work session of this same chat.  
+Next-Action: Human Owner may explicitly select R029-S10 for a later work session of this same chat. Do not execute R029-S10 until explicitly selected.  
 Next-ChatGPT-Effort: HIGH  
 Session-Sequence: `docs/orchestrator/R029-OBJECTIVE-SEQUENCE.md`  
 Current-Research: `docs/research/R029-AGENTS-SKILL-ARCHITECTURE-REFACTOR-RESEARCH.md`  
@@ -28,11 +25,9 @@ Chat-Closure: KEEP_CURRENT_CHAT_ACTIVE
 
 ## Completed
 
-The Human Owner accepted R029-S8 and explicitly selected R029-S9 in this same ChatGPT chat.
+The Human Owner accepted R029-S9 on 2026-09-13.
 
-R029-S9 was executed from `develop@54b7350b49d6b412e1a9e8395f8f8358140b72d6` using accepted S4/S8 context plus D058 and `docs/EXECUTOR-SESSION-WORKTREE-HYGIENE.md`.
-
-S9 result:
+Accepted S9 result:
 
 - reusable workspace-isolation intent: bind one delegated writable work unit to one exclusive attributable writable surface, detect collisions/ambiguous local state before mutation, preserve that attribution through continuation, and retire the surface safely after its review/integration lifecycle;
 - the distinguishing trigger is delegated writable-execution attribution and continuation safety, not generic Git/worktree usage;
@@ -43,13 +38,13 @@ S9 result:
 - analytical disposition: `INTERNAL_ROUTE`;
 - no root rewrite, Skill implementation, Executor/provider/model call, normative adoption or T066 mutation occurred.
 
-The S9 completion gate is satisfied analytically and durably. It now awaits Human review/acceptance before S10 becomes selectable.
+S1-S9 are now accepted. R029-S10 is the sole remaining analytical subtask before the R029 Human Decision Gate.
 
 ## Current Human gate
 
-The Human Owner should review/accept or request correction of `docs/orchestrator/R029-S9-WORKSPACE-ISOLATION-PLACEMENT.md`.
+R029-S10 is selectable but not yet selected.
 
-If accepted, the candidate next session is:
+If the Human Owner explicitly selects it, the next work session is:
 
 ```text
 R029-S10 — Candidate-topology synthesis and evaluation plan
@@ -57,7 +52,7 @@ ChatGPT Effort: HIGH
 Execution Shape: SINGLE_EXECUTION
 ```
 
-S10 is not selected automatically merely because S9 completed.
+Selection of S10 authorizes only that bounded analytical synthesis/evaluation-plan subtask. It does not authorize architecture adoption, a Decision Record, root rewrite, Skill implementation, Executor launch, provider/model calls, scored observations or T066 work.
 
 ## Candidate next-session scope — only if Human selects S10
 
