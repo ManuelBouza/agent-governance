@@ -10,9 +10,9 @@ Decision-State: EVALUATING
 
 R029 follow-up is one continuing Human objective executed in this same ChatGPT Orchestrator chat across bounded work sessions. The sequence is decomposed into short subtasks so only one material subtask is executed per session.
 
-This is **not** a sequence of independent D067 objectives and does not require a fresh chat between subtasks. D067 remains satisfied because the parent Human objective remains R029 Skill-architecture evaluation; R029-S1 through R029-S10 are ordered subordinate work units inside that one objective.
+This is not a sequence of independent D067 objectives and does not require a fresh chat between subtasks. D067 remains satisfied because the parent Human objective remains R029 Skill-architecture evaluation; R029-S1 through R029-S10 are ordered subordinate work units inside that one objective.
 
-There is **no automatic progression** from one subtask to the next. Each subtask must reach its own durable completion gate, be persisted, and return to a Human review gate before the next subtask is selected for a later session of this same chat.
+There is no automatic progression from one subtask to the next. Each subtask must reach its own durable completion gate, be persisted, and return to a Human review gate before the next subtask is selected for a later session of this same chat.
 
 The sequence does not authorize a root `AGENTS.md` rewrite, Skill implementation, normative decision, Executor/Codex launch, provider/model evaluation, or T066 work.
 
@@ -29,8 +29,8 @@ Each subtask has its own D080 execution-shape classification. These are bounded 
 
 | ID | Status | Subtask | Prerequisites | Durable output | Completion gate | ChatGPT Effort | Execution Shape |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| R029-S1 | COMPLETE_AWAITING_HUMAN_REVIEW | Root preservation-map audit | R029 integrated | `docs/orchestrator/R029-S1-ROOT-PRESERVATION-MAP.md` | Every current root semantic unit has exactly one preservation classification/destination, with unresolved conflicts explicitly listed | MEDIUM | SINGLE_EXECUTION |
-| R029-S2 | NOT_STARTED | Lean-root responsibility contract | S1 accepted | Candidate always-on root responsibility contract | Every retained root item is justified as pre-routing authority/safety/bootstrap; every omitted detail remains reachable through an explicit destination class | MEDIUM | SINGLE_EXECUTION |
+| R029-S1 | ACCEPTED | Root preservation-map audit | R029 integrated | `docs/orchestrator/R029-S1-ROOT-PRESERVATION-MAP.md` | Every current root semantic unit has exactly one preservation classification/destination, with unresolved conflicts explicitly listed | MEDIUM | SINGLE_EXECUTION |
+| R029-S2 | COMPLETE_AWAITING_HUMAN_REVIEW | Lean-root responsibility contract | S1 accepted | `docs/orchestrator/R029-S2-LEAN-ROOT-RESPONSIBILITY-CONTRACT.md` | Every retained root item is justified as pre-routing authority/safety/bootstrap; every omitted detail remains reachable through an explicit destination class | MEDIUM | SINGLE_EXECUTION |
 | R029-S3 | NOT_STARTED | Maintainer Skill domain boundary | S1-S2 accepted | Agent-Governance-specific domain-routing map | Source-maintenance-specific workflows are separated from transverse candidates without splitting the approved Maintainer Skill by role | MEDIUM | SINGLE_EXECUTION |
 | R029-S4 | NOT_STARTED | `repository-change-control` candidate | S1-S3 accepted | Candidate contract, triggers/anti-triggers, host-adapter boundary, analytical disposition | Reusable intent and non-overlap are explicit; candidate is classified `KEEP_CANDIDATE`, `INTERNAL_ROUTE`, or `REJECT_FOR_TRANSVERSE` as research/evaluation only | MEDIUM | SINGLE_EXECUTION |
 | R029-S5 | NOT_STARTED | `upstream-version-revalidation` candidate | S1-S3 accepted | Candidate contract, triggers/anti-triggers, adapter boundary, analytical disposition | Generalizable semantics are separated from D077/Agent-Governance-specific policy and candidate disposition is explicit | MEDIUM | SINGLE_EXECUTION |
@@ -44,25 +44,15 @@ Each subtask has its own D080 execution-shape classification. These are bounded 
 
 ### R029-S1 — Root preservation-map audit
 
-Audit the current `develop` root `AGENTS.md` against R029's semantic inventory. Confirm that every material current rule is represented exactly once in a preservation map as:
+Audit the current `develop` root `AGENTS.md` against R029's semantic inventory. Confirm that every material current rule is represented exactly once in a preservation map as always-on root invariant, root trigger plus Agent-Governance domain route, root trigger plus transverse candidate, domain route, or reference/deterministic mechanism.
 
-- always-on root invariant;
-- root trigger plus Agent-Governance domain route;
-- root trigger plus transverse candidate;
-- domain route;
-- reference/deterministic mechanism.
-
-Out of scope: designing the lean root, deciding Skill topology, writing or changing `AGENTS.md`, creating Skills, or provider/model evaluation.
-
-Required durable output: a persisted S1 result containing the complete preservation map, duplicate/ambiguous classifications, and any uncovered current root semantics.
-
-Completion gate: no material root semantic unit remains unclassified. Any disagreement is recorded as an explicit gap rather than silently resolved.
-
-S1 completed on 2026-09-13 and is persisted at `docs/orchestrator/R029-S1-ROOT-PRESERVATION-MAP.md`. The audit refined the coarse R029 inventory into 79 atomic semantic units with zero unclassified units, zero delete-without-replacement units, and zero preservation-classification ambiguities. Two later topology questions remain explicitly deferred rather than silently decided. S1 now awaits Human review/acceptance; S2 is not selected automatically.
+S1 completed and was Human-accepted on 2026-09-13. Durable output: `docs/orchestrator/R029-S1-ROOT-PRESERVATION-MAP.md`.
 
 ### R029-S2 — Lean-root responsibility contract
 
 Define only the responsibility boundary of the future always-loaded root. Do not draft the final root file and do not design individual transverse Skills.
+
+S2 completed analytically on 2026-09-13 and is persisted at `docs/orchestrator/R029-S2-LEAN-ROOT-RESPONSIBILITY-CONTRACT.md`. It defines twelve always-loaded responsibility families plus explicit routed destination classes, and accounts for all 79 S1 units as `ROOT`, `ROOT+ROUTE`, or `ROUTE` with zero uncovered semantics. S2 now awaits Human review/acceptance; S3 is not selected automatically.
 
 ### R029-S3 — Maintainer Skill domain boundary
 
