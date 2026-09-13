@@ -1,0 +1,71 @@
+{
+  "schema_version": "1.0.0",
+  "task": "T067",
+  "baseline_root_bytes": 34567,
+  "root_path": "AGENTS.md",
+  "root_markers": ["LR-01","LR-02","LR-03","LR-04","LR-05","LR-06","LR-07","LR-08","LR-09","LR-10","LR-11","LR-12"],
+  "maintainer": {
+    "package": "maintainer-skill",
+    "skill": "maintainer-skill/SKILL.md",
+    "name": "source-maintainer",
+    "routes": ["maintainer-skill/references/orchestrator-route.md","maintainer-skill/references/executor-route.md"]
+  },
+  "transverse": [
+    {"name":"repository-change-control","skill":"repository-change-control-skill/SKILL.md"},
+    {"name":"upstream-version-revalidation","skill":"upstream-version-revalidation-skill/SKILL.md"},
+    {"name":"research-evidence-traceability","skill":"research-evidence-traceability-skill/SKILL.md"},
+    {"name":"durable-work-checkpoint","skill":"durable-work-checkpoint-skill/SKILL.md"},
+    {"name":"executor-launch-handoff","skill":"executor-launch-handoff-skill/SKILL.md"}
+  ],
+  "workspace_isolation": {
+    "top_level_forbidden_name": "workspace-isolation",
+    "reference": "executor-launch-handoff-skill/references/workspace-isolation.md",
+    "parent": "executor-launch-handoff"
+  },
+  "descriptor_required_terms": {
+    "source-maintainer": ["source product","Do not use for ordinary consumer-project governance"],
+    "repository-change-control": ["authorized tracked repository mutation path","Do not use for read-only inspection"],
+    "upstream-version-revalidation": ["version-sensitive external behavior","Do not use for routine update checks"],
+    "research-evidence-traceability": ["Persist consequential evidence","Do not use for disposable factual lookup"],
+    "durable-work-checkpoint": ["authoritative work frontier","Do not use for conversation summaries"],
+    "executor-launch-handoff": ["bounded delegated executor/session boundary","Do not use for local helper calls"]
+  },
+  "cold_start_required_snippets": [
+    "current `develop`",
+    "`docs/orchestrator/CHECKPOINT.md`",
+    "Cold-start correctness must never require prior private chat history",
+    "Skills absent or disabled"
+  ],
+  "representative_loads": [
+    {
+      "id":"source-task-contract-orchestrator",
+      "paths":["AGENTS.md","maintainer-skill/SKILL.md","maintainer-skill/references/orchestrator-route.md","maintainer-skill/references/TASK-CONTRACT-TEMPLATE-USAGE.md","maintainer-skill/references/TASK-CONTRACT-V4-TEMPLATE.md","docs/TASK-CONTRACTS.md"],
+      "reference_hops":3
+    },
+    {
+      "id":"agent-governance-version-revalidation",
+      "paths":["AGENTS.md","maintainer-skill/SKILL.md","maintainer-skill/references/orchestrator-route.md","upstream-version-revalidation-skill/SKILL.md","docs/decisions/D077-version-sensitive-upstream-revalidation.md"],
+      "reference_hops":3
+    },
+    {
+      "id":"agent-governance-research-traceability",
+      "paths":["AGENTS.md","maintainer-skill/SKILL.md","maintainer-skill/references/orchestrator-route.md","research-evidence-traceability-skill/SKILL.md","docs/RESEARCH-TRACEABILITY.md"],
+      "reference_hops":3
+    },
+    {
+      "id":"orchestrator-checkpoint-turnover",
+      "paths":["AGENTS.md","maintainer-skill/SKILL.md","maintainer-skill/references/orchestrator-route.md","durable-work-checkpoint-skill/SKILL.md","docs/ORCHESTRATOR-CHECKPOINTS.md"],
+      "reference_hops":3
+    },
+    {
+      "id":"stage6-executor-launch-workspace",
+      "paths":["AGENTS.md","maintainer-skill/SKILL.md","maintainer-skill/references/executor-route.md","executor-launch-handoff-skill/SKILL.md","executor-launch-handoff-skill/references/workspace-isolation.md","repository-change-control-skill/SKILL.md","docs/EXECUTOR-HANDOFFS.md","docs/EXECUTOR-SESSION-WORKTREE-HYGIENE.md"],
+      "reference_hops":4
+    },
+    {
+      "id":"tracked-repository-mutation",
+      "paths":["AGENTS.md","repository-change-control-skill/SKILL.md","docs/BRANCHING.md"],
+      "reference_hops":2
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "schema_version": "1.0.0",
+  "task": "T067",
+  "rule_families": [
+    {"id":"R029-LR-01","owner_path":"AGENTS.md","references":[],"ownership":"always-loaded pre-routing authority"},
+    {"id":"R029-LR-02","owner_path":"AGENTS.md","references":["maintainer-skill/SKILL.md"],"ownership":"always-loaded pre-routing authority"},
+    {"id":"R029-LR-03","owner_path":"AGENTS.md","references":["maintainer-skill/SKILL.md","maintainer-skill/references/executor-route.md"],"ownership":"always-loaded pre-routing authority"},
+    {"id":"R029-LR-04","owner_path":"AGENTS.md","references":["maintainer-skill/SKILL.md","maintainer-skill/references/orchestrator-route.md","maintainer-skill/references/executor-route.md"],"ownership":"always-loaded pre-routing authority"},
+    {"id":"R029-LR-05","owner_path":"AGENTS.md","references":["maintainer-skill/references/executor-route.md"],"ownership":"always-loaded pre-routing authority"},
+    {"id":"R029-LR-06","owner_path":"AGENTS.md","references":["maintainer-skill/references/orchestrator-route.md"],"ownership":"always-loaded pre-routing authority"},
+    {"id":"R029-LR-07","owner_path":"AGENTS.md","references":["maintainer-skill/SKILL.md","maintainer-skill/references/orchestrator-route.md"],"ownership":"always-loaded pre-routing authority"},
+    {"id":"R029-LR-08","owner_path":"AGENTS.md","references":["maintainer-skill/references/orchestrator-route.md"],"ownership":"always-loaded pre-routing authority"},
+    {"id":"R029-LR-09","owner_path":"AGENTS.md","references":["maintainer-skill/references/executor-route.md"],"ownership":"always-loaded pre-routing authority"},
+    {"id":"R029-LR-10","owner_path":"AGENTS.md","references":["maintainer-skill/references/orchestrator-route.md"],"ownership":"always-loaded pre-routing authority"},
+    {"id":"R029-LR-11","owner_path":"AGENTS.md","references":["maintainer-skill/SKILL.md","maintainer-skill/references/executor-route.md"],"ownership":"always-loaded pre-routing authority"},
+    {"id":"R029-LR-12","owner_path":"AGENTS.md","references":["maintainer-skill/SKILL.md","maintainer-skill/references/orchestrator-route.md"],"ownership":"always-loaded pre-routing authority"},
+    {"id":"R029-TC-RCC","owner_path":"repository-change-control-skill/SKILL.md","references":["maintainer-skill/SKILL.md"],"ownership":"transverse workflow; repository-local policy remains external authority"},
+    {"id":"R029-TC-UVR","owner_path":"upstream-version-revalidation-skill/SKILL.md","references":["maintainer-skill/SKILL.md"],"ownership":"transverse evidence workflow"},
+    {"id":"R029-TC-RET","owner_path":"research-evidence-traceability-skill/SKILL.md","references":["maintainer-skill/SKILL.md"],"ownership":"transverse evidence-lineage workflow"},
+    {"id":"R029-TC-DWC","owner_path":"durable-work-checkpoint-skill/SKILL.md","references":["maintainer-skill/SKILL.md"],"ownership":"transverse resumable-frontier workflow"},
+    {"id":"R029-TC-ELH","owner_path":"executor-launch-handoff-skill/SKILL.md","references":["maintainer-skill/SKILL.md","executor-launch-handoff-skill/references/workspace-isolation.md"],"ownership":"transverse delegation workflow"}
+  ]
+}
