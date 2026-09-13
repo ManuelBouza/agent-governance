@@ -3,17 +3,21 @@
 Status: COMPLETE  
 Date: 2026-09-13  
 Parent: `R029 — AGENTS.md / Skill Architecture Refactor Research`  
-Human-Disposition: `ADOPT_FOR_DESIGN`  
+Human-Disposition: `REJECT_TOPOLOGY`  
+Research-Decision-State: `REJECTED`  
 Normative-Decision: none  
-Implementation-Authorization: none
+Implementation-Authorization: none  
+Supersedes-Recorded-Disposition: `ADOPT_FOR_DESIGN` from PR `#403`
 
 ## Human selection
 
-The Human Owner selected `ADOPT_FOR_DESIGN` after completion of R029-S10.
+The Human Owner explicitly corrected the prior `ADOPT_FOR_DESIGN` selection and selected `REJECT_TOPOLOGY` after completion of R029-S10.
 
-This selection accepts the R029 candidate topology as the direction to carry into a later architecture/design objective. It does **not** itself create an accepted architecture Decision Record, rewrite `AGENTS.md`, create/package/install Skills, authorize provider/model evaluation, launch an Executor, or authorize implementation.
+This correction occurred before any downstream normative architecture/design objective, root `AGENTS.md` refactor, Skill materialization, provider/model evaluation, Executor launch, or implementation was performed. Git history is preserved; this artifact supersedes the previously recorded disposition rather than rewriting repository history.
 
-## Accepted design direction
+## Rejected candidate topology
+
+The following R029 candidate is **not adopted**:
 
 ```text
 Lean always-loaded AGENTS.md
@@ -31,10 +35,17 @@ Lean always-loaded AGENTS.md
          └── consumes repository-change-control/repository-local policy as needed
 ```
 
-The R029-S10 evaluation requirements remain prerequisites for any later implementation/adoption plan: semantic preservation, pre-routing safety, routing precision, authority-leakage resistance, progressive-disclosure/context efficiency, portability, no-Skill degradation, composition/non-overlap, and maintainability.
+R029-S1 through R029-S10 remain historical research/evaluation evidence. Their analytical findings are not deleted, but the synthesized topology is rejected as a product direction.
+
+## Result
+
+- the current Agent Governance instruction/Skill architecture remains controlling;
+- no root `AGENTS.md` refactor follows from R029;
+- no new transverse Skill follows from R029;
+- no normative Decision Record is created for the rejected topology;
+- no implementation/evaluation authority is created by R029;
+- reopening this topology would require a later explicit Human objective that acknowledges and supersedes this rejection.
 
 ## Boundary
 
-`ADOPT_FOR_DESIGN` is a Human-selected evaluation disposition, not normative product authority. Any normative Decision/design/evaluation/implementation objective requires a separate explicit Human authorization under the normal Agent Governance lifecycle.
-
-R029 is closed after this disposition. No additional R029 subtask is implied.
+`REJECT_TOPOLOGY` is the durable Human disposition required by D057 for the completed R029 research recommendation. It closes R029 with `Decision-State: REJECTED` while preserving the research artifacts as historical evidence.
