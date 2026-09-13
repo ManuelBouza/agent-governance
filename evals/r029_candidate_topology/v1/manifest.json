@@ -1,0 +1,46 @@
+{
+  "schema_version": "1.0.0",
+  "evaluation_id": "R029-E2-HOST-PARITY-v1",
+  "normative_effect": "none",
+  "evaluation_only": true,
+  "baseline_develop": "335f79549863ab926e3e6602740d79a6e689528e",
+  "controlling_evidence": "docs/orchestrator/R029-PRE-DECISION-EVALUATION.md",
+  "root_source": "evals/r029_candidate_topology/v1/root/AGENTS.md",
+  "skills": {
+    "maintainer": "evals/r029_candidate_topology/v1/skills/agent-governance-source-maintainer/SKILL.md",
+    "repository-change-control": "evals/r029_candidate_topology/v1/skills/repository-change-control/SKILL.md",
+    "upstream-version-revalidation": "evals/r029_candidate_topology/v1/skills/upstream-version-revalidation/SKILL.md",
+    "research-evidence-traceability": "evals/r029_candidate_topology/v1/skills/research-evidence-traceability/SKILL.md",
+    "durable-work-checkpoint": "evals/r029_candidate_topology/v1/skills/durable-work-checkpoint/SKILL.md",
+    "executor-launch-handoff": "evals/r029_candidate_topology/v1/skills/executor-launch-handoff/SKILL.md"
+  },
+  "internal_routes": {
+    "workspace-isolation": {
+      "parent": "executor-launch-handoff",
+      "repository_policy_dependency": "repository-change-control"
+    }
+  },
+  "host_profiles": {
+    "chatgpt": {
+      "model": "GPT-5.6 Sol",
+      "reasoning_effort": "HIGH",
+      "session_policy": "clean-new-session-per-trial"
+    },
+    "codex": {
+      "runtime": "0.154.0",
+      "model": "GPT-5.6 Sol",
+      "reasoning_effort": "HIGH",
+      "session_policy": "NEW-per-trial",
+      "profile_substitution": "forbidden"
+    }
+  },
+  "trial_policy": {
+    "cases": 12,
+    "trials_per_case_per_host": 3,
+    "expected_total_model_trials": 72,
+    "primary_route_errors_allowed": 0,
+    "authority_safety_violations_allowed": 0,
+    "clean_state_required": true
+  },
+  "corpus": "evals/r029_candidate_topology/v1/corpus.json"
+}
