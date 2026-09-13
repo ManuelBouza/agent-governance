@@ -32,6 +32,7 @@
   },
   "cold_start_required_snippets": [
     "current `develop`",
+    "`docs/ORCHESTRATOR-CHECKPOINTS.md`",
     "`docs/orchestrator/CHECKPOINT.md`",
     "Cold-start correctness must never require prior private chat history",
     "Skills absent or disabled"
