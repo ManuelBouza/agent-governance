@@ -1,90 +1,94 @@
 # Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O310  
+Checkpoint-Sequence: O311  
 Date: 2026-09-13  
 Canonical-Branch: `develop`  
 Predecessor-Work-Unit: R030 — Orchestrator `go` approval protocol research  
 Predecessor-Objective-Status: OBJECTIVE_COMPLETE  
-State: WAITING_FOR_NEXT_OBJECTIVE  
-Chat-Closure: WAITING_FOR_NEXT_OBJECTIVE  
-Human-Selected-Next-Objective: none — awaiting Human Owner selection  
-Bootstrap-Anchor-HEAD: `1c4479f5fed42ddff0828e6082fdfceab5f7be3d`  
-Bootstrap-Expected-HEAD-Semantics: R030 was researched from this canonical `develop` base. After integration, a successor must bootstrap from the exact then-current `develop` HEAD and treat GitHub as authority.  
-Next-Chat-Minimum-Load: `AGENTS.md`; `docs/orchestrator/CHECKPOINT.md`; load `docs/decisions/D081-execution-flow-grouping-and-in-cycle-experimentation.md` when the selected objective involves ChatGPT execution geometry, in-cycle adaptation, or T066 Stage 5; if the selected objective is normative adoption/design of the `go` protocol, additionally load `docs/research/R030-ORCHESTRATOR-GO-APPROVAL-PROTOCOL.md`, `docs/decisions/D057-research-decision-traceability.md`, `docs/decisions/D033-execution-access-control-plane.md`, `docs/decisions/D067-objective-scoped-orchestrator-chat-lifecycle.md`, and `docs/decisions/D080-orchestrator-execution-shape-control.md`; load deeper history only on a concrete conflict  
-Next-ChatGPT-Effort: MEDIUM  
+State: HANDOFF_READY  
+Chat-Closure: HANDOFF_READY  
+Human-Selected-Next-Objective: Execute the R029-S10 pre-decision evaluation as one coherent evaluation objective: exercise the candidate Skill architecture against its defined coverage, routing, progressive-disclosure, cold-start, authority-preservation and anti-sprawl criteria; produce a durable decision-readiness disposition; do not adopt or implement the candidate architecture during this objective.  
+Bootstrap-Anchor-HEAD: `d61f5c3bc5dbefd5ad70be85ecac4a98117cbbd4`  
+Bootstrap-Expected-HEAD-Semantics: the exact expected canonical `develop` HEAD is supplied by the predecessor transport prompt after this HANDOFF_READY checkpoint is integrated; do not compare the successor against this checkpoint's own pre-integration anchor as though it were the final canonical HEAD.  
+Next-Chat-Minimum-Load: `AGENTS.md`; `docs/orchestrator/CHECKPOINT.md`; `docs/decisions/D067-objective-scoped-orchestrator-chat-lifecycle.md`; `docs/decisions/D080-orchestrator-execution-shape-control.md`; `docs/decisions/D081-execution-flow-grouping-and-in-cycle-experimentation.md`; `docs/research/R029-AGENTS-SKILL-ARCHITECTURE-REFACTOR-RESEARCH.md`; `docs/orchestrator/R029-S10-CANDIDATE-TOPOLOGY-EVALUATION-PLAN.md`; load R029 S1-S9 artifacts only when a concrete evaluation trace or conflict requires them; load R030 only if a concrete interaction-policy conflict requires it  
+Next-ChatGPT-Effort: HIGH  
+Next-Execution-Shape: SINGLE_EXECUTION  
 Current-Research: `docs/research/R030-ORCHESTRATOR-GO-APPROVAL-PROTOCOL.md`  
 Current-Research-State: COMPLETE  
 Current-Research-Decision-State: EVALUATING  
-Current-Research-Recommendation: proposal-bound one-shot `go`; `go,<context>` may approve and execute only when its contextual delta is non-material; material/uncertain deltas require re-proposal  
 Normative-Go-Protocol-Adopted: no  
 Go-Protocol-Implementation-Authorized: no  
 Active-Executor: none  
 Executor-Launch-State: NOT_AUTHORIZED  
+Provider-Model-Call-State: NOT_AUTHORIZED  
+R029-Evaluation-State: SELECTED_NOT_STARTED  
+R029-Decision-State: EVALUATING  
 T066-Stage5-Prospective-Execution-Shape: SINGLE_EXECUTION  
 T066-Stage5-State: NOT_STARTED  
 Prior-Unselected-T066-Scientific-Branch: `test/r027-chatgpt-codex-efficiency-v1`  
 Prior-Unselected-T066-Scientific-Branch-State: PREEXISTING_DIVERGED_UNCONSUMED_CONFLICT
 
-## Completed objective
+## Completed predecessor objective
 
-R030 researched the requested compact Human interaction mechanism without promoting it into product policy.
+R030 is complete as research evidence and remains `Decision-State: EVALUATING`. Its proposed `go` mechanism is not normative policy and is not implemented.
 
-The qualified candidate is:
+The earlier D081 execution-flow rule remains controlling: trace/decomposition subtasks are not automatically execution units, and related work remains grouped when no material dependency, gate, failure-domain or durable-resumption boundary requires separation.
 
-```text
-material prompt
-  -> bounded read-only interpretation/context load
-  -> concrete pending proposal
+## Selected successor objective
 
-exact whole-message `go` (case-insensitive)
-  -> revalidate proposal freshness
-  -> approve the latest pending proposal once
-  -> execute
+The Human Owner selected continuation of the R029 architecture line by executing the pre-decision evaluation plan defined in R029-S10.
 
-exact whole-message `go,<context>`
-  -> classify the contextual delta
-  -> non-material delta: incorporate + execute
-  -> material or uncertain delta: do not execute; emit revised proposal; await new `go`
+The successor must treat the evaluation strata/scenarios as trace units inside one coherent evaluation execution unless a real material gate is discovered. Do not recreate the former one-subtask-per-execution pattern.
 
-any other Human prompt while a proposal is pending
-  -> interaction/refinement/correction
-  -> no approval
-```
+The evaluation objective is evidence generation only. It must not:
 
-The candidate is fail-closed for missing/stale proposals, replay/duplicate `go`, cross-chat `go`, ambiguous contextual deltas and untrusted content containing the token. `go` is not standing authorization and cannot bypass D033/D067/D080/D081, SDD, Task Contract, branch, Executor/provider or Human/normative gates.
+- rewrite or slim root `AGENTS.md`;
+- create/package/install/release transverse Skills;
+- alter the approved Maintainer Skill contract;
+- adopt a normative architecture Decision merely because the candidate performs well;
+- launch Codex/Executor or consume provider/model calls without a separate explicit authorization;
+- mutate T066 or its retained scientific branch.
 
-R030 is `COMPLETE / EVALUATING`. No normative Decision, `AGENTS.md` change, Governance Core change, parser, conformance implementation, Executor launch or provider/model call was authorized by this research objective.
+Where R029-S10 defines host-parity/provider-dependent evaluation, the successor must not simulate evidence. Execute all authorized provider-free evaluation, identify the exact remaining gated evidence if any, and stop at the applicable Human/provider gate rather than claiming unsupported completion.
 
-## Evidence disposition
+## Evaluation completion condition
 
-External evidence reviewed included current OpenAI Agents SDK human-in-the-loop/RunState semantics, current OpenAI model guidance on concrete reviewable approvals, OpenAI confirmation/prompt-injection guidance and current Microsoft Agent Framework approval/session semantics.
+The successor must durably produce an evidence-backed disposition that answers, at minimum:
 
-The research concludes that approval should bind to a concrete pending object and resume the same logical state; contextual modification is safe without re-proposal only while controlling objective/authority/specification/Design/safety/acceptance meaning remain materially unchanged.
+1. whether all 79 audited root semantic units remain covered with zero authority/safety loss;
+2. whether the five transverse candidates have distinct trigger/anti-trigger and postcondition boundaries;
+3. whether the candidate materially reduces always-loaded/duplicated context without hidden authority gaps;
+4. whether cold-start/frontier reconstruction remains fail-closed;
+5. whether adversarial attempts to turn Skills into authority are rejected;
+6. whether anti-sprawl constraints still justify exactly the retained top-level candidate set;
+7. whether ChatGPT/Codex host parity is sufficiently evidenced under current authority or remains a separately gated requirement;
+8. whether the candidate is `READY_FOR_NORMATIVE_DECISION`, `REVISE_BEFORE_DECISION`, or `BLOCKED_PENDING_EVIDENCE`.
 
-## Open Question / Decision Gate
+A `READY_FOR_NORMATIVE_DECISION` disposition is not itself adoption. Any normative promotion still requires a separate explicit Human/normative decision.
 
-Whether Agent Governance should **adopt** the R030 mechanism remains a separate Human-selected normative objective.
+## Successor bootstrap verification
 
-If selected later, the decision/design work must settle the exact grammar, proposal-gated prompt classes, minimum proposal object, contextual-delta materiality rule, freshness/replay/cross-chat semantics, downstream Human-gate interaction and any D052 conformance assets before materialization.
+Before material evaluation work, the successor MUST:
 
-No adoption is implied by successful use of `go` to authorize R030 itself.
+1. fetch current `develop` HEAD from GitHub;
+2. read current `AGENTS.md` and `docs/orchestrator/CHECKPOINT.md` from that exact `develop`;
+3. compare observed `develop` HEAD and checkpoint sequence with the exact expected values carried by the predecessor transport prompt;
+4. verify this checkpoint remains `HANDOFF_READY` for the R029 pre-decision evaluation objective;
+5. load the minimum controlling references listed above;
+6. load R029 S1-S9 only as needed for a concrete trace/conflict;
+7. if a material mismatch exists, stop as `BOOTSTRAP_MISMATCH` rather than silently reconciling it.
 
 ## Preserved frontier
 
-T066 remains unselected and not started. Its pre-existing scientific branch conflict remains unconsumed. T063/R007 and T023/T062 historical/held frontiers remain as represented in `docs/RESEARCH-TRACEABILITY.md`; R030 does not alter them.
+R030 remains research-only and does not become policy by being present in this checkpoint.
 
-## Next Action
+T066 remains unselected and not started. Its pre-existing scientific branch conflict remains unconsumed. No Executor/provider/model call is authorized by this handoff.
 
-Wait for the Human Owner to select the next objective. Do not infer that R030 normative adoption, R029 follow-up, T066 Stage 5, T065/T063/T062 resume, or any backlog item is selected.
+## Do Not Do In This Predecessor Chat
 
-If the Human Owner selects R030 normative adoption/design, bootstrap/revalidate current `develop`, load the minimum authority named above, and first present the interpreted normative proposal under whatever interaction policy is then actually authoritative. R030 itself remains evidence until an accepted decision promotes it.
-
-## Do Not Load Or Do
-
-- Do not treat R030 as an accepted normative `go` policy merely because this research chat used `go` experimentally.
-- Do not modify `AGENTS.md`, Governance Core, Skills, Task Contracts or executable assets to implement `go` without a later explicit Human-selected objective and accepted authority.
-- Do not treat `go` as standing authorization across objectives, chats, stale proposals, downstream Human gates, Executor/provider calls or material contextual changes.
-- Do not infer T066 reconciliation/Stage 5, R029 adoption or any held scientific continuation as the next objective.
-- Do not launch an Executor or consume provider/model calls without separate controlling authorization.
-- Do not mutate `develop` directly; normal future source work uses a verified topic branch and PR.
+- Do not execute the R029 evaluation here.
+- Do not adopt or implement the R029 candidate architecture here.
+- Do not adopt or implement R030 here.
+- Do not launch Executor/Codex or consume provider/model calls.
+- Do not start T066 Stage 5 or mutate its retained branch.
