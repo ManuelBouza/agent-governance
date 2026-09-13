@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.0.0",
+  "schema_version": "1.1.0",
   "evaluation_id": "R029-E2-HOST-PARITY-v1",
   "normative_effect": "none",
   "evaluation_only": true,
@@ -22,16 +22,20 @@
   },
   "host_profiles": {
     "chatgpt": {
+      "client_surface": "ChatGPT",
       "model": "GPT-5.6 Sol",
       "reasoning_effort": "HIGH",
       "trial_context_policy": "clean-isolated-context-per-trial"
     },
     "codex": {
-      "runtime": "0.154.0",
+      "client_surface": "ChatGPT desktop app / Codex view",
+      "observed_app_version": "26.903.71938",
+      "observed_app_release_date": "2026-09-10",
       "model": "GPT-5.6 Sol",
       "reasoning_effort": "HIGH",
       "coordinator_policy": "one D060 coordinator for the E2 work unit",
       "trial_context_policy": "clean-isolated-context-per-trial; concrete child/thread/session mechanics are Executor-owned",
+      "cli_identity_requirement": "none; codex CLI version is execution-mechanics metadata only and is not the Codex Desktop host identity",
       "profile_substitution": "forbidden"
     }
   },
