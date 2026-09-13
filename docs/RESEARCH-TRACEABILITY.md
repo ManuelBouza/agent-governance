@@ -62,7 +62,7 @@ See D057 for transition semantics and required metadata for new research.
 | R026 | `docs/research/R026-CHATGPT-GITHUB-INTERACTION-MINIMIZATION.md` | COMPLETE | EVALUATING | D048; D066; GitHub Git Data docs; `test_biblioteca` write-path qualification; PR `#371` | none | R026 does not replace the existing native-Git publication process. It qualifies adaptive ChatGPT Web write transport: direct per-file Contents writes for trivial independent changes, and Git Data tree/commit/ref batching when coherent multi-file publication reduces mutation cost or materially benefits from one-commit coherence. Reads remain direct from GitHub; normative adoption remains EVALUATING. |
 | R027 | `docs/research/R027-CHATGPT-CODEX-COST-EFFICIENT-RESPONSIBILITY-SPLIT.md` | COMPLETE | EVALUATING | T066; R028; D079; D053/D054/D055/D060/D065/D068/D075/D076; OpenAI Chat/Work/Codex, prompting, AGENTS.md, subagent, speed and rate-card guidance; OpenAI Harness Engineering; external empirical context-efficiency studies | `docs/decisions/D079-lean-executor-qualification-and-adoption-boundary.md` | R027 remains predecessor evidence for the responsibility-split hypothesis. D079 selects the R027+ Lean Executor architecture for qualification but does not adopt it as production policy; the production conclusion remains EVALUATING through T066 and any required confirmation. |
 | R028 | `docs/research/R028-R027-DEEP-REVALIDATION-AND-LEAN-EXECUTOR.md` | COMPLETE | EVALUATING | R027; T066 v2; D079; R007; R010; D055/D057/D060/D063/D065/D068/D075/D076/D077; current OpenAI model/rate-card/AGENTS.md/speed/subagent guidance; OpenAI Harness Engineering; external empirical context/specialist-agent studies | `docs/decisions/D079-lean-executor-qualification-and-adoption-boundary.md` | D079 accepts R028's qualification/adoption boundary and selects Lean Executor as the official candidate architecture. D068 and other production policies remain unchanged; final production disposition remains EVALUATING pending T066 screening, independent confirmation and any required mechanism-level evidence. |
-| R029 | `docs/research/R029-AGENTS-SKILL-ARCHITECTURE-REFACTOR-RESEARCH.md` | COMPLETE | EVALUATING | no empirical evaluation yet; pre-decision preservation/routing/context/cross-host gates defined by R029 | none | R029 classifies the overloaded root `AGENTS.md` and identifies a candidate lean-root + Maintainer-domain + small transverse-capability architecture. No root/Skill implementation or normative adoption is authorized; next step requires explicit Human-selected evaluation/design work. |
+| R029 | `docs/research/R029-AGENTS-SKILL-ARCHITECTURE-REFACTOR-RESEARCH.md` | COMPLETE | EVALUATING | `docs/orchestrator/R029-PRE-DECISION-EVALUATION.md`; `docs/orchestrator/R029-E2-HOST-PARITY-FREEZE-D.md`; `handoffs/R029-E2-codex-trials.jsonl`; `evals/r029_candidate_topology/v1/freeze-d-codex-rescore.json` | none | Provider-free evaluation passed without a topology defect. E2 has consumed 37 provider/model calls: 36 Codex attempts plus one unscored adapter preflight. Freeze D deterministically reuses the immutable Codex evidence as 36/36 PASS on the scored transverse surface with zero authority/safety violations; Maintainer domain routing was observed in 21/36 and remains explicitly unscored. The paired ChatGPT half is still 0/36, so R029 remains EVALUATING with no root/Skill implementation or normative adoption authorized. |
 | R030 | `docs/research/R030-ORCHESTRATOR-GO-APPROVAL-PROTOCOL.md` | COMPLETE | EVALUATING | this chat's approved research execution; external HITL/approval evidence; no empirical product evaluation yet | none | R030 recommends a strict proposal-bound, one-shot `go` approval token. Exact `go` approves the latest pending proposal; `go,<context>` may execute only for a non-material contextual delta, while material/uncertain deltas, stale proposals, missing proposals, duplicate/replayed approvals and cross-chat approvals fail closed. No normative policy or implementation is adopted. |
 
 ## Live research frontier
@@ -91,12 +91,16 @@ R029
   root AGENTS.md refactor: NOT AUTHORIZED
   new transverse Skill implementation: NOT AUTHORIZED
   decision adoption: none
-  provider/model calls: 0
-  scored observations: 0
-  next gate: Human-selected evaluation/design objective
+  provider/model calls: 37
+  scored transverse Codex observations: 36
+  Codex transverse result under Freeze D: 36/36 PASS
+  authority/safety violations: 0
+  Maintainer domain route observed: 21/36 (informational; not scored)
+  ChatGPT paired half: 0/36
+  next gate: clean ChatGPT paired half under Freeze D
 ```
 
-R029 is research evidence only. It identifies repository change control and upstream version revalidation as the strongest reusable transverse-capability candidates, while research traceability, durable checkpointing, and executor launch/handoff retain stronger Agent Governance adapter boundaries. Workspace isolation remains an initial sub-route/reference candidate rather than an automatically separate top-level Skill.
+R029 is research evidence only. Freeze D corrects the E2 observation model by separating Maintainer domain routing from transverse routing; it does not adopt the candidate architecture. The Codex half is reusable without rerun for the scored transverse surface, while paired host parity remains incomplete until the clean ChatGPT half is executed. Workspace isolation remains an internal ELH route with RCC policy dependency.
 
 ### T063 — adaptive worker routing requalification
 
@@ -258,26 +262,3 @@ R014/R015 -> D066
 ```
 
 D063 qualifies the child measurement substrate only. D065 establishes delegation obligation. D075 establishes only the coordinator-direct versus delegated/contract-fixed first gate. D077 governs upstream version-range revalidation. None of them adopts adaptive child compute routing, changes D055, establishes provider-signed backend identity, or authorizes a global savings claim. R007 remains EVALUATING after T063's frozen mapping fails qualification.
-
-## Required workflow for new research
-
-For each new material investigation:
-
-1. allocate the next stable `Rxxx` identifier;
-2. create the research artifact under `docs/research/` with D057 metadata;
-3. add/update its registry row in the same Markdown change set;
-4. record sources/evidence and distinguish volatile facts from durable analysis;
-5. if empirical validation is required, set `Decision-State: EVALUATING` and link the exact Task Contract/eval/review;
-6. if a decision is accepted, update the registry to `DECIDED` and link the exact `Dxxx` authority;
-7. if deferred/rejected/superseded, persist that disposition and reason/reference;
-8. update `docs/orchestrator/CHECKPOINT.md` only when the item is part of the live frontier.
-
-No material research may be relied on for a downstream Task Contract or normative change while existing only in chat.
-
-Version-sensitive external/vendor research is additionally subject to D077: compare the pinned/reference version, current stable, and higher relevant versions before promoting a version-dependent conclusion into consequential authority.
-
-## Provenance rule
-
-Do not rewrite a completed research artifact merely to align with a later conclusion. Preserve the original analysis, create or reference the successor when material evidence changes, and use the registry to express supersession/current disposition.
-
-For volatile vendor/model/pricing/regulatory facts, revalidate the source before a later decision and update `Last-Reviewed` metadata or create a successor research item.
