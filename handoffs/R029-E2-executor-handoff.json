@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "task_id": "R029-E2-HOST-PARITY-v1",
+  "status": "BLOCKED",
+  "task_contract_path": "docs/orchestrator/R029-E2-HOST-PARITY-FREEZE.md",
+  "sdd_profile": "not_specified_by_persisted_authority",
+  "branch": "test/r029-host-parity-e2",
+  "implementation_head_sha": "d6b738aa0c17d5f9e8b4207992d2b53bb6f94946",
+  "base_branch": "develop",
+  "base_sha": "335f79549863ab926e3e6602740d79a6e689528e",
+  "coordinator_session": {
+    "coordinator_id": "AG | agent-governance | R029-E2 | root-1",
+    "mode": "NEW",
+    "host_display_title": null,
+    "host_display_title_availability_reason": "The active execution surface did not expose a reliable host display title; this navigation metadata was not used as governance identity."
+  },
+  "workspace": {
+    "worktree_label": ".worktrees/r029-e2-host-parity-freeze",
+    "isolation": "Created a new exclusive worktree from origin/test/r029-host-parity-e2 after fetching and pruning origin. Local and remote branch HEAD both resolved to d6b738aa0c17d5f9e8b4207992d2b53bb6f94946 before authority was loaded. Existing checkouts, worktrees, and unrepresented local state were preserved."
+  },
+  "files_changed": [
+    "handoffs/R029-E2-executor-handoff.json"
+  ],
+  "implementation_summary": "Performed the frozen E2 launch preflight without starting model trials. Freeze commit 785ed8a5e2a8df03d01cb218ae39087c39448e59 is an ancestor of the execution branch, and all eleven frozen fixture paths are byte-identical between that commit and the preflight HEAD. The installed Codex runtime reports 0.153.4, while the frozen host profile requires exactly 0.154.0 and forbids substitution. The run is therefore blocked at the execution-surface gate with zero provider/model calls and zero scored observations.",
+  "verification": {
+    "commands": [
+      "git fetch --prune origin",
+      "git status --short --branch",
+      "git rev-parse HEAD",
+      "git rev-parse origin/test/r029-host-parity-e2",
+      "git merge-base --is-ancestor 785ed8a5e2a8df03d01cb218ae39087c39448e59 HEAD",
+      "git diff --quiet 785ed8a5e2a8df03d01cb218ae39087c39448e59..HEAD -- <eleven frozen fixture paths>",
+      "codex --version",
+      "git --version",
+      "uv --version"
+    ],
+    "results": {
+      "remote_baseline": "PASS: local and origin/test/r029-host-parity-e2 both resolved to d6b738aa0c17d5f9e8b4207992d2b53bb6f94946 in a new isolated worktree.",
+      "freeze_ancestry": "PASS: frozen fixture commit 785ed8a5e2a8df03d01cb218ae39087c39448e59 is an ancestor of the branch preflight HEAD.",
+      "fixture_integrity": "PASS: git diff --quiet returned 0 for all eleven fixture paths between the freeze commit and preflight HEAD.",
+      "codex_runtime_profile": "BLOCKED: codex --version returned codex-cli 0.153.4; the frozen profile requires Codex 0.154.0 exactly and forbids runtime substitution.",
+      "model_trials": "NOT RUN: launch preflight failed before any provider/model call.",
+      "chatgpt_host_half": "NOT RUN: the complete paired run cannot begin after the mandatory Codex runtime precondition failed."
+    },
+    "runtime": "Windows; Codex CLI 0.153.4; Git 2.53.0.windows.2; uv 0.11.32.",
+    "network_required": "Canonical Git fetch and final push require network. The frozen E2 run would additionally require provider/model execution access, but no provider/model call was made after the exact-profile preflight failed."
+  },
+  "requirement_trace": {
+    "G1": "PASS: persisted authority records Human-Gate-G1 as AUTHORIZED.",
+    "Freeze-B": "PASS: freeze commit ancestry and all eleven frozen fixture paths were verified unchanged.",
+    "Host-profile-control": "BLOCKED: installed Codex runtime 0.153.4 does not equal required 0.154.0; substitution is explicitly forbidden.",
+    "Trial-policy": "NOT RUN: 0 of 72 model trials started; no observations were simulated.",
+    "Next-condition": "UNSATISFIED: continue only when a real connected execution surface can run both host halves under the exact frozen profile."
+  },
+  "code_review": {
+    "reviewed_head_sha": "d6b738aa0c17d5f9e8b4207992d2b53bb6f94946",
+    "summary": "Reviewed the published freeze identity and launch preconditions only. The frozen fixture is intact, but the exact Codex runtime precondition fails before empirical execution. No candidate topology conclusion or acceptance claim is made.",
+    "findings": [
+      "The active Codex installation is 0.153.4 rather than the frozen required runtime 0.154.0."
+    ],
+    "resolved_findings": [],
+    "upstream_reentry_required": false,
+    "upstream_reentry_stage": null
+  },
+  "provider_model_calls_consumed": 0,
+  "executor_launches_consumed": 1,
+  "scored_empirical_observations": 0,
+  "ephemeral_artifacts": [],
+  "dependencies_or_config_changes": [],
+  "git_status": "Expected clean tracked branch after committing this handoff-only blocker record; verified again before final push.",
+  "unresolved_issues": [
+    "An exact Codex 0.154.0 execution surface is unavailable on this host.",
+    "The paired 36 ChatGPT and 36 Codex clean isolated trials remain unexecuted."
+  ],
+  "scope_confirmation": {
+    "executor_authored_markdown": false,
+    "frozen_fixture_modified": false,
+    "provider_model_calls_made": false,
+    "observations_simulated": false,
+    "profile_substituted": false,
+    "dependencies_changed": false,
+    "configuration_changed": false
+  },
+  "recommended_next_task": "Provide a real connected execution surface that can run both host halves using the exact frozen profiles, including Codex 0.154.0, then continue E2 without mutating Freeze B.",
+  "chatgpt_read_path": [
+    "docs/orchestrator/R029-E2-HOST-PARITY-FREEZE.md",
+    "handoffs/R029-E2-executor-handoff.json"
+  ]
+}
