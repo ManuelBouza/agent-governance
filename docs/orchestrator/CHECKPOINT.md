@@ -1,16 +1,17 @@
 # Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O294  
+Checkpoint-Sequence: O295  
 Date: 2026-09-13  
 Canonical-Branch: `develop`  
 Current-Work-Unit: R029 — incremental Skill-architecture evaluation  
-State: ACTIVE  
+State: HUMAN_REVIEW_GATE  
 Current-Objective: `R029 — evaluate the Skill-architecture refactor without adopting or implementing it`  
-Next-Subtask: `R029-S1 — Root preservation-map audit`  
-Next-Action: In the next work session of this same ChatGPT Orchestrator chat, revalidate current `develop` and this checkpoint, then execute only R029-S1. Do not begin R029-S2 or any later subtask automatically.  
+Completed-Subtask: `R029-S1 — Root preservation-map audit`  
+Completed-Artifact: `docs/orchestrator/R029-S1-ROOT-PRESERVATION-MAP.md`  
+Candidate-Next-Subtask: `R029-S2 — Lean-root responsibility contract`  
+Next-Action: Human Owner reviews R029-S1. Do not execute R029-S2 unless the Human Owner explicitly accepts/selects it for a later work session of this same chat.  
 Next-ChatGPT-Effort: MEDIUM  
-Next-Execution-Shape: SINGLE_EXECUTION  
 Session-Sequence: `docs/orchestrator/R029-OBJECTIVE-SEQUENCE.md`  
 Current-Research: `docs/research/R029-AGENTS-SKILL-ARCHITECTURE-REFACTOR-RESEARCH.md`  
 Current-Research-State: COMPLETE / EVALUATING  
@@ -25,95 +26,75 @@ Chat-Closure: KEEP_CURRENT_CHAT_ACTIVE
 
 ## Completed
 
-The Human Owner selected a research-only objective to determine how the overloaded source-product instruction architecture can be refactored toward a leaner root `AGENTS.md` plus progressively disclosed domain/transverse capabilities without promoting a decision or implementing the refactor.
+R029 remains one continuing Human objective in this same ChatGPT chat, decomposed into bounded session subtasks. Only one material subtask is executed per work session, and each completed subtask returns to a Human gate before any successor starts.
 
-R029 is analytically complete and remains `Decision-State: EVALUATING`. It records the external evidence, current-root semantic inventory, candidate lean-root/Maintainer/transverse-capability architecture, and pre-decision safety/evaluation gates.
+R029-S1 was executed from `develop@8113b9d0963e4d9ddfa10e5b7c5bf9cc66348eec` against root `AGENTS.md` blob `dd2e2d814aee8f682bde54f6d5d0d462d7e1de87`.
 
-The follow-up was initially persisted as ten separate D067 objectives requiring fresh chats. The Human Owner corrected that interpretation on 2026-09-13: the R029 evaluation remains **one continuing Human objective in this same ChatGPT chat**, decomposed into bounded subtasks so only one subtask is executed per work session.
+The root blob is unchanged from the R029 research baseline. The S1 audit refined R029's coarse inventory into an atomic preservation map persisted at:
 
-The corrected sequence is persisted in:
+`docs/orchestrator/R029-S1-ROOT-PRESERVATION-MAP.md`
 
-`docs/orchestrator/R029-OBJECTIVE-SEQUENCE.md`
+S1 result:
 
-The current session model is:
+- 79 material atomic semantic units audited;
+- 79 units assigned exactly one preservation classification/destination;
+- 0 unclassified material units;
+- 0 delete-without-replacement units;
+- 0 preservation-classification ambiguities;
+- 2 later topology/placement questions explicitly retained rather than decided (`workspace isolation` and `volatile-fact refresh routing`);
+- 0 normative architecture decisions;
+- 0 root `AGENTS.md` mutations;
+- 0 Skill implementations;
+- 0 Executor/Codex launches;
+- 0 provider/model calls or scored observations.
 
-```text
-same ChatGPT chat / one R029 parent objective
+The S1 completion gate is therefore satisfied analytically and durably. It remains awaiting Human Owner review/acceptance before S2 becomes selectable.
 
-R029-S1 -> Human gate -> later session
-R029-S2 -> Human gate -> later session
-...
-R029-S10 -> Human decision gate
-```
+## Current Human gate
 
-Each subtask:
+The Human Owner should review/accept or request correction of the S1 preservation map.
 
-- has one observable completion gate and durable output;
-- has its own D080 execution-shape classification;
-- stops material work for the session after persistence;
-- returns to a Human gate before the next subtask begins;
-- does not automatically authorize its successor.
-
-This preserves D067 because the Human objective does not change; only subordinate execution sessions advance inside it.
-
-The selected immediate subtask is:
+If accepted, the candidate next session is:
 
 ```text
-R029-S1 — Root preservation-map audit
+R029-S2 — Lean-root responsibility contract
 ChatGPT Effort: MEDIUM
 Execution Shape: SINGLE_EXECUTION
 ```
 
-S1 is limited to auditing/classifying preservation coverage for the current root `AGENTS.md`. It does not design the lean root, decide Skill topology, rewrite `AGENTS.md`, create Skills, or run provider/model evaluation.
+This candidate is **not selected automatically** merely because S1 completed.
 
-No Executor/Codex launch, provider/model call, scored observation, root `AGENTS.md` mutation, Skill implementation, normative decision, or T066 scientific-branch mutation was performed by this correction.
+## Candidate next-session scope — only if Human selects S2
 
-## Persisted session sequence
+S2 defines only the responsibility boundary of the future always-loaded root. It must justify every retained root responsibility as pre-routing authority/safety/bootstrap and ensure every omitted detail remains reachable through an explicit destination class.
+
+S2 must not:
+
+- draft the final root `AGENTS.md`;
+- design individual transverse Skills;
+- decide Maintainer Skill domain placement beyond what is needed to define the root boundary;
+- implement Skills;
+- launch Codex/another Executor;
+- consume provider/model calls;
+- promote R029 into normative policy.
+
+## Session rule
+
+After every subtask:
 
 ```text
-R029-S1  Root preservation-map audit
-R029-S2  Lean-root responsibility contract
-R029-S3  Maintainer Skill domain boundary
-R029-S4  repository-change-control candidate
-R029-S5  upstream-version-revalidation candidate
-R029-S6  research-evidence-traceability candidate
-R029-S7  durable-work-checkpoint candidate
-R029-S8  executor-launch-handoff candidate
-R029-S9  Workspace-isolation placement
-R029-S10 Candidate-topology synthesis and evaluation plan
-          -> HUMAN DECISION GATE
+subtask complete
+-> persist result and checkpoint
+-> stop material work for that session
+-> Human Owner reviews/selects next subtask
+-> later session resumes this same chat
+-> revalidate current develop/checkpoint
+-> execute only the selected subtask
 ```
-
-S1 is `SELECTED_NEXT`; S2-S10 remain `NOT_STARTED`. Later subtasks become only eligible after their prerequisites are durably completed and the Human Owner explicitly selects them for a later session of this same chat.
-
-## Next Action
-
-Stop material work after integrating this closure correction.
-
-Keep this ChatGPT chat active. In the next work session, revalidate current `develop`, `AGENTS.md`, and this checkpoint, then execute **only R029-S1**.
-
-Do not open a new chat merely to advance from one R029 subtask to another.
-
-## Next Session Minimum Load — R029-S1
-
-After revalidating `develop`, root `AGENTS.md`, and this checkpoint, load only:
-
-- `docs/orchestrator/R029-OBJECTIVE-SEQUENCE.md` — R029-S1 section and global session rules;
-- `docs/research/R029-AGENTS-SKILL-ARCHITECTURE-REFACTOR-RESEARCH.md` — current semantic inventory/classification baseline;
-- current root `AGENTS.md` — authoritative material being audited.
-
-Load D067/D080 only if a lifecycle/execution-shape conflict must be resolved. Do not preload the Maintainer Skill contract or individual transverse-candidate context during S1 unless a concrete classification conflict requires it.
-
-## R029-S1 completion gate
-
-S1 completes only when every material semantic unit in the current root `AGENTS.md` has exactly one explicit preservation classification/destination, with duplicate, ambiguous, conflicting, or uncovered semantics recorded explicitly rather than silently resolved.
-
-The durable S1 result must be persisted before the Human Owner is asked whether to select R029-S2 for a later session.
 
 ## Do Not Load Or Do
 
-- Do not begin R029-S2 through R029-S10 during the S1 session.
-- Do not treat the session sequence as automatic authorization for later subtasks.
+- Do not begin R029-S2 through R029-S10 until the Human Owner selects the next subtask.
 - Do not treat R029 findings as an accepted architecture decision.
 - Do not rewrite root `AGENTS.md` from R029/S1.
 - Do not author, package, install, or release new transverse Skills.

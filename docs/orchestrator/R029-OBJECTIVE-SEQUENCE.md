@@ -29,7 +29,7 @@ Each subtask has its own D080 execution-shape classification. These are bounded 
 
 | ID | Status | Subtask | Prerequisites | Durable output | Completion gate | ChatGPT Effort | Execution Shape |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| R029-S1 | SELECTED_NEXT | Root preservation-map audit | R029 integrated | Verified root semantic preservation map with gaps/conflicts | Every current root semantic unit has exactly one preservation classification/destination, with unresolved conflicts explicitly listed | MEDIUM | SINGLE_EXECUTION |
+| R029-S1 | COMPLETE_AWAITING_HUMAN_REVIEW | Root preservation-map audit | R029 integrated | `docs/orchestrator/R029-S1-ROOT-PRESERVATION-MAP.md` | Every current root semantic unit has exactly one preservation classification/destination, with unresolved conflicts explicitly listed | MEDIUM | SINGLE_EXECUTION |
 | R029-S2 | NOT_STARTED | Lean-root responsibility contract | S1 accepted | Candidate always-on root responsibility contract | Every retained root item is justified as pre-routing authority/safety/bootstrap; every omitted detail remains reachable through an explicit destination class | MEDIUM | SINGLE_EXECUTION |
 | R029-S3 | NOT_STARTED | Maintainer Skill domain boundary | S1-S2 accepted | Agent-Governance-specific domain-routing map | Source-maintenance-specific workflows are separated from transverse candidates without splitting the approved Maintainer Skill by role | MEDIUM | SINGLE_EXECUTION |
 | R029-S4 | NOT_STARTED | `repository-change-control` candidate | S1-S3 accepted | Candidate contract, triggers/anti-triggers, host-adapter boundary, analytical disposition | Reusable intent and non-overlap are explicit; candidate is classified `KEEP_CANDIDATE`, `INTERNAL_ROUTE`, or `REJECT_FOR_TRANSVERSE` as research/evaluation only | MEDIUM | SINGLE_EXECUTION |
@@ -57,6 +57,8 @@ Out of scope: designing the lean root, deciding Skill topology, writing or chang
 Required durable output: a persisted S1 result containing the complete preservation map, duplicate/ambiguous classifications, and any uncovered current root semantics.
 
 Completion gate: no material root semantic unit remains unclassified. Any disagreement is recorded as an explicit gap rather than silently resolved.
+
+S1 completed on 2026-09-13 and is persisted at `docs/orchestrator/R029-S1-ROOT-PRESERVATION-MAP.md`. The audit refined the coarse R029 inventory into 79 atomic semantic units with zero unclassified units, zero delete-without-replacement units, and zero preservation-classification ambiguities. Two later topology questions remain explicitly deferred rather than silently decided. S1 now awaits Human review/acceptance; S2 is not selected automatically.
 
 ### R029-S2 — Lean-root responsibility contract
 
