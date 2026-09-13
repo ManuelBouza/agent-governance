@@ -1,12 +1,12 @@
 # Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O320  
+Checkpoint-Sequence: O321  
 Date: 2026-09-13  
 Canonical-Branch: `develop`  
 Current-Work-Unit: R029 normative architecture decision — COMPLETE  
-State: WAITING_FOR_NEXT_OBJECTIVE  
-Chat-Closure: WAITING_FOR_NEXT_OBJECTIVE  
+State: HANDOFF_READY  
+Chat-Closure: HANDOFF_READY  
 R029-Research-State: COMPLETE  
 R029-Decision-State: DECIDED  
 R029-Decision-Ref: `docs/decisions/D082-r029-lean-root-and-transverse-skill-architecture.md`  
@@ -30,9 +30,11 @@ Active-Executor: none
 T066-Stage5-State: NOT_STARTED  
 Prior-Unselected-T066-Scientific-Branch: `test/r027-chatgpt-codex-efficiency-v1`  
 Prior-Unselected-T066-Scientific-Branch-State: PREEXISTING_DIVERGED_UNCONSUMED_CONFLICT  
-Next-ChatGPT-Effort: MEDIUM  
-Next-Action: Wait for a new Human-selected objective. D082 makes the R029 family-level architecture normative, but it does not authorize productive materialization in this completed objective. A later Human-selected materialization/qualification objective may implement the architecture subject to D082 and the then-current source-maintenance rules. T066 Stage 5 remains a separate unstarted objective.  
-Next-Chat-Minimum-Load: `AGENTS.md`; `docs/orchestrator/CHECKPOINT.md`; `docs/decisions/D067-objective-scoped-orchestrator-chat-lifecycle.md`; `docs/decisions/D082-r029-lean-root-and-transverse-skill-architecture.md`; load additional authority only as required by the newly selected objective
+Next-Human-Objective: Materialize and post-materialization-qualify the R029 architecture adopted by D082, preserving every D082 condition and residual.  
+Next-ChatGPT-Effort: HIGH  
+Next-Execution-Shape: MULTI_EXECUTION  
+Next-Action: Successor chat must bootstrap fail-closed from current `develop`, then enter the Human-selected R029 materialization/qualification objective. It must first establish the controlling SDD/Task Contract/materialization plan and exact writable topic-branch frontier. Productive materialization remains unstarted until that successor bootstrap succeeds. T066 Stage 5 remains a separate unstarted objective.  
+Next-Chat-Minimum-Load: `AGENTS.md`; `docs/orchestrator/CHECKPOINT.md`; `docs/decisions/D067-objective-scoped-orchestrator-chat-lifecycle.md`; `docs/decisions/D082-r029-lean-root-and-transverse-skill-architecture.md`; `docs/decisions/D068-library-first-candidate-materialization-executor-verification-boundary.md`; `docs/decisions/D061-orchestrator-branch-target-write-guard.md`; `docs/decisions/D080-orchestrator-execution-shape-control.md`; load the R029 preservation/evaluation artifacts required to construct the exact materialization Task Contract and qualification plan
 
 ## R029 normative decision
 
@@ -99,7 +101,7 @@ These are qualification residuals, not evidence of a family-level topology defec
 
 ## D057 transition
 
-`docs/RESEARCH-TRACEABILITY.md` now records R029 as:
+`docs/RESEARCH-TRACEABILITY.md` records R029 as:
 
 ```text
 Research-State: COMPLETE
@@ -110,15 +112,29 @@ Disposition: ADOPT_WITH_CONDITIONS
 
 The completed R029 research and evaluation artifacts remain historical evidence; D082 is the normative architecture authority.
 
+## Successor handoff
+
+The Human Owner explicitly selected the next objective on 2026-09-13:
+
+```text
+Materialize and post-materialization-qualify the R029 architecture adopted by D082.
+```
+
+D067 forbids this completed predecessor chat from executing that materially new objective. This checkpoint therefore advances only the durable handoff frontier to `HANDOFF_READY`; it does not start Stage 5 materialization.
+
+The successor must fail closed if its observed `develop` HEAD, checkpoint sequence/state, D082 state, or any retained branch/task identity materially differs from the bootstrap it receives.
+
+The selected objective is classified `MULTI_EXECUTION` prospectively because it contains ordered authority and verification gates: controlling Stage 1-4/Task Contract materialization plan, coherent D068 Stage 5 candidate publication, separate Stage 6 Executor execution/diagnosis/repair/verification, and Stage 7 convergence plus post-materialization qualification. The classification is based on dependency/gate geometry, not elapsed-time assumptions.
+
 ## Preserved boundaries
 
-- Production `AGENTS.md` has not been rewritten or slimmed by this objective.
-- No production transverse Skill has been created, renamed, packaged, installed, published or activated.
-- The Maintainer Skill contract/package has not been modified.
+- Production `AGENTS.md` has not yet been rewritten or slimmed.
+- No production transverse Skill has yet been created, renamed, packaged, installed, published or activated.
+- The Maintainer Skill contract/package has not yet been modified for R029 materialization.
 - R029 scientific evaluation branches/evidence remain research artifacts and are not production-integrated.
-- No new Executor/Codex or provider/model call was launched for D082.
+- No new Executor/Codex or provider/model call has been launched by this handoff-only closure update.
 - D052/D053/D054/D055/D068 source-maintenance ownership remains unchanged.
 - D079/T066 Lean Executor production adoption remains a separate evaluation line.
 - T066 Stage 5 remains `NOT_STARTED`.
 - R030 remains research-only and unimplemented.
-- This chat has completed its one D067 Human-selected objective and must not silently start materialization or another objective.
+- This predecessor chat must not execute the selected R029 materialization objective; only the successor may do so after verified bootstrap.
