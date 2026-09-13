@@ -3,13 +3,14 @@
 ## Identity
 
 - Task ID: `T067`
-- Status: `READY`
+- Status: `ACCEPTED`
 - Type: `refactor`
 - SDD profile: `ASSURED`
 - Base branch: `develop`
 - Base SHA: `758b92cf38af9bc06e4717b1206dafb8e5d82e9e`
 - Topic branch: `refactor/r029-d082-materialization`
-- Expected Executor handoff: `handoffs/T067-executor-handoff.json`
+- Executor handoff: `handoffs/T067-executor-handoff.json`
+- Integration PR: `#426`
 - Test-Authorship-Mode: `mixed`
 - Owner: `ChatGPT Orchestrator (Stages 1-5/7 and semantic oracle) / Agente de IA Ejecutor (Stage 6) / Human Owner (final authority)`
 - Execution Shape: `MULTI_EXECUTION`
@@ -37,7 +38,7 @@ lean always-loaded root AGENTS.md
   + deterministic scripts/CI/references for mechanical enforcement
 ```
 
-T066 is out of scope and must remain untouched.
+T066 is out of scope and remains untouched/not started.
 
 ## Controlling authority
 
@@ -166,12 +167,10 @@ If Stage 6 finds a material descriptor/semantic mismatch that invalidates this d
 
 | Unit | Owner | Durable boundary | Gate |
 | --- | --- | --- | --- |
-| `E1` | ChatGPT | this contract + verified topic branch | complete |
+| `E1` | ChatGPT | Task Contract + verified topic branch | complete |
 | `E2` | ChatGPT | complete D082 candidate + semantic/conformance assets + published Stage 5 checkpoint | complete, then corrected by Stage 5 re-entry after E3 attempt 1 |
-| `E3` | Executor | execution/diagnosis/bounded repair/Code Review & Verify + handoff/evidence | attempt 1 BLOCKED; replacement attempt pending; DONE permits E4 |
-| `E4` | ChatGPT | convergence, qualification disposition, PR/integration, checkpoint | forbidden until replacement E3 is DONE and verified |
-
-Later units must not begin before the previous gate is satisfied.
+| `E3` | Executor | execution/diagnosis/bounded repair/Code Review & Verify + handoff/evidence | replacement attempt `DONE` at terminal remote HEAD `0cfd7e25da54a0f7b759da655a611c6a98e57d2a` |
+| `E4` | ChatGPT | convergence, qualification disposition, PR/integration, checkpoint | accepted; PR `#426` is the authorized integration vehicle to `develop` |
 
 ## Stage ownership
 
@@ -182,7 +181,7 @@ Stage 6    -> Agente de IA Ejecutor
 Stage 7    -> ChatGPT Orchestrator
 ```
 
-The Executor must not reconstruct or first-pass materialize this architecture.
+The Executor did not reconstruct or first-pass materialize this architecture.
 
 ## Stage 6 attempt 1 and Design re-entry
 
@@ -193,7 +192,7 @@ The blocking full-suite failure was the preserved reference-integrity requiremen
 Orchestrator re-entry resolved this as a Stage 5 omission, not an oracle defect:
 
 - `AGENTS.md` restores `docs/ORCHESTRATOR-CHECKPOINTS.md` in its canonical anchors;
-- `evals/r029_materialization/qualification-profile.json` now includes that path in `cold_start_required_snippets`.
+- `evals/r029_materialization/qualification-profile.json` includes that path in `cold_start_required_snippets`.
 
 No topology, trigger/anti-trigger, authority, provider-evidence, residual, or T066 semantic changed.
 
@@ -205,100 +204,84 @@ original_materialization_anchor:     c59dfe3ed2ee69d2fbfb9100f6927dbd10051017
 stage6_attempt1_blocked_head:         bfdeb4a7914a03bcec7be91d983dfb8b0535dcf0
 stage5_reentry_correction_anchor:     a3c8c00cb2f0ecb5ce1c077ffa43614b94d3998f
 candidate_checkpoint_head:           308d6ad09b756fb30878e9a4658eaf309cabd998
+replacement_launch_head:             2127381406078cbf4a31d8f4b5b76fcf7d687d58
 candidate_base:                      758b92cf38af9bc06e4717b1206dafb8e5d82e9e
 ```
 
-`stage5_reentry_correction_anchor` contains the complete corrected candidate after the blocked Stage 6 evidence. `candidate_checkpoint_head` persists O323 and the E3-retry frontier. This Task Contract freeze is necessarily a metadata-only successor because a file cannot contain the SHA of the commit that contains itself.
+The replacement Executor verified checkpoint/correction ancestry, the exact protected base, and that only T067 freeze metadata followed the checkpoint before execution.
 
-Before replacement Stage 6, ChatGPT supplies the exact current remote branch HEAD in thin transport. The Executor must verify:
+## Stage 6 replacement result
 
-1. `candidate_checkpoint_head` is an ancestor of that launch HEAD;
-2. the diff from `candidate_checkpoint_head` to launch HEAD contains only this T067 freeze/finalization metadata;
-3. no candidate product/test/eval/checkpoint artifact changed after `candidate_checkpoint_head`;
-4. `stage5_reentry_correction_anchor` is an ancestor of `candidate_checkpoint_head`;
-5. the protected base remains the exact `candidate_base`;
-6. the prior BLOCKED handoff is historical attempt-1 evidence and must be replaced/updated by the replacement Stage 6 terminal result.
+The replacement Stage 6 returned `DONE` and is accepted as technically valid evidence:
 
-Any other pre-Stage-6 branch movement requires Orchestrator re-entry.
+```text
+terminal_remote_head: 0cfd7e25da54a0f7b759da655a611c6a98e57d2a
+implementation_head:  3907419370947e41150eb401a3e557f1177dfa0c
+handoff:              handoffs/T067-executor-handoff.json
+qualification:        evals/r029_materialization/stage6-qualification.json
+```
 
-## Authorized Stage 6 scope
+Verified result:
 
-The Executor may:
-
-- establish exact branch/base/candidate identities;
-- execute the already-published deterministic tests/evals/measurement tooling;
-- inspect root/Skill/reference topology and perform Code Review & Verify;
-- diagnose technical failures inside D082 and this Design;
-- make bounded **non-Markdown** technical repairs that do not change topology, triggers/anti-triggers, authority, acceptance meaning, or Orchestrator-owned semantic oracle meaning;
-- add small supplementary technical verification inside approved semantics;
-- persist `handoffs/T067-executor-handoff.json` and authorized non-Markdown evidence.
-
-The Executor must not edit committed Markdown; add/remove/split/merge top-level Skills; change workspace-isolation placement; change the 79-unit mapping; weaken activation expected classifications; weaken the restored checkpoint-policy cold-start requirement; relabel parity; autonomously rerun/waive provider evidence; touch T066; or first-pass-create substantial missing harness/controller/script/fixture/oracle material.
-
-D076 applies to all Stage 6 executable aids.
+- deterministic T067 qualifier: `18/18 PASS`;
+- preservation: `79/79`, `ROOT=39`, `ROOT+ROUTE=20`, `ROUTE=20`, zero unresolved;
+- topology: one `source-maintainer` with two internal routes, exactly five transverse Skills, workspace isolation internal only;
+- cold start: both `docs/ORCHESTRATOR-CHECKPOINTS.md` and `docs/orchestrator/CHECKPOINT.md` rooted and tested;
+- root bytes: `11496` vs baseline `34567`, delta `-23071`;
+- initial catalog metadata: `2799` bytes;
+- representative conditional loads: `21420..63447` bytes;
+- maximum representative reference-hop depth: `4`;
+- normative rule families: `17`, duplicate owner IDs `0`;
+- focused tests: `3 passed`;
+- full repository suite: `527 passed`;
+- Ruff and code health: PASS;
+- Executor scope: no Markdown edits, no T066 changes, no provider/model trial launch;
+- unresolved issues: none;
+- upstream re-entry required: false.
 
 ## Acceptance criteria
 
-- `AC-T067-1` Preservation: 79/79 with `39/20/20`, zero unresolved, and no pre-routing obligation dependent on Skill activation.
-- `AC-T067-2` Topology: one Maintainer/two internal routes; exactly five transverse Skills; workspace isolation internal.
-- `AC-T067-3` Activation: production Maintainer and transverse positive/anti-trigger/composition cases preserve the frozen semantic boundaries.
-- `AC-T067-4` Cold start: cold Orchestrator/authorized Executor bootstrap is reconstructable from canonical Git without chat or Skill activation; both checkpoint policy and current-frontier anchors remain reachable; mismatches fail closed.
-- `AC-T067-5` Progressive disclosure: actual burden metrics and reference hops are measured/reviewable with no semantic loss.
-- `AC-T067-6` Deterministic qualification: repository-owned qualification assets execute without model-driven Skill activation.
-- `AC-T067-7` Residual integrity: parity remains `NOT_ESTABLISHED`; Maintainer historical `21/36` remains unscored history.
-- `AC-T067-8` Evidence economy: no ceremonial repeat of 36 Codex trials.
-- `AC-T067-9` Stage boundary: E2 materializes, E3 executes/verifies/repairs only, E4 accepts/integrates.
-- `AC-T067-10` Isolation: T066 unchanged/not started.
+- `AC-T067-1` **PASS** — 79/79 preservation with `39/20/20`, zero unresolved, pre-routing obligations remain root-visible.
+- `AC-T067-2` **PASS** — one Maintainer/two internal routes; exactly five transverse Skills; workspace isolation internal.
+- `AC-T067-3` **PASS** — frozen production descriptor/activation boundaries and composition corpus pass without changing scored semantics.
+- `AC-T067-4` **PASS** — cold bootstrap is reconstructable without private chat or Skill activation and both checkpoint anchors are enforced.
+- `AC-T067-5` **PASS** — burden measurements and reference-hop evidence are persisted; no semantic-loss threshold substitution occurred.
+- `AC-T067-6` **PASS** — repository-owned deterministic qualification and full verification execute independently of model-driven Skill activation.
+- `AC-T067-7` **PASS** — ChatGPT/Codex empirical parity remains `NOT_ESTABLISHED`; Maintainer `21/36` remains informational/unscored.
+- `AC-T067-8` **PASS** — historical Codex `36/36` is reused; no ceremonial provider rerun occurred.
+- `AC-T067-9` **PASS** — Stage 5/6/7 ownership boundaries were preserved, including fail-closed re-entry on attempt 1.
+- `AC-T067-10` **PASS** — T066 remained unchanged and not started.
 
-## Stage 6 required evidence
+## Stage 7 acceptance disposition
 
-At minimum execute/review:
+ChatGPT Orchestrator accepts the corrected D082 materialization represented by Executor terminal HEAD `0cfd7e25da54a0f7b759da655a611c6a98e57d2a`, plus this Stage 7 Markdown closure, for integration into `develop` through PR `#426`.
 
-- deterministic 79-unit preservation/topology checks;
-- syntax/structure of production Skill packages/references;
-- frozen activation/anti-trigger corpus against production descriptions/routing behavior at the strongest available non-authority-changing surface;
-- cold-start/no-Skill structural checks, including both checkpoint policy and current-frontier anchors;
-- burden measurement tool with persisted non-Markdown results;
-- absence of a sixth workspace-isolation Skill;
-- normative ownership/reference-hop outputs;
-- descriptor-equivalence disposition;
-- normal affected repository test/lint/conformance suite.
+The accepted D082 conditions/residuals remain explicit:
 
-Executor Code Review & Verify must inspect requirement/Design/PRESERVED fidelity, missing/duplicated authority, false trigger risks, hidden Skill dependency, stale/unreachable references, measurement reproducibility, unauthorized scope, and D076 compliance.
+- the complete 79-unit responsibility ledger is preserved;
+- authority, ownership, safety, cold-start and fail-closed behavior remain independent of optional Skill activation;
+- exactly one Maintainer domain Skill and exactly five transverse Skills are adopted;
+- workspace isolation remains subordinate to `executor-launch-handoff`;
+- measured context reduction is evidence, not permission to remove authority;
+- historical Codex transverse `36/36` remains regression evidence without a fresh rerun;
+- ChatGPT/Codex empirical parity remains `NOT_ESTABLISHED` with ChatGPT empirical trials `0/36` and Human waiver preserved;
+- historical Maintainer `21/36` remains informational/unscored and is not promoted into a qualification claim;
+- T066 remains a separate, unstarted objective.
 
-## Stop / re-entry
+No further Executor launch is authorized for T067. Any post-acceptance defect or material follow-up is new work and must enter through current repository authority rather than mutating this accepted topic branch after merge.
 
-Stop rather than guess if branch/base/candidate identity is unsafe; any S1 unit lacks an unambiguous destination; root slimming makes safety/authority conditional on Skills; Maintainer/consumer routing is materially ambiguous; workspace isolation appears to require a sixth Skill; production routing contradicts D082 evidence; descriptor equivalence is materially false and fresh provider evidence would be required; a semantic oracle is defective; substantial Stage 5 qualification material is missing; a repair would change D082/Design/acceptance semantics; or T066 would need modification.
+## Integration
 
-## Expected handoff
-
-Stage 6 must persist:
-
-```text
-handoffs/T067-executor-handoff.json
-```
-
-It must satisfy `docs/EXECUTOR-HANDOFFS.md`, including SDD profile, implementation/review SHA anchors, requirement trace, verification results/runtime, findings, re-entry fields, and D076 `ephemeral_artifacts`.
-
-Terminal response:
-
-```text
-STATUS: DONE | BLOCKED | PARTIAL
-HANDOFF: handoffs/T067-executor-handoff.json
-BRANCH: refactor/r029-d082-materialization
-HEAD: <actual pushed remote branch HEAD>
-```
+PR `#426` targets `develop` from `refactor/r029-d082-materialization`. Normal integration uses squash merge under `docs/BRANCHING.md`. The topic branch becomes frozen at the exact reviewed PR head once merged and then enters normal branch-retirement procedure.
 
 ## Human launch gate
 
 ```text
-launch_state: AUTHORIZED_AWAITING_HUMAN_CONTINUE
+launch_state: CLOSED
 ```
 
-This is the same T067 work unit. Under D060 the existing `AG | agent-governance | T067 | root-1` remains the coordinator because attempt 1 returned a coherent durable blocker and the root is recoverable. The replacement Stage 6 interaction therefore uses `CONTINUE`, not a new root.
-
-ChatGPT must present the D055 concrete Executor/session/model/effort profile and the exact replacement launch HEAD before continuation.
+Replacement Stage 6 completed. No further T067 Executor continuation/root is authorized.
 
 ## Thin transport invariant
 
-The Human-visible Executor prompt contains only the canonical repository, continuation/coordinator identity, this Task Contract path, and exact authorized branch@launch-HEAD. Design, tests, commands, repair rules, evidence schema, and stop conditions remain in canonical Git authority.
+Historical Human-visible Executor prompts were transport/bootstrap only. All accepted semantics, evidence, and residuals are represented in canonical Git state.
