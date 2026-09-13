@@ -195,9 +195,9 @@
     }
   ],
   "measurements": {
-    "root_bytes": 11427,
+    "root_bytes": 11496,
     "baseline_root_bytes": 34567,
-    "root_byte_delta": -23140,
+    "root_byte_delta": -23071,
     "catalog_metadata_bytes_by_skill": {
       "source-maintainer": 395,
       "repository-change-control": 467,
@@ -210,7 +210,7 @@
     "representative_conditional_loads": [
       {
         "id": "source-task-contract-orchestrator",
-        "bytes": 63378,
+        "bytes": 63447,
         "reference_hops": 3,
         "paths": [
           "AGENTS.md",
@@ -223,7 +223,7 @@
       },
       {
         "id": "agent-governance-version-revalidation",
-        "bytes": 26556,
+        "bytes": 26625,
         "reference_hops": 3,
         "paths": [
           "AGENTS.md",
@@ -235,7 +235,7 @@
       },
       {
         "id": "agent-governance-research-traceability",
-        "bytes": 46859,
+        "bytes": 46928,
         "reference_hops": 3,
         "paths": [
           "AGENTS.md",
@@ -247,7 +247,7 @@
       },
       {
         "id": "orchestrator-checkpoint-turnover",
-        "bytes": 32070,
+        "bytes": 32139,
         "reference_hops": 3,
         "paths": [
           "AGENTS.md",
@@ -259,7 +259,7 @@
       },
       {
         "id": "stage6-executor-launch-workspace",
-        "bytes": 54444,
+        "bytes": 54513,
         "reference_hops": 4,
         "paths": [
           "AGENTS.md",
@@ -274,7 +274,7 @@
       },
       {
         "id": "tracked-repository-mutation",
-        "bytes": 21351,
+        "bytes": 21420,
         "reference_hops": 2,
         "paths": [
           "AGENTS.md",
