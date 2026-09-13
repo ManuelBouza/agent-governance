@@ -165,7 +165,7 @@ If Stage 6 finds a material descriptor/semantic mismatch that invalidates this d
 | Unit | Owner | Durable boundary | Gate |
 | --- | --- | --- | --- |
 | `E1` | ChatGPT | this contract + verified topic branch | complete |
-| `E2` | ChatGPT | complete D082 candidate + semantic/conformance assets + candidate-content anchor | complete when freeze below is published/verified |
+| `E2` | ChatGPT | complete D082 candidate + semantic/conformance assets + published Stage 5 checkpoint | complete |
 | `E3` | Executor | execution/diagnosis/bounded repair/Code Review & Verify + handoff/evidence | DONE permits E4; BLOCKED/PARTIAL re-enters earliest affected stage |
 | `E4` | ChatGPT | convergence, qualification disposition, PR/integration, checkpoint | objective closure or explicit re-entry |
 
@@ -185,19 +185,21 @@ The Executor must not reconstruct or first-pass materialize this architecture.
 ## Published Stage 5 candidate freeze
 
 ```text
-candidate_branch:       refactor/r029-d082-materialization
-candidate_content_head: c59dfe3ed2ee69d2fbfb9100f6927dbd10051017
-candidate_base:         758b92cf38af9bc06e4717b1206dafb8e5d82e9e
+candidate_branch:                 refactor/r029-d082-materialization
+candidate_materialization_anchor: c59dfe3ed2ee69d2fbfb9100f6927dbd10051017
+candidate_checkpoint_head:        c6da4445862f0166192283479d3ae77c27d07f78
+candidate_base:                   758b92cf38af9bc06e4717b1206dafb8e5d82e9e
 ```
 
-`candidate_content_head` is the exact commit that introduced the complete Stage 5 product/eval candidate. This Task Contract freeze is necessarily persisted in a metadata-only successor commit because a file cannot contain the SHA of the commit that contains itself.
+`candidate_materialization_anchor` introduced the complete Stage 5 product/eval candidate. `candidate_checkpoint_head` additionally persists O322, the durable E2 -> E3 frontier. This Task Contract freeze is necessarily a metadata-only successor because a file cannot contain the SHA of the commit that contains itself.
 
 Before Stage 6 launch, ChatGPT supplies the exact current remote branch HEAD in thin transport. The Executor must verify:
 
-1. `candidate_content_head` is an ancestor of that launch HEAD;
-2. the diff from `candidate_content_head` to launch HEAD contains only this T067 freeze/finalization metadata;
-3. no candidate product/test/eval artifact changed after `candidate_content_head`;
-4. the protected base remains the exact `candidate_base`.
+1. `candidate_checkpoint_head` is an ancestor of that launch HEAD;
+2. the diff from `candidate_checkpoint_head` to launch HEAD contains only this T067 freeze/finalization metadata;
+3. no candidate product/test/eval/checkpoint artifact changed after `candidate_checkpoint_head`;
+4. `candidate_materialization_anchor` is an ancestor of `candidate_checkpoint_head`;
+5. the protected base remains the exact `candidate_base`.
 
 Any other pre-Stage-6 branch movement requires Orchestrator re-entry.
 
