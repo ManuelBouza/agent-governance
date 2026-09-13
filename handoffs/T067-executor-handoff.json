@@ -1,0 +1,116 @@
+{
+  "schema_version": 1,
+  "task_id": "T067",
+  "status": "BLOCKED",
+  "task_contract_path": "docs/tasks/T067-r029-d082-materialization-and-qualification.md",
+  "sdd_profile": "ASSURED",
+  "branch": "refactor/r029-d082-materialization",
+  "implementation_head_sha": "06d54fc3e5bac13562e286006e1a810468205578",
+  "base_branch": "develop",
+  "base_sha": "758b92cf38af9bc06e4717b1206dafb8e5d82e9e",
+  "candidate_identity": {
+    "authorized_launch_head": "50098838a470c9e2bc0a6beb61a4a12a90923ef1",
+    "candidate_checkpoint_head": "c6da4445862f0166192283479d3ae77c27d07f78",
+    "candidate_materialization_anchor": "c59dfe3ed2ee69d2fbfb9100f6927dbd10051017",
+    "checkpoint_is_launch_ancestor": true,
+    "anchor_is_checkpoint_ancestor": true,
+    "protected_base_merge_base_matches": true,
+    "post_checkpoint_diff": [
+      "docs/tasks/T067-r029-d082-materialization-and-qualification.md"
+    ]
+  },
+  "files_changed": [
+    "evals/r029_materialization/stage6-qualification.json",
+    "handoffs/T067-executor-handoff.json",
+    "tests/test_r029_materialization.py",
+    "tools/r029_materialization_qualify.py"
+  ],
+  "implementation_summary": "Executed the published T067 candidate, persisted the deterministic Stage 6 qualification result, and applied only Ruff-required formatting repairs to the existing non-Markdown T067 test and qualifier. The frozen qualifier passes all preservation, topology, descriptor, activation-corpus, cold-start, normative-ownership, reference-hop, and residual checks. The normal full repository suite exposes an unresolved conflict between the lean root and the existing checkpoint reference-integrity oracle, so Stage 6 fails closed for Orchestrator re-entry.",
+  "verification": {
+    "commands": [
+      "git fetch --prune origin",
+      "git merge-base --is-ancestor c6da4445862f0166192283479d3ae77c27d07f78 50098838a470c9e2bc0a6beb61a4a12a90923ef1",
+      "git merge-base --is-ancestor c59dfe3ed2ee69d2fbfb9100f6927dbd10051017 c6da4445862f0166192283479d3ae77c27d07f78",
+      "git merge-base 50098838a470c9e2bc0a6beb61a4a12a90923ef1 origin/develop",
+      "git diff --name-status c6da4445862f0166192283479d3ae77c27d07f78..50098838a470c9e2bc0a6beb61a4a12a90923ef1",
+      "uv run --locked python tools/r029_materialization_qualify.py --root . --output evals/r029_materialization/stage6-qualification.json",
+      "uv run --locked python -m pytest tests/test_r029_materialization.py",
+      "uv run --locked ruff check .",
+      "uv run --locked ruff format --check .",
+      "uv run --locked python tools/code_health.py check",
+      "uv run --locked python -m pytest",
+      "git diff --check"
+    ],
+    "results": {
+      "candidate_identity": "PASS: remote launch HEAD exactly 50098838a470c9e2bc0a6beb61a4a12a90923ef1; checkpoint and materialization ancestry pass; protected-base merge base exactly 758b92cf38af9bc06e4717b1206dafb8e5d82e9e; the only checkpoint-to-launch change is T067 freeze metadata.",
+      "qualification": "PASS: 18/18 named checks pass; preservation counts ROOT=39, ROOT+ROUTE=20, ROUTE=20; all S1-001 through S1-079 present; zero missing destinations, root families, or duplicate normative owners.",
+      "measurements": "PASS: root_bytes=11427 versus baseline_root_bytes=34567 (delta=-23140); initial_catalog_bytes=2799; representative conditional loads=21351..63378 bytes; maximum reference-hop depth=4; normative rule families=17 with zero duplicate owner IDs.",
+      "topology_and_residuals": "PASS: one source-maintainer with two internal routes; exactly five transverse Skills; workspace isolation is internal only; descriptor equivalence remains MATERIALLY_EQUIVALENT; fresh 36-trial rerun remains false; ChatGPT/Codex parity remains NOT_ESTABLISHED; Maintainer 21/36 remains informational/unscored.",
+      "focused_tests": "PASS: 3 passed in 0.86s before formatting repair; the same three tests passed again as part of the final full-suite run.",
+      "ruff_check": "PASS: All checks passed after mechanical import formatting repair.",
+      "ruff_format": "PASS: 83 files already formatted after mechanical qualifier formatting repair.",
+      "code_health": "PASS: complexity, dependency layers, and size policies all pass.",
+      "full_suite": "FAIL: 526 passed, 1 failed in 137.78s. tests/test_reference_integrity.py::test_orchestrator_checkpoint_paths_referenced_by_agents_md_resolve requires AGENTS.md to mention docs/ORCHESTRATOR-CHECKPOINTS.md, but the published lean root does not contain that path.",
+      "diff_check": "PASS: no whitespace errors.",
+      "scope": "PASS: no T066 path changed; no committed Markdown was edited by the Executor; bounded repairs are formatting-only; no new provider/model trials were launched."
+    },
+    "runtime": "Windows; Git 2.53.0.windows.2; uv 0.11.32; CPython 3.13.14; pytest 9.1.1; Ruff 0.16.2 from the locked environment.",
+    "network_required": "Only canonical Git fetch and final push require network. Qualification and verification execute locally from the locked environment."
+  },
+  "requirement_trace": {
+    "T067-A1": "PASS: persisted qualifier reports all 79 IDs with ROOT=39, ROOT+ROUTE=20, ROUTE=20 and zero unresolved destinations.",
+    "T067-A2": "PASS: source-maintainer is the sole Maintainer top-level Skill and both internal routes exist.",
+    "T067-A3": "PASS: the qualifier finds exactly the five D082 transverse Skills.",
+    "T067-A4": "PASS: workspace-isolation exists only as executor-launch-handoff-skill/references/workspace-isolation.md and composes repository change control.",
+    "T067-A5": "PASS: all frozen Stage 5 qualification assets exist and execute deterministically.",
+    "T067-A6": "PASS: stage6-qualification.json records root/catalog/conditional-load/normative-ownership/reference-hop measurements.",
+    "T067-A7": "PASS_WITH_LIMITATION: production descriptors and the frozen activation corpus pass deterministic checks; historical Maintainer 21/36 remains explicitly informational/unscored.",
+    "T067-A8": "PASS: ChatGPT/Codex empirical parity remains NOT_ESTABLISHED.",
+    "T067-A9": "PASS: historical Codex 36/36 transverse evidence remains reused as regression evidence with no fresh trial launch.",
+    "T067-P1": "PASS: no role/stage authority was changed.",
+    "T067-P2": "BLOCKED: the frozen qualifier reports its cold-start root contract as passing, but the unchanged repository oracle requires the always-loaded root to name docs/ORCHESTRATOR-CHECKPOINTS.md; resolving whether the root or oracle is authoritative requires Orchestrator-owned semantic/Markdown re-entry.",
+    "T067-P3": "PASS: deterministic qualification ran without model-driven Skill activation.",
+    "T067-P4": "PASS: source-maintainer and consumer-governance domains remain separate.",
+    "T067-P5": "PASS: no domain-side decision semantics were modified by Stage 6.",
+    "T067-P6": "PASS: no historical contract, handoff, or evidence semantics were rewritten.",
+    "T067-P7": "PASS_WITH_REENTRY: burden and reference-hop evidence is persisted, but the unresolved root/reference-integrity conflict prevents terminal qualification.",
+    "T067-P8": "PASS: no T066 path changed and no T066 execution was started.",
+    "AC-T067-1": "PASS by the frozen qualifier: 79/79, 39/20/20, zero unresolved.",
+    "AC-T067-2": "PASS by topology checks.",
+    "AC-T067-3": "PASS at the contracted deterministic surface; provider evidence disposition is unchanged.",
+    "AC-T067-4": "BLOCKED by the full-suite checkpoint reference-integrity failure.",
+    "AC-T067-5": "PASS: actual burden metrics and reference hops are persisted and reviewable.",
+    "AC-T067-6": "PASS: repository-owned qualifier and focused conformance tests execute without model-driven Skill activation.",
+    "AC-T067-7": "PASS: residuals remain explicit and unchanged.",
+    "AC-T067-8": "PASS: no ceremonial provider rerun occurred.",
+    "AC-T067-9": "PASS: Executor work stayed within execution, verification, formatting-only bounded repair, evidence, and handoff scope.",
+    "AC-T067-10": "PASS: T066 remained untouched and not started."
+  },
+  "code_review": {
+    "reviewed_head_sha": "06d54fc3e5bac13562e286006e1a810468205578",
+    "summary": "Reviewed the published candidate and formatting-only repair against T067 requirement deltas, D082 topology, PRESERVED invariants, authorized scope, cold-start/no-Skill behavior, trigger boundaries, normative ownership, reference reachability, measurement reproducibility, provider-evidence disposition, T066 isolation, and D076. The qualification implementation is deterministic and passes its frozen checks, but the production lean root conflicts with the unchanged checkpoint reference-integrity oracle. Stage 6 cannot choose between an Orchestrator-owned Markdown repair and a semantic oracle revision.",
+    "findings": [
+      "BLOCKING: AGENTS.md does not mention docs/ORCHESTRATOR-CHECKPOINTS.md, while tests/test_reference_integrity.py explicitly requires that cold-start checkpoint policy path to remain referenced from the root.",
+      "NON_BLOCKING_RESOLVED: Ruff required import-block formatting in tests/test_r029_materialization.py and line wrapping in tools/r029_materialization_qualify.py."
+    ],
+    "resolved_findings": [
+      "Applied formatting-only Ruff repairs to the two existing non-Markdown T067 files and reran qualification, Ruff, format, code-health, full-suite, and diff checks as applicable."
+    ],
+    "upstream_reentry_required": true,
+    "upstream_reentry_stage": "Design"
+  },
+  "ephemeral_artifacts": [],
+  "dependencies_or_config_changes": [],
+  "git_status": "Expected clean tracked worktree after the handoff-only commit; verified again before final push.",
+  "unresolved_issues": [
+    "The full repository suite cannot pass until the Orchestrator resolves whether the lean root must restore the docs/ORCHESTRATOR-CHECKPOINTS.md pointer or the existing semantic/reference-integrity oracle must be revised under persisted authority. The Executor is not authorized to edit either committed Markdown or semantic-oracle meaning."
+  ],
+  "recommended_next_task": "ChatGPT Orchestrator should re-enter at Design, reconcile the lean-root cold-start/path contract with tests/test_reference_integrity.py, publish a corrected Stage 5 candidate, and then continue T067 Stage 6 verification.",
+  "chatgpt_read_path": [
+    "docs/tasks/T067-r029-d082-materialization-and-qualification.md",
+    "handoffs/T067-executor-handoff.json",
+    "evals/r029_materialization/stage6-qualification.json",
+    "AGENTS.md",
+    "tests/test_reference_integrity.py"
+  ]
+}
