@@ -26,8 +26,8 @@ R029-S1 -> Human gate -> R029-S2 -> Human gate -> ... -> R029-S10
 | R029-S3 | ACCEPTED | Maintainer Skill domain boundary | S1-S2 accepted | `docs/orchestrator/R029-S3-MAINTAINER-DOMAIN-BOUNDARY.md` | Source-maintenance-specific workflows are separated from transverse candidate seams without splitting the approved Maintainer Skill by role | MEDIUM | SINGLE_EXECUTION |
 | R029-S4 | ACCEPTED | `repository-change-control` candidate | S1-S3 accepted | `docs/orchestrator/R029-S4-REPOSITORY-CHANGE-CONTROL-CANDIDATE.md` | Reusable intent and non-overlap are explicit; disposition is `KEEP_CANDIDATE` | MEDIUM | SINGLE_EXECUTION |
 | R029-S5 | ACCEPTED | `upstream-version-revalidation` candidate | S1-S3 accepted | `docs/orchestrator/R029-S5-UPSTREAM-VERSION-REVALIDATION-CANDIDATE.md` | Generalizable semantics separated from D077/Agent-Governance policy; disposition is `KEEP_CANDIDATE` | MEDIUM | SINGLE_EXECUTION |
-| R029-S6 | COMPLETE_AWAITING_HUMAN_REVIEW | `research-evidence-traceability` candidate | S1-S3 accepted | `docs/orchestrator/R029-S6-RESEARCH-EVIDENCE-TRACEABILITY-CANDIDATE.md` | Reusable provenance semantics separated from `Rxxx`/`Dxxx` conventions; disposition is `KEEP_CANDIDATE` | MEDIUM | SINGLE_EXECUTION |
-| R029-S7 | NOT_STARTED | `durable-work-checkpoint` candidate | S1-S3 accepted | Generic cold-start/frontier capability vs Agent Governance checkpoint adapter map and disposition | Generic durable-resume semantics separated from D027/D067/checkpoint rules | MEDIUM | SINGLE_EXECUTION |
+| R029-S6 | ACCEPTED | `research-evidence-traceability` candidate | S1-S3 accepted | `docs/orchestrator/R029-S6-RESEARCH-EVIDENCE-TRACEABILITY-CANDIDATE.md` | Reusable provenance semantics separated from `Rxxx`/`Dxxx` conventions; disposition is `KEEP_CANDIDATE` | MEDIUM | SINGLE_EXECUTION |
+| R029-S7 | COMPLETE_AWAITING_HUMAN_REVIEW | `durable-work-checkpoint` candidate | S1-S3 accepted | `docs/orchestrator/R029-S7-DURABLE-WORK-CHECKPOINT-CANDIDATE.md` | Generic durable-resume semantics separated from D027/D067/checkpoint rules; disposition is `KEEP_CANDIDATE` | MEDIUM | SINGLE_EXECUTION |
 | R029-S8 | NOT_STARTED | `executor-launch-handoff` candidate | S1-S3 accepted | Generic launch/handoff capability vs Agent Governance Task Contract/D055 adapter map and disposition | Reusable transport/session/handoff separated from repository-specific authority | MEDIUM | SINGLE_EXECUTION |
 | R029-S9 | NOT_STARTED | Workspace-isolation placement | S4 and S8 accepted | Placement analysis and explicit disposition | Workspace isolation classified as sub-route/reference or standalone candidate from intent/trigger evidence | MEDIUM | SINGLE_EXECUTION |
 | R029-S10 | NOT_STARTED | Candidate-topology synthesis and evaluation plan | S1-S9 accepted | One bounded candidate topology plus pre-decision evaluation plan | Topology/evaluation plan coherent; no adoption occurs | HIGH | SINGLE_EXECUTION |
@@ -50,13 +50,15 @@ Accepted 2026-09-13. Durable output: `docs/orchestrator/R029-S4-REPOSITORY-CHANG
 Accepted 2026-09-13. Durable output: `docs/orchestrator/R029-S5-UPSTREAM-VERSION-REVALIDATION-CANDIDATE.md`. Disposition: `KEEP_CANDIDATE`.
 
 ### R029-S6 — `research-evidence-traceability` candidate
-Completed analytically 2026-09-13. Durable output: `docs/orchestrator/R029-S6-RESEARCH-EVIDENCE-TRACEABILITY-CANDIDATE.md`.
+Accepted 2026-09-13. Durable output: `docs/orchestrator/R029-S6-RESEARCH-EVIDENCE-TRACEABILITY-CANDIDATE.md`. Disposition: `KEEP_CANDIDATE`.
 
-S6 classifies the candidate `KEEP_CANDIDATE`: durable evidence provenance/freshness/authority separation has reusable intent, bounded triggers, a concrete reconstructability postcondition, safe fail-closed behavior and host-neutral semantics. Agent Governance retains D057, exact `Rxxx`/`Dxxx` lifecycle vocabulary, ledger, checkpoint integration and normative promotion authority domain-side.
+### R029-S7 — `durable-work-checkpoint` candidate
+Completed analytically 2026-09-13. Durable output: `docs/orchestrator/R029-S7-DURABLE-WORK-CHECKPOINT-CANDIDATE.md`.
+
+S7 classifies the candidate `KEEP_CANDIDATE`: compact durable frontier persistence and cold-start-safe resumption have reusable intent, bounded triggers, an explicit resumption postcondition and fail-closed mismatch behavior. Agent Governance retains D027/D067, the exact checkpoint path/schema, `Oxxx` sequence, chat lifecycle states, Human selection gates and source-maintenance bootstrap conventions domain-side.
 
 ## Remaining subtask intent
 
-- S7 independently evaluates `durable-work-checkpoint`.
 - S8 independently evaluates `executor-launch-handoff`.
 - S9 decides workspace-isolation placement after S4/S8.
 - S10 synthesizes accepted results and the pre-decision evaluation plan.
