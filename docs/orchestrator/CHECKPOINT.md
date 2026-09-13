@@ -1,88 +1,80 @@
 # Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O323  
+Checkpoint-Sequence: O324  
 Date: 2026-09-13  
 Canonical-Branch: `develop`  
 Current-Work-Unit: `T067 / R029 D082 materialization and qualification`  
-State: EXECUTOR_RETRY_READY  
-Chat-Closure: KEEP_CURRENT_CHAT  
+State: STAGE7_ACCEPTED_INTEGRATION_AUTHORIZED  
+Chat-Closure: CLOSE_AFTER_INTEGRATION_VERIFIED  
 R029-Research-State: COMPLETE  
 R029-Decision-State: DECIDED  
 R029-Decision-Ref: `docs/decisions/D082-r029-lean-root-and-transverse-skill-architecture.md`  
-R029-Architecture-State: ADOPTED_CANDIDATE_MATERIALIZED  
-R029-Materialization-State: STAGE5_REENTRY_CORRECTED  
-R029-Qualification-State: STAGE6_RETRY_PENDING  
+R029-Architecture-State: ADOPTED_MATERIALIZATION_ACCEPTED  
+R029-Materialization-State: STAGE7_ACCEPTED  
+R029-Qualification-State: PASS  
 T067-Task-Contract: `docs/tasks/T067-r029-d082-materialization-and-qualification.md`  
 T067-Topic-Branch: `refactor/r029-d082-materialization`  
-T067-Original-Stage5-Content-Anchor: `c59dfe3ed2ee69d2fbfb9100f6927dbd10051017`  
-T067-Stage6-Blocked-Head: `bfdeb4a7914a03bcec7be91d983dfb8b0535dcf0`  
-T067-Stage5-Reentry-Correction-Anchor: `a3c8c00cb2f0ecb5ce1c077ffa43614b94d3998f`  
-T067-Stage5-Freeze-State: CORRECTED_AWAITING_FINAL_METADATA_FREEZE  
-Active-Executor: Codex  
-Coordinator-ID: `AG | agent-governance | T067 | root-1`  
-Executor-Session-State: AWAITING_CONTINUE  
+T067-Stage6-Terminal-Head: `0cfd7e25da54a0f7b759da655a611c6a98e57d2a`  
+T067-Stage7-Acceptance-Anchor: `93a5cedc1135ad7008e376b9b196c7d9a38fa4fd`  
+T067-Integration-PR: `#426` -> `develop`  
+T067-Integration-State: ACCEPTED_FOR_SQUASH_MERGE  
+Active-Executor: none  
 T066-Stage5-State: NOT_STARTED  
 ChatGPT-Empirical-Parity: NOT_ESTABLISHED  
 Codex-Transverse-Historical-Result: `36/36 PASS`, reused as regression evidence; no ceremonial rerun authorized  
 Maintainer-Historical-Signal: `21/36 observed`, informational/unscored/not-qualified  
-Next-ChatGPT-Effort: HIGH  
-Next-Action: Finalize T067 metadata freeze for the corrected Stage 5 candidate, then continue the same Codex T067 root-1 for Stage 6 re-verification from the exact new remote launch HEAD. Do not enter E4 unless the replacement Stage 6 handoff is DONE and verified remotely.  
-Next-Chat-Minimum-Load: `AGENTS.md`; `docs/orchestrator/CHECKPOINT.md`; `docs/tasks/T067-r029-d082-materialization-and-qualification.md`; `handoffs/T067-executor-handoff.json`; D082; D068; then only evidence needed for the replacement Stage 6 result  
-Do-Not-Load-Or-Do: Do not start or modify T066; do not weaken `tests/test_reference_integrity.py`; do not repeat the historical 36 Codex transverse trials unless descriptor equivalence is invalidated under controlling authority; do not treat ChatGPT/Codex parity as established.
+Next-ChatGPT-Effort: MEDIUM  
+Next-Action: If PR #426 is still open, verify its exact head/base and required checks, then squash-merge it to `develop`; if already merged, verify the merged `develop` state and retire the topic branch under branch-cleanup policy. After integration closure, await Human selection of the next objective. Do not start T066 automatically.  
+Next-Chat-Minimum-Load: `AGENTS.md`; `docs/orchestrator/CHECKPOINT.md`; then only the authority for the Human-selected next objective  
+Do-Not-Load-Or-Do: Do not restart T067 Executor work; do not repeat the historical 36 Codex transverse trials without new controlling authority; do not relabel ChatGPT/Codex parity; do not start or modify T066 without a new explicit Human objective.
 
-## Stage 6 attempt 1
+## T067 Stage 7 convergence
 
-The first T067 Stage 6 attempt started from authorized launch HEAD `50098838a470c9e2bc0a6beb61a4a12a90923ef1` and returned:
+The replacement Stage 6 handoff at `0cfd7e25da54a0f7b759da655a611c6a98e57d2a` is accepted as valid technical evidence.
 
-```text
-STATUS: BLOCKED
-HANDOFF: handoffs/T067-executor-handoff.json
-HEAD: bfdeb4a7914a03bcec7be91d983dfb8b0535dcf0
-```
+Accepted evidence:
 
-The handoff is remotely present and coherent. The Executor verified the candidate identity, preserved topology and residuals, ran deterministic qualification, applied formatting-only bounded repairs, and reported `526 passed, 1 failed` for the full repository suite.
+- deterministic T067 qualification: `18/18 PASS`;
+- preservation ledger: `79/79`, `ROOT=39`, `ROOT+ROUTE=20`, `ROUTE=20`, unresolved `0`;
+- topology: one `source-maintainer` with two internal routes; exactly five transverse Skills; workspace isolation internal under `executor-launch-handoff`;
+- cold-start: both `docs/ORCHESTRATOR-CHECKPOINTS.md` and `docs/orchestrator/CHECKPOINT.md` are rooted and tested;
+- full repository suite: `527 passed`;
+- Ruff and code-health checks: PASS;
+- root measurement: `11496` bytes vs `34567` baseline, delta `-23071`;
+- initial Skill catalog metadata: `2799` bytes;
+- representative conditional loads: `21420..63447` bytes;
+- maximum representative reference-hop depth: `4`;
+- normative rule families: `17`, duplicate owner IDs `0`;
+- no Executor Markdown edits, no T066 changes, no provider/model trial launch, no unresolved issues, no upstream re-entry required.
 
-The blocking failure was `tests/test_reference_integrity.py::test_orchestrator_checkpoint_paths_referenced_by_agents_md_resolve`: the lean root named the current frontier `docs/orchestrator/CHECKPOINT.md` but omitted the standing checkpoint-policy anchor `docs/ORCHESTRATOR-CHECKPOINTS.md` that existed in the pre-refactor root and is part of preserved cold-start/bootstrap routing.
+All `AC-T067-1` through `AC-T067-10` are accepted PASS. Stage 7 does not promote measurements into new thresholds and does not expand any empirical claim beyond the persisted evidence.
 
-The Executor correctly stopped for Orchestrator Design/Stage 5 re-entry rather than editing Markdown or weakening semantic/reference-integrity expectations.
+## Preserved D082 residuals
 
-## Re-entry disposition
+- ChatGPT/Codex empirical parity remains `NOT_ESTABLISHED`.
+- ChatGPT empirical trials remain `0/36`; the Human waiver remains the controlling disposition.
+- Historical Maintainer `21/36` remains informational/unscored/not-qualified.
+- Historical Codex transverse `36/36` remains reused as regression evidence; no ceremonial rerun occurred.
+- Authority, ownership, safety, cold-start and fail-closed behavior remain independent of model-driven Skill activation.
+- T066 remains separate, unchanged and not started.
 
-The contradiction is resolved by preserving the root anchor, not by weakening the historical oracle.
+## Integration gate
 
-Stage 5 re-entry made exactly two semantic candidate corrections after the blocked handoff:
+PR `#426` is the sole authorized integration vehicle for this accepted T067 topic branch into `develop`.
 
-1. `AGENTS.md` again names `docs/ORCHESTRATOR-CHECKPOINTS.md` as the Orchestrator checkpoint-policy anchor.
-2. `evals/r029_materialization/qualification-profile.json` now requires that path in the T067-owned `cold-start-root-contract` check.
+Before merge, verify:
 
-The corrected Stage 5 content anchor is `a3c8c00cb2f0ecb5ce1c077ffa43614b94d3998f`. No topology family, trigger/anti-trigger contract, authority boundary, evidence-reuse disposition, or T066 state changed.
+1. `develop` has not drifted from the reviewed base in a way that invalidates the PR;
+2. PR head equals the exact current remote topic-branch head containing the Stage 7 acceptance and this checkpoint;
+3. required repository checks/statuses do not report a blocking failure;
+4. the PR still targets `develop`;
+5. no post-acceptance material change has entered the topic branch.
 
-## Preserved evidence from attempt 1
+Use squash merge. Once merged, the topic branch is frozen at the reviewed PR head and must enter `docs/BRANCH-CLEANUP.md` retirement. Do not append post-merge commits to it.
 
-Attempt-1 evidence remains historical evidence, not terminal qualification:
+## Objective boundary
 
-- T067 deterministic qualifier: 18/18 checks passed before the new cold-start assertion was added;
-- preservation: `ROOT=39`, `ROOT+ROUTE=20`, `ROUTE=20`, total `79/79`;
-- topology: one Maintainer/two internal routes, exactly five transverse Skills, workspace isolation internal;
-- measurements: `root_bytes=11427` before the restored anchor, `initial_catalog_bytes=2799`, representative conditional loads `21351..63378`, max reference-hop depth `4`, zero duplicate normative owner IDs;
-- descriptor equivalence: `MATERIALLY_EQUIVALENT`; no fresh 36-trial rerun required;
-- ChatGPT/Codex parity remains `NOT_ESTABLISHED`;
-- T066 remained untouched.
+T067 is semantically accepted. Integration/retirement is closure mechanics for the same Human objective, not a new objective.
 
-The root-byte measurement must be regenerated by replacement Stage 6 because Stage 5 changed `AGENTS.md` after the blocked attempt.
-
-## Immediate gate
-
-E4 remains forbidden. Replacement Stage 6 must execute the corrected candidate, regenerate qualification/measurements, run the affected/full verification, update the durable handoff, and return a new remote terminal HEAD.
-
-Under D060 this is the same T067 work unit and the original `root-1` is recoverable, so the next Executor interaction uses `CONTINUE`, not a new coordinator root.
-
-## Preserved boundaries
-
-- `develop` remains the protected base at `758b92cf38af9bc06e4717b1206dafb8e5d82e9e`.
-- Stage 6 may execute, diagnose, bounded-repair non-Markdown technical defects, review and verify; semantic/topology/oracle defects re-enter ChatGPT.
-- Stage 7 acceptance/integration remains ChatGPT-owned.
-- ChatGPT/Codex paired empirical parity remains `NOT_ESTABLISHED`.
-- The historical Maintainer `21/36` observation remains unscored and is not production qualification.
-- T066 remains a separate unstarted objective.
+After verified integration and branch retirement, this chat may close. The next product objective requires explicit Human selection; T066 is not implicitly selected by T067 completion.
