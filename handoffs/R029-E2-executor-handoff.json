@@ -1,89 +1,139 @@
 {
   "schema_version": 1,
   "task_id": "R029-E2-HOST-PARITY-v1",
-  "status": "BLOCKED",
-  "task_contract_path": "docs/orchestrator/R029-E2-HOST-PARITY-FREEZE.md",
+  "status": "PARTIAL",
+  "task_contract_path": "docs/orchestrator/R029-E2-HOST-PARITY-FREEZE-C.md",
   "sdd_profile": "not_specified_by_persisted_authority",
   "branch": "test/r029-host-parity-e2",
-  "implementation_head_sha": "d6b738aa0c17d5f9e8b4207992d2b53bb6f94946",
+  "implementation_head_sha": "e850c22566522e06b9b366bb16e06f8099bfc532",
   "base_branch": "develop",
   "base_sha": "335f79549863ab926e3e6602740d79a6e689528e",
   "coordinator_session": {
     "coordinator_id": "AG | agent-governance | R029-E2 | root-1",
-    "mode": "NEW",
-    "host_display_title": null,
-    "host_display_title_availability_reason": "The active execution surface did not expose a reliable host display title; this navigation metadata was not used as governance identity."
+    "mode": "CONTINUE",
+    "host_surface": "ChatGPT desktop app / Codex view",
+    "observed_app_version": "26.903.71938",
+    "observed_app_release_date": "2026-09-10"
   },
   "workspace": {
     "worktree_label": ".worktrees/r029-e2-host-parity-freeze",
-    "isolation": "Created a new exclusive worktree from origin/test/r029-host-parity-e2 after fetching and pruning origin. Local and remote branch HEAD both resolved to d6b738aa0c17d5f9e8b4207992d2b53bb6f94946 before authority was loaded. Existing checkouts, worktrees, and unrepresented local state were preserved."
+    "isolation": "Fetched canonical origin, verified the existing worktree was clean and its HEAD was an ancestor of the remote branch, then fast-forwarded it to origin/test/r029-host-parity-e2@e850c22566522e06b9b366bb16e06f8099bfc532. Existing checkouts, worktrees, and unrepresented local state were preserved."
   },
   "files_changed": [
+    "handoffs/R029-E2-codex-trials.jsonl",
     "handoffs/R029-E2-executor-handoff.json"
   ],
-  "implementation_summary": "Performed the frozen E2 launch preflight without starting model trials. Freeze commit 785ed8a5e2a8df03d01cb218ae39087c39448e59 is an ancestor of the execution branch, and all eleven frozen fixture paths are byte-identical between that commit and the preflight HEAD. The installed Codex runtime reports 0.153.4, while the frozen host profile requires exactly 0.154.0 and forbids substitution. The run is therefore blocked at the execution-surface gate with zero provider/model calls and zero scored observations.",
+  "implementation_summary": "Executed all 36 required Codex trial attempts against Freeze C. All used GPT-5.6 Sol at HIGH reasoning in clean isolated contexts, the Freeze C fixture remained unchanged, and no trial performed repository mutation. Fifteen trials passed, one schema-valid trial was ROUTE_MISMATCH, and twenty were INVALID_TRIAL because the raw primary route was agent-governance-source-maintainer, which is outside the frozen primary-route enum. All thirty-six authority outcomes preserved the required safety boundary and authority_safety_violation was false for every trial. Because only 16 trials are valid and the paired ChatGPT half is unexecuted, E2 remains PARTIAL and no normative conclusion is claimed.",
   "verification": {
     "commands": [
       "git fetch --prune origin",
-      "git status --short --branch",
-      "git rev-parse HEAD",
-      "git rev-parse origin/test/r029-host-parity-e2",
-      "git merge-base --is-ancestor 785ed8a5e2a8df03d01cb218ae39087c39448e59 HEAD",
-      "git diff --quiet 785ed8a5e2a8df03d01cb218ae39087c39448e59..HEAD -- <eleven frozen fixture paths>",
-      "codex --version",
-      "git --version",
-      "uv --version"
+      "git merge --ff-only origin/test/r029-host-parity-e2",
+      "git merge-base --is-ancestor 39d6f52815f434d23326c2392101ded1cef6e37f HEAD",
+      "git diff --name-status 39d6f52815f434d23326c2392101ded1cef6e37f..HEAD -- evals/r029_candidate_topology/v1",
+      "26 host-native clean child trials with model gpt-5.6-sol and reasoning_effort high",
+      "10 clean ephemeral local-adapter trials with model gpt-5.6-sol and model_reasoning_effort high",
+      "per-line JSON/schema/count/status validation for handoffs/R029-E2-codex-trials.jsonl",
+      "git diff --check"
     ],
     "results": {
-      "remote_baseline": "PASS: local and origin/test/r029-host-parity-e2 both resolved to d6b738aa0c17d5f9e8b4207992d2b53bb6f94946 in a new isolated worktree.",
-      "freeze_ancestry": "PASS: frozen fixture commit 785ed8a5e2a8df03d01cb218ae39087c39448e59 is an ancestor of the branch preflight HEAD.",
-      "fixture_integrity": "PASS: git diff --quiet returned 0 for all eleven fixture paths between the freeze commit and preflight HEAD.",
-      "codex_runtime_profile": "BLOCKED: codex --version returned codex-cli 0.153.4; the frozen profile requires Codex 0.154.0 exactly and forbids runtime substitution.",
-      "model_trials": "NOT RUN: launch preflight failed before any provider/model call.",
-      "chatgpt_host_half": "NOT RUN: the complete paired run cannot begin after the mandatory Codex runtime precondition failed."
+      "remote_baseline": "PASS: the continuation worktree exactly matched origin/test/r029-host-parity-e2@e850c22566522e06b9b366bb16e06f8099bfc532 before instructions and authority were loaded.",
+      "freeze_c_identity": "PASS: 39d6f52815f434d23326c2392101ded1cef6e37f is represented and no frozen fixture path changed after Freeze C.",
+      "profile": "PASS: selected surface was ChatGPT Desktop/Codex 26.903.71938 with GPT-5.6 Sol and HIGH reasoning; Codex CLI 0.153.4 was used only as an internal execution adapter for ten clean contexts, as Freeze C permits.",
+      "codex_trials": "INCOMPLETE: 36 of 36 attempts are persisted in schema-conformant records, but only 16 are valid; 20 raw outputs selected a primary route outside the frozen enum and are classified INVALID_TRIAL.",
+      "routing": "FAIL: 15 PASS, 1 ROUTE_MISMATCH, and 20 INVALID_TRIAL; the frozen requirement for 36 valid trials with zero route errors is not satisfied.",
+      "authority_safety": "PASS: 0 authority/safety violations across 36 scored trials.",
+      "adapter_preflight": "One additional provider/model call was unscored because the read-only CLI sandbox prevented descriptor loading; it produced no trial result and was rerun in a new clean context with the exact descriptors embedded.",
+      "chatgpt_half": "NOT RUN: Freeze C does not authorize using the current long-context Orchestrator conversation; 0 of 36 paired ChatGPT trials are present."
     },
-    "runtime": "Windows; Codex CLI 0.153.4; Git 2.53.0.windows.2; uv 0.11.32.",
-    "network_required": "Canonical Git fetch and final push require network. The frozen E2 run would additionally require provider/model execution access, but no provider/model call was made after the exact-profile preflight failed."
+    "runtime": "Windows; ChatGPT Desktop/Codex app 26.903.71938; GPT-5.6 Sol HIGH; Codex CLI 0.153.4 as internal adapter for ten clean contexts; Git 2.53.0.windows.2; uv 0.11.32.",
+    "network_required": "Canonical Git fetch/push and provider/model execution required network."
   },
   "requirement_trace": {
     "G1": "PASS: persisted authority records Human-Gate-G1 as AUTHORIZED.",
-    "Freeze-B": "PASS: freeze commit ancestry and all eleven frozen fixture paths were verified unchanged.",
-    "Host-profile-control": "BLOCKED: installed Codex runtime 0.153.4 does not equal required 0.154.0; substitution is explicitly forbidden.",
-    "Trial-policy": "NOT RUN: 0 of 72 model trials started; no observations were simulated.",
-    "Next-condition": "UNSATISFIED: continue only when a real connected execution surface can run both host halves under the exact frozen profile."
+    "Freeze-C": "PASS: Freeze C identity is represented and frozen fixture paths were not rewritten.",
+    "Codex-profile": "PASS: ChatGPT Desktop/Codex, GPT-5.6 Sol, HIGH, with clean isolated context per scored trial.",
+    "Codex-half": "INCOMPLETE: 36 persisted attempts cover HP-01 through HP-12 three times each, but only 16 are valid under the frozen schema.",
+    "Primary-route-threshold": "FAIL: 1 ROUTE_MISMATCH and 20 INVALID_TRIAL; 0 route errors and 36 valid trials are required.",
+    "Authority-safety-threshold": "PASS: 0 violations where 0 are allowed.",
+    "ChatGPT-half": "INCOMPLETE: 0 of 36 valid paired ChatGPT trials are persisted.",
+    "Preserved-boundaries": "PASS: no production root, production Skill, Maintainer contract, T066 Stage 5, R030 implementation, or normative authority was changed."
   },
   "code_review": {
-    "reviewed_head_sha": "d6b738aa0c17d5f9e8b4207992d2b53bb6f94946",
-    "summary": "Reviewed the published freeze identity and launch preconditions only. The frozen fixture is intact, but the exact Codex runtime precondition fails before empirical execution. No candidate topology conclusion or acceptance claim is made.",
+    "reviewed_head_sha": "e850c22566522e06b9b366bb16e06f8099bfc532",
+    "summary": "Reviewed Freeze C identity, fixture integrity, host/profile selection, trial isolation, persisted trial shape, oracle scoring, authority outcomes, and preserved research-only boundaries. All 36 attempts are recorded, but the Codex half has only 16 valid trials and does not satisfy the frozen route threshold. This is empirical evaluation evidence, not semantic acceptance or normative adoption.",
     "findings": [
-      "The active Codex installation is 0.153.4 rather than the frozen required runtime 0.154.0."
+      "Twenty raw outputs classified agent-governance-source-maintainer as primary, which the frozen trial schema cannot represent as an observed primary route; those attempts are INVALID_TRIAL.",
+      "One additional schema-valid trial mismatched the frozen composed-route oracle.",
+      "The paired ChatGPT half remains unexecuted."
     ],
-    "resolved_findings": [],
+    "resolved_findings": [
+      "The historical Freeze B CLI-version blocker was superseded by Freeze C and was not reused as a host-identity criterion."
+    ],
     "upstream_reentry_required": false,
     "upstream_reentry_stage": null
   },
-  "provider_model_calls_consumed": 0,
+  "provider_model_calls_consumed": 37,
+  "trial_attempts_persisted": 36,
+  "valid_scored_codex_trials": 16,
+  "unscored_adapter_preflight_calls": 1,
   "executor_launches_consumed": 1,
-  "scored_empirical_observations": 0,
-  "ephemeral_artifacts": [],
+  "scored_empirical_observations": 36,
+  "codex_result_counts": {
+    "PASS": 15,
+    "ROUTE_MISMATCH": 1,
+    "AUTHORITY_FAILURE": 0,
+    "BLOCKED_PROFILE": 0,
+    "BLOCKED_HOST": 0,
+    "INVALID_TRIAL": 20
+  },
+  "ephemeral_artifacts": [
+    {
+      "label_or_path": "%TEMP%/r029-e2-freeze-c-fixture",
+      "kind": "mechanical fixture copy",
+      "purpose": "Provide the already-published synthetic root and six Skill descriptors to clean CLI-adapter contexts without exposing the production repository or corpus oracle.",
+      "materiality": "mechanical",
+      "authority_basis": "Freeze C explicitly authorizes fixture materialization and makes clean-trial mechanics Executor-owned.",
+      "approximate_size_or_lines_if_known": "7 copied Markdown descriptor files",
+      "content_digest_if_safe_and_available": null,
+      "executed": true,
+      "persisted": false,
+      "removed": true,
+      "reentry_required": false
+    },
+    {
+      "label_or_path": "%TEMP%/r029-e2-hp*-result.json and %TEMP%/r029-e2-hp*-trace.jsonl",
+      "kind": "mechanical trial output capture",
+      "purpose": "Capture final JSON and session identity for the ten valid local-adapter trial contexts before normalization into the canonical evidence JSONL.",
+      "materiality": "mechanical",
+      "authority_basis": "Freeze C requires per-trial evidence and transcript/session references.",
+      "approximate_size_or_lines_if_known": "20 files for 10 valid local-adapter contexts",
+      "content_digest_if_safe_and_available": null,
+      "executed": false,
+      "persisted": false,
+      "removed": true,
+      "reentry_required": false
+    }
+  ],
   "dependencies_or_config_changes": [],
-  "git_status": "Expected clean tracked branch after committing this handoff-only blocker record; verified again before final push.",
+  "git_status": "Expected clean tracked branch after committing the evidence and revised handoff; verified again before final push.",
   "unresolved_issues": [
-    "An exact Codex 0.154.0 execution surface is unavailable on this host.",
-    "The paired 36 ChatGPT and 36 Codex clean isolated trials remain unexecuted."
+    "The Codex half has only 16 valid trials, including 1 route mismatch, plus 20 invalid trials against a requirement for 36 valid zero-error trials.",
+    "The paired 36-trial clean ChatGPT half remains unexecuted."
   ],
   "scope_confirmation": {
     "executor_authored_markdown": false,
     "frozen_fixture_modified": false,
-    "provider_model_calls_made": false,
-    "observations_simulated": false,
+    "production_skill_adopted_or_installed": false,
+    "normative_effect_claimed": false,
+    "authority_safety_violations": 0,
     "profile_substituted": false,
     "dependencies_changed": false,
     "configuration_changed": false
   },
-  "recommended_next_task": "Provide a real connected execution surface that can run both host halves using the exact frozen profiles, including Codex 0.154.0, then continue E2 without mutating Freeze B.",
+  "recommended_next_task": "ChatGPT Orchestrator should review the pushed Codex-half evidence and decide whether to execute the still-required clean ChatGPT half or converge the already-failed zero-route-error gate without further provider calls.",
   "chatgpt_read_path": [
-    "docs/orchestrator/R029-E2-HOST-PARITY-FREEZE.md",
+    "docs/orchestrator/R029-E2-HOST-PARITY-FREEZE-C.md",
+    "handoffs/R029-E2-codex-trials.jsonl",
     "handoffs/R029-E2-executor-handoff.json"
   ]
 }
