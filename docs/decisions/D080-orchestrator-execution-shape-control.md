@@ -7,7 +7,7 @@ Scope: source-product ChatGPT Orchestrator task geometry and decomposition
 
 ## Context
 
-D067 defines one explicit Human objective per ChatGPT Orchestrator chat, and D069 exposes the recommended `ChatGPT Effort` for the next ChatGPT task. Neither rule determines whether one Human objective should be attempted as one material ChatGPT execution or decomposed into several ordered executions.
+D067 defines one explicit Human objective per ChatGPT Orchestrator chat, and D069 exposes the recommended `ChatGPT Effort` for the next required ChatGPT intervention. Neither rule determines whether one Human objective should be attempted as one material ChatGPT execution or decomposed into several ordered executions.
 
 Agent Governance therefore needs a separate control for **execution geometry**. This control must not depend on guessed provider timeouts, minute budgets, context-duration folklore, or a fixed mapping from reasoning effort to runtime.
 
@@ -23,12 +23,14 @@ The two Human-facing controls answer different questions:
 
 ```text
 ChatGPT Effort: MEDIUM | HIGH
-    -> how much reasoning depth the task warrants
+    -> how much reasoning depth the next required ChatGPT intervention warrants
 
 Execution Shape: SINGLE_EXECUTION | MULTI_EXECUTION
-    -> whether the material task should be attempted as one bounded execution unit
+    -> whether a concrete material ChatGPT task should be attempted as one bounded execution unit
        or decomposed into several ordered bounded execution units
 ```
+
+`ChatGPT Effort` is always present in D069 project closure. `Execution Shape` applies when a concrete ChatGPT task exists to classify; it need not be invented for a Human-only gate, Executor-first frontier, or waiting state that has not yet produced a concrete material ChatGPT task.
 
 `Execution Shape` is qualitative task-geometry metadata. It does not specify wall-clock duration and does not claim any OpenAI/provider timeout, session lifetime, token ceiling, or guaranteed completion window.
 
@@ -113,7 +115,7 @@ HIGH   + MULTI_EXECUTION
 
 A task does not become `MULTI_EXECUTION` merely because `HIGH` reasoning is recommended. A task does not become `SINGLE_EXECUTION` merely because its reasoning effort is `MEDIUM`.
 
-The Orchestrator selects the minimum sufficient reasoning effort and independently selects the execution geometry needed for coherent completion.
+The Orchestrator selects the minimum sufficient reasoning effort for the next required ChatGPT intervention and independently selects execution geometry whenever a concrete material ChatGPT task exists.
 
 ## Relationship to D055 and Executor configuration
 
@@ -132,10 +134,11 @@ Those remain under D055 and any controlling Task Contract/experimental authority
 
 ## Human-facing representation
 
-When D069 requires `Próxima Tarea` for a concrete next ChatGPT Orchestrator task, the section SHALL include both:
+D069 requires every qualifying project response to end with `Próxima Tarea` and exactly one `ChatGPT Effort: MEDIUM | HIGH`, regardless of same-chat/cross-chat routing or whether a Human/Executor gate occurs first.
+
+When that frontier also defines a concrete next ChatGPT Orchestrator task, the section SHALL additionally include:
 
 ```text
-ChatGPT Effort: MEDIUM | HIGH
 Execution Shape: SINGLE_EXECUTION | MULTI_EXECUTION
 ```
 
@@ -146,10 +149,18 @@ When `MULTI_EXECUTION` is selected, the Human-facing response SHOULD name the im
 `docs/orchestrator/CHECKPOINT.md` SHALL carry:
 
 ```text
+Next-ChatGPT-Effort: MEDIUM | HIGH
+```
+
+for the next required ChatGPT intervention, including waiting, Human-gate, Executor-first and cross-chat frontiers.
+
+It SHALL additionally carry:
+
+```text
 Next-Execution-Shape: SINGLE_EXECUTION | MULTI_EXECUTION
 ```
 
-when the checkpoint already names a concrete next ChatGPT Orchestrator task.
+when the checkpoint names a concrete next ChatGPT Orchestrator task.
 
 When `MULTI_EXECUTION` materially controls cold-start resumption, the checkpoint SHALL also identify the ordered execution units or point to the exact authoritative artifact that defines them, and SHALL identify the immediate next unit.
 
@@ -166,6 +177,8 @@ Typical reclassification cases:
 - `SINGLE_EXECUTION -> MULTI_EXECUTION`: a new mandatory dependency/gate or separable material workstream is discovered;
 - `MULTI_EXECUTION -> SINGLE_EXECUTION`: a planned boundary proves artificial because the units are one inseparable coherent transformation and no durable/gating value remains.
 
+A mandatory `ChatGPT Effort` recommendation may also be revalidated when new Human/Executor evidence changes the next ChatGPT intervention. That effort revalidation is not an execution-shape reclassification unless the concrete task geometry also changed.
+
 ## Prohibitions
 
 Agent Governance SHALL NOT use `Execution Shape` to:
@@ -181,11 +194,13 @@ Agent Governance SHALL NOT use `Execution Shape` to:
 ## Effective rule
 
 ```text
-next ChatGPT task known
--> choose minimum sufficient ChatGPT Effort
--> inspect task dependency/gate/failure geometry
+project frontier known
+-> always expose Próxima Tarea
+-> always choose minimum sufficient ChatGPT Effort for the next required ChatGPT intervention
+-> if a concrete material ChatGPT task exists, inspect dependency/gate/failure geometry
 -> choose SINGLE_EXECUTION or MULTI_EXECUTION
 -> if MULTI_EXECUTION, freeze ordered bounded units before material work
 -> execute only the immediate authorized unit
+-> revalidate effort/shape when new authoritative evidence changes them
 -> advance through durable gates until the one Human objective is complete
 ```
