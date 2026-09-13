@@ -23,8 +23,8 @@ R029-S1 -> Human gate -> R029-S2 -> Human gate -> ... -> R029-S10
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | R029-S1 | ACCEPTED | Root preservation-map audit | R029 integrated | `docs/orchestrator/R029-S1-ROOT-PRESERVATION-MAP.md` | Every current root semantic unit has exactly one preservation classification/destination | MEDIUM | SINGLE_EXECUTION |
 | R029-S2 | ACCEPTED | Lean-root responsibility contract | S1 accepted | `docs/orchestrator/R029-S2-LEAN-ROOT-RESPONSIBILITY-CONTRACT.md` | Every retained root responsibility is pre-routing justified and omitted detail remains explicitly reachable | MEDIUM | SINGLE_EXECUTION |
-| R029-S3 | COMPLETE_AWAITING_HUMAN_REVIEW | Maintainer Skill domain boundary | S1-S2 accepted | `docs/orchestrator/R029-S3-MAINTAINER-DOMAIN-BOUNDARY.md` | Source-maintenance-specific workflows are separated from transverse candidate seams without splitting the approved Maintainer Skill by role | MEDIUM | SINGLE_EXECUTION |
-| R029-S4 | NOT_STARTED | `repository-change-control` candidate | S1-S3 accepted | Candidate contract, triggers/anti-triggers, host-adapter boundary, analytical disposition | Reusable intent and non-overlap are explicit; disposition is `KEEP_CANDIDATE`, `INTERNAL_ROUTE`, or `REJECT_FOR_TRANSVERSE` | MEDIUM | SINGLE_EXECUTION |
+| R029-S3 | ACCEPTED | Maintainer Skill domain boundary | S1-S2 accepted | `docs/orchestrator/R029-S3-MAINTAINER-DOMAIN-BOUNDARY.md` | Source-maintenance-specific workflows are separated from transverse candidate seams without splitting the approved Maintainer Skill by role | MEDIUM | SINGLE_EXECUTION |
+| R029-S4 | COMPLETE_AWAITING_HUMAN_REVIEW | `repository-change-control` candidate | S1-S3 accepted | `docs/orchestrator/R029-S4-REPOSITORY-CHANGE-CONTROL-CANDIDATE.md` | Reusable intent and non-overlap are explicit; disposition is `KEEP_CANDIDATE` | MEDIUM | SINGLE_EXECUTION |
 | R029-S5 | NOT_STARTED | `upstream-version-revalidation` candidate | S1-S3 accepted | Candidate contract, triggers/anti-triggers, adapter boundary, analytical disposition | Generalizable semantics separated from D077/Agent-Governance policy | MEDIUM | SINGLE_EXECUTION |
 | R029-S6 | NOT_STARTED | `research-evidence-traceability` candidate | S1-S3 accepted | Generic capability vs Agent Governance adapter map and disposition | Reusable provenance semantics separated from `Rxxx`/`Dxxx` conventions | MEDIUM | SINGLE_EXECUTION |
 | R029-S7 | NOT_STARTED | `durable-work-checkpoint` candidate | S1-S3 accepted | Generic cold-start/frontier capability vs Agent Governance checkpoint adapter map and disposition | Generic durable-resume semantics separated from D027/D067/checkpoint rules | MEDIUM | SINGLE_EXECUTION |
@@ -41,13 +41,15 @@ Accepted 2026-09-13. Durable output: `docs/orchestrator/R029-S1-ROOT-PRESERVATIO
 Accepted 2026-09-13. Durable output: `docs/orchestrator/R029-S2-LEAN-ROOT-RESPONSIBILITY-CONTRACT.md`.
 
 ### R029-S3 — Maintainer Skill domain boundary
-Completed analytically 2026-09-13. Durable output: `docs/orchestrator/R029-S3-MAINTAINER-DOMAIN-BOUNDARY.md`.
+Accepted 2026-09-13. Durable output: `docs/orchestrator/R029-S3-MAINTAINER-DOMAIN-BOUNDARY.md`.
 
-S3 preserves one top-level Maintainer Skill with internal Orchestrator/Executor routes, retains Agent-Governance-specific decisions/lifecycle/tooling adapters in the domain, and defines six reusable candidate seams for later independent evaluation. S3 does not adopt any transverse Skill.
+### R029-S4 — `repository-change-control` candidate
+Completed analytically 2026-09-13. Durable output: `docs/orchestrator/R029-S4-REPOSITORY-CHANGE-CONTROL-CANDIDATE.md`.
+
+S4 classifies the candidate `KEEP_CANDIDATE`: repository mutation/change-path control has reusable intent, distinct positive/negative triggers, a concrete durable postcondition, and host-neutral semantics with ChatGPT/Codex mechanics adapters. Agent Governance's branch/release/stage/ownership policy remains domain-side. Workspace-isolation final placement remains deferred to S9.
 
 ## Remaining subtask intent
 
-- S4 independently evaluates `repository-change-control`.
 - S5 independently evaluates `upstream-version-revalidation`.
 - S6 independently evaluates `research-evidence-traceability`.
 - S7 independently evaluates `durable-work-checkpoint`.
