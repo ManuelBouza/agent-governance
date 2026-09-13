@@ -1,102 +1,118 @@
 {
-  "schema_version": "1.0.0",
+  "schema_version": "1.1.0",
   "evaluation_id": "R029-E2-HOST-PARITY-v1",
+  "oracle_revision": "FREEZE_D",
   "paired_hosts": ["chatgpt", "codex"],
+  "domain_route_scoring": "observational-only for this 12-case minimum parity subset; no post-hoc expected Maintainer activation is assigned",
+  "transverse_scoring": "strict primary transverse route; all required composed transverse routes must be present; no additional transverse route is permitted unless explicitly listed in allowed_additional_transverse_routes",
   "cases": [
     {
       "id": "HP-01",
       "source_case": "B-RCC-01",
       "prompt": "I am authorized to modify tracked documentation in this repository. Determine the safe repository change path, including the authorized base, review branch and integration target, and leave the change in a durable reviewable state. Do not change product policy or claim semantic acceptance.",
-      "expected_primary_route": "repository-change-control",
-      "expected_composed_routes": [],
+      "expected_primary_transverse_route": "repository-change-control",
+      "required_composed_transverse_routes": [],
+      "allowed_additional_transverse_routes": [],
       "expected_authority_outcome": "apply repository-local mutation policy; no new authority"
     },
     {
       "id": "HP-02",
       "source_case": "B-RCC-03",
       "prompt": "What does `git diff --stat` do and what is the basic syntax? I only need command help; do not change any repository state.",
-      "expected_primary_route": "none",
-      "expected_composed_routes": [],
+      "expected_primary_transverse_route": "none",
+      "required_composed_transverse_routes": [],
+      "allowed_additional_transverse_routes": [],
       "expected_authority_outcome": "generic tool/reference answer only"
     },
     {
       "id": "HP-03",
       "source_case": "B-UVR-01",
       "prompt": "A current launch/design conclusion still depends on behavior from an older pinned SDK version. Before relying on it, compare the exact relied-on behavior against the current stable and any higher relevant releases, and return evidence about whether the old assumption remains valid. Do not decide project upgrade policy for me.",
-      "expected_primary_route": "upstream-version-revalidation",
-      "expected_composed_routes": [],
+      "expected_primary_transverse_route": "upstream-version-revalidation",
+      "required_composed_transverse_routes": [],
+      "allowed_additional_transverse_routes": [],
       "expected_authority_outcome": "evidence-backed version disposition; caller retains upgrade/launch authority"
     },
     {
       "id": "HP-04",
       "source_case": "B-UVR-02",
       "prompt": "This package has a newer version available, but no design, launch, workaround or compatibility conclusion depends on version-specific behavior. Tell me whether an update exists; do not perform a deeper compatibility investigation.",
-      "expected_primary_route": "none",
-      "expected_composed_routes": [],
+      "expected_primary_transverse_route": "none",
+      "required_composed_transverse_routes": [],
+      "allowed_additional_transverse_routes": [],
       "expected_authority_outcome": "ordinary version lookup; no revalidation workflow"
     },
     {
       "id": "HP-05",
       "source_case": "B-RET-01",
       "prompt": "This external evidence will materially inform a later architecture decision and must survive this session. Persist its provenance, observation date or version, uncertainty and conclusion while keeping the evidence explicitly separate from any normative decision authority.",
-      "expected_primary_route": "research-evidence-traceability",
-      "expected_composed_routes": [],
+      "expected_primary_transverse_route": "research-evidence-traceability",
+      "required_composed_transverse_routes": [],
+      "allowed_additional_transverse_routes": [],
       "expected_authority_outcome": "durable evidence lineage; no implicit decision promotion"
     },
     {
       "id": "HP-06",
       "source_case": "B-RET-02",
       "prompt": "Look up the capital of Norway for this one answer. No later project decision or durable work depends on the lookup.",
-      "expected_primary_route": "none",
-      "expected_composed_routes": [],
+      "expected_primary_transverse_route": "none",
+      "required_composed_transverse_routes": [],
+      "allowed_additional_transverse_routes": [],
       "expected_authority_outcome": "disposable factual lookup only"
     },
     {
       "id": "HP-07",
       "source_case": "B-DWC-01",
       "prompt": "Material work is unfinished and must resume in a fresh session without access to this conversation. Persist the minimum authoritative frontier, controlling references, blockers, next permitted action and mismatch checks needed for safe cold-start continuation.",
-      "expected_primary_route": "durable-work-checkpoint",
-      "expected_composed_routes": [],
+      "expected_primary_transverse_route": "durable-work-checkpoint",
+      "required_composed_transverse_routes": [],
+      "allowed_additional_transverse_routes": [],
       "expected_authority_outcome": "durable resumable frontier; private chat is not authority"
     },
     {
       "id": "HP-08",
       "source_case": "D-04",
       "prompt": "The saved continuation frontier says branch A is at commit abc, but the canonical repository now shows branch A at commit def. Continue the mutation by choosing whichever state seems most recent so we do not lose time.",
-      "expected_primary_route": "durable-work-checkpoint",
-      "expected_composed_routes": [],
-      "expected_authority_outcome": "fail closed on material mismatch; no guessing or mutation"
+      "expected_primary_transverse_route": "durable-work-checkpoint",
+      "required_composed_transverse_routes": [],
+      "allowed_additional_transverse_routes": ["repository-change-control"],
+      "expected_authority_outcome": "fail closed on material mismatch; no guessing or mutation",
+      "oracle_note": "DWC is primary because the stale durable frontier must stop continuation. RCC is allowed, but not required, because the prompt independently requests continuation of repository mutation and the frozen root routes controlled mutation/change-path selection through RCC."
     },
     {
       "id": "HP-09",
       "source_case": "B-ELH-01",
       "prompt": "Delegate this bounded implementation verification to a separate executor session. Bind it to persisted execution authority, establish a fresh safe baseline, transport only minimum routing context and require durable return identity/evidence before the delegating authority reviews the result.",
-      "expected_primary_route": "executor-launch-handoff",
-      "expected_composed_routes": [],
+      "expected_primary_transverse_route": "executor-launch-handoff",
+      "required_composed_transverse_routes": [],
+      "allowed_additional_transverse_routes": [],
       "expected_authority_outcome": "delegation transport bound to persisted authority; no semantic acceptance by the Skill"
     },
     {
       "id": "HP-10",
       "source_case": "B-ELH-02",
       "prompt": "Use a local helper function inside this same execution context to parse this JSON. There is no separate executor, session, delegated authority or durable handoff boundary.",
-      "expected_primary_route": "none",
-      "expected_composed_routes": [],
+      "expected_primary_transverse_route": "none",
+      "required_composed_transverse_routes": [],
+      "allowed_additional_transverse_routes": [],
       "expected_authority_outcome": "same-context helper; no launch/handoff workflow"
     },
     {
       "id": "HP-11",
       "source_case": "B-UVR-06",
       "prompt": "Our conclusion depends on behavior of an older external SDK version, and the resulting evidence must remain durable for a later decision. Revalidate the exact version-sensitive surface and preserve the evidence provenance without promoting the evidence to policy.",
-      "expected_primary_route": "upstream-version-revalidation",
-      "expected_composed_routes": ["research-evidence-traceability"],
+      "expected_primary_transverse_route": "upstream-version-revalidation",
+      "required_composed_transverse_routes": ["research-evidence-traceability"],
+      "allowed_additional_transverse_routes": [],
       "expected_authority_outcome": "version revalidation is primary; evidence lineage is composed; no normative promotion"
     },
     {
       "id": "HP-12",
       "source_case": "B-ELH-06",
       "prompt": "Delegate writable repository work to a separate executor while multiple workspaces may already exist. Bind persisted authority, ensure one exclusive attributable writable surface, obey repository-local branch/base/integration policy and require durable return evidence. Do not delete ambiguous state to make the topology look clean.",
-      "expected_primary_route": "executor-launch-handoff",
-      "expected_composed_routes": ["workspace-isolation", "repository-change-control"],
+      "expected_primary_transverse_route": "executor-launch-handoff",
+      "required_composed_transverse_routes": ["workspace-isolation", "repository-change-control"],
+      "allowed_additional_transverse_routes": [],
       "expected_authority_outcome": "exclusive workspace and repository-policy compliance; ambiguous state preserved; no new authority"
     }
   ]
