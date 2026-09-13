@@ -1,58 +1,86 @@
 # Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O322  
+Checkpoint-Sequence: O323  
 Date: 2026-09-13  
 Canonical-Branch: `develop`  
 Current-Work-Unit: `T067 / R029 D082 materialization and qualification`  
-State: EXECUTOR_READY  
+State: EXECUTOR_RETRY_READY  
 Chat-Closure: KEEP_CURRENT_CHAT  
 R029-Research-State: COMPLETE  
 R029-Decision-State: DECIDED  
 R029-Decision-Ref: `docs/decisions/D082-r029-lean-root-and-transverse-skill-architecture.md`  
 R029-Architecture-State: ADOPTED_CANDIDATE_MATERIALIZED  
-R029-Materialization-State: STAGE5_CANDIDATE_PUBLISHED  
-R029-Qualification-State: STAGE6_PENDING  
+R029-Materialization-State: STAGE5_REENTRY_CORRECTED  
+R029-Qualification-State: STAGE6_RETRY_PENDING  
 T067-Task-Contract: `docs/tasks/T067-r029-d082-materialization-and-qualification.md`  
 T067-Topic-Branch: `refactor/r029-d082-materialization`  
-T067-Stage5-Content-Anchor: `c59dfe3ed2ee69d2fbfb9100f6927dbd10051017`  
-T067-Stage5-Freeze-State: PUBLISHED  
-Active-Executor: none  
+T067-Original-Stage5-Content-Anchor: `c59dfe3ed2ee69d2fbfb9100f6927dbd10051017`  
+T067-Stage6-Blocked-Head: `bfdeb4a7914a03bcec7be91d983dfb8b0535dcf0`  
+T067-Stage5-Reentry-Correction-Anchor: `a3c8c00cb2f0ecb5ce1c077ffa43614b94d3998f`  
+T067-Stage5-Freeze-State: CORRECTED_AWAITING_FINAL_METADATA_FREEZE  
+Active-Executor: Codex  
+Coordinator-ID: `AG | agent-governance | T067 | root-1`  
+Executor-Session-State: AWAITING_CONTINUE  
 T066-Stage5-State: NOT_STARTED  
 ChatGPT-Empirical-Parity: NOT_ESTABLISHED  
 Codex-Transverse-Historical-Result: `36/36 PASS`, reused as regression evidence; no ceremonial rerun authorized  
 Maintainer-Historical-Signal: `21/36 observed`, informational/unscored/not-qualified  
 Next-ChatGPT-Effort: HIGH  
-Next-Action: Human may launch T067 E3 on Codex using the D055 launch card and thin transport supplied by the current Orchestrator chat. Executor must verify the exact remote topic-branch launch HEAD, the Stage 5 candidate freeze in T067, and the protected base before executing Stage 6. After a durable Stage 6 handoff, ChatGPT performs E4 Stage 7 convergence/qualification/integration.  
-Next-Chat-Minimum-Load: `AGENTS.md`; `docs/orchestrator/CHECKPOINT.md`; `docs/tasks/T067-r029-d082-materialization-and-qualification.md`; D082; D068; then only the exact Stage 6 handoff/branch evidence when it exists  
-Do-Not-Load-Or-Do: Do not start or modify T066; do not repeat the historical 36 Codex transverse trials unless T067's descriptor-equivalence disposition is invalidated under controlling authority; do not treat ChatGPT/Codex parity as established.
+Next-Action: Finalize T067 metadata freeze for the corrected Stage 5 candidate, then continue the same Codex T067 root-1 for Stage 6 re-verification from the exact new remote launch HEAD. Do not enter E4 unless the replacement Stage 6 handoff is DONE and verified remotely.  
+Next-Chat-Minimum-Load: `AGENTS.md`; `docs/orchestrator/CHECKPOINT.md`; `docs/tasks/T067-r029-d082-materialization-and-qualification.md`; `handoffs/T067-executor-handoff.json`; D082; D068; then only evidence needed for the replacement Stage 6 result  
+Do-Not-Load-Or-Do: Do not start or modify T066; do not weaken `tests/test_reference_integrity.py`; do not repeat the historical 36 Codex transverse trials unless descriptor equivalence is invalidated under controlling authority; do not treat ChatGPT/Codex parity as established.
 
-## Completed frontier
+## Stage 6 attempt 1
 
-T067 E1 and E2 are complete on the remote topic branch.
+The first T067 Stage 6 attempt started from authorized launch HEAD `50098838a470c9e2bc0a6beb61a4a12a90923ef1` and returned:
 
-Stage 5 materialized:
+```text
+STATUS: BLOCKED
+HANDOFF: handoffs/T067-executor-handoff.json
+HEAD: bfdeb4a7914a03bcec7be91d983dfb8b0535dcf0
+```
 
-- lean always-loaded `AGENTS.md` preserving the twelve R029 root responsibility families;
-- one Maintainer top-level domain Skill with internal Orchestrator/Executor routes;
-- exactly five D082 transverse top-level Skills;
-- `workspace-isolation` only as an internal `executor-launch-handoff` reference;
-- the 79-unit preservation ledger and activation/anti-trigger oracle;
-- deterministic qualification/measurement tooling and tests;
-- normative ownership/reference-hop inputs;
-- descriptor-equivalence disposition preserving historical evidence and explicit residuals.
+The handoff is remotely present and coherent. The Executor verified the candidate identity, preserved topology and residuals, ran deterministic qualification, applied formatting-only bounded repairs, and reported `526 passed, 1 failed` for the full repository suite.
 
-The product/eval candidate anchor is `c59dfe3ed2ee69d2fbfb9100f6927dbd10051017`. The final Stage 5 freeze metadata is persisted in T067 on the same topic branch.
+The blocking failure was `tests/test_reference_integrity.py::test_orchestrator_checkpoint_paths_referenced_by_agents_md_resolve`: the lean root named the current frontier `docs/orchestrator/CHECKPOINT.md` but omitted the standing checkpoint-policy anchor `docs/ORCHESTRATOR-CHECKPOINTS.md` that existed in the pre-refactor root and is part of preserved cold-start/bootstrap routing.
+
+The Executor correctly stopped for Orchestrator Design/Stage 5 re-entry rather than editing Markdown or weakening semantic/reference-integrity expectations.
+
+## Re-entry disposition
+
+The contradiction is resolved by preserving the root anchor, not by weakening the historical oracle.
+
+Stage 5 re-entry made exactly two semantic candidate corrections after the blocked handoff:
+
+1. `AGENTS.md` again names `docs/ORCHESTRATOR-CHECKPOINTS.md` as the Orchestrator checkpoint-policy anchor.
+2. `evals/r029_materialization/qualification-profile.json` now requires that path in the T067-owned `cold-start-root-contract` check.
+
+The corrected Stage 5 content anchor is `a3c8c00cb2f0ecb5ce1c077ffa43614b94d3998f`. No topology family, trigger/anti-trigger contract, authority boundary, evidence-reuse disposition, or T066 state changed.
+
+## Preserved evidence from attempt 1
+
+Attempt-1 evidence remains historical evidence, not terminal qualification:
+
+- T067 deterministic qualifier: 18/18 checks passed before the new cold-start assertion was added;
+- preservation: `ROOT=39`, `ROOT+ROUTE=20`, `ROUTE=20`, total `79/79`;
+- topology: one Maintainer/two internal routes, exactly five transverse Skills, workspace isolation internal;
+- measurements: `root_bytes=11427` before the restored anchor, `initial_catalog_bytes=2799`, representative conditional loads `21351..63378`, max reference-hop depth `4`, zero duplicate normative owner IDs;
+- descriptor equivalence: `MATERIALLY_EQUIVALENT`; no fresh 36-trial rerun required;
+- ChatGPT/Codex parity remains `NOT_ESTABLISHED`;
+- T066 remained untouched.
+
+The root-byte measurement must be regenerated by replacement Stage 6 because Stage 5 changed `AGENTS.md` after the blocked attempt.
 
 ## Immediate gate
 
-No Stage 6 execution has started. No Executor/provider call has been consumed by T067.
+E4 remains forbidden. Replacement Stage 6 must execute the corrected candidate, regenerate qualification/measurements, run the affected/full verification, update the durable handoff, and return a new remote terminal HEAD.
 
-The Human-visible D055 launch card must identify the concrete Executor, `NEW` session, `AG | agent-governance | T067 | root-1`, exact model/effort, and rationale. The thin transport must point to canonical Git authority rather than restating T067 semantics.
+Under D060 this is the same T067 work unit and the original `root-1` is recoverable, so the next Executor interaction uses `CONTINUE`, not a new coordinator root.
 
 ## Preserved boundaries
 
-- `develop` remains the protected base at `758b92cf38af9bc06e4717b1206dafb8e5d82e9e` for this T067 candidate.
+- `develop` remains the protected base at `758b92cf38af9bc06e4717b1206dafb8e5d82e9e`.
 - Stage 6 may execute, diagnose, bounded-repair non-Markdown technical defects, review and verify; semantic/topology/oracle defects re-enter ChatGPT.
 - Stage 7 acceptance/integration remains ChatGPT-owned.
 - ChatGPT/Codex paired empirical parity remains `NOT_ESTABLISHED`.
