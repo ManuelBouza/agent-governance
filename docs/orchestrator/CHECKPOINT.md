@@ -1,54 +1,45 @@
 # Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O304  
+Checkpoint-Sequence: O305  
 Date: 2026-09-13  
 Canonical-Branch: `develop`  
-Current-Work-Unit: R029 — incremental Skill-architecture evaluation  
-State: HUMAN_DECISION_GATE  
+Current-Work-Unit: R029 — completed Skill-architecture research/evaluation objective  
+State: OBJECTIVE_COMPLETE  
 Current-Objective: `R029 — evaluate the Skill-architecture refactor without adopting or implementing it`  
-Accepted-Subtasks: `R029-S1`, `R029-S2`, `R029-S3`, `R029-S4`, `R029-S5`, `R029-S6`, `R029-S7`, `R029-S8`, `R029-S9`  
-Completed-Subtask: `R029-S10 — Candidate-topology synthesis and evaluation plan`  
-Completed-Artifact: `docs/orchestrator/R029-S10-CANDIDATE-TOPOLOGY-AND-EVALUATION-PLAN.md`  
-Completed-Disposition: `CANDIDATE_TOPOLOGY_READY_FOR_HUMAN_DECISION`  
+Accepted-Subtasks: `R029-S1`, `R029-S2`, `R029-S3`, `R029-S4`, `R029-S5`, `R029-S6`, `R029-S7`, `R029-S8`, `R029-S9`, `R029-S10`  
+Completed-Subtask: `R029 Human Decision Gate`  
+Completed-Artifact: `docs/orchestrator/R029-HUMAN-DISPOSITION.md`  
+Completed-Disposition: `ADOPT_FOR_DESIGN`  
 Candidate-Next-Subtask: none  
-Next-Action: Human Owner reviews the complete R029 candidate topology and chooses `ADOPT_FOR_DESIGN`, `REVISE_AND_REEVALUATE`, or `REJECT_TOPOLOGY`. Do not create a normative Decision, rewrite `AGENTS.md`, implement Skills, launch an Executor, consume provider/model calls, or mutate T066 without separate explicit authorization.  
+Next-Action: If the Human Owner wants to continue this line, start a new ChatGPT chat with a separate explicit objective authorizing the next normative architecture/design step. `ADOPT_FOR_DESIGN` accepts the R029 topology only as a design direction; it does not itself authorize a normative Decision Record, evaluation run, `AGENTS.md` rewrite, Skill implementation, Executor launch, provider/model calls, or T066 mutation.  
 Next-ChatGPT-Effort: HIGH  
+Next-Chat-Minimum-Load: `docs/orchestrator/R029-HUMAN-DISPOSITION.md`; `docs/orchestrator/R029-S10-CANDIDATE-TOPOLOGY-AND-EVALUATION-PLAN.md`  
 Session-Sequence: `docs/orchestrator/R029-OBJECTIVE-SEQUENCE.md`  
 Current-Research: `docs/research/R029-AGENTS-SKILL-ARCHITECTURE-REFACTOR-RESEARCH.md`  
 Current-Research-State: COMPLETE / EVALUATING  
-Current-Decision: none  
+Current-Decision: none — no normative architecture Decision Record has been authorized or created  
 Active-Executor: none  
 Executor-Launch-State: NOT_AUTHORIZED  
 R029-Provider-Model-Calls: `0`  
 R029-Scored-Observations: `0`  
 Prior-Unselected-T066-Scientific-Branch: `test/r027-chatgpt-codex-efficiency-v1`  
 Prior-Unselected-T066-Scientific-Branch-State: PREEXISTING_DIVERGED_UNCONSUMED_CONFLICT  
-Chat-Closure: KEEP_CURRENT_CHAT_ACTIVE
+Chat-Closure: NEW_CHAT_RECOMMENDED
 
 ## Completed
 
-The Human Owner accepted R029-S9 and explicitly selected R029-S10 in this same ChatGPT chat.
+The Human Owner selected `ADOPT_FOR_DESIGN` at the R029 Human Decision Gate after accepting the complete S1-S10 analytical chain.
 
-R029-S10 was executed from `develop@097a15a41326d914a07f3eb6122df8caa5194f4e` using the accepted S1-S9 analytical chain.
+Durable outcome:
 
-S10 result:
+- the candidate topology is accepted as the direction for a later architecture/design objective;
+- the accepted direction is recorded in `docs/orchestrator/R029-HUMAN-DISPOSITION.md`;
+- R029 itself is complete and has no successor subtask;
+- the topology remains non-normative until a separately authorized architecture/design objective creates the applicable Decision/design artifacts and passes required evaluation gates;
+- no root `AGENTS.md` rewrite, Skill creation/package/install, Executor/provider/model call, scored observation, normative Decision, or T066 mutation occurred.
 
-- synthesizes one bounded candidate topology consisting of a lean always-loaded root, the existing one-top-level Maintainer Skill with Orchestrator/Executor internal routes, and five transverse candidate capabilities;
-- retained transverse candidates are `repository-change-control`, `upstream-version-revalidation`, `research-evidence-traceability`, `durable-work-checkpoint`, and `executor-launch-handoff`;
-- workspace isolation remains an internal route/reference under `executor-launch-handoff`, consuming `repository-change-control`/repository-local policy when branch/base/integration/retirement semantics are needed;
-- the lean root preserves the S2 pre-routing responsibility contract and all S1 semantics remain mandatory/reachable;
-- Agent Governance-specific decisions, stages, Task Contracts, checkpoint/research schemas, release/branch rules, testing architecture and adapters remain Maintainer/domain-side;
-- transverse Skills remain authority-neutral and host-neutral at the semantic level;
-- progressive disclosure loads domain adapters/references and deterministic/host mechanics only when required;
-- anti-sprawl rules reject generic coding/testing/Git/Markdown/role-named Skills and standalone workspace-isolation;
-- S10 defines a future pre-decision/pre-implementation evaluation plan covering semantic preservation, pre-routing safety, routing precision, authority leakage, context efficiency, portability, no-Skill degradation, composition/non-overlap and maintainability;
-- analytical result: `CANDIDATE_TOPOLOGY_READY_FOR_HUMAN_DECISION`;
-- no root rewrite, Skill implementation, Executor/provider/model call, scored observation, normative adoption or T066 mutation occurred.
-
-R029's planned S1-S10 analytical sequence is complete.
-
-## Candidate topology
+Candidate direction retained from S10:
 
 ```text
 Lean always-loaded AGENTS.md
@@ -66,32 +57,19 @@ Lean always-loaded AGENTS.md
          └── consumes repository-change-control/repository-local policy as needed
 ```
 
-This topology is not accepted policy yet.
+S10's future evaluation requirements remain controlling evidence requirements for any later adoption/implementation proposal: semantic preservation, pre-routing safety, routing precision, authority-leakage resistance, progressive-disclosure/context efficiency, cross-host portability, no-Skill degradation, composition/non-overlap, and maintainability/change locality.
 
-## Human Decision Gate
+## Next chat
 
-The Human Owner must now choose one direction:
+R029 should not be extended with additional subtasks in this chat. A successor objective, if selected by the Human Owner, must bootstrap from current `develop`, `AGENTS.md`, this checkpoint, and the two files listed in `Next-Chat-Minimum-Load`.
 
-```text
-ADOPT_FOR_DESIGN
-    -> accept the topology direction
-    -> separately authorize normative Decision/design/evaluation/implementation work
-
-REVISE_AND_REEVALUATE
-    -> identify the topology assumption(s) to change
-    -> persist a bounded R029 revision before any adoption
-
-REJECT_TOPOLOGY
-    -> retain the current architecture
-    -> no implementation follows from R029
-```
-
-No choice is implied by completion of S10.
+No `Next-Execution-Shape` is recorded because no concrete successor ChatGPT material task has yet been separately authorized.
 
 ## Do Not Load Or Do
 
-- Do not treat R029 findings as an accepted architecture Decision.
-- Do not rewrite root `AGENTS.md` or author/package/install/release transverse Skills.
+- Do not treat `ADOPT_FOR_DESIGN` as an accepted normative architecture Decision.
+- Do not begin design/materialization/evaluation merely because R029 closed successfully.
+- Do not rewrite root `AGENTS.md` or author/package/install/release transverse Skills without a separate explicit Human objective.
 - Do not split the approved Maintainer Skill by role or change accepted ownership decisions implicitly.
 - Do not launch Codex/another Executor or consume provider/model calls.
 - Do not create scored provider/model observations without separately authorized evaluation work.

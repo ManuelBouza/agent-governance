@@ -1,10 +1,12 @@
 # R029 Incremental Session Sequence
 
-Status: COMPLETE_AWAITING_HUMAN_DECISION  
+Status: COMPLETE_ADOPT_FOR_DESIGN  
 Parent-Research: `docs/research/R029-AGENTS-SKILL-ARCHITECTURE-REFACTOR-RESEARCH.md`  
 Authority: Human Owner clarified incremental same-chat execution on 2026-09-13  
 Lifecycle: one persistent R029 ChatGPT Orchestrator objective with bounded session subtasks  
-Decision-State: EVALUATING
+Decision-State: EVALUATING  
+Human-Disposition: `ADOPT_FOR_DESIGN`  
+Disposition-Artifact: `docs/orchestrator/R029-HUMAN-DISPOSITION.md`
 
 ## Execution rule
 
@@ -14,7 +16,7 @@ R029 does not authorize a root `AGENTS.md` rewrite, Skill implementation, normat
 
 ```text
 R029-S1 -> Human gate -> R029-S2 -> Human gate -> ... -> R029-S10
-         -> HUMAN DECISION GATE
+         -> HUMAN DECISION GATE -> ADOPT_FOR_DESIGN
 ```
 
 ## Subtask registry
@@ -30,7 +32,7 @@ R029-S1 -> Human gate -> R029-S2 -> Human gate -> ... -> R029-S10
 | R029-S7 | ACCEPTED | `durable-work-checkpoint` candidate | `docs/orchestrator/R029-S7-DURABLE-WORK-CHECKPOINT-CANDIDATE.md` | `KEEP_CANDIDATE` | MEDIUM | SINGLE_EXECUTION |
 | R029-S8 | ACCEPTED | `executor-launch-handoff` candidate | `docs/orchestrator/R029-S8-EXECUTOR-LAUNCH-HANDOFF-CANDIDATE.md` | `KEEP_CANDIDATE` | MEDIUM | SINGLE_EXECUTION |
 | R029-S9 | ACCEPTED | Workspace-isolation placement | `docs/orchestrator/R029-S9-WORKSPACE-ISOLATION-PLACEMENT.md` | `INTERNAL_ROUTE` under `executor-launch-handoff` | MEDIUM | SINGLE_EXECUTION |
-| R029-S10 | COMPLETE_AWAITING_HUMAN_DECISION | Candidate-topology synthesis and evaluation plan | `docs/orchestrator/R029-S10-CANDIDATE-TOPOLOGY-AND-EVALUATION-PLAN.md` | `CANDIDATE_TOPOLOGY_READY_FOR_HUMAN_DECISION` | HIGH | SINGLE_EXECUTION |
+| R029-S10 | ACCEPTED | Candidate-topology synthesis and evaluation plan | `docs/orchestrator/R029-S10-CANDIDATE-TOPOLOGY-AND-EVALUATION-PLAN.md` | `CANDIDATE_TOPOLOGY_READY_FOR_HUMAN_DECISION` | HIGH | SINGLE_EXECUTION |
 
 ## Synthesized candidate topology
 
@@ -52,17 +54,13 @@ Lean always-loaded AGENTS.md
 
 Supporting deterministic scripts/CI/references and host adapters remain conditional implementation/reference surfaces, not authority sources.
 
-## Human Decision Gate
+## Human disposition
 
-R029 analytical work is complete. No successor subtask exists inside R029.
+On 2026-09-13 the Human Owner selected `ADOPT_FOR_DESIGN`.
 
-The Human Owner now decides among the non-normative options documented by S10:
+This accepts the candidate topology as the direction for a later architecture/design objective. It does not itself create normative product authority or authorize implementation. The durable disposition is `docs/orchestrator/R029-HUMAN-DISPOSITION.md`.
 
-- `ADOPT_FOR_DESIGN` — accept the candidate direction and separately authorize normative architecture/design work;
-- `REVISE_AND_REEVALUATE` — revise one or more assumptions before adoption;
-- `REJECT_TOPOLOGY` — retain the current architecture pending a different proposal.
-
-No option is selected automatically.
+R029 has no remaining subtask. Any normative architecture Decision, detailed design, evaluation execution, root refactor, Skill creation, or implementation requires a separate explicit Human objective.
 
 ## Evaluation requirement before implementation
 
@@ -72,4 +70,4 @@ R029 itself performed no provider/model evaluation and created no scored observa
 
 ## Global prohibitions still active
 
-Until separately authorized: do not change role/stage/Markdown/oracle/execution-mechanics ownership; do not rewrite root `AGENTS.md`; do not create/package/install/release transverse Skills; do not split the Maintainer Skill by role; do not launch an Executor; do not consume provider/model calls; do not treat the candidate topology as accepted policy; do not mutate the unselected T066 scientific branch.
+Until separately authorized: do not change role/stage/Markdown/oracle/execution-mechanics ownership; do not rewrite root `AGENTS.md`; do not create/package/install/release transverse Skills; do not split the Maintainer Skill by role; do not launch an Executor; do not consume provider/model calls; do not treat `ADOPT_FOR_DESIGN` as a normative architecture Decision; do not mutate the unselected T066 scientific branch.
