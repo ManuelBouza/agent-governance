@@ -1,7 +1,7 @@
 # Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O307  
+Checkpoint-Sequence: O308  
 Date: 2026-09-13  
 Canonical-Branch: `develop`  
 Predecessor-Work-Unit: R029 — incremental Skill-architecture evaluation  
@@ -9,7 +9,8 @@ Predecessor-Objective-Status: OBJECTIVE_COMPLETE
 State: HANDOFF_READY  
 Chat-Closure: HANDOFF_READY  
 Human-Selected-Next-Objective: Formalize and apply execution-flow refinement so trace/decomposition subtasks are not automatically execution units, related subtasks are grouped into one execution when no material gate requires separation, and Human-requested in-cycle changes may be applied locally as explicitly experimental adaptations without breaking the active task flow; at cycle close, experimental adaptations are evaluated against the objective/acceptance evidence and only successful ones may be promoted through an explicit normative decision and later materialization.  
-Expected-Canonical-HEAD: `f281cd0c62515c6f2b03e70df1902f544dde83c2`  
+Bootstrap-Anchor-HEAD: `00a51d551356c59738097c36b19d11377f9ff719`  
+Bootstrap-Expected-HEAD-Semantics: the exact expected canonical `develop` HEAD is supplied by the predecessor transport prompt after the HANDOFF_READY checkpoint is integrated; do not compare the successor against this checkpoint's own pre-integration anchor as though it were the final canonical HEAD.  
 Next-Chat-Minimum-Load: `AGENTS.md`; `docs/orchestrator/CHECKPOINT.md`; `docs/decisions/D067-objective-scoped-orchestrator-chat-lifecycle.md`; `docs/decisions/D080-orchestrator-execution-shape-control.md`; load R029 artifacts only if a concrete conflict requires them  
 Next-ChatGPT-Effort: HIGH  
 Next-Execution-Shape: SINGLE_EXECUTION  
@@ -73,10 +74,11 @@ Before material work, the successor MUST:
 1. fetch current `develop` HEAD from GitHub;
 2. read current `AGENTS.md` from that `develop`;
 3. read current `docs/orchestrator/CHECKPOINT.md`;
-4. compare observed HEAD/checkpoint with the expected bootstrap identities above;
-5. read D067 and D080;
-6. load no additional history unless the checkpoint or a concrete conflict requires it;
-7. if a material mismatch exists, stop as `BOOTSTRAP_MISMATCH` rather than silently reconciling it.
+4. compare observed `develop` HEAD and checkpoint sequence with the exact expected values carried by the predecessor successor-bootstrap prompt;
+5. verify that this checkpoint remains `HANDOFF_READY` for the same Human-selected objective;
+6. read D067 and D080;
+7. load no additional history unless the checkpoint or a concrete conflict requires it;
+8. if a material mismatch exists, stop as `BOOTSTRAP_MISMATCH` rather than silently reconciling it.
 
 ## Authorized successor scope
 
