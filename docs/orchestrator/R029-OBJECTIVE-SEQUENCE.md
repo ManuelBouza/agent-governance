@@ -28,8 +28,8 @@ R029-S1 -> Human gate -> R029-S2 -> Human gate -> ... -> R029-S10
 | R029-S5 | ACCEPTED | `upstream-version-revalidation` candidate | S1-S3 accepted | `docs/orchestrator/R029-S5-UPSTREAM-VERSION-REVALIDATION-CANDIDATE.md` | Generalizable semantics separated from D077/Agent-Governance policy; disposition is `KEEP_CANDIDATE` | MEDIUM | SINGLE_EXECUTION |
 | R029-S6 | ACCEPTED | `research-evidence-traceability` candidate | S1-S3 accepted | `docs/orchestrator/R029-S6-RESEARCH-EVIDENCE-TRACEABILITY-CANDIDATE.md` | Reusable provenance semantics separated from `Rxxx`/`Dxxx` conventions; disposition is `KEEP_CANDIDATE` | MEDIUM | SINGLE_EXECUTION |
 | R029-S7 | ACCEPTED | `durable-work-checkpoint` candidate | S1-S3 accepted | `docs/orchestrator/R029-S7-DURABLE-WORK-CHECKPOINT-CANDIDATE.md` | Generic durable-resume semantics separated from D027/D067/checkpoint rules; disposition is `KEEP_CANDIDATE` | MEDIUM | SINGLE_EXECUTION |
-| R029-S8 | COMPLETE_AWAITING_HUMAN_REVIEW | `executor-launch-handoff` candidate | S1-S3 accepted | `docs/orchestrator/R029-S8-EXECUTOR-LAUNCH-HANDOFF-CANDIDATE.md` | Reusable transport/session/handoff separated from repository-specific authority; disposition is `KEEP_CANDIDATE` | MEDIUM | SINGLE_EXECUTION |
-| R029-S9 | NOT_STARTED | Workspace-isolation placement | S4 and S8 accepted | Placement analysis and explicit disposition | Workspace isolation classified as sub-route/reference or standalone candidate from intent/trigger evidence | MEDIUM | SINGLE_EXECUTION |
+| R029-S8 | ACCEPTED | `executor-launch-handoff` candidate | S1-S3 accepted | `docs/orchestrator/R029-S8-EXECUTOR-LAUNCH-HANDOFF-CANDIDATE.md` | Reusable transport/session/handoff separated from repository-specific authority; disposition is `KEEP_CANDIDATE` | MEDIUM | SINGLE_EXECUTION |
+| R029-S9 | COMPLETE_AWAITING_HUMAN_REVIEW | Workspace-isolation placement | S4 and S8 accepted | `docs/orchestrator/R029-S9-WORKSPACE-ISOLATION-PLACEMENT.md` | Workspace isolation classified with explicit parent/dependency and anti-sprawl rationale; disposition is `INTERNAL_ROUTE` | MEDIUM | SINGLE_EXECUTION |
 | R029-S10 | NOT_STARTED | Candidate-topology synthesis and evaluation plan | S1-S9 accepted | One bounded candidate topology plus pre-decision evaluation plan | Topology/evaluation plan coherent; no adoption occurs | HIGH | SINGLE_EXECUTION |
 
 ## Completed subtasks
@@ -56,13 +56,15 @@ Accepted 2026-09-13. Durable output: `docs/orchestrator/R029-S6-RESEARCH-EVIDENC
 Accepted 2026-09-13. Durable output: `docs/orchestrator/R029-S7-DURABLE-WORK-CHECKPOINT-CANDIDATE.md`. Disposition: `KEEP_CANDIDATE`.
 
 ### R029-S8 — `executor-launch-handoff` candidate
-Completed analytically 2026-09-13. Durable output: `docs/orchestrator/R029-S8-EXECUTOR-LAUNCH-HANDOFF-CANDIDATE.md`.
+Accepted 2026-09-13. Durable output: `docs/orchestrator/R029-S8-EXECUTOR-LAUNCH-HANDOFF-CANDIDATE.md`. Disposition: `KEEP_CANDIDATE`.
 
-S8 classifies the candidate `KEEP_CANDIDATE`: delegated executor launch/handoff has reusable semantics around persisted authority, fresh safe baseline establishment, minimal transport, explicit executor/session binding and durable return identity. Agent Governance retains Task Contracts, D055 launch-card/model-effort policy, D060 coordinator continuity, D054 mechanics ownership, D068/D076 execution topology and exact handoff schema domain-side. Workspace-isolation final placement remains deferred to S9.
+### R029-S9 — Workspace-isolation placement
+Completed analytically 2026-09-13. Durable output: `docs/orchestrator/R029-S9-WORKSPACE-ISOLATION-PLACEMENT.md`.
+
+S9 classifies workspace isolation as `INTERNAL_ROUTE` under `executor-launch-handoff`, with `repository-change-control`/repository-local policy as the dependency for branch/base/integration/retirement semantics. Workspace isolation is reusable but normally subordinate to delegated writable-execution attribution and continuation safety, so a standalone top-level Skill would add routing/context overhead without a sufficiently distinct independent intent.
 
 ## Remaining subtask intent
 
-- S9 decides workspace-isolation placement after S4/S8.
 - S10 synthesizes accepted results and the pre-decision evaluation plan.
 
 ## Session and Human gates
