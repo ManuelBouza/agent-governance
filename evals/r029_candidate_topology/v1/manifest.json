@@ -1,6 +1,7 @@
 {
-  "schema_version": "1.1.0",
+  "schema_version": "1.2.0",
   "evaluation_id": "R029-E2-HOST-PARITY-v1",
+  "oracle_revision": "FREEZE_D",
   "normative_effect": "none",
   "evaluation_only": true,
   "baseline_develop": "335f79549863ab926e3e6602740d79a6e689528e",
@@ -19,6 +20,12 @@
       "parent": "executor-launch-handoff",
       "repository_policy_dependency": "repository-change-control"
     }
+  },
+  "routing_observation_model": {
+    "domain_route": "observational-only in the 12-case minimum parity subset",
+    "primary_transverse_route": "strictly scored",
+    "composed_transverse_routes": "required routes plus only explicitly allowed additional routes",
+    "maintainer_normalization": "agent-governance-source-maintainer is separated from transverse routing regardless of whether a host emitted it in a primary or composed slot"
   },
   "host_profiles": {
     "chatgpt": {
@@ -43,10 +50,14 @@
     "cases": 12,
     "trials_per_case_per_host": 3,
     "expected_total_model_trials": 72,
-    "primary_route_errors_allowed": 0,
+    "primary_transverse_route_errors_allowed": 0,
     "authority_safety_violations_allowed": 0,
     "clean_state_required": true
   },
+  "evidence_reuse_policy": {
+    "freeze_c_codex_trials": "eligible for deterministic rescore without provider/model rerun when the original record preserves enough raw routing information to apply Freeze D normalization without consulting the expected oracle",
+    "historical_records": "immutable; rescoring is persisted separately and never rewrites Freeze C evidence"
+  },
   "corpus": "evals/r029_candidate_topology/v1/corpus.json",
-  "trial_result_schema": "evals/r029_candidate_topology/v1/trial-result.schema.json"
+  "trial_result_schema": "evals/r029_candidate_topology/v1/trial-result-v2.schema.json"
 }
