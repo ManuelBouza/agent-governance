@@ -1,144 +1,124 @@
 # Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O319  
+Checkpoint-Sequence: O320  
 Date: 2026-09-13  
 Canonical-Branch: `develop`  
-Current-Work-Unit: R029 pre-decision candidate-topology evaluation — COMPLETE / closure repaired  
-State: HANDOFF_READY  
-Chat-Closure: HANDOFF_READY  
+Current-Work-Unit: R029 normative architecture decision — COMPLETE  
+State: WAITING_FOR_NEXT_OBJECTIVE  
+Chat-Closure: WAITING_FOR_NEXT_OBJECTIVE  
 R029-Research-State: COMPLETE  
-R029-Decision-State: EVALUATING  
+R029-Decision-State: DECIDED  
+R029-Decision-Ref: `docs/decisions/D082-r029-lean-root-and-transverse-skill-architecture.md`  
+R029-Normative-Disposition: ADOPT_WITH_CONDITIONS  
+R029-Architecture-State: ADOPTED_NOT_MATERIALIZED  
+R029-Materialization-State: NOT_STARTED  
+R029-Qualification-State: POST_MATERIALIZATION_CONDITIONS_OPEN  
 R029-Evaluation-State: E3_COMPLETE_READY_FOR_NORMATIVE_DECISION_WITH_EXPLICIT_RESIDUALS  
 R029-E3-Convergence: `docs/orchestrator/R029-E3-CONVERGENCE.md`  
-R029-Provider-Free-Evidence: `docs/orchestrator/R029-PRE-DECISION-EVALUATION.md`  
-R029-E2-Freeze-D: `docs/orchestrator/R029-E2-HOST-PARITY-FREEZE-D.md`  
 R029-E2-Disposition: `docs/orchestrator/R029-E2-EMPIRICAL-DISPOSITION.md`  
-R029-Predecision-Disposition: READY_FOR_NORMATIVE_DECISION_WITH_EXPLICIT_RESIDUALS  
-R029-D081-Cycle-Disposition: RECOMMEND_PROMOTION  
-R029-Closure-Repair-State: COMPLETE_D057_REGISTRY_ALIGNED  
-R029-Closure-Repair-Ref: `docs/RESEARCH-TRACEABILITY.md` repaired by PR `#422`, integrated at `develop@093c44d052a2c95fca4eb7c2eedf73944fd114bf`  
 Provider-Model-Call-State: COMPLETE_FOR_R029_PREDECISION_SCOPE  
-Provider-Model-Calls-Consumed: `37` (`36` persisted Codex trial attempts + `1` unscored adapter preflight)  
+Provider-Model-Calls-Consumed: `37` historical R029 E2 calls (`36` persisted Codex trials + `1` unscored adapter preflight)  
+New-Provider-Model-Calls-For-D082: `0`  
 ChatGPT-Half-Calls-Consumed: `0`  
 ChatGPT-Half-State: WAIVED_BY_HUMAN  
 ChatGPT-Empirical-Parity: NOT_ESTABLISHED  
 Codex-Transverse-Result: `36/36 PASS`, `0` authority/safety violations  
-Maintainer-Domain-Signal: `21/36 observed`, informational/unscored  
+Maintainer-Domain-Signal: `21/36 observed`, informational/unscored/not-qualified  
 Post-Materialization-Context-Burden: NOT_MEASURED  
 Active-Executor: none  
-Active-Evaluation-Branch: `test/r029-host-parity-e2` retained as scientific evidence, not production-integrated  
-Scientific-Branch-HEAD: `c30b8144426610fed733d8f95010a419e77b8533`  
-Freeze-D-Commit: `40948f5831aad462334fe6ff5e62d24e9e58def6`  
-Codex-Source-Evidence: `handoffs/R029-E2-codex-trials.jsonl` at evidence HEAD `4dc43b60b838483d5f857df8f146898f94dc2a68`  
-Codex-Freeze-D-Rescore: `evals/r029_candidate_topology/v1/freeze-d-codex-rescore.json`  
-Next-ChatGPT-Effort: HIGH  
-Next-Execution-Shape: SINGLE_EXECUTION  
-Immediate-Next-Execution-Unit: successor objective — R029 normative architecture decision  
-Next-Action: Do not execute the R029 normative architecture decision in this predecessor chat. Human opens a successor ChatGPT chat using the repaired bootstrap. The successor must verify current `develop`, read `AGENTS.md` and this checkpoint, load the minimum references below, then perform the separately selected R029 normative architecture-decision objective. The later decision may adopt, adopt with conditions/revisions, or reject the candidate; production remains unchanged until that separate decision exists.  
-Next-Chat-Minimum-Load: `AGENTS.md`; `docs/orchestrator/CHECKPOINT.md`; `docs/decisions/D057-research-decision-traceability.md`; `docs/RESEARCH-TRACEABILITY.md`; `docs/decisions/D067-objective-scoped-orchestrator-chat-lifecycle.md`; `docs/decisions/D080-orchestrator-execution-shape-control.md`; `docs/decisions/D081-execution-flow-grouping-and-in-cycle-experimentation.md`; `docs/research/R029-AGENTS-SKILL-ARCHITECTURE-REFACTOR-RESEARCH.md`; `docs/orchestrator/R029-S10-CANDIDATE-TOPOLOGY-EVALUATION-PLAN.md`; `docs/orchestrator/R029-PRE-DECISION-EVALUATION.md`; `docs/orchestrator/R029-E2-HOST-PARITY-FREEZE-D.md`; `docs/orchestrator/R029-E2-EMPIRICAL-DISPOSITION.md`; `docs/orchestrator/R029-E3-CONVERGENCE.md`  
 T066-Stage5-State: NOT_STARTED  
 Prior-Unselected-T066-Scientific-Branch: `test/r027-chatgpt-codex-efficiency-v1`  
-Prior-Unselected-T066-Scientific-Branch-State: PREEXISTING_DIVERGED_UNCONSUMED_CONFLICT
+Prior-Unselected-T066-Scientific-Branch-State: PREEXISTING_DIVERGED_UNCONSUMED_CONFLICT  
+Next-ChatGPT-Effort: MEDIUM  
+Next-Action: Wait for a new Human-selected objective. D082 makes the R029 family-level architecture normative, but it does not authorize productive materialization in this completed objective. A later Human-selected materialization/qualification objective may implement the architecture subject to D082 and the then-current source-maintenance rules. T066 Stage 5 remains a separate unstarted objective.  
+Next-Chat-Minimum-Load: `AGENTS.md`; `docs/orchestrator/CHECKPOINT.md`; `docs/decisions/D067-objective-scoped-orchestrator-chat-lifecycle.md`; `docs/decisions/D082-r029-lean-root-and-transverse-skill-architecture.md`; load additional authority only as required by the newly selected objective
 
-## Closure/frontier repair
+## R029 normative decision
 
-A successor bootstrap detected a material D057 inconsistency after O318: `docs/RESEARCH-TRACEABILITY.md` still represented the ChatGPT `0/36` half as the next required E2 gate even though `docs/orchestrator/R029-E2-EMPIRICAL-DISPOSITION.md` had closed that half as `WAIVED_BY_HUMAN` and E3 had already converged R029 as `READY_FOR_NORMATIVE_DECISION_WITH_EXPLICIT_RESIDUALS`.
-
-The predecessor repair window under D067 corrected only that stale ledger/frontier representation. PR `#422` aligned the R029 registry row and live frontier with the already-controlling E2/E3 disposition. No historical Freeze D evidence, evaluation result, architecture semantics, production artifact, provider call or T066 state changed.
-
-The repaired frontier is therefore:
+The selected R029 normative disposition is:
 
 ```text
-R029 research: COMPLETE
-R029 decision: EVALUATING
-pre-decision disposition: READY_FOR_NORMATIVE_DECISION_WITH_EXPLICIT_RESIDUALS
-D081 cycle disposition: RECOMMEND_PROMOTION
-ChatGPT paired empirical parity: NOT ESTABLISHED
-ChatGPT half: WAIVED_BY_HUMAN
-Codex transverse: 36/36 PASS; 0 authority/safety violations
-Maintainer domain-route signal: 21/36 observed; informational/unscored
-post-materialization root/catalog/context burden: NOT MEASURED
-next gate: Human-selected separate normative architecture-decision objective
-normative R029 architecture adopted: no
+ADOPT_WITH_CONDITIONS
 ```
 
-## E3 convergence result
-
-The complete R029 pre-decision evidence does not identify a topology defect requiring revision before an architecture decision.
-
-Provider-free evidence:
+D082 adopts the candidate topology unchanged at the family level:
 
 ```text
-root semantic coverage:      79/79 represented
-static trigger corpus:       30/30 PASS
-cold-start/frontier:         STATIC PASS
-authority adversarial:       STATIC PASS
-anti-sprawl:                 PASS
-progressive disclosure:      STRUCTURAL PASS / quantitative follow-up remains
-```
-
-Codex Freeze D evidence:
-
-```text
-transverse attempts           36
-valid                         36
-PASS                          36
-ROUTE_MISMATCH                 0
-INVALID_TRIAL                  0
-AUTHORITY_FAILURE              0
-authority/safety violations    0
-```
-
-Residuals carried into any later normative decision:
-
-```text
-ChatGPT paired empirical parity: NOT ESTABLISHED; Human-waived for this pre-decision objective
-Maintainer domain-route signal:  21/36 observed; unscored; requires explicit materialized-candidate qualification
-exact post-materialization root/catalog/context burden: not yet measured
-```
-
-These residuals prevent claims of full production qualification but do not require pre-decision topology revision. E3 therefore closes R029 evaluation as:
-
-```text
-READY_FOR_NORMATIVE_DECISION_WITH_EXPLICIT_RESIDUALS
-```
-
-D081 cycle-close disposition:
-
-```text
-RECOMMEND_PROMOTION
-```
-
-Promotion requires a separate normative decision and does not occur automatically.
-
-## Recommended candidate for the later decision
-
-If separately selected, the normative decision should consider the topology unchanged at the family level:
-
-```text
-lean root AGENTS.md
-+ one Maintainer top-level domain Skill with internal Orchestrator/Executor routes
-+ repository-change-control
-+ upstream-version-revalidation
-+ research-evidence-traceability
-+ durable-work-checkpoint
-+ executor-launch-handoff
-    -> workspace-isolation internal route/reference
-+ host adapters/references only for mechanical differences
+lean always-loaded root AGENTS.md
++ one Agent Governance Maintainer top-level domain Skill
+    -> Orchestrator internal route
+    -> Executor internal route
++ five top-level transverse capabilities
+    -> repository-change-control
+    -> upstream-version-revalidation
+    -> research-evidence-traceability
+    -> durable-work-checkpoint
+    -> executor-launch-handoff
+         -> workspace-isolation internal route/reference
++ host-specific adapters/references only where mechanics differ
 + deterministic scripts/CI/references for mechanical enforcement
 ```
 
-The later decision should preserve the E3 qualification conditions rather than claiming that unmeasured context burden, Maintainer activation or ChatGPT empirical parity has already been proven.
+The decision does not add or remove a top-level capability family. E3 found no topology defect that required revision before adoption.
+
+## Conditions carried into materialization and qualification
+
+Any later materialization/qualification objective must preserve the D082 conditions, including:
+
+1. preserve the complete 79-unit R029 root-responsibility ledger with no authority deletion;
+2. keep pre-routing authority, ownership, safety, cold-start and fail-closed obligations independent of Skill activation;
+3. keep one Maintainer top-level domain Skill with internal Orchestrator/Executor routing unless later evidence and authority explicitly change the topology;
+4. retain exactly the five adopted transverse families and keep workspace isolation subordinate under `executor-launch-handoff` unless a later accepted decision changes this;
+5. validate actual Maintainer-domain activation/anti-trigger behavior on the materialized candidate;
+6. measure actual lean-root size, initial Skill catalog burden, representative conditional context load, duplicated normative text and reference-hop depth;
+7. preserve the frozen transverse regression corpus and zero authority/safety-failure expectation;
+8. preserve the limitation that ChatGPT/Codex paired empirical parity was not established;
+9. do not rerun the existing 36 Codex trials merely for ceremony unless material semantics/descriptions change or later qualification authority requires fresh evidence;
+10. fail closed and re-enter normal decision flow if materialized evidence contradicts the adopted architecture.
+
+## Explicit residuals
+
+The decision preserves these unresolved facts without converting them into PASS:
+
+```text
+ChatGPT/Codex paired empirical parity:
+  NOT_ESTABLISHED
+  ChatGPT half = WAIVED_BY_HUMAN
+  ChatGPT empirical trials = 0/36
+
+Maintainer domain-route behavior:
+  21/36 observed
+  informational / unscored / not qualified
+
+Exact post-materialization root/catalog/context burden:
+  NOT_MEASURED
+```
+
+These are qualification residuals, not evidence of a family-level topology defect.
+
+## D057 transition
+
+`docs/RESEARCH-TRACEABILITY.md` now records R029 as:
+
+```text
+Research-State: COMPLETE
+Decision-State: DECIDED
+Decision-Ref: docs/decisions/D082-r029-lean-root-and-transverse-skill-architecture.md
+Disposition: ADOPT_WITH_CONDITIONS
+```
+
+The completed R029 research and evaluation artifacts remain historical evidence; D082 is the normative architecture authority.
 
 ## Preserved boundaries
 
-- No R029 architecture decision has been adopted.
-- Production root `AGENTS.md` remains unchanged.
-- No production transverse Skill has been created, installed, packaged, published or activated.
-- Maintainer Skill contract remains unchanged.
-- Scientific R029 branches/evidence remain research artifacts and are not production-integrated.
-- No new provider/model calls are authorized or required by this repair.
-- T066 Stage 5 remains not started and its retained scientific branch remains unconsumed.
+- Production `AGENTS.md` has not been rewritten or slimmed by this objective.
+- No production transverse Skill has been created, renamed, packaged, installed, published or activated.
+- The Maintainer Skill contract/package has not been modified.
+- R029 scientific evaluation branches/evidence remain research artifacts and are not production-integrated.
+- No new Executor/Codex or provider/model call was launched for D082.
+- D052/D053/D054/D055/D068 source-maintenance ownership remains unchanged.
+- D079/T066 Lean Executor production adoption remains a separate evaluation line.
+- T066 Stage 5 remains `NOT_STARTED`.
 - R030 remains research-only and unimplemented.
-- This predecessor chat is recoverable only for the completed R029 closure/frontier repair and bootstrap transport; it must not execute the successor normative architecture-decision objective.
+- This chat has completed its one D067 Human-selected objective and must not silently start materialization or another objective.
