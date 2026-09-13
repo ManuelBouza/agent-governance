@@ -1,20 +1,22 @@
 # R029 Incremental Session Sequence
 
-Status: COMPLETE_AWAITING_HUMAN_DECISION  
+Status: COMPLETE_ACCEPTED_FOR_LATER_NORMATIVE_DECISION  
 Parent-Research: `docs/research/R029-AGENTS-SKILL-ARCHITECTURE-REFACTOR-RESEARCH.md`  
 Authority: Human Owner clarified incremental same-chat execution on 2026-09-13  
 Lifecycle: one persistent R029 ChatGPT Orchestrator objective with bounded session subtasks  
-Decision-State: EVALUATING
+Decision-State: EVALUATING  
+Human-Disposition: `ACCEPTED_AS_BASIS_FOR_LATER_NORMATIVE_DECISION`
 
 ## Execution rule
 
-R029 remains one Human objective in this ChatGPT chat. Only one material subtask is executed per work session. Each subtask must be persisted and return to a Human review gate before its successor is selected. No automatic progression is authorized.
+R029 remained one Human objective in one ChatGPT chat. Each material analytical subtask was persisted and reviewed before the next was selected. No automatic progression was authorized.
 
-The sequence does not authorize a root `AGENTS.md` rewrite, Skill implementation, normative decision, Executor/Codex launch, provider/model evaluation, or T066 work.
+The sequence never authorized a root `AGENTS.md` rewrite, Skill implementation, normative Decision Record, Executor/Codex launch, provider/model evaluation, or T066 work.
 
 ```text
 R029-S1 -> Human gate -> R029-S2 -> Human gate -> ... -> R029-S10
          -> HUMAN DECISION GATE
+         -> ACCEPTED_AS_BASIS_FOR_LATER_NORMATIVE_DECISION
 ```
 
 ## Subtask registry
@@ -30,57 +32,34 @@ R029-S1 -> Human gate -> R029-S2 -> Human gate -> ... -> R029-S10
 | R029-S7 | ACCEPTED | `durable-work-checkpoint` candidate | S1-S3 accepted | `docs/orchestrator/R029-S7-DURABLE-WORK-CHECKPOINT-CANDIDATE.md` | Generic durable-resume semantics separated from D027/D067/checkpoint rules; disposition is `KEEP_CANDIDATE` | MEDIUM | SINGLE_EXECUTION |
 | R029-S8 | ACCEPTED | `executor-launch-handoff` candidate | S1-S3 accepted | `docs/orchestrator/R029-S8-EXECUTOR-LAUNCH-HANDOFF-CANDIDATE.md` | Reusable transport/session/handoff separated from repository-specific authority; disposition is `KEEP_CANDIDATE` | MEDIUM | SINGLE_EXECUTION |
 | R029-S9 | ACCEPTED | Workspace-isolation placement | S4 and S8 accepted | `docs/orchestrator/R029-S9-WORKSPACE-ISOLATION-PLACEMENT.md` | Workspace isolation classified with explicit parent/dependency and anti-sprawl rationale; disposition is `INTERNAL_ROUTE` | MEDIUM | SINGLE_EXECUTION |
-| R029-S10 | COMPLETE_AWAITING_HUMAN_DECISION | Candidate-topology synthesis and evaluation plan | S1-S9 accepted | `docs/orchestrator/R029-S10-CANDIDATE-TOPOLOGY-EVALUATION-PLAN.md` | Topology/evaluation plan coherent; no adoption occurs | HIGH | SINGLE_EXECUTION |
+| R029-S10 | ACCEPTED | Candidate-topology synthesis and evaluation plan | S1-S9 accepted | `docs/orchestrator/R029-S10-CANDIDATE-TOPOLOGY-EVALUATION-PLAN.md` | Topology/evaluation plan coherent; no adoption occurs | HIGH | SINGLE_EXECUTION |
 
-## Completed subtasks
+## Final analytical result
 
-### R029-S1 — Root preservation-map audit
-Accepted 2026-09-13. Durable output: `docs/orchestrator/R029-S1-ROOT-PRESERVATION-MAP.md`.
+R029 accepts for later normative consideration this candidate architecture:
 
-### R029-S2 — Lean-root responsibility contract
-Accepted 2026-09-13. Durable output: `docs/orchestrator/R029-S2-LEAN-ROOT-RESPONSIBILITY-CONTRACT.md`.
+```text
+lean always-loaded AGENTS.md
+  + one Agent-Governance Maintainer Skill
+       -> Orchestrator route
+       -> Executor route
+  + repository-change-control
+  + upstream-version-revalidation
+  + research-evidence-traceability
+  + durable-work-checkpoint
+  + executor-launch-handoff
+       -> workspace-isolation internal route/reference
+            -> repository-change-control / local repository policy dependency
+  + host-specific adapters/references where mechanics differ
+  + deterministic scripts / CI / narrow references
+```
 
-### R029-S3 — Maintainer Skill domain boundary
-Accepted 2026-09-13. Durable output: `docs/orchestrator/R029-S3-MAINTAINER-DOMAIN-BOUNDARY.md`.
+The Human Owner accepted this topology on 2026-09-13 as the basis for a **later** normative architecture decision. This Human disposition is not itself that normative decision.
 
-### R029-S4 — `repository-change-control` candidate
-Accepted 2026-09-13. Durable output: `docs/orchestrator/R029-S4-REPOSITORY-CHANGE-CONTROL-CANDIDATE.md`. Disposition: `KEEP_CANDIDATE`.
+R029 therefore remains `Decision-State: EVALUATING` under D057 until a separately authorized and accepted normative artifact explicitly adopts, revises, rejects or supersedes the architecture.
 
-### R029-S5 — `upstream-version-revalidation` candidate
-Accepted 2026-09-13. Durable output: `docs/orchestrator/R029-S5-UPSTREAM-VERSION-REVALIDATION-CANDIDATE.md`. Disposition: `KEEP_CANDIDATE`.
+## Closure
 
-### R029-S6 — `research-evidence-traceability` candidate
-Accepted 2026-09-13. Durable output: `docs/orchestrator/R029-S6-RESEARCH-EVIDENCE-TRACEABILITY-CANDIDATE.md`. Disposition: `KEEP_CANDIDATE`.
+R029's analytical objective is complete. No root rewrite, Skill implementation, Executor launch, provider/model call, scored observation or T066 mutation occurred.
 
-### R029-S7 — `durable-work-checkpoint` candidate
-Accepted 2026-09-13. Durable output: `docs/orchestrator/R029-S7-DURABLE-WORK-CHECKPOINT-CANDIDATE.md`. Disposition: `KEEP_CANDIDATE`.
-
-### R029-S8 — `executor-launch-handoff` candidate
-Accepted 2026-09-13. Durable output: `docs/orchestrator/R029-S8-EXECUTOR-LAUNCH-HANDOFF-CANDIDATE.md`. Disposition: `KEEP_CANDIDATE`.
-
-### R029-S9 — Workspace-isolation placement
-Accepted 2026-09-13. Durable output: `docs/orchestrator/R029-S9-WORKSPACE-ISOLATION-PLACEMENT.md`.
-
-S9 classifies workspace isolation as `INTERNAL_ROUTE` under `executor-launch-handoff`, with `repository-change-control`/repository-local policy as the dependency for branch/base/integration/retirement semantics. Workspace isolation is reusable but normally subordinate to delegated writable-execution attribution and continuation safety, so a standalone top-level Skill would add routing/context overhead without a sufficiently distinct independent intent.
-
-### R029-S10 — Candidate-topology synthesis and evaluation plan
-Completed analytically 2026-09-13. Durable output: `docs/orchestrator/R029-S10-CANDIDATE-TOPOLOGY-EVALUATION-PLAN.md`.
-
-S10 synthesizes the accepted R029 result into a candidate architecture consisting of a lean always-loaded root, the existing one-top-level Maintainer Skill with internal Orchestrator/Executor routes, five retained transverse candidates, workspace isolation as an internal `executor-launch-handoff` route with `repository-change-control` dependency, host-specific mechanics adapters only where needed, and deterministic references/scripts/CI. It also defines a pre-decision evaluation plan covering static authority/coverage trace, trigger/anti-trigger routing, progressive-disclosure/context burden, cold-start reconstruction, adversarial authority preservation, host parity and anti-sprawl robustness.
-
-No architecture adoption, root rewrite, Skill implementation, Executor launch, provider/model call, scored observation or T066 mutation occurred.
-
-## Human Decision Gate
-
-All ten analytical subtasks are complete. R029 remains `Decision-State: EVALUATING` until the Human Owner explicitly chooses among later disposition paths such as:
-
-- accept the candidate topology for a later normative architecture decision/implementation plan;
-- request bounded revision or additional evaluation;
-- reject the candidate topology;
-- retain the research without adopting it.
-
-A Human decision does not itself authorize implementation unless the resulting next objective explicitly does so under a new authorized work unit/chat as required by D067.
-
-## Global prohibitions
-
-Until separately authorized: do not change role/stage/Markdown/oracle/execution-mechanics ownership; do not rewrite root `AGENTS.md`; do not create/package/install/release transverse Skills; do not split the Maintainer Skill by role; do not launch an Executor; do not consume provider/model calls; do not promote R029 into normative policy automatically; do not mutate the unselected T066 scientific branch.
+Under D067, any materially new follow-on objective must begin in a successor ChatGPT chat after a fail-closed bootstrap from the current canonical repository state.

@@ -1,65 +1,35 @@
 # Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O305  
+Checkpoint-Sequence: O306  
 Date: 2026-09-13  
 Canonical-Branch: `develop`  
 Current-Work-Unit: R029 — incremental Skill-architecture evaluation  
-State: HUMAN_DECISION_GATE  
+State: WAITING_FOR_NEXT_OBJECTIVE  
 Current-Objective: `R029 — evaluate the Skill-architecture refactor without adopting or implementing it`  
-Accepted-Subtasks: `R029-S1`, `R029-S2`, `R029-S3`, `R029-S4`, `R029-S5`, `R029-S6`, `R029-S7`, `R029-S8`, `R029-S9`  
-Completed-Subtask: `R029-S10 — Candidate-topology synthesis and evaluation plan`  
+Objective-Status: OBJECTIVE_COMPLETE  
+Human-Disposition: `ACCEPTED_AS_BASIS_FOR_LATER_NORMATIVE_DECISION`  
+Accepted-Subtasks: `R029-S1`, `R029-S2`, `R029-S3`, `R029-S4`, `R029-S5`, `R029-S6`, `R029-S7`, `R029-S8`, `R029-S9`, `R029-S10`  
 Completed-Artifact: `docs/orchestrator/R029-S10-CANDIDATE-TOPOLOGY-EVALUATION-PLAN.md`  
-Completed-Disposition: `CANDIDATE_TOPOLOGY_READY_FOR_HUMAN_DECISION`  
-Next-Action: Human Owner reviews the complete R029 candidate topology and chooses accept-for-later-normative-decision, bounded revision/additional evaluation, reject, or retain-without-adoption. No implementation or successor objective is authorized automatically.  
-Next-ChatGPT-Effort: HIGH  
-Session-Sequence: `docs/orchestrator/R029-OBJECTIVE-SEQUENCE.md`  
 Current-Research: `docs/research/R029-AGENTS-SKILL-ARCHITECTURE-REFACTOR-RESEARCH.md`  
 Current-Research-State: COMPLETE / EVALUATING  
 Current-Decision: none  
+Next-Action: Wait for the Human Owner to provide a materially new objective. Do not infer or start a normative architecture Decision, root refactor, Skill implementation, D080 refinement, T066 work, Executor launch, or provider/model evaluation automatically.  
 Active-Executor: none  
 Executor-Launch-State: NOT_AUTHORIZED  
 R029-Provider-Model-Calls: `0`  
 R029-Scored-Observations: `0`  
 Prior-Unselected-T066-Scientific-Branch: `test/r027-chatgpt-codex-efficiency-v1`  
 Prior-Unselected-T066-Scientific-Branch-State: PREEXISTING_DIVERGED_UNCONSUMED_CONFLICT  
-Chat-Closure: KEEP_CURRENT_CHAT_ACTIVE
+Chat-Closure: WAITING_FOR_NEXT_OBJECTIVE
 
-## Completed
+## Completed objective
 
-The Human Owner accepted R029-S9 and explicitly selected R029-S10 on 2026-09-13.
+The Human Owner accepted the complete R029 candidate topology at the O305 Human Decision Gate on 2026-09-13 as the basis for a possible later normative architecture decision.
 
-R029-S10 was executed from `develop@88d246e9f746a76c154b21f8912fc6d75f47a74e` using the accepted S1-S9 artifacts, the parent R029 research artifact and the DESIGN-APPROVED Maintainer Skill contract.
+This resolves the R029 objective. It does **not** itself create a normative Decision Record or authorize implementation.
 
-S10 result:
-
-- candidate root remains lean but always loaded, preserving the twelve S2 pre-routing responsibility families and all 79 audited S1 semantic units;
-- the existing one-top-level Agent Governance Maintainer Skill remains the domain capability with internal Orchestrator and Executor routes;
-- five transverse candidates are retained for possible later adoption: `repository-change-control`, `upstream-version-revalidation`, `research-evidence-traceability`, `durable-work-checkpoint`, and `executor-launch-handoff`;
-- workspace isolation is not a sixth top-level candidate; it remains an internal `executor-launch-handoff` route/reference and consumes `repository-change-control`/repository-local policy for branch/base/integration/retirement constraints;
-- host differences are adapters/references only when intent, semantic outcome and authority boundary remain shared;
-- deterministic behavior remains script/CI/reference-first rather than prose-Skill-first;
-- generic coding/testing/pytest/TDD/Git/branching/Markdown/role-named/worktree-only Skills remain anti-sprawl negative controls;
-- a pre-decision evaluation plan now covers static authority/coverage trace, trigger/anti-trigger routing, progressive-disclosure/context burden, cold-start reconstruction, adversarial authority preservation, host parity and catalog robustness;
-- S10 executed no provider/model runs and created no scored observations;
-- no root rewrite, Skill implementation, normative adoption, Executor launch or T066 mutation occurred.
-
-The complete durable synthesis is `docs/orchestrator/R029-S10-CANDIDATE-TOPOLOGY-EVALUATION-PLAN.md`.
-
-## Current Human Decision Gate
-
-All R029 analytical subtasks S1-S10 are complete. R029 remains research/evaluation evidence only with `Decision-State: EVALUATING` and no Decision Ref.
-
-The Human Owner must now choose one of the bounded disposition paths:
-
-1. accept the candidate topology as the basis for a later normative architecture Decision/implementation plan;
-2. request bounded revision or additional evaluation;
-3. reject the candidate topology;
-4. retain the research without adoption.
-
-Acceptance at this gate does not itself rewrite `AGENTS.md`, create Skills, launch an Executor, consume provider/model calls or authorize T066 work. Any materially new follow-on objective must be authorized separately and routed according to D067.
-
-## Candidate topology summary
+Accepted candidate topology:
 
 ```text
 lean always-loaded AGENTS.md
@@ -77,12 +47,27 @@ lean always-loaded AGENTS.md
   + deterministic scripts / CI / narrow references
 ```
 
+The acceptance preserves these boundaries:
+
+- R029 remains `Decision-State: EVALUATING` because D057 requires an accepted normative artifact before `DECIDED`;
+- root `AGENTS.md` has not been rewritten;
+- no transverse Skill has been created, packaged, installed or released;
+- the approved Maintainer Skill has not been split by role;
+- no Executor/Codex session or provider/model call was launched;
+- no T066 work or scientific-branch mutation occurred.
+
+## D067 closure state
+
+R029 is `OBJECTIVE_COMPLETE`. Because the Human Owner has not yet supplied the next materially new objective, this chat is `WAITING_FOR_NEXT_OBJECTIVE`.
+
+A later objective supplied to this completed chat must be used only to construct a fail-closed successor bootstrap. This chat must not execute that new objective itself.
+
 ## Do Not Load Or Do
 
-- Do not treat the candidate topology as accepted normative architecture before the Human Decision Gate is resolved.
-- Do not rewrite root `AGENTS.md` or author/package/install/release transverse Skills.
-- Do not split the approved Maintainer Skill by role or change accepted ownership decisions implicitly.
+- Do not treat Human acceptance of the R029 candidate as a normative architecture Decision.
+- Do not create the normative architecture Decision Record automatically.
+- Do not rewrite root `AGENTS.md` or create/package/install/release transverse Skills.
 - Do not launch Codex/another Executor or consume provider/model calls.
-- Do not create scored provider/model observations as part of R029 without separate authority.
-- Do not mutate the unselected T066 scientific branch.
+- Do not mutate T066 or its unselected scientific branch.
+- Do not begin any materially new objective in this chat; follow D067 successor-bootstrap semantics.
 - Do not mutate `develop` directly; use topic branch + PR.
