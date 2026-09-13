@@ -63,8 +63,25 @@ See D057 for transition semantics and required metadata for new research.
 | R027 | `docs/research/R027-CHATGPT-CODEX-COST-EFFICIENT-RESPONSIBILITY-SPLIT.md` | COMPLETE | EVALUATING | T066; R028; D079; D053/D054/D055/D060/D065/D068/D075/D076; OpenAI Chat/Work/Codex, prompting, AGENTS.md, subagent, speed and rate-card guidance; OpenAI Harness Engineering; external empirical context-efficiency studies | `docs/decisions/D079-lean-executor-qualification-and-adoption-boundary.md` | R027 remains predecessor evidence for the responsibility-split hypothesis. D079 selects the R027+ Lean Executor architecture for qualification but does not adopt it as production policy; the production conclusion remains EVALUATING through T066 and any required confirmation. |
 | R028 | `docs/research/R028-R027-DEEP-REVALIDATION-AND-LEAN-EXECUTOR.md` | COMPLETE | EVALUATING | R027; T066 v2; D079; R007; R010; D055/D057/D060/D063/D065/D068/D075/D076/D077; current OpenAI model/rate-card/AGENTS.md/speed/subagent guidance; OpenAI Harness Engineering; external empirical context/specialist-agent studies | `docs/decisions/D079-lean-executor-qualification-and-adoption-boundary.md` | D079 accepts R028's qualification/adoption boundary and selects Lean Executor as the official candidate architecture. D068 and other production policies remain unchanged; final production disposition remains EVALUATING pending T066 screening, independent confirmation and any required mechanism-level evidence. |
 | R029 | `docs/research/R029-AGENTS-SKILL-ARCHITECTURE-REFACTOR-RESEARCH.md` | COMPLETE | EVALUATING | no empirical evaluation yet; pre-decision preservation/routing/context/cross-host gates defined by R029 | none | R029 classifies the overloaded root `AGENTS.md` and identifies a candidate lean-root + Maintainer-domain + small transverse-capability architecture. No root/Skill implementation or normative adoption is authorized; next step requires explicit Human-selected evaluation/design work. |
+| R030 | `docs/research/R030-ORCHESTRATOR-GO-APPROVAL-PROTOCOL.md` | COMPLETE | EVALUATING | this chat's approved research execution; external HITL/approval evidence; no empirical product evaluation yet | none | R030 recommends a strict proposal-bound, one-shot `go` approval token. Exact `go` approves the latest pending proposal; `go,<context>` may execute only for a non-material contextual delta, while material/uncertain deltas, stale proposals, missing proposals, duplicate/replayed approvals and cross-chat approvals fail closed. No normative policy or implementation is adopted. |
 
 ## Live research frontier
+
+### R030 — Orchestrator `go` approval protocol
+
+```text
+R030
+  COMPLETE / EVALUATING
+  candidate: proposal-bound one-shot `go`
+  `go,<context>`: non-material delta may approve+execute; material/uncertain delta requires re-proposal
+  direct non-`go` Human prompt while pending: interaction, not approval
+  normative policy adopted: no
+  implementation authorized: no
+  Executor/provider/model calls: 0
+  next gate: Human-selected normative decision/design objective if adoption is desired
+```
+
+R030 is research evidence only. It qualifies the interaction mechanism for normative design consideration but does not modify D033/D067/D080/D081, `AGENTS.md`, Governance Core, Task Contracts, source-maintenance execution behavior, or any Human/Executor/provider gate.
 
 ### R029 — AGENTS.md / Skill architecture refactor
 

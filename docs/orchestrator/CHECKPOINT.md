@@ -1,18 +1,24 @@
 # Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O309  
+Checkpoint-Sequence: O310  
 Date: 2026-09-13  
 Canonical-Branch: `develop`  
-Predecessor-Work-Unit: D081 — execution-flow grouping and in-cycle experimentation  
+Predecessor-Work-Unit: R030 — Orchestrator `go` approval protocol research  
 Predecessor-Objective-Status: OBJECTIVE_COMPLETE  
 State: WAITING_FOR_NEXT_OBJECTIVE  
 Chat-Closure: WAITING_FOR_NEXT_OBJECTIVE  
 Human-Selected-Next-Objective: none — awaiting Human Owner selection  
-Bootstrap-Anchor-HEAD: `40bb626fd11d74b355def7fe8a466668d8d6e591`  
-Bootstrap-Expected-HEAD-Semantics: no successor bootstrap exists while waiting; when the Human Owner selects the next objective, the successor transport prompt must carry the exact then-current canonical `develop` HEAD after this checkpoint's integration.  
-Next-Chat-Minimum-Load: `AGENTS.md`; `docs/orchestrator/CHECKPOINT.md`; load `docs/decisions/D081-execution-flow-grouping-and-in-cycle-experimentation.md` when the selected objective involves ChatGPT execution geometry, in-cycle adaptation, or T066 Stage 5; load deeper history only when the checkpoint or a concrete conflict requires it  
+Bootstrap-Anchor-HEAD: `1c4479f5fed42ddff0828e6082fdfceab5f7be3d`  
+Bootstrap-Expected-HEAD-Semantics: R030 was researched from this canonical `develop` base. After integration, a successor must bootstrap from the exact then-current `develop` HEAD and treat GitHub as authority.  
+Next-Chat-Minimum-Load: `AGENTS.md`; `docs/orchestrator/CHECKPOINT.md`; load `docs/decisions/D081-execution-flow-grouping-and-in-cycle-experimentation.md` when the selected objective involves ChatGPT execution geometry, in-cycle adaptation, or T066 Stage 5; if the selected objective is normative adoption/design of the `go` protocol, additionally load `docs/research/R030-ORCHESTRATOR-GO-APPROVAL-PROTOCOL.md`, `docs/decisions/D057-research-decision-traceability.md`, `docs/decisions/D033-execution-access-control-plane.md`, `docs/decisions/D067-objective-scoped-orchestrator-chat-lifecycle.md`, and `docs/decisions/D080-orchestrator-execution-shape-control.md`; load deeper history only on a concrete conflict  
 Next-ChatGPT-Effort: MEDIUM  
+Current-Research: `docs/research/R030-ORCHESTRATOR-GO-APPROVAL-PROTOCOL.md`  
+Current-Research-State: COMPLETE  
+Current-Research-Decision-State: EVALUATING  
+Current-Research-Recommendation: proposal-bound one-shot `go`; `go,<context>` may approve and execute only when its contextual delta is non-material; material/uncertain deltas require re-proposal  
+Normative-Go-Protocol-Adopted: no  
+Go-Protocol-Implementation-Authorized: no  
 Active-Executor: none  
 Executor-Launch-State: NOT_AUTHORIZED  
 T066-Stage5-Prospective-Execution-Shape: SINGLE_EXECUTION  
@@ -22,66 +28,63 @@ Prior-Unselected-T066-Scientific-Branch-State: PREEXISTING_DIVERGED_UNCONSUMED_C
 
 ## Completed objective
 
-The Human-selected execution-flow refinement is complete as D081.
+R030 researched the requested compact Human interaction mechanism without promoting it into product policy.
 
-D081 prospectively refines D067/D080 by making the following distinction explicit:
-
-```text
-subtask / trace unit
-    != execution unit
-    != normative decision
-```
-
-Related consecutive subtasks remain in one execution when they share objective/authority, context, specification/Design, invariants and acceptance meaning and no material gate requires separation. Trace IDs, file counts or analytical decomposition do not create execution boundaries by themselves.
-
-Separate executions are justified only by a real controlling dependency, mandatory freeze/verification/revalidation/review/Human-acceptance gate, material failure-domain boundary, required durable-resumption boundary, or a change to controlling authority/ownership/specification/Design/safety/acceptance meaning.
-
-## In-cycle adaptation rule
-
-An in-scope Human adjustment during active work may remain inside the same D067 objective and current execution/cycle as `EXPERIMENTAL_IN_CYCLE` when it stays within the active authority envelope.
-
-The adaptation must identify what changed, why, the affected execution/cycle, what remains invariant, how it will be evaluated, and that it is not normative authority.
-
-At cycle close:
+The qualified candidate is:
 
 ```text
-EXPERIMENTAL_IN_CYCLE
-    -> evidence
-    -> RETAIN / REVISE / REJECT / RECOMMEND_PROMOTION
-    -> explicit normative decision if promotion is desired
-    -> materialization only after that decision authorizes it
+material prompt
+  -> bounded read-only interpretation/context load
+  -> concrete pending proposal
+
+exact whole-message `go` (case-insensitive)
+  -> revalidate proposal freshness
+  -> approve the latest pending proposal once
+  -> execute
+
+exact whole-message `go,<context>`
+  -> classify the contextual delta
+  -> non-material delta: incorporate + execute
+  -> material or uncertain delta: do not execute; emit revised proposal; await new `go`
+
+any other Human prompt while a proposal is pending
+  -> interaction/refinement/correction
+  -> no approval
 ```
 
-`EXPERIMENTAL_IN_CYCLE` cannot bypass a material objective, ownership, specification/Design, safety, acceptance or Human/normative gate.
+The candidate is fail-closed for missing/stale proposals, replay/duplicate `go`, cross-chat `go`, ambiguous contextual deltas and untrusted content containing the token. `go` is not standing authorization and cannot bypass D033/D067/D080/D081, SDD, Task Contract, branch, Executor/provider or Human/normative gates.
 
-## Effort / shape separation
+R030 is `COMPLETE / EVALUATING`. No normative Decision, `AGENTS.md` change, Governance Core change, parser, conformance implementation, Executor launch or provider/model call was authorized by this research objective.
 
-The controls remain orthogonal:
+## Evidence disposition
 
-```text
-ChatGPT Effort: MEDIUM | HIGH
-    -> reasoning depth
+External evidence reviewed included current OpenAI Agents SDK human-in-the-loop/RunState semantics, current OpenAI model guidance on concrete reviewable approvals, OpenAI confirmation/prompt-injection guidance and current Microsoft Agent Framework approval/session semantics.
 
-Execution Shape: SINGLE_EXECUTION | MULTI_EXECUTION
-    -> material task geometry
-```
+The research concludes that approval should bind to a concrete pending object and resume the same logical state; contextual modification is safe without re-proposal only while controlling objective/authority/specification/Design/safety/acceptance meaning remain materially unchanged.
 
-Execution Shape depends on task dependencies, gates, failure domains and durable-resumption needs. It does not use minute budgets, token budgets, provider timeouts or assumed session-duration limits.
+## Open Question / Decision Gate
 
-## Prospective T066 Stage 5 application
+Whether Agent Governance should **adopt** the R030 mechanism remains a separate Human-selected normative objective.
 
-The future T066 Stage 5 is prospectively `SINGLE_EXECUTION`.
+If selected later, the decision/design work must settle the exact grammar, proposal-gated prompt classes, minimum proposal object, contextual-delta materiality rule, freshness/replay/cross-chat semantics, downstream Human-gate interaction and any D052 conformance assets before materialization.
 
-Its fixture/oracle/scheduler/scoring/receipt/instruction-control items are decomposition/trace units under one T066 authority envelope and converge into one coherent provider-free `Freeze A`. The current T066 Task Contract contains no mandatory intermediate Human acceptance, independent freeze, controlling revalidation gate, separable failure-domain handoff or durable-resumption boundary between those Stage 5 materialization subtasks.
+No adoption is implied by successful use of `go` to authorize R030 itself.
 
-Internal ordering remains required, but internal ordering alone does not justify multiple executions.
+## Preserved frontier
 
-Reclassify to `MULTI_EXECUTION` only if new authoritative information introduces a real material gate before or during Stage 5, and freeze the ordered execution plan before continuing.
+T066 remains unselected and not started. Its pre-existing scientific branch conflict remains unconsumed. T063/R007 and T023/T062 historical/held frontiers remain as represented in `docs/RESEARCH-TRACEABILITY.md`; R030 does not alter them.
 
-No T066 Stage 5 work was started by this objective. No T066 scientific branch was created or selected. The preexisting `test/r027-chatgpt-codex-efficiency-v1` branch remains unconsumed. No Executor/Codex/provider/model call was authorized or consumed.
+## Next Action
 
-## Closure
+Wait for the Human Owner to select the next objective. Do not infer that R030 normative adoption, R029 follow-up, T066 Stage 5, T065/T063/T062 resume, or any backlog item is selected.
 
-This objective required Markdown-only source-product policy work. It is intended to return to `develop` through the normal topic-branch/PR path. No Executor is required for ceremony.
+If the Human Owner selects R030 normative adoption/design, bootstrap/revalidate current `develop`, load the minimum authority named above, and first present the interpreted normative proposal under whatever interaction policy is then actually authoritative. R030 itself remains evidence until an accepted decision promotes it.
 
-No next Human objective has been selected. The project therefore waits in `WAITING_FOR_NEXT_OBJECTIVE`; do not infer or start backlog work.
+## Do Not Load Or Do
+
+- Do not treat R030 as an accepted normative `go` policy merely because this research chat used `go` experimentally.
+- Do not modify `AGENTS.md`, Governance Core, Skills, Task Contracts or executable assets to implement `go` without a later explicit Human-selected objective and accepted authority.
+- Do not treat `go` as standing authorization across objectives, chats, stale proposals, downstream Human gates, Executor/provider calls or material contextual changes.
+- Do not infer T066 reconciliation/Stage 5, R029 adoption or any held scientific continuation as the next objective.
+- Do not launch an Executor or consume provider/model calls without separate controlling authorization.
+- Do not mutate `develop` directly; normal future source work uses a verified topic branch and PR.
