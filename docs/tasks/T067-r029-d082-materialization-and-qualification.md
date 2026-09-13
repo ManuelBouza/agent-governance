@@ -91,6 +91,8 @@ D082 is the normative architecture authority. R029 scientific artifacts are pres
 
 Every ROOT/ROOT+ROUTE obligation remains represented before optional routing.
 
+Cold-start/bootstrap anchors include both the standing checkpoint policy `docs/ORCHESTRATOR-CHECKPOINTS.md` and the current frontier `docs/orchestrator/CHECKPOINT.md`. The first Stage 6 attempt exposed omission of the policy anchor from the lean root; Stage 5 re-entry restored it and added it to the T067 cold-start qualifier.
+
 ### Maintainer domain
 
 Production package:
@@ -165,9 +167,9 @@ If Stage 6 finds a material descriptor/semantic mismatch that invalidates this d
 | Unit | Owner | Durable boundary | Gate |
 | --- | --- | --- | --- |
 | `E1` | ChatGPT | this contract + verified topic branch | complete |
-| `E2` | ChatGPT | complete D082 candidate + semantic/conformance assets + published Stage 5 checkpoint | complete |
-| `E3` | Executor | execution/diagnosis/bounded repair/Code Review & Verify + handoff/evidence | DONE permits E4; BLOCKED/PARTIAL re-enters earliest affected stage |
-| `E4` | ChatGPT | convergence, qualification disposition, PR/integration, checkpoint | objective closure or explicit re-entry |
+| `E2` | ChatGPT | complete D082 candidate + semantic/conformance assets + published Stage 5 checkpoint | complete, then corrected by Stage 5 re-entry after E3 attempt 1 |
+| `E3` | Executor | execution/diagnosis/bounded repair/Code Review & Verify + handoff/evidence | attempt 1 BLOCKED; replacement attempt pending; DONE permits E4 |
+| `E4` | ChatGPT | convergence, qualification disposition, PR/integration, checkpoint | forbidden until replacement E3 is DONE and verified |
 
 Later units must not begin before the previous gate is satisfied.
 
@@ -182,24 +184,40 @@ Stage 7    -> ChatGPT Orchestrator
 
 The Executor must not reconstruct or first-pass materialize this architecture.
 
-## Published Stage 5 candidate freeze
+## Stage 6 attempt 1 and Design re-entry
+
+Attempt 1 launched from `50098838a470c9e2bc0a6beb61a4a12a90923ef1` and returned `BLOCKED` at remote HEAD `bfdeb4a7914a03bcec7be91d983dfb8b0535dcf0` with durable handoff `handoffs/T067-executor-handoff.json`.
+
+The blocking full-suite failure was the preserved reference-integrity requirement that `AGENTS.md` name `docs/ORCHESTRATOR-CHECKPOINTS.md`. The lean root had retained `docs/orchestrator/CHECKPOINT.md` but omitted the standing policy anchor. The Executor correctly declared upstream Design re-entry instead of editing committed Markdown or changing oracle meaning.
+
+Orchestrator re-entry resolved this as a Stage 5 omission, not an oracle defect:
+
+- `AGENTS.md` restores `docs/ORCHESTRATOR-CHECKPOINTS.md` in its canonical anchors;
+- `evals/r029_materialization/qualification-profile.json` now includes that path in `cold_start_required_snippets`.
+
+No topology, trigger/anti-trigger, authority, provider-evidence, residual, or T066 semantic changed.
+
+## Corrected Stage 5 candidate freeze
 
 ```text
-candidate_branch:                 refactor/r029-d082-materialization
-candidate_materialization_anchor: c59dfe3ed2ee69d2fbfb9100f6927dbd10051017
-candidate_checkpoint_head:        c6da4445862f0166192283479d3ae77c27d07f78
-candidate_base:                   758b92cf38af9bc06e4717b1206dafb8e5d82e9e
+candidate_branch:                    refactor/r029-d082-materialization
+original_materialization_anchor:     c59dfe3ed2ee69d2fbfb9100f6927dbd10051017
+stage6_attempt1_blocked_head:         bfdeb4a7914a03bcec7be91d983dfb8b0535dcf0
+stage5_reentry_correction_anchor:     a3c8c00cb2f0ecb5ce1c077ffa43614b94d3998f
+candidate_checkpoint_head:           308d6ad09b756fb30878e9a4658eaf309cabd998
+candidate_base:                      758b92cf38af9bc06e4717b1206dafb8e5d82e9e
 ```
 
-`candidate_materialization_anchor` introduced the complete Stage 5 product/eval candidate. `candidate_checkpoint_head` additionally persists O322, the durable E2 -> E3 frontier. This Task Contract freeze is necessarily a metadata-only successor because a file cannot contain the SHA of the commit that contains itself.
+`stage5_reentry_correction_anchor` contains the complete corrected candidate after the blocked Stage 6 evidence. `candidate_checkpoint_head` persists O323 and the E3-retry frontier. This Task Contract freeze is necessarily a metadata-only successor because a file cannot contain the SHA of the commit that contains itself.
 
-Before Stage 6 launch, ChatGPT supplies the exact current remote branch HEAD in thin transport. The Executor must verify:
+Before replacement Stage 6, ChatGPT supplies the exact current remote branch HEAD in thin transport. The Executor must verify:
 
 1. `candidate_checkpoint_head` is an ancestor of that launch HEAD;
 2. the diff from `candidate_checkpoint_head` to launch HEAD contains only this T067 freeze/finalization metadata;
 3. no candidate product/test/eval/checkpoint artifact changed after `candidate_checkpoint_head`;
-4. `candidate_materialization_anchor` is an ancestor of `candidate_checkpoint_head`;
-5. the protected base remains the exact `candidate_base`.
+4. `stage5_reentry_correction_anchor` is an ancestor of `candidate_checkpoint_head`;
+5. the protected base remains the exact `candidate_base`;
+6. the prior BLOCKED handoff is historical attempt-1 evidence and must be replaced/updated by the replacement Stage 6 terminal result.
 
 Any other pre-Stage-6 branch movement requires Orchestrator re-entry.
 
@@ -215,7 +233,7 @@ The Executor may:
 - add small supplementary technical verification inside approved semantics;
 - persist `handoffs/T067-executor-handoff.json` and authorized non-Markdown evidence.
 
-The Executor must not edit committed Markdown; add/remove/split/merge top-level Skills; change workspace-isolation placement; change the 79-unit mapping; weaken activation expected classifications; relabel parity; autonomously rerun/waive provider evidence; touch T066; or first-pass-create substantial missing harness/controller/script/fixture/oracle material.
+The Executor must not edit committed Markdown; add/remove/split/merge top-level Skills; change workspace-isolation placement; change the 79-unit mapping; weaken activation expected classifications; weaken the restored checkpoint-policy cold-start requirement; relabel parity; autonomously rerun/waive provider evidence; touch T066; or first-pass-create substantial missing harness/controller/script/fixture/oracle material.
 
 D076 applies to all Stage 6 executable aids.
 
@@ -224,7 +242,7 @@ D076 applies to all Stage 6 executable aids.
 - `AC-T067-1` Preservation: 79/79 with `39/20/20`, zero unresolved, and no pre-routing obligation dependent on Skill activation.
 - `AC-T067-2` Topology: one Maintainer/two internal routes; exactly five transverse Skills; workspace isolation internal.
 - `AC-T067-3` Activation: production Maintainer and transverse positive/anti-trigger/composition cases preserve the frozen semantic boundaries.
-- `AC-T067-4` Cold start: cold Orchestrator/authorized Executor bootstrap is reconstructable from canonical Git without chat or Skill activation; mismatches fail closed.
+- `AC-T067-4` Cold start: cold Orchestrator/authorized Executor bootstrap is reconstructable from canonical Git without chat or Skill activation; both checkpoint policy and current-frontier anchors remain reachable; mismatches fail closed.
 - `AC-T067-5` Progressive disclosure: actual burden metrics and reference hops are measured/reviewable with no semantic loss.
 - `AC-T067-6` Deterministic qualification: repository-owned qualification assets execute without model-driven Skill activation.
 - `AC-T067-7` Residual integrity: parity remains `NOT_ESTABLISHED`; Maintainer historical `21/36` remains unscored history.
@@ -239,7 +257,7 @@ At minimum execute/review:
 - deterministic 79-unit preservation/topology checks;
 - syntax/structure of production Skill packages/references;
 - frozen activation/anti-trigger corpus against production descriptions/routing behavior at the strongest available non-authority-changing surface;
-- cold-start/no-Skill structural checks;
+- cold-start/no-Skill structural checks, including both checkpoint policy and current-frontier anchors;
 - burden measurement tool with persisted non-Markdown results;
 - absence of a sixth workspace-isolation Skill;
 - normative ownership/reference-hop outputs;
@@ -274,11 +292,13 @@ HEAD: <actual pushed remote branch HEAD>
 ## Human launch gate
 
 ```text
-launch_state: AUTHORIZED_AWAITING_HUMAN_START
+launch_state: AUTHORIZED_AWAITING_HUMAN_CONTINUE
 ```
 
-ChatGPT must present the D055 concrete Executor/session/model/effort profile and the exact launch HEAD before the Human starts Stage 6.
+This is the same T067 work unit. Under D060 the existing `AG | agent-governance | T067 | root-1` remains the coordinator because attempt 1 returned a coherent durable blocker and the root is recoverable. The replacement Stage 6 interaction therefore uses `CONTINUE`, not a new root.
+
+ChatGPT must present the D055 concrete Executor/session/model/effort profile and the exact replacement launch HEAD before continuation.
 
 ## Thin transport invariant
 
-The Human-visible Executor prompt contains only the canonical repository, session/coordinator identity when required, this Task Contract path, and exact authorized branch@launch-HEAD. Design, tests, commands, repair rules, evidence schema, and stop conditions remain in canonical Git authority.
+The Human-visible Executor prompt contains only the canonical repository, continuation/coordinator identity, this Task Contract path, and exact authorized branch@launch-HEAD. Design, tests, commands, repair rules, evidence schema, and stop conditions remain in canonical Git authority.
