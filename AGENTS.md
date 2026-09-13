@@ -13,6 +13,7 @@ Canonical anchors:
 - Source Maintainer Skill: `maintainer-skill/`
 - Task Contracts: `docs/tasks/`
 - Executor handoffs: `handoffs/`
+- Orchestrator checkpoint policy: `docs/ORCHESTRATOR-CHECKPOINTS.md`
 - current Orchestrator frontier: `docs/orchestrator/CHECKPOINT.md`
 - research ledger: `docs/RESEARCH-TRACEABILITY.md`
 - deterministic tests/evals: `tests/`, `evals/`
