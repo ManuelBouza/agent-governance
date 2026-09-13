@@ -1,31 +1,30 @@
 # Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O308  
+Checkpoint-Sequence: O309  
 Date: 2026-09-13  
 Canonical-Branch: `develop`  
-Predecessor-Work-Unit: R029 — incremental Skill-architecture evaluation  
+Predecessor-Work-Unit: D081 — execution-flow grouping and in-cycle experimentation  
 Predecessor-Objective-Status: OBJECTIVE_COMPLETE  
-State: HANDOFF_READY  
-Chat-Closure: HANDOFF_READY  
-Human-Selected-Next-Objective: Formalize and apply execution-flow refinement so trace/decomposition subtasks are not automatically execution units, related subtasks are grouped into one execution when no material gate requires separation, and Human-requested in-cycle changes may be applied locally as explicitly experimental adaptations without breaking the active task flow; at cycle close, experimental adaptations are evaluated against the objective/acceptance evidence and only successful ones may be promoted through an explicit normative decision and later materialization.  
-Bootstrap-Anchor-HEAD: `00a51d551356c59738097c36b19d11377f9ff719`  
-Bootstrap-Expected-HEAD-Semantics: the exact expected canonical `develop` HEAD is supplied by the predecessor transport prompt after the HANDOFF_READY checkpoint is integrated; do not compare the successor against this checkpoint's own pre-integration anchor as though it were the final canonical HEAD.  
-Next-Chat-Minimum-Load: `AGENTS.md`; `docs/orchestrator/CHECKPOINT.md`; `docs/decisions/D067-objective-scoped-orchestrator-chat-lifecycle.md`; `docs/decisions/D080-orchestrator-execution-shape-control.md`; load R029 artifacts only if a concrete conflict requires them  
-Next-ChatGPT-Effort: HIGH  
-Next-Execution-Shape: SINGLE_EXECUTION  
+State: WAITING_FOR_NEXT_OBJECTIVE  
+Chat-Closure: WAITING_FOR_NEXT_OBJECTIVE  
+Human-Selected-Next-Objective: none — awaiting Human Owner selection  
+Bootstrap-Anchor-HEAD: `40bb626fd11d74b355def7fe8a466668d8d6e591`  
+Bootstrap-Expected-HEAD-Semantics: no successor bootstrap exists while waiting; when the Human Owner selects the next objective, the successor transport prompt must carry the exact then-current canonical `develop` HEAD after this checkpoint's integration.  
+Next-Chat-Minimum-Load: `AGENTS.md`; `docs/orchestrator/CHECKPOINT.md`; load `docs/decisions/D081-execution-flow-grouping-and-in-cycle-experimentation.md` when the selected objective involves ChatGPT execution geometry, in-cycle adaptation, or T066 Stage 5; load deeper history only when the checkpoint or a concrete conflict requires it  
+Next-ChatGPT-Effort: MEDIUM  
 Active-Executor: none  
 Executor-Launch-State: NOT_AUTHORIZED  
+T066-Stage5-Prospective-Execution-Shape: SINGLE_EXECUTION  
+T066-Stage5-State: NOT_STARTED  
 Prior-Unselected-T066-Scientific-Branch: `test/r027-chatgpt-codex-efficiency-v1`  
 Prior-Unselected-T066-Scientific-Branch-State: PREEXISTING_DIVERGED_UNCONSUMED_CONFLICT
 
-## Completed predecessor objective
+## Completed objective
 
-R029 is complete. The Human Owner accepted its candidate topology only as the basis for a possible later normative architecture decision. R029 remains `Decision-State: EVALUATING`; no root `AGENTS.md` rewrite, transverse Skill implementation, Executor/provider/model call, scored observation or T066 mutation was authorized.
+The Human-selected execution-flow refinement is complete as D081.
 
-## Successor objective semantics
-
-The successor must distinguish three levels that must not be conflated:
+D081 prospectively refines D067/D080 by making the following distinction explicit:
 
 ```text
 subtask / trace unit
@@ -33,65 +32,56 @@ subtask / trace unit
     != normative decision
 ```
 
-### 1. Execution grouping
+Related consecutive subtasks remain in one execution when they share objective/authority, context, specification/Design, invariants and acceptance meaning and no material gate requires separation. Trace IDs, file counts or analytical decomposition do not create execution boundaries by themselves.
 
-Multiple consecutive subtasks SHOULD normally remain inside one execution when they share the same authority, context and invariants and no earlier result must become a controlling prerequisite through a material freeze, verification, revalidation, Human acceptance, distinct failure-domain boundary or durable-resumption gate.
+Separate executions are justified only by a real controlling dependency, mandatory freeze/verification/revalidation/review/Human-acceptance gate, material failure-domain boundary, required durable-resumption boundary, or a change to controlling authority/ownership/specification/Design/safety/acceptance meaning.
 
-Do not manufacture execution boundaries merely because trace IDs or analytical subtasks exist. A materially small task may still require multiple executions when a real gate exists; a task spanning many files/subtasks may remain one execution when it is one coherent bounded unit.
+## In-cycle adaptation rule
 
-### 2. In-cycle experimental adaptation
+An in-scope Human adjustment during active work may remain inside the same D067 objective and current execution/cycle as `EXPERIMENTAL_IN_CYCLE` when it stays within the active authority envelope.
 
-If the Human Owner requests a change while an authorized execution/cycle is in progress, do not automatically terminate the objective, create a new chat, or promote the change into policy.
+The adaptation must identify what changed, why, the affected execution/cycle, what remains invariant, how it will be evaluated, and that it is not normative authority.
 
-When the requested change is compatible with the active objective and authority envelope, it may be applied locally as an explicit `EXPERIMENTAL_IN_CYCLE` adaptation. The adaptation must be durably traceable enough to identify:
-
-- what changed and why;
-- which execution/cycle it affected;
-- which prior assumption/rule remained unchanged versus locally varied;
-- what evidence will determine whether the adaptation helped, harmed or remained inconclusive;
-- that the adaptation is not yet normative authority.
-
-A change that materially alters the Human objective, authority/ownership, accepted specification/Design, safety envelope, or controlling acceptance meaning remains a stop/re-entry/new-objective boundary; `EXPERIMENTAL_IN_CYCLE` must not be used to bypass those gates.
-
-### 3. End-of-cycle promotion gate
-
-At the end of the relevant cycle, evaluate each experimental adaptation against the controlling objective, acceptance criteria and observed evidence.
+At cycle close:
 
 ```text
-experimental adaptation
-    -> evidence at cycle close
-    -> retain / revise / reject / recommend promotion
-    -> explicit Human/normative decision if promotion is desired
-    -> materialize only after that decision authorizes it
+EXPERIMENTAL_IN_CYCLE
+    -> evidence
+    -> RETAIN / REVISE / REJECT / RECOMMEND_PROMOTION
+    -> explicit normative decision if promotion is desired
+    -> materialization only after that decision authorizes it
 ```
 
-Successful local experimentation does not automatically become product policy. Normative promotion must remain explicit and durable under the applicable research/decision traceability rules.
+`EXPERIMENTAL_IN_CYCLE` cannot bypass a material objective, ownership, specification/Design, safety, acceptance or Human/normative gate.
 
-## Successor bootstrap verification
+## Effort / shape separation
 
-Before material work, the successor MUST:
+The controls remain orthogonal:
 
-1. fetch current `develop` HEAD from GitHub;
-2. read current `AGENTS.md` from that `develop`;
-3. read current `docs/orchestrator/CHECKPOINT.md`;
-4. compare observed `develop` HEAD and checkpoint sequence with the exact expected values carried by the predecessor successor-bootstrap prompt;
-5. verify that this checkpoint remains `HANDOFF_READY` for the same Human-selected objective;
-6. read D067 and D080;
-7. load no additional history unless the checkpoint or a concrete conflict requires it;
-8. if a material mismatch exists, stop as `BOOTSTRAP_MISMATCH` rather than silently reconciling it.
+```text
+ChatGPT Effort: MEDIUM | HIGH
+    -> reasoning depth
 
-## Authorized successor scope
+Execution Shape: SINGLE_EXECUTION | MULTI_EXECUTION
+    -> material task geometry
+```
 
-The successor may formalize the execution-grouping and in-cycle experimental-adaptation rule and integrate the smallest coherent documentation/decision changes needed to make it durable.
+Execution Shape depends on task dependencies, gates, failure domains and durable-resumption needs. It does not use minute budgets, token budgets, provider timeouts or assumed session-duration limits.
 
-It must preserve the distinction between execution geometry and ChatGPT reasoning effort. It must not introduce minute/token/time budgets.
+## Prospective T066 Stage 5 application
 
-It may apply the resulting rule prospectively to future planned work, including T066 Stage 5 geometry, but MUST NOT start T066 Stage 5 materialization, create its scientific branch, launch Executor/Codex, consume provider/model calls or mutate the preexisting unselected T066 branch unless separately authorized.
+The future T066 Stage 5 is prospectively `SINGLE_EXECUTION`.
 
-## Do Not Do In This Predecessor Chat
+Its fixture/oracle/scheduler/scoring/receipt/instruction-control items are decomposition/trace units under one T066 authority envelope and converge into one coherent provider-free `Freeze A`. The current T066 Task Contract contains no mandatory intermediate Human acceptance, independent freeze, controlling revalidation gate, separable failure-domain handoff or durable-resumption boundary between those Stage 5 materialization subtasks.
 
-- Do not execute the successor objective here.
-- Do not modify D080 or other normative policy here beyond this successor bootstrap.
-- Do not start T066 work.
-- Do not launch an Executor or consume provider/model calls.
-- Do not treat `EXPERIMENTAL_IN_CYCLE` as authority to bypass specification, ownership, safety, Human or acceptance gates.
+Internal ordering remains required, but internal ordering alone does not justify multiple executions.
+
+Reclassify to `MULTI_EXECUTION` only if new authoritative information introduces a real material gate before or during Stage 5, and freeze the ordered execution plan before continuing.
+
+No T066 Stage 5 work was started by this objective. No T066 scientific branch was created or selected. The preexisting `test/r027-chatgpt-codex-efficiency-v1` branch remains unconsumed. No Executor/Codex/provider/model call was authorized or consumed.
+
+## Closure
+
+This objective required Markdown-only source-product policy work. It is intended to return to `develop` through the normal topic-branch/PR path. No Executor is required for ceremony.
+
+No next Human objective has been selected. The project therefore waits in `WAITING_FOR_NEXT_OBJECTIVE`; do not infer or start backlog work.
