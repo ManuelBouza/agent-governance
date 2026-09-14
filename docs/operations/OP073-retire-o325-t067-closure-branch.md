@@ -10,8 +10,8 @@ Coordinator-ID: `AG | agent-governance | T067 | root-1`
 Base branch: `develop`  
 Controlling policy: D058, D059, D060, D064, `docs/OPERATION-CONTRACTS.md`, `docs/BRANCHING.md`, `docs/BRANCH-CLEANUP.md`  
 Contract-authoring branch: `docs/o325-t067-closed`  
-Contract-authoring PR: `PENDING`  
-Durable receipt anchor: `PENDING`
+Contract-authoring PR: `#428`  
+Durable receipt anchor: GitHub PR `#428`
 
 ## Objective
 
@@ -21,19 +21,19 @@ Complete the final operational closure of T067 by retiring only the branch that 
 
 ```text
 head branch: docs/o325-t067-closed
-PR: PENDING
+PR: #428
 base: develop
 ```
 
-Before execution this contract must be integrated with the actual PR identity. At execution time derive the exact reviewed `head_sha` and integration commit from that merged PR. Remote retirement is allowed only when the PR is merged into `develop` and the present remote branch head equals the reviewed head, or the branch is already absent.
+At execution time derive the exact reviewed `head_sha` and integration commit from merged PR #428. Remote retirement is allowed only when PR #428 is merged into `develop` and the present remote branch head equals the reviewed head, or the branch is already absent.
 
 ## Preconditions
 
 - synchronize canonical GitHub state and establish a safe current `develop == origin/develop` baseline without discarding local/uncommitted work;
 - load this integrated contract from current `develop`;
-- verify the durable receipt anchor accepts a top-level GitHub comment before mutation;
-- verify the authoring PR is merged into `develop`;
-- require exact current remote branch head == merged PR reviewed head before deletion;
+- verify GitHub PR #428 accepts a top-level comment before mutation;
+- verify PR #428 is merged into `develop`;
+- require exact current remote branch head == PR #428 reviewed head before deletion;
 - preserve any dirty, unique, ambiguous, or unrepresented local state.
 
 ## Authorized operations
@@ -46,13 +46,13 @@ Do not modify tracked repository content; reopen T067; start/modify T066; delete
 
 ## Verification requirements
 
-`DONE` requires the authoring PR merged into `develop`; remote `docs/o325-t067-closed` absent; every accessible local copy/worktree safely absent; primary checkout on clean current `develop`; no tracked-content mutation; no unrelated target mutation; final receipt published; coordinator identity unchanged.
+`DONE` requires PR #428 merged into `develop`; remote `docs/o325-t067-closed` absent; every accessible local copy/worktree safely absent; primary checkout on clean current `develop`; no tracked-content mutation; no unrelated target mutation; final receipt published; coordinator identity unchanged.
 
 If an inaccessible local target cannot be verified, return `PARTIAL`. If branch identity/head or unique work is ambiguous, return `BLOCKED` and preserve it.
 
 ## Durable receipt
 
-Publish one final top-level comment to the integrated authoring PR using exactly:
+Publish one final top-level comment to PR #428 using exactly:
 
 ```text
 OP073_STATUS: DONE | BLOCKED | PARTIAL
@@ -76,7 +76,7 @@ Return only:
 
 ```text
 STATUS: DONE | BLOCKED | PARTIAL
-RECEIPT: <integrated OP073 authoring PR URL>
+RECEIPT: https://github.com/ManuelBouza/agent-governance/pull/428
 COORDINATOR: AG | agent-governance | T067 | root-1
 ```
 
