@@ -78,7 +78,9 @@ def test_builds_six_source_identical_skill_archives_and_manifest(tmp_path: Path)
 
         with zipfile.ZipFile(archive_path) as archive:
             assert set(archive.namelist()) == expected_members
-            assert all(not member.startswith(f"{source_dir.name}/") for member in archive.namelist())
+            assert all(
+                not member.startswith(f"{source_dir.name}/") for member in archive.namelist()
+            )
             for member in archive.namelist():
                 assert archive.read(member) == (source_dir / member).read_bytes()
 

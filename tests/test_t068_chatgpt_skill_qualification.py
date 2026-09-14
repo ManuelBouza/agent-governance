@@ -97,4 +97,6 @@ def test_role_and_composition_cases_cover_d082_boundaries() -> None:
         "executor-launch-handoff",
     }
     assert any("workspace isolation" in item for item in composition["expected_visible_behavior"])
-    assert any("seventh top-level Skill" in item for item in composition["forbidden_visible_behavior"])
+    assert any(
+        "seventh top-level Skill" in item for item in composition["forbidden_visible_behavior"]
+    )
