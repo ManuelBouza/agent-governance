@@ -7,9 +7,9 @@
 - Type: `mixed`
 - SDD profile: `STANDARD`
 - Base branch: `develop`
-- Base SHA at task creation: `5bed8b952a3c552e3af0abfdbe07895864319696`
-- Expected topic branch: `feat/t068-chatgpt-skill-host-activation`
-- Expected executor handoff: `handoffs/T068-executor-handoff.json`
+- Base SHA: `5bed8b952a3c552e3af0abfdbe07895864319696`
+- Topic branch: `feat/t068-chatgpt-skill-host-activation`
+- Expected Executor handoff: `handoffs/T068-executor-handoff.json`
 - Test-Authorship-Mode: `orchestrator-conformance`
 - Owner: `ChatGPT Orchestrator / Agente de IA Ejecutor / Human Owner`
 - ChatGPT Effort: `MEDIUM`
@@ -25,6 +25,7 @@ This task does not reopen D082/T067 and does not start or modify T066.
 
 - `AGENTS.md`
 - `docs/research/R031-CHATGPT-SKILL-HOST-MATERIALIZATION.md`
+- `docs/RESEARCH-TRACEABILITY.md`
 - `docs/decisions/D082-r029-lean-root-and-transverse-skill-architecture.md`
 - `maintainer-skill/SKILL.md`
 - `repository-change-control-skill/SKILL.md`
@@ -44,7 +45,7 @@ R031 is the current host-evidence carrier. OpenAI Skills behavior is version-sen
 - **REQ-T068-1 — Packaging:** reproducibly materialize exactly six top-level ChatGPT Skill bundles: `source-maintainer` plus the five D082 transverse Skills.
 - **REQ-T068-2 — Resource completeness:** preserve each root `SKILL.md` and all required Skill-local references/resources with relative paths intact.
 - **REQ-T068-3 — Provenance:** bind generated packages to a canonical source revision without making generated host artifacts authoritative over Git.
-- **REQ-T068-4 — Deterministic validation:** reject missing/extra top-level Skills, missing `SKILL.md`, missing required Skill-local resources, duplicate Skill names, and any top-level promotion of `workspace-isolation`.
+- **REQ-T068-4 — Deterministic validation:** reject missing/extra top-level Skills, missing `SKILL.md`, missing required Skill-local resources, duplicate Skill names, escaping references, contaminated output, and any top-level promotion of `workspace-isolation`.
 - **REQ-T068-5 — Human install gate:** distinguish `PACKAGED` from `INSTALLED`; fail closed when the ChatGPT Skills surface, upload permission, scan, or installation is unavailable or blocked.
 - **REQ-T068-6 — Post-install qualification:** qualify observable explicit invocation, automatic routing, anti-trigger behavior, Maintainer internal routing, and transverse composition after installation.
 - **REQ-T068-7 — No semantic host fork:** ChatGPT adaptation is limited to packaging, provenance, narrow host adapters, and qualification assets unless durable Orchestrator authority explicitly re-enters Design.
@@ -75,17 +76,19 @@ Do not combine the six semantic Skills into a ChatGPT-specific mega-Skill. `work
 
 ### Packaging design
 
-Stage 5 SHALL materialize a deterministic packager/validator that:
+Stage 5 materializes a deterministic packager/validator that:
 
 - reads the six canonical Skill source directories;
 - resolves Skill identity from each root `SKILL.md`;
 - recursively includes Skill-local files;
-- validates required internal relative references;
+- validates required internal relative references and rejects escape attempts;
+- rejects an independent root `workspace-isolation` / `workspace-isolation-skill` source;
 - emits one archive per top-level Skill to generated/untracked output;
 - emits a machine-readable manifest with Skill name, source directory, source revision, file inventory and digests;
-- normalizes archive metadata sufficiently for reproducible output from identical inputs;
-- excludes `.git`, caches, secrets, generated local state and unrelated repository files;
-- does not vendor mutable repository authority such as `AGENTS.md`, the current checkpoint or Task Contracts into Skill bundles unless such content is intentionally Skill-local source.
+- normalizes archive timestamps, permissions, ordering and compression inputs for reproducible output;
+- refuses unrelated output-directory entries rather than deleting them;
+- excludes `.git`, caches, local generated state and unrelated repository files from Skill sources;
+- does not vendor mutable repository authority such as `AGENTS.md`, the checkpoint or Task Contracts into the bundle unless intentionally Skill-local source.
 
 Generated archives are disposable distribution artifacts; canonical Skill directories and packaging code remain authoritative.
 
@@ -93,14 +96,16 @@ Generated archives are disposable distribution artifacts; canonical Skill direct
 
 Two evidence planes apply:
 
-1. **Pre-host deterministic conformance:** topology, package completeness, provenance, no sixth Skill, no semantic source rewrite.
+1. **Pre-host deterministic conformance:** topology, package completeness, provenance, reproducibility, no sixth Skill, no semantic source rewrite.
 2. **Post-install ChatGPT behavioral qualification:** explicit availability, positive auto-routing, negative/near-miss anti-trigger cases, Maintainer Orchestrator/Executor route separation, transverse composition, absence of top-level `workspace-isolation`, and Git-bootstrap/fail-closed behavior.
+
+The frozen Orchestrator-owned corpus is `evals/t068_chatgpt_skill_host/qualification-corpus.json` with 22 observable scenarios: six explicit, six auto-positive, six auto-negative, three transverse composition cases, and one Maintainer role-routing case.
 
 Score only observable behavior and explicit Skill invocation surfaces. Do not require hidden chain-of-thought or undocumented routing telemetry.
 
 ### Installation design
 
-Expected eligible-workspace path:
+Expected eligible-workspace path from current OpenAI documentation:
 
 `Plugins -> Skills -> Create -> Upload from your computer`
 
@@ -108,14 +113,14 @@ Record each bundle outcome as `INSTALLED`, `NEEDS_REVIEW`, `BLOCKED`, `UNAVAILAB
 
 ## Plan & Trace
 
-| Unit | Requirement / Design | Candidate/evidence |
-| --- | --- | --- |
-| `E1` Research + authority freeze | R031; all REQ/PRESERVED | R031 + T068 + checkpoint |
-| `E2` Stage 5 package materialization | REQ-T068-1..4,7 | packager/validator + tests + qualification corpus skeleton |
-| `E3` Stage 6 technical verification | E2 candidate | Executor verification + `handoffs/T068-executor-handoff.json` |
-| `E4` Human ChatGPT installation gate | REQ-T068-5 | six upload/scan/install outcomes tied to candidate provenance |
-| `E5` ChatGPT behavioral qualification | REQ-T068-6; P1..P3,P6 | observable explicit/auto/anti-trigger/composition results |
-| `E6` Stage 7 convergence | all | acceptance/integration/closure records |
+| Unit | Requirement / Design | Candidate/evidence | State |
+| --- | --- | --- | --- |
+| `E1` Research + authority freeze | R031; all REQ/PRESERVED | R031 + T068 + O326 | COMPLETE |
+| `E2` Stage 5 package materialization | REQ-T068-1..4,7 | packager/validator + tests + qualification corpus | COMPLETE |
+| `E3` Stage 6 technical verification | E2 candidate | Executor verification + `handoffs/T068-executor-handoff.json` | AUTHORIZED |
+| `E4` Human ChatGPT installation gate | REQ-T068-5 | six upload/scan/install outcomes tied to accepted candidate provenance | NOT_STARTED |
+| `E5` ChatGPT behavioral qualification | REQ-T068-6; P1..P3,P6 | observable explicit/auto/anti-trigger/composition results | NOT_STARTED |
+| `E6` Stage 7 convergence | all | acceptance/integration/closure records | NOT_STARTED |
 
 ## Execution geometry
 
@@ -123,8 +128,8 @@ Record each bundle outcome as `INSTALLED`, `NEEDS_REVIEW`, `BLOCKED`, `UNAVAILAB
 
 Ordered units:
 
-1. **Execution 1 — E1 + E2:** research/authority freeze and complete Stage 5 package candidate.
-2. **Execution 2 — E3:** Executor technical verification.
+1. **Execution 1 — E1 + E2:** COMPLETE.
+2. **Execution 2 — E3:** next; Executor technical verification.
 3. **Human gate — E4:** install/upload accepted bundles in ChatGPT.
 4. **Execution 3 — E5:** ChatGPT behavioral qualification after confirmed installation.
 5. **Execution 4 — E6:** Stage 7 convergence/integration/closure.
@@ -143,21 +148,47 @@ Stage 7    -> ChatGPT Orchestrator
 
 Post-install behavioral qualification is Orchestrator-owned semantic/eval work because it determines the accepted host-activation claim.
 
-## Published candidate freeze
+## Stage 5 published candidate freeze
 
-Populate immediately before E3 launch:
+Stage 5 material candidate content is frozen at:
 
 ```text
-candidate_branch: feat/t068-chatgpt-skill-host-activation
-candidate_head:   <exact published Stage 5 SHA>
-candidate_base:   <exact authorized develop SHA>
+candidate_branch:         feat/t068-chatgpt-skill-host-activation
+candidate_base:           5bed8b952a3c552e3af0abfdbe07895864319696
+candidate_content_anchor: 9707b41a1e0ac7f64c776318ca557bd3ceca263f
 ```
 
-## Authorized scope
+`candidate_content_anchor` is deliberately the last commit containing material E2 executable/eval content. Subsequent commits may only publish this Task Contract freeze and the Orchestrator checkpoint/launch routing. The Executor launch transport must carry the exact current remote branch HEAD after those metadata-only commits and must verify that the delta from `candidate_content_anchor` contains only the authorized freeze/checkpoint Markdown.
 
-Stage 5 may create/modify only packaging, validation, qualification, provenance, test/eval, research, Task Contract and checkpoint artifacts required by T068.
+If any executable, test, eval corpus, Skill source, research conclusion or other material candidate surface changes after `candidate_content_anchor`, E3 authority is invalid until ChatGPT Orchestrator re-enters Stage 5 and publishes a new content anchor.
 
-Stage 6 may execute the candidate, diagnose defects, perform bounded technical repairs that do not alter Skill semantics/topology/acceptance, run technical verification, and persist the authorized non-Markdown handoff.
+## Stage 5 materialized surfaces
+
+- `tools/chatgpt_skill_package.py`
+- `tests/test_chatgpt_skill_package.py`
+- `tests/test_chatgpt_skill_package_safety.py`
+- `tests/test_t068_chatgpt_skill_qualification.py`
+- `evals/t068_chatgpt_skill_host/qualification-corpus.json`
+- `docs/research/R031-CHATGPT-SKILL-HOST-MATERIALIZATION.md`
+- `docs/RESEARCH-TRACEABILITY.md`
+- this Task Contract and the T068 Orchestrator checkpoint
+
+The Orchestrator sandbox could not execute the remote branch because its local execution environment had no DNS/network path to GitHub. That failed clone is not verification evidence and does not weaken E3. Stage 6 remains the required technical execution/review gate.
+
+## Authorized Stage 6 scope
+
+The Executor may:
+
+- establish an isolated writable T068 workspace from the exact launch HEAD;
+- verify base/branch/content-anchor identity and the metadata-only post-anchor delta;
+- run the packager in validate and build modes using the exact launch HEAD as `source_revision` provenance input;
+- inspect generated six ZIPs and manifest;
+- run focused T068 tests, relevant reference-integrity/Skill tests, Ruff, code-health and the normal full repository test suite;
+- review path traversal, archive safety, reproducibility, output preservation, source-to-package byte identity, relative resources, topology and generated-artifact hygiene;
+- make bounded technical repairs to Stage 5 executable/test mechanics only when they do not alter Skill semantics, topology, acceptance meaning, R031 conclusions, the qualification corpus's semantic expectations, or committed Markdown;
+- persist `handoffs/T068-executor-handoff.json`, commit/push the authorized state, and return the exact remote branch HEAD.
+
+If a repair changes any Stage 5 executable/test file, the Executor must clearly identify it in the handoff. ChatGPT will determine whether the repair remains bounded or requires Stage 5 re-entry before acceptance.
 
 ## Explicit exclusions
 
@@ -165,15 +196,16 @@ Do not:
 
 - change D082 topology;
 - create top-level `workspace-isolation`;
-- rewrite Skill semantics merely to satisfy ChatGPT packaging;
+- rewrite any canonical Skill semantics merely to satisfy ChatGPT packaging;
+- edit committed Markdown during Stage 6;
+- edit the qualification corpus semantic expectations during Stage 6;
 - create a host-specific competing authority plane;
 - infer installation from packaging;
 - infer auto-routing from explicit `@` invocation alone;
 - require/expose hidden reasoning;
 - start/modify T066;
 - relabel empirical parity;
-- edit unrelated product surfaces;
-- allow Stage 6 to edit committed Markdown or Orchestrator-owned semantic qualification assets.
+- edit unrelated product surfaces.
 
 ## Invariants / constraints
 
@@ -182,17 +214,18 @@ Do not:
 - Account-specific entitlement and upload permissions are Human/host gates, not repository assumptions.
 - OpenAI scan outcomes are authoritative observations for E4.
 - Generated bundles must be reproducible and regenerable.
+- Generated ZIPs/manifest are verification/distribution outputs and need not be committed unless later authority explicitly changes that disposition.
 
 ## D076 boundary
 
-All substantial packaging controllers, validators, fixtures and semantic qualification assets required for first-pass verification must exist by the end of E2. Discovery in E3 of a material missing executable artifact requires Stage 5 re-entry.
+All substantial packaging controllers, validators, fixtures and semantic qualification assets required for first-pass verification exist by the end of E2. Discovery in E3 of a material missing executable artifact requires Stage 5 re-entry.
 
 ## Acceptance criteria
 
 - **AC-T068-1:** exactly six canonical ChatGPT Skill packages are reproducibly materializable.
-- **AC-T068-2:** every package includes root `SKILL.md` plus required Skill-local resources.
-- **AC-T068-3:** deterministic validation detects topology/resource/name/provenance violations including top-level `workspace-isolation`.
-- **AC-T068-4:** package contents preserve canonical Skill semantics without host-specific semantic fork.
+- **AC-T068-2:** every package includes root `SKILL.md` plus required Skill-local resources with source-identical bytes.
+- **AC-T068-3:** deterministic validation detects topology/resource/name/provenance/path/output violations including top-level `workspace-isolation`.
+- **AC-T068-4:** package contents preserve canonical Skill semantics without a host-specific semantic fork.
 - **AC-T068-5:** Stage 6 verification passes with no unresolved material review item.
 - **AC-T068-6:** all six Skills reach a recorded usable installed state, or T068 remains explicitly blocked/partial.
 - **AC-T068-7:** post-install qualification demonstrates explicit availability and bounded positive/negative routing behavior with observable evidence.
@@ -200,28 +233,27 @@ All substantial packaging controllers, validators, fixtures and semantic qualifi
 - **AC-T068-9:** Git-authority/cold-start/fail-closed independence is preserved.
 - **AC-T068-10:** T066 remains untouched; ChatGPT/Codex parity remains `NOT_ESTABLISHED` absent separate authority.
 
-## Verification and trace requirements
+## Stage 6 required verification
 
-Orchestrator-owned conformance assets must cover AC-T068-1..4 and the post-install corpus for AC-T068-6..9.
+At minimum:
 
-Stage 6 must execute:
-
-- package topology/resource/provenance tests;
-- relevant reference-integrity/Skill tests;
-- applicable repository lint/code-health/full tests for changed executable surfaces;
-- generated-manifest review from a clean candidate state.
-
-E5 evidence records scenario ID/prompt class, expected visible classification, actual visible outcome, explicit-vs-auto mode, Skill availability and pass/fail disposition. Do not persist hidden reasoning.
-
-## Code Review & Verify obligations
-
-E3 reviews path-traversal/archive safety, reproducibility, accidental inclusion of secrets/local state, source-to-package identity, relative references, topology drift, generated artifact hygiene, and coverage sufficient to detect semantic rewrite/omission.
+1. `python tools/chatgpt_skill_package.py --root . --validate-only`
+2. generate packages to a disposable clean directory with `--source-revision <exact launch HEAD>`;
+3. run all three T068 test modules;
+4. run relevant existing Skill/reference-integrity tests;
+5. `ruff check` over changed Python surfaces (and repository-wide if normal project workflow does so);
+6. repository code-health checker/tests;
+7. full `pytest` suite;
+8. inspect manifest and ZIP inventory/digests/source-byte identity;
+9. confirm no generated archives/manifests or unrelated files are accidentally tracked;
+10. audit D076 material completeness.
 
 ## Stop / escalation / SDD re-entry
 
 STOP rather than guess when:
 
-- base/branch/candidate identity is unsafe or ambiguous;
+- base/branch/content-anchor/launch-HEAD identity is unsafe or ambiguous;
+- the post-anchor delta is not metadata-only freeze/checkpoint Markdown;
 - OpenAI materially changes the Skills contract relied on by R031;
 - ChatGPT requires an incompatible package structure;
 - a Skill-local dependency cannot be represented without semantic change;
@@ -231,21 +263,31 @@ STOP rather than guess when:
 - Stage 6 discovers a D076-material missing artifact;
 - T066 or unrelated scope would need to be touched.
 
-## Version-sensitive launch gate
+## Version-sensitive gate
 
 - Reference evidence: OpenAI Skills/Plugins documentation reviewed `2026-09-14` in R031.
-- Current disposition: `NO_MATERIAL_CHANGE` from the reviewed evidence baseline.
+- Current disposition: `NO_MATERIAL_CHANGE` at Stage 5 freeze.
 - Before E4/E5, refresh official OpenAI Skills documentation when material host drift is observed or freshness is insufficient for consequential qualification.
 
 ## Expected handoff
-
-Stage 6 result:
 
 ```text
 handoffs/T068-executor-handoff.json
 ```
 
-It must capture candidate/base/branch identity, Stage 6 repairs, package/test/review results, generated-manifest evidence and D076 artifact audit.
+It must capture candidate base/content anchor/launch HEAD, branch/worktree identity, Stage 6 repairs, exact commands/results, package manifest evidence, review findings, generated-artifact hygiene, D076 audit, and unresolved issues.
+
+## Executor launch profile
+
+```text
+Executor: Codex
+Session: NEW
+Coordinator-ID: AG | agent-governance | T068 | root-1
+Model: GPT-5.6 Sol
+Effort: Medium
+```
+
+D055 rationale: bounded but consequential technical verification with archive/reproducibility/security review; Medium is the minimum sufficient profile. D060 requires a new task-scoped root because T068 is a new Task Contract.
 
 ## Terminal return shape
 
@@ -261,11 +303,11 @@ HEAD: <actual remote pushed HEAD>
 E3 launch state:
 
 ```text
-launch_state: NOT_AUTHORIZED
+launch_state: AUTHORIZED
 ```
 
-E3 becomes launchable only after E2 is complete, reviewed and frozen at an exact remote head. E4 remains a distinct Human/workspace gate and cannot be consumed by Executor completion.
+Authorization is conditional on the next Orchestrator checkpoint recording E2 complete / E3 next and on the Human launching the thin transport against the exact then-current remote branch HEAD. E4 remains a distinct Human/workspace gate and cannot be consumed by Executor completion.
 
 ## Thin transport invariant
 
-Any later Executor prompt carries only coordinator/session/bootstrap identity, canonical repository, this Task Contract pointer and exact candidate identity. Detailed semantics remain in canonical Git.
+The Executor prompt carries only coordinator/session/bootstrap identity, canonical repository, this Task Contract pointer, candidate content anchor, exact launch HEAD, and current base. Detailed semantics remain in canonical Git.
