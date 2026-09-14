@@ -3,7 +3,7 @@
 Status: CURRENT  
 Owner: ChatGPT Orchestrator  
 Controlling decision: `docs/decisions/D057-research-decision-traceability.md`  
-Last-Registry-Review: 2026-09-13
+Last-Registry-Review: 2026-09-14
 
 ## Purpose
 
@@ -62,10 +62,32 @@ See D057 for transition semantics and required metadata for new research.
 | R026 | `docs/research/R026-CHATGPT-GITHUB-INTERACTION-MINIMIZATION.md` | COMPLETE | EVALUATING | D048; D066; GitHub Git Data docs; `test_biblioteca` write-path qualification; PR `#371` | none | R026 does not replace the existing native-Git publication process. It qualifies adaptive ChatGPT Web write transport: direct per-file Contents writes for trivial independent changes, and Git Data tree/commit/ref batching when coherent multi-file publication reduces mutation cost or materially benefits from one-commit coherence. Reads remain direct from GitHub; normative adoption remains EVALUATING. |
 | R027 | `docs/research/R027-CHATGPT-CODEX-COST-EFFICIENT-RESPONSIBILITY-SPLIT.md` | COMPLETE | EVALUATING | T066; R028; D079; D053/D054/D055/D060/D065/D068/D075/D076; OpenAI Chat/Work/Codex, prompting, AGENTS.md, subagent, speed and rate-card guidance; OpenAI Harness Engineering; external empirical context-efficiency studies | `docs/decisions/D079-lean-executor-qualification-and-adoption-boundary.md` | R027 remains predecessor evidence for the responsibility-split hypothesis. D079 selects the R027+ Lean Executor architecture for qualification but does not adopt it as production policy; the production conclusion remains EVALUATING through T066 and any required confirmation. |
 | R028 | `docs/research/R028-R027-DEEP-REVALIDATION-AND-LEAN-EXECUTOR.md` | COMPLETE | EVALUATING | R027; T066 v2; D079; R007; R010; D055/D057/D060/D063/D065/D068/D075/D076/D077; current OpenAI model/rate-card/AGENTS.md/speed/subagent guidance; OpenAI Harness Engineering; external empirical context/specialist-agent studies | `docs/decisions/D079-lean-executor-qualification-and-adoption-boundary.md` | D079 accepts R028's qualification/adoption boundary and selects Lean Executor as the official candidate architecture. D068 and other production policies remain unchanged; final production disposition remains EVALUATING pending T066 screening, independent confirmation and any required mechanism-level evidence. |
-| R029 | `docs/research/R029-AGENTS-SKILL-ARCHITECTURE-REFACTOR-RESEARCH.md` | COMPLETE | DECIDED | `docs/orchestrator/R029-PRE-DECISION-EVALUATION.md`; `docs/orchestrator/R029-E2-HOST-PARITY-FREEZE-D.md`; `docs/orchestrator/R029-E2-EMPIRICAL-DISPOSITION.md`; `docs/orchestrator/R029-E3-CONVERGENCE.md`; `handoffs/R029-E2-codex-trials.jsonl`; `evals/r029_candidate_topology/v1/freeze-d-codex-rescore.json` | `docs/decisions/D082-r029-lean-root-and-transverse-skill-architecture.md` | D082 adopts the R029 lean-root + one Maintainer-domain Skill + five transverse-capability architecture with explicit post-materialization qualification conditions. Codex transverse routing remains `36/36 PASS` with `0` authority/safety violations. ChatGPT empirical parity remains `NOT ESTABLISHED` (`0/36`, `WAIVED_BY_HUMAN`), Maintainer domain routing remains `21/36` observed and unscored, and exact post-materialization root/catalog/context burden remains `NOT_MEASURED`. Productive materialization is not started by D082. |
+| R029 | `docs/research/R029-AGENTS-SKILL-ARCHITECTURE-REFACTOR-RESEARCH.md` | COMPLETE | DECIDED | D082; T067; PR `#426`; T067 Stage 7/qualification evidence | `docs/decisions/D082-r029-lean-root-and-transverse-skill-architecture.md` | D082's lean-root + one Maintainer-domain Skill + five transverse-capability architecture was materialized, qualified and accepted through T067. Codex transverse historical routing remains `36/36 PASS`; ChatGPT/Codex empirical parity remains `NOT ESTABLISHED` (`0/36`, `WAIVED_BY_HUMAN`), and real ChatGPT host installation/routing is now a separate T068/R031 evaluation rather than an inferred consequence of source materialization. |
 | R030 | `docs/research/R030-ORCHESTRATOR-GO-APPROVAL-PROTOCOL.md` | COMPLETE | EVALUATING | this chat's approved research execution; external HITL/approval evidence; no empirical product evaluation yet | none | R030 recommends a strict proposal-bound, one-shot `go` approval token. Exact `go` approves the latest pending proposal; `go,<context>` may execute only for a non-material contextual delta, while material/uncertain deltas, stale proposals, missing proposals, duplicate/replayed approvals and cross-chat approvals fail closed. No normative policy or implementation is adopted. |
+| R031 | `docs/research/R031-CHATGPT-SKILL-HOST-MATERIALIZATION.md` | COMPLETE | EVALUATING | T068; D082/T067; current OpenAI Skills/Plugins/API evidence reviewed 2026-09-14 | none | Current ChatGPT provides a native Skill upload/install surface on eligible workspaces, and the six adopted D082 Skill source directories are structurally aligned with that model. Product host activation remains EVALUATING pending deterministic T068 packaging, the explicit Human/workspace install gate, and post-install observable routing qualification; successful source packaging alone is not installation evidence. |
 
 ## Live research frontier
+
+### R031 — ChatGPT Skill host materialization
+
+```text
+R031
+  COMPLETE / EVALUATING
+  architecture source: R029 / D082 / accepted T067 materialization
+  ChatGPT native Skill feature: documented current as of 2026-09-14
+  top-level bundles planned: 6
+  source-maintainer: 1, with Orchestrator/Executor internal routes
+  transverse Skills: 5
+  workspace-isolation top-level Skill: forbidden; remains internal to executor-launch-handoff
+  deterministic T068 packaging: IN_PROGRESS
+  ChatGPT workspace installation: NOT_STARTED
+  post-install ChatGPT routing qualification: NOT_STARTED
+  ChatGPT/Codex empirical parity: NOT_ESTABLISHED
+  T066: untouched / NOT_STARTED
+  next gate: T068 E2 complete Stage 5 package candidate, then exact-candidate Stage 6 verification
+```
+
+R031 is evidence/analysis, not host-activation acceptance. ChatGPT upload entitlement, scan result, installed state, automatic routing and anti-trigger quality must be observed at their T068 gates. Git remains canonical authority over any installed Skill snapshot.
 
 ### R030 — Orchestrator `go` approval protocol
 
@@ -89,23 +111,20 @@ R030 is research evidence only. It qualifies the interaction mechanism for norma
 R029
   COMPLETE / DECIDED
   normative architecture: ADOPTED_WITH_CONDITIONS -> D082
-  root AGENTS.md materialization: NOT_STARTED
-  transverse Skill materialization: NOT_STARTED
-  Maintainer Skill materialization/change: NOT_STARTED
-  provider/model calls: 37 historical R029 E2 calls; no new calls from D082
-  scored transverse Codex observations: 36
-  Codex transverse result under Freeze D: 36/36 PASS
+  source materialization: COMPLETE -> T067
+  deterministic post-materialization qualification: PASS -> T067
+  integration: COMPLETE -> PR #426
+  operational closure: COMPLETE -> OP072/OP073
+  Codex transverse historical result: 36/36 PASS
   authority/safety violations: 0
   Maintainer domain route observed: 21/36 (informational; not scored; not qualified)
   ChatGPT paired empirical parity: NOT ESTABLISHED
   ChatGPT half: WAIVED_BY_HUMAN (0/36 executed)
-  exact post-materialization root/catalog/context burden: NOT_MEASURED
-  decision disposition: ADOPT_WITH_CONDITIONS
+  real ChatGPT host Skill activation: EVALUATING separately in R031/T068
   decision authority: docs/decisions/D082-r029-lean-root-and-transverse-skill-architecture.md
-  next gate: Human-selected separate materialization/qualification objective if desired
 ```
 
-D082 is now the normative R029 architecture authority. It adopts the family-level topology without adding or removing top-level capability families, while carrying forward the missing paired ChatGPT empirical parity, the unscored `21/36` Maintainer-domain signal, and the unmeasured post-materialization context burden as explicit qualification residuals. D082 does not itself rewrite production `AGENTS.md`, create or activate production Skills, change the Maintainer contract, launch an Executor/provider call, or start T066 Stage 5. Workspace isolation remains an internal ELH route with RCC policy dependency.
+D082 remains the normative R029 architecture authority. T067 materialized and accepted that architecture without converting missing paired ChatGPT empirical evidence into a positive claim. T068/R031 now evaluates the distinct host-installation/routing question. Workspace isolation remains an internal ELH route with RCC policy dependency.
 
 ### T063 — adaptive worker routing requalification
 
