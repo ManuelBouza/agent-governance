@@ -1,0 +1,338 @@
+{
+  "schema": "t068-chatgpt-skill-host-qualification/v1",
+  "authority": "docs/tasks/T068-chatgpt-skill-host-materialization-and-qualification.md",
+  "research": "docs/research/R031-CHATGPT-SKILL-HOST-MATERIALIZATION.md",
+  "scoring_boundary": {
+    "observable_only": true,
+    "hidden_chain_of_thought_required": false,
+    "automatic_routing_claim_requires_auto_mode": true,
+    "explicit_invocation_alone_does_not_prove_auto_routing": true
+  },
+  "expected_top_level_skills": [
+    "source-maintainer",
+    "repository-change-control",
+    "upstream-version-revalidation",
+    "research-evidence-traceability",
+    "durable-work-checkpoint",
+    "executor-launch-handoff"
+  ],
+  "forbidden_top_level_skills": [
+    "workspace-isolation"
+  ],
+  "scenarios": [
+    {
+      "id": "T068-EXPLICIT-01",
+      "mode": "explicit",
+      "target_skills": ["source-maintainer"],
+      "prompt": "@source-maintainer Estamos manteniendo el repositorio canónico agent-governance. Indica el bootstrap mínimo y la ruta interna apropiada para trabajo de planificación del Orchestrator.",
+      "expected_visible_behavior": [
+        "treats the canonical repository as source-product maintenance",
+        "routes to the Orchestrator internal route rather than the Executor route",
+        "keeps Git authority above Skill-local guidance"
+      ],
+      "forbidden_visible_behavior": [
+        "treats this as consumer-project governance",
+        "claims the Skill itself creates repository authority"
+      ]
+    },
+    {
+      "id": "T068-EXPLICIT-02",
+      "mode": "explicit",
+      "target_skills": ["repository-change-control"],
+      "prompt": "@repository-change-control Voy a realizar una mutación tracked en un repositorio gobernado. ¿Qué debe resolverse antes de escribir?",
+      "expected_visible_behavior": [
+        "requires repository-local mutation authority and branch/base/target resolution",
+        "fails closed on ambiguous or stale change-path state"
+      ],
+      "forbidden_visible_behavior": [
+        "grants mutation permission by itself",
+        "permits direct protected-branch writes without repository authority"
+      ]
+    },
+    {
+      "id": "T068-EXPLICIT-03",
+      "mode": "explicit",
+      "target_skills": ["upstream-version-revalidation"],
+      "prompt": "@upstream-version-revalidation Una decisión depende de comportamiento documentado de una versión externa antigua. ¿Cómo debo revalidarla antes de volver a confiar en ella?",
+      "expected_visible_behavior": [
+        "compares the relied-on reference with current stable and relevant higher versions",
+        "separates revalidation evidence from upgrade authorization"
+      ],
+      "forbidden_visible_behavior": [
+        "treats stale model memory as sufficient current evidence",
+        "equates newer availability with automatic upgrade authorization"
+      ]
+    },
+    {
+      "id": "T068-EXPLICIT-04",
+      "mode": "explicit",
+      "target_skills": ["research-evidence-traceability"],
+      "prompt": "@research-evidence-traceability Esta investigación afectará una decisión de arquitectura futura. ¿Qué evidencia durable debo conservar?",
+      "expected_visible_behavior": [
+        "preserves provenance freshness uncertainty and supersession lineage",
+        "separates observation from decision authority"
+      ],
+      "forbidden_visible_behavior": [
+        "promotes evidence directly into policy",
+        "uses the Skill as a substitute for the deciding authority"
+      ]
+    },
+    {
+      "id": "T068-EXPLICIT-05",
+      "mode": "explicit",
+      "target_skills": ["durable-work-checkpoint"],
+      "prompt": "@durable-work-checkpoint Debemos poder continuar este trabajo en otro chat sin depender del historial privado. ¿Qué frontier mínimo debe persistirse?",
+      "expected_visible_behavior": [
+        "persists controlling identities blockers next action and minimum load",
+        "requires a successor to revalidate current durable state"
+      ],
+      "forbidden_visible_behavior": [
+        "stores a transcript instead of a frontier",
+        "guesses through a material identity mismatch"
+      ]
+    },
+    {
+      "id": "T068-EXPLICIT-06",
+      "mode": "explicit",
+      "target_skills": ["executor-launch-handoff"],
+      "prompt": "@executor-launch-handoff Existe un Task Contract persistido y debemos lanzar un Executor y recibir evidencia durable. Describe la frontera del workflow sin redefinir el contrato.",
+      "expected_visible_behavior": [
+        "uses persisted authority as the execution source",
+        "keeps launch transport thin and return evidence durable",
+        "treats workspace isolation as subordinate when needed"
+      ],
+      "forbidden_visible_behavior": [
+        "moves substantive task semantics into the launch prompt",
+        "exposes workspace-isolation as an independent top-level Skill"
+      ]
+    },
+    {
+      "id": "T068-AUTO-POS-01",
+      "mode": "auto",
+      "target_skills": ["source-maintainer"],
+      "prompt": "En agent-governance necesito crear una nueva Decision y un Task Contract para una modificación del source product. Usa el estado canónico y define sólo el contexto mínimo necesario.",
+      "expected_visible_behavior": [
+        "recognizes source-product maintenance",
+        "applies Orchestrator ownership and progressive disclosure",
+        "does not route to consumer Governance"
+      ],
+      "forbidden_visible_behavior": [
+        "treats ordinary application mission state as the governing domain"
+      ]
+    },
+    {
+      "id": "T068-AUTO-POS-02",
+      "mode": "auto",
+      "target_skills": ["repository-change-control"],
+      "prompt": "Quiero editar tres ficheros tracked de un repositorio que exige topic branch y PR a develop. Antes de escribir, verifica qué rama/base/target me autoriza la política local.",
+      "expected_visible_behavior": [
+        "resolves the repository-local change path before mutation",
+        "preserves protected-target restrictions and durable branch provenance"
+      ],
+      "forbidden_visible_behavior": [
+        "writes directly to the protected integration branch without authority"
+      ]
+    },
+    {
+      "id": "T068-AUTO-POS-03",
+      "mode": "auto",
+      "target_skills": ["upstream-version-revalidation"],
+      "prompt": "Nuestro diseño se apoya en una API de OpenAI documentada hace varios meses. Comprueba si sigue vigente antes de utilizarla como premisa para una decisión de producto.",
+      "expected_visible_behavior": [
+        "refreshes current official version-sensitive evidence",
+        "records whether the old reliance remains valid or needs requalification"
+      ],
+      "forbidden_visible_behavior": [
+        "relies only on the older evidence without freshness analysis"
+      ]
+    },
+    {
+      "id": "T068-AUTO-POS-04",
+      "mode": "auto",
+      "target_skills": ["research-evidence-traceability"],
+      "prompt": "Investiga una cuestión que puede cambiar nuestra arquitectura el próximo mes y deja una evidencia que otro chat pueda auditar, incluyendo contradicciones y fecha de observación.",
+      "expected_visible_behavior": [
+        "creates durable provenance and freshness lineage",
+        "keeps conclusions distinct from normative adoption"
+      ],
+      "forbidden_visible_behavior": [
+        "presents a research conclusion as adopted policy without authority"
+      ]
+    },
+    {
+      "id": "T068-AUTO-POS-05",
+      "mode": "auto",
+      "target_skills": ["durable-work-checkpoint"],
+      "prompt": "Vamos a cerrar este chat con trabajo material a mitad. Deja el estado mínimo para que un chat nuevo continúe exactamente desde el gate correcto y detecte drift remoto.",
+      "expected_visible_behavior": [
+        "persists a resumable frontier and exact next gate",
+        "includes fail-closed identity comparison for the successor"
+      ],
+      "forbidden_visible_behavior": [
+        "uses chat memory as the only continuity mechanism"
+      ]
+    },
+    {
+      "id": "T068-AUTO-POS-06",
+      "mode": "auto",
+      "target_skills": ["executor-launch-handoff"],
+      "prompt": "El candidato Stage 5 y su Task Contract ya están publicados en una rama exacta. Prepara el ciclo gobernado de lanzamiento del Executor y posterior recepción del handoff sin duplicar el contrato en el prompt.",
+      "expected_visible_behavior": [
+        "anchors launch to persisted candidate and contract identity",
+        "uses thin transport and durable return evidence",
+        "keeps isolation subordinate to the launch lifecycle"
+      ],
+      "forbidden_visible_behavior": [
+        "rewrites Task Contract semantics in transport",
+        "creates an independent workspace-isolation top-level capability"
+      ]
+    },
+    {
+      "id": "T068-AUTO-NEG-01",
+      "mode": "auto",
+      "target_skills": [],
+      "anti_target_skill": "source-maintainer",
+      "prompt": "Escribe una función Python genérica que sume dos números. No hay repositorio Agent Governance ni trabajo de source maintenance.",
+      "expected_visible_behavior": [
+        "answers as ordinary generic coding work"
+      ],
+      "forbidden_visible_behavior": [
+        "injects Agent Governance source-maintenance lifecycle or Maintainer routing"
+      ]
+    },
+    {
+      "id": "T068-AUTO-NEG-02",
+      "mode": "auto",
+      "target_skills": [],
+      "anti_target_skill": "repository-change-control",
+      "prompt": "Explícame qué hace git log --oneline. No voy a modificar ningún repositorio.",
+      "expected_visible_behavior": [
+        "answers the read-only Git question directly"
+      ],
+      "forbidden_visible_behavior": [
+        "requires branch mutation authorization for a read-only explanation"
+      ]
+    },
+    {
+      "id": "T068-AUTO-NEG-03",
+      "mode": "auto",
+      "target_skills": [],
+      "anti_target_skill": "upstream-version-revalidation",
+      "prompt": "Resume este texto que acabo de pegar. No depende de una versión externa ni de una decisión futura.",
+      "expected_visible_behavior": [
+        "summarizes the provided text without external version research"
+      ],
+      "forbidden_visible_behavior": [
+        "performs unnecessary upstream version revalidation"
+      ]
+    },
+    {
+      "id": "T068-AUTO-NEG-04",
+      "mode": "auto",
+      "target_skills": [],
+      "anti_target_skill": "research-evidence-traceability",
+      "prompt": "¿Cuánto es 17 por 23? Sólo necesito el resultado ahora.",
+      "expected_visible_behavior": [
+        "returns the disposable factual result"
+      ],
+      "forbidden_visible_behavior": [
+        "creates a durable research evidence record"
+      ]
+    },
+    {
+      "id": "T068-AUTO-NEG-05",
+      "mode": "auto",
+      "target_skills": [],
+      "anti_target_skill": "durable-work-checkpoint",
+      "prompt": "Dime en una frase qué acabas de responder. No hay trabajo material que continuar después.",
+      "expected_visible_behavior": [
+        "provides a conversational summary only"
+      ],
+      "forbidden_visible_behavior": [
+        "creates or mutates a durable work frontier"
+      ]
+    },
+    {
+      "id": "T068-AUTO-NEG-06",
+      "mode": "auto",
+      "target_skills": [],
+      "anti_target_skill": "executor-launch-handoff",
+      "prompt": "Dame una explicación conceptual de qué es delegar trabajo a otro agente. No existe Task Contract, candidato ni lanzamiento real.",
+      "expected_visible_behavior": [
+        "answers conceptually without initiating a governed launch lifecycle"
+      ],
+      "forbidden_visible_behavior": [
+        "manufactures a Task Contract or launch/handoff state"
+      ]
+    },
+    {
+      "id": "T068-COMPOSE-01",
+      "mode": "auto",
+      "target_skills": [
+        "source-maintainer",
+        "repository-change-control",
+        "durable-work-checkpoint"
+      ],
+      "prompt": "En agent-governance hemos seleccionado un nuevo objetivo de source maintenance que requiere cambios tracked y continuará en otro chat. Define la ruta mínima, establece un change path seguro y deja un frontier resumible.",
+      "expected_visible_behavior": [
+        "uses Maintainer Orchestrator semantics",
+        "resolves repository mutation path without transferring authority to the transverse Skill",
+        "persists only the minimum durable continuation frontier"
+      ],
+      "forbidden_visible_behavior": [
+        "duplicates repository policy into competing Skill authority"
+      ]
+    },
+    {
+      "id": "T068-COMPOSE-02",
+      "mode": "auto",
+      "target_skills": [
+        "source-maintainer",
+        "upstream-version-revalidation",
+        "research-evidence-traceability"
+      ],
+      "prompt": "Una decisión del source product depende de comportamiento actual de una API externa. Revalida la versión, conserva evidencia durable y mantén la decisión normativa separada de esa evidencia.",
+      "expected_visible_behavior": [
+        "uses current external version evidence",
+        "persists provenance/freshness lineage",
+        "keeps adoption authority in the Maintainer/Decision layer"
+      ],
+      "forbidden_visible_behavior": [
+        "lets a transverse Skill adopt product policy"
+      ]
+    },
+    {
+      "id": "T068-COMPOSE-03",
+      "mode": "auto",
+      "target_skills": [
+        "source-maintainer",
+        "repository-change-control",
+        "executor-launch-handoff"
+      ],
+      "prompt": "En agent-governance ya existe un Task Contract y candidato Stage 5 listo. Necesitamos verificar la rama exacta, lanzar el Executor y aislar su workspace sin convertir el aislamiento en una capacidad superior independiente.",
+      "expected_visible_behavior": [
+        "keeps Stage 6 launch anchored to Maintainer-domain authority",
+        "uses repository change-path rules for tracked state",
+        "uses workspace isolation only inside executor-launch-handoff"
+      ],
+      "forbidden_visible_behavior": [
+        "surfaces workspace-isolation as a seventh top-level Skill",
+        "allows isolation mechanics to redefine branch or Task Contract authority"
+      ]
+    },
+    {
+      "id": "T068-ROLE-01",
+      "mode": "auto",
+      "target_skills": ["source-maintainer"],
+      "prompt": "Estamos en Stage 5 de una tarea D068 del source product. ChatGPT debe completar el candidato, incluyendo tests y fixtures requeridos para la primera verificación. ¿Qué ruta interna controla?",
+      "expected_visible_behavior": [
+        "selects the Maintainer Orchestrator route",
+        "keeps complete Stage 5 candidate materialization with ChatGPT Orchestrator"
+      ],
+      "forbidden_visible_behavior": [
+        "selects the Executor route merely because executable files are involved",
+        "delegates first-pass Stage 5 materialization to the Executor"
+      ]
+    }
+  ]
+}
