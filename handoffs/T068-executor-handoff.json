@@ -1,0 +1,178 @@
+{
+  "schema_version": 1,
+  "task_id": "T068",
+  "status": "DONE",
+  "task_contract_path": "docs/tasks/T068-chatgpt-skill-host-materialization-and-qualification.md",
+  "sdd_profile": "STANDARD",
+  "branch": "feat/t068-chatgpt-skill-host-activation",
+  "implementation_head_sha": "b25a5a3e7ac91137a302cde4849c4b1262393b2d",
+  "base_branch": "develop",
+  "base_sha": "5bed8b952a3c552e3af0abfdbe07895864319696",
+  "candidate_identity": {
+    "candidate_content_anchor": "9707b41a1e0ac7f64c776318ca557bd3ceca263f",
+    "expected_launch_head": "8554fa35e5a45a6f6589932554eac4abe51c77fb",
+    "observed_remote_launch_head": "8554fa35e5a45a6f6589932554eac4abe51c77fb",
+    "launch_head_verified_exact": true,
+    "protected_base_merge_base_matches": true,
+    "content_anchor_is_launch_ancestor": true,
+    "post_anchor_delta": [
+      "docs/orchestrator/CHECKPOINT.md",
+      "docs/tasks/T068-chatgpt-skill-host-materialization-and-qualification.md"
+    ],
+    "post_anchor_delta_metadata_only": true
+  },
+  "workspace_identity": {
+    "coordinator_id": "AG | agent-governance | T068 | root-1",
+    "session": "NEW",
+    "worktree": ".worktrees/t068-executor",
+    "exclusive_for_task": true
+  },
+  "files_changed": [
+    "tests/test_chatgpt_skill_package.py",
+    "tests/test_t068_chatgpt_skill_qualification.py",
+    "handoffs/T068-executor-handoff.json"
+  ],
+  "stage6_repairs": [
+    {
+      "files": [
+        "tests/test_chatgpt_skill_package.py",
+        "tests/test_t068_chatgpt_skill_qualification.py"
+      ],
+      "classification": "bounded technical test-mechanics repair",
+      "description": "Applied Ruff's deterministic line wrapping to two overlong assertions after the repository format gate reported them. Assertions, qualification expectations, topology, and semantics are unchanged."
+    }
+  ],
+  "implementation_summary": "Verified the exact frozen T068 candidate, built and independently inspected six reproducible ChatGPT Skill ZIPs plus their manifest, executed focused and repository-wide verification, repaired only two Ruff formatting defects in T068 tests, and completed Code Review & Verify with no unresolved material finding.",
+  "verification": {
+    "commands": [
+      "git fetch origin refs/heads/feat/t068-chatgpt-skill-host-activation:refs/remotes/origin/feat/t068-chatgpt-skill-host-activation",
+      "git ls-remote --heads origin feat/t068-chatgpt-skill-host-activation",
+      "git merge-base --is-ancestor 5bed8b952a3c552e3af0abfdbe07895864319696 refs/remotes/origin/feat/t068-chatgpt-skill-host-activation",
+      "git merge-base --is-ancestor 9707b41a1e0ac7f64c776318ca557bd3ceca263f refs/remotes/origin/feat/t068-chatgpt-skill-host-activation",
+      "git diff --name-status 9707b41a1e0ac7f64c776318ca557bd3ceca263f..8554fa35e5a45a6f6589932554eac4abe51c77fb",
+      "uv run --locked python tools/chatgpt_skill_package.py --root . --validate-only",
+      "uv run --locked python tools/chatgpt_skill_package.py --root . --output <disposable-temp>/t068-e3-8554fa35 --source-revision 8554fa35e5a45a6f6589932554eac4abe51c77fb",
+      "uv run --locked python -m pytest tests/test_chatgpt_skill_package.py tests/test_chatgpt_skill_package_safety.py tests/test_t068_chatgpt_skill_qualification.py",
+      "uv run --locked python -m pytest tests/test_reference_integrity.py tests/test_r029_materialization.py tests/test_source_maintainer_profile.py tests/test_source_consumer_separation.py tests/test_canonical_layout.py",
+      "uv run --locked ruff check tools/chatgpt_skill_package.py tests/test_chatgpt_skill_package.py tests/test_chatgpt_skill_package_safety.py tests/test_t068_chatgpt_skill_qualification.py",
+      "uv run --locked ruff check .",
+      "uv run --locked ruff format --check .",
+      "uv run --locked python -m pytest tests/test_code_health.py",
+      "uv run --locked python tools/code_health.py check",
+      "uv run --locked python -m pytest",
+      "git diff --check"
+    ],
+    "results": {
+      "identity": "PASS: canonical remote and fetched tracking ref both matched the exact launch head; base and content-anchor ancestry passed; post-anchor delta contained only the T068 Task Contract and Orchestrator checkpoint Markdown.",
+      "package_validation": "PASS: validate-only completed and build emitted exactly six ZIPs plus manifest.json with source_revision bound to the exact launch head.",
+      "package_inspection": "PASS: manifest/archive SHA-256 values, ZIP inventories, source-file sizes and SHA-256 values, source-to-archive byte identity, root SKILL.md presence, required relative resources, and normalized 1980-01-01 timestamps were independently checked.",
+      "reproducibility": "PASS: a second clean build produced 7/7 byte-identical outputs, including manifest.json and all six ZIPs.",
+      "topology": "PASS: exactly one source-maintainer plus five transverse Skill bundles; workspace-isolation is present only as executor-launch-handoff/references/workspace-isolation.md and is not a top-level bundle.",
+      "focused_tests": "PASS: 17 passed after repair.",
+      "relevant_skill_reference_tests": "PASS: 121 passed.",
+      "ruff": "PASS: focused and repository-wide lint clean; repository format check reports 87 files formatted after the bounded repair.",
+      "code_health": "PASS: 6 tests passed; checker reports size, complexity, and dependency status PASS.",
+      "full_suite": "PASS: 544 passed in 142.13s.",
+      "generated_artifact_hygiene": "PASS: generated ZIPs/manifests were created only under two disposable OS-temp directories; none are tracked or present in the worktree diff.",
+      "scope_hygiene": "PASS: the implementation diff contains only the two authorized T068 test-formatting repairs; no committed Markdown, qualification semantics, Skill source, T066, or unrelated product surface changed."
+    },
+    "diagnostic_history": [
+      "Initial sandboxed uv invocations could not access the existing user uv cache; rerunning with authorized normal cache/temp access succeeded.",
+      "The first repository format check found two T068 assertion-wrapping defects; Ruff formatted those exact files and all affected/broad gates then passed.",
+      "An initial code-health CLI invocation omitted the now-required subcommand and returned usage status; the documented 'check' invocation passed."
+    ],
+    "runtime": "Windows; uv 0.11.32; CPython 3.13.14; pytest 9.1.1; Ruff 0.16.2.",
+    "network_required": "Only canonical remote fetch/query and final push/verification. Package generation and all test/lint/code-health inspection were local."
+  },
+  "package_manifest_evidence": {
+    "schema": "agent-governance-chatgpt-skill-packages/v1",
+    "source_revision": "8554fa35e5a45a6f6589932554eac4abe51c77fb",
+    "manifest_sha256": "cdea239717707565cd5c0324de63ffacb62957bcdbb3220074989d1230415adf",
+    "bundle_count": 6,
+    "bundles": [
+      {
+        "name": "source-maintainer",
+        "archive_sha256": "71d88c6d537a9cfd9211fc26cd42e7df5389389d45c880e311f2d21fe4e9437d",
+        "file_count": 6
+      },
+      {
+        "name": "repository-change-control",
+        "archive_sha256": "e96e5503fb8cd117aee48f5a0671ba21f6d3f0205272e007a6f3c39782c716f2",
+        "file_count": 1
+      },
+      {
+        "name": "upstream-version-revalidation",
+        "archive_sha256": "b6c7f097f331df42667d870f501567204e0d6ace4fc29b7d73776e88cd8cca95",
+        "file_count": 1
+      },
+      {
+        "name": "research-evidence-traceability",
+        "archive_sha256": "963635682b463173e6581cf9049905e81ccdf33a15a522cec174b626595e921c",
+        "file_count": 1
+      },
+      {
+        "name": "durable-work-checkpoint",
+        "archive_sha256": "6682f7501c05d41266ab3380d002357ce8ca8c994e7d373e462da73343519872",
+        "file_count": 1
+      },
+      {
+        "name": "executor-launch-handoff",
+        "archive_sha256": "f4285711f64f66ed43086143b6b2bf522b0ce5b2e9976d285ddebb5c22b07fff",
+        "file_count": 2
+      }
+    ]
+  },
+  "requirement_trace": {
+    "REQ-T068-1": "PASS: exactly six independently named bundles were built and inventoried.",
+    "REQ-T068-2": "PASS: each bundle contains root SKILL.md and all Skill-local files with source-identical bytes and preserved relative paths.",
+    "REQ-T068-3": "PASS: manifest provenance is bound to launch head 8554fa35e5a45a6f6589932554eac4abe51c77fb; generated outputs remain untracked and non-authoritative.",
+    "REQ-T068-4": "PASS: frozen safety/topology tests and independent inspection cover missing resources, names, escape paths, contamination, output preservation, reproducibility, and forbidden top-level workspace-isolation.",
+    "REQ-T068-5": "PRESERVED/NOT CONSUMED: E3 does not infer installation; E4 remains the Human/workspace gate.",
+    "REQ-T068-6": "PRESERVED/NOT STARTED: the 22-scenario Orchestrator-owned corpus passed structural tests but no post-install host behavior was claimed.",
+    "REQ-T068-7": "PASS: archive bytes are identical to canonical Skill sources and no host-specific semantic rewrite exists.",
+    "REQ-T068-P1/P2/P3/P4": "PASS: D082 topology, Git authority, Skill-independent correctness, and D068 ownership remain intact.",
+    "REQ-T068-P5": "PASS: no T066 path or state was touched.",
+    "REQ-T068-P6": "PASS: no ChatGPT/Codex empirical parity claim was changed or inferred.",
+    "AC-T068-1/2/3/4/5": "PASS for E3: reproducibility, completeness, deterministic safety validation, semantic preservation, and technical verification are green with no unresolved material finding.",
+    "AC-T068-6/7/8": "DEFERRED BY CONTRACT: E4 installation and E5 observable behavioral qualification remain not started; E3 preserves their topology/corpus prerequisites.",
+    "AC-T068-9/10": "PASS: Git/cold-start/fail-closed independence is preserved; T066 is untouched and parity remains NOT_ESTABLISHED."
+  },
+  "code_review": {
+    "reviewed_head_sha": "b25a5a3e7ac91137a302cde4849c4b1262393b2d",
+    "summary": "Reviewed the published candidate and bounded repair for requirement/Design/PRESERVED fidelity, archive/path safety, deterministic ordering and metadata, output preservation, source-byte identity, relative-resource completeness, provenance, D082 topology, maintainability, generated-artifact hygiene, unauthorized scope, and D076. All required E3 gates pass.",
+    "findings": [],
+    "resolved_findings": [
+      "Ruff format initially reported two overlong T068 assertions; the exact two test files were mechanically reformatted without changing behavior or semantic expectations."
+    ],
+    "upstream_reentry_required": false,
+    "upstream_reentry_stage": null
+  },
+  "d076_audit": {
+    "material_missing_stage5_artifact": false,
+    "custom_executor_controller_or_harness_created": false,
+    "conclusion": "No material or uncertain Executor-created executable artifact was needed. Verification used the published packager/tests, repository tools, standard toolchain, and inline inspection only."
+  },
+  "ephemeral_artifacts": [
+    {
+      "label_or_path": ".venv/",
+      "kind": "tool-managed Python virtual environment",
+      "purpose": "Execute the repository's locked Python, pytest, and Ruff toolchain.",
+      "materiality": "mechanical",
+      "authority_basis": "Repository pyproject.toml, uv.lock, and canonical test workflow.",
+      "approximate_size_or_lines_if_known": "7 locked packages installed; source-line count not applicable.",
+      "content_digest_if_safe_and_available": null,
+      "executed": true,
+      "persisted": false,
+      "removed": false,
+      "reentry_required": false
+    }
+  ],
+  "dependencies_or_config_changes": [],
+  "git_status": "Implementation commit b25a5a3e7ac91137a302cde4849c4b1262393b2d is clean; only this handoff file remains to be committed in the finalization commit.",
+  "unresolved_issues": [],
+  "recommended_next_task": "ChatGPT Orchestrator may perform T068 Stage 7 review of E3 evidence, then proceed only to the distinct E4 Human installation gate if accepted.",
+  "chatgpt_read_path": [
+    "docs/tasks/T068-chatgpt-skill-host-materialization-and-qualification.md",
+    "handoffs/T068-executor-handoff.json"
+  ]
+}
