@@ -6,9 +6,9 @@ import json
 import re
 import stat
 import zipfile
+from collections.abc import Iterable
 from dataclasses import dataclass
 from pathlib import Path, PurePosixPath
-from typing import Iterable
 
 SKILL_SOURCES: dict[str, str] = {
     "source-maintainer": "maintainer-skill",
