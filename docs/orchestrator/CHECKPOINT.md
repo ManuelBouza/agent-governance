@@ -1,7 +1,7 @@
 # Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O328  
+Checkpoint-Sequence: O329  
 Date: 2026-09-14  
 Canonical-Branch: `develop`  
 Current-Work-Unit: `T068 / ChatGPT Skill host materialization and qualification`  
@@ -25,7 +25,7 @@ T067-State: ACCEPTED_INTEGRATED_OPERATIONALLY_CLOSED
 T067-Coordinator: retired  
 T066-Stage5-State: NOT_STARTED  
 ChatGPT-Empirical-Parity: NOT_ESTABLISHED  
-Experimental-Human-Readability-Rule: ACTIVE_TRIAL  
+Experimental-Human-Readability-Rule: ACTIVE_TRIAL_CHATGPT_ONLY  
 Next-ChatGPT-Effort: MEDIUM  
 Next-Action: Human launches the T068 E3 Executor against the exact current remote head of `feat/t068-chatgpt-skill-host-activation`, using the thin transport and the frozen Task Contract. After terminal return, ChatGPT validates the durable handoff/remote state before any E4 ChatGPT workspace installation. Do not start E4/E5/T066 automatically.  
 Next-Chat-Minimum-Load: `docs/tasks/T068-chatgpt-skill-host-materialization-and-qualification.md`; `handoffs/T068-executor-handoff.json` only after Executor return; R031 only if a host/version claim must be revalidated  
@@ -33,23 +33,36 @@ Do-Not-Load-Or-Do: Do not reopen T067; do not start/modify T066; do not claim Ch
 
 ## Experimental Human-readable identifier rule
 
-Human instruction on 2026-09-14 establishes this as an experimental presentation rule for later retention/rejection review. It is not yet a normative product-policy Decision.
+Human instruction on 2026-09-14 establishes this as an experimental **ChatGPT Human-facing presentation rule** for later retention/rejection review. It is not yet a normative product-policy Decision.
 
-When communicating with the Human, the Orchestrator SHOULD translate opaque governance identifiers into a short plain-language gloss on first meaningful use in each response or local discussion context. The identifier remains visible for traceability, followed immediately by its human meaning.
+When ChatGPT communicates directly with the Human in the ChatGPT conversation UI, the Orchestrator SHOULD translate opaque governance identifiers into a short plain-language gloss on first meaningful use in each response or local discussion context. The identifier remains visible for traceability, followed immediately by its human meaning.
 
 Examples:
 
 - `R031 — investigación sobre cómo empaquetar, cargar y validar las Skills de Agent Governance en ChatGPT`;
-- `O328 — checkpoint/frontera actual del Orchestrator`;
+- `O329 — checkpoint/frontera actual del Orchestrator`;
 - `T068 — trabajo para materializar y cualificar las Skills en ChatGPT`;
 - `D082 — decisión que adoptó la arquitectura de un Maintainer Skill + cinco Skills transversales`;
 - `E3 — verificación técnica Stage 6 por el Executor`.
 
-The rule applies to Human-facing explanations, status summaries, launch explanations, acceptance reports, and next-step descriptions. It does not require rewriting canonical IDs, filenames, machine-readable schemas, exact command arguments, commit SHAs, branch names, code blocks where exact syntax is needed, or historical artifacts.
+### Scope boundary
 
-If multiple identifiers appear together, prefer a compact inline gloss or a short mapping rather than making the response harder to read. Repeated occurrences in the same response need not be retranslated unless ambiguity returns.
+This experimental translation/gloss rule applies **only to Human-visible prose produced by ChatGPT in the ChatGPT interaction surface**.
 
-Evaluation target for later Human decision: whether the glosses materially improve comprehension without excessive verbosity or obscuring exact repository traceability.
+It MUST NOT be propagated as a requirement to:
+
+- Codex / Agente de IA Ejecutor prompts or transport instructions;
+- Codex internal reasoning, planning, worker/subagent prompts, or private execution traces;
+- Task Contracts, Executor handoffs, machine-readable evidence, eval schemas, commands, branch names, commit SHAs, filenames, or other technical artifacts unless a separate product requirement explicitly calls for human-readable labels there;
+- requests that Codex translate, expand, explain, or otherwise spend context/tokens on these identifiers merely for presentation.
+
+Codex and Executor-facing surfaces retain the compact canonical identifiers (`R031`, `O329`, `T068`, `D082`, `E3`, etc.) without added gloss unless the gloss is independently required by the underlying task semantics.
+
+Within ChatGPT Human-facing prose, if multiple identifiers appear together, prefer a compact inline gloss or short mapping rather than making the response harder to read. Repeated occurrences in the same response need not be retranslated unless ambiguity returns.
+
+The rule does not require rewriting canonical IDs, filenames, machine-readable schemas, exact command arguments, commit SHAs, branch names, code blocks where exact syntax is needed, or historical artifacts.
+
+Evaluation target for later Human decision: whether ChatGPT-only glosses materially improve comprehension without excessive verbosity, obscuring exact repository traceability, or adding unnecessary Executor/Codex context cost.
 
 ## Execution 1 completion
 
@@ -88,7 +101,9 @@ Model: GPT-5.6 Sol
 Effort: Medium
 ```
 
-The Human-visible launch prompt must carry the exact current remote topic-branch HEAD observed after this O328 publication. That HEAD is transport/freshness identity, not embedded self-referentially in this checkpoint. The Executor must verify that changes after content anchor `9707b41a1e0ac7f64c776318ca557bd3ceca263f` are limited to the Task Contract freeze and Orchestrator checkpoint Markdown before executing E3.
+The Human-visible launch prompt must carry the exact current remote topic-branch HEAD observed after this O329 publication. That HEAD is transport/freshness identity, not embedded self-referentially in this checkpoint. The Executor must verify that changes after content anchor `9707b41a1e0ac7f64c776318ca557bd3ceca263f` are limited to the Task Contract freeze and Orchestrator checkpoint Markdown before executing E3.
+
+The ChatGPT-only identifier-gloss trial MUST NOT add explanatory identifier expansions to the Executor launch transport. The transport remains compact and technical.
 
 Stage 6 may make only bounded technical repairs permitted by T068 and must persist `handoffs/T068-executor-handoff.json`. Any semantic/topology/research/qualification-corpus/Markdown defect is a fail-closed Stage 5 re-entry.
 
