@@ -20,6 +20,7 @@ SKILL_SOURCES: dict[str, str] = {
 }
 
 FORBIDDEN_TOP_LEVEL_SKILLS = {"workspace-isolation"}
+FORBIDDEN_TOP_LEVEL_SOURCE_DIRECTORIES = {"workspace-isolation", "workspace-isolation-skill"}
 FORBIDDEN_PATH_PARTS = {
     ".git",
     ".pytest_cache",
@@ -122,11 +123,10 @@ def validate_skill_local_references(skill_dir: Path, files: Iterable[Path]) -> N
         except (OSError, UnicodeDecodeError) as exc:
             raise SkillPackageError(f"cannot read Markdown Skill resource: {path}") from exc
         for reference in sorted(set(REFERENCE_RE.findall(text))):
-            target = skill_dir / PurePosixPath(reference)
-            try:
-                target.relative_to(skill_dir)
-            except ValueError as exc:
-                raise SkillPackageError(f"Skill reference escapes package: {reference}") from exc
+            relative_reference = PurePosixPath(reference)
+            if ".." in relative_reference.parts:
+                raise SkillPackageError(f"Skill reference escapes package: {reference}")
+            target = skill_dir.joinpath(*relative_reference.parts)
             if not target.is_file():
                 relative_source = path.relative_to(skill_dir).as_posix()
                 raise SkillPackageError(
@@ -139,6 +139,16 @@ def validate_source_topology(root: Path) -> dict[str, tuple[Path, tuple[Path, ..
         raise SkillPackageError("forbidden top-level Skill configured")
     if len(set(SKILL_SOURCES.values())) != len(SKILL_SOURCES):
         raise SkillPackageError("duplicate Skill source directory configured")
+    forbidden_sources = sorted(
+        directory
+        for directory in FORBIDDEN_TOP_LEVEL_SOURCE_DIRECTORIES
+        if (root / directory).exists()
+    )
+    if forbidden_sources:
+        raise SkillPackageError(
+            "workspace-isolation cannot be promoted to a top-level Skill source: "
+            + ", ".join(forbidden_sources)
+        )
 
     validated: dict[str, tuple[Path, tuple[Path, ...]]] = {}
     seen_names: set[str] = set()
