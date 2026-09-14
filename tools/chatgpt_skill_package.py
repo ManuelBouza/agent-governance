@@ -200,7 +200,12 @@ def build_bundle(
     ) as archive:
         for path in files:
             relative_path = _validate_relative_path(path.relative_to(skill_dir))
-            archive.writestr(_zip_info(relative_path), path.read_bytes(), compress_type=zipfile.ZIP_DEFLATED)
+            archive.writestr(
+                _zip_info(relative_path),
+                path.read_bytes(),
+                compress_type=zipfile.ZIP_DEFLATED,
+                compresslevel=9,
+            )
 
     source_files = tuple(_source_file(skill_dir, path) for path in files)
     return SkillBundle(
@@ -225,10 +230,14 @@ def build_packages(root: Path, output_dir: Path, source_revision: str) -> dict[s
     topology = validate_source_topology(resolved_root)
     resolved_output.mkdir(parents=True, exist_ok=True)
 
-    expected_archives = {f"{name}.zip" for name in SKILL_SOURCES}
-    for existing in resolved_output.glob("*.zip"):
-        if existing.name not in expected_archives:
-            existing.unlink()
+    expected_outputs = {f"{name}.zip" for name in SKILL_SOURCES} | {"manifest.json"}
+    unexpected_outputs = sorted(
+        path.name for path in resolved_output.iterdir() if path.name not in expected_outputs
+    )
+    if unexpected_outputs:
+        raise SkillPackageError(
+            "output directory contains unrelated entries: " + ", ".join(unexpected_outputs)
+        )
 
     bundles: list[SkillBundle] = []
     for name in SKILL_SOURCES:
