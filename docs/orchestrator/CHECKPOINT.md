@@ -1,11 +1,11 @@
 # Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O331  
+Checkpoint-Sequence: O332  
 Date: 2026-09-15  
 Canonical-Branch: `develop`  
 Current-Work-Unit: `T068 / ChatGPT Skill host materialization and qualification`  
-State: T068_E4_HUMAN_REPORTED_COMPLETE_E5_READY_FOR_FRESH_CHAT_QUALIFICATION  
+State: T068_E4_VISUALLY_VERIFIED_E5_READY_FOR_FRESH_CHAT_QUALIFICATION  
 Chat-Closure: CLOSE_AFTER_HANDOFF_TO_FRESH_CHAT  
 Human-Objective: Materialize the adopted R029/D082 Skills in ChatGPT and qualify real host activation/routing  
 T068-Task-Contract: `docs/tasks/T068-chatgpt-skill-host-materialization-and-qualification.md`  
@@ -19,10 +19,10 @@ T068-E4-Gate-Checkpoint-Head: `2dbdd18bd4ff6c70c3d602526e2ef2ebae294d5b`
 T068-Execution-Shape: MULTI_EXECUTION  
 T068-Execution1-State: COMPLETE  
 T068-Execution2-State: COMPLETE_ACCEPTED  
-T068-E4-State: HUMAN_REPORTED_COMPLETE_NOT_DIRECTLY_ENUMERABLE_BY_ORCHESTRATOR_RUNTIME  
+T068-E4-State: VERIFIED_BY_HUMAN_VISIBLE_CHATGPT_SKILLS_UI  
 T068-Immediate-Unit: `Execution 3 / E5 ChatGPT host behavioral qualification`  
 T068-Stage6-State: ACCEPTED  
-T068-ChatGPT-Install-State: HUMAN_REPORTED_COMPLETE  
+T068-ChatGPT-Install-State: VERIFIED_INSTALLED_SIX_OF_SIX  
 T068-ChatGPT-Qualification-State: READY_NOT_STARTED  
 Active-Executor: none  
 T067-State: ACCEPTED_INTEGRATED_OPERATIONALLY_CLOSED  
@@ -32,9 +32,9 @@ ChatGPT-Empirical-Parity: NOT_ESTABLISHED
 Experimental-Human-Readability-Rule: ACTIVE_TRIAL_CHATGPT_ONLY  
 Next-ChatGPT-Effort: MEDIUM  
 Next-Execution-Shape: SINGLE_EXECUTION  
-Next-Action: Start a fresh ChatGPT chat for T068 E5 behavioral qualification. Bootstrap from current `develop`, then this checkpoint and the T068 Task Contract. Run the frozen 22-scenario corpus against the installed ChatGPT Skills, scoring only observable behavior. Treat any inability to explicitly invoke or observe the six Skills as host evidence, not as hidden-routing proof. Do not start/modify T066.  
+Next-Action: Start a fresh ChatGPT chat for T068 E5 behavioral qualification. Bootstrap from current `develop`, then this checkpoint and the T068 Task Contract. Run the frozen 22-scenario corpus against the installed ChatGPT Skills, scoring only observable behavior. Treat any inability to explicitly invoke or observe a Skill as host evidence, not as hidden-routing proof. Do not start/modify T066.  
 Next-Chat-Minimum-Load: `docs/tasks/T068-chatgpt-skill-host-materialization-and-qualification.md`; `evals/t068_chatgpt_skill_host/qualification-corpus.json`; `handoffs/T068-executor-handoff.json`; R031 only if a host/version claim must be revalidated  
-Do-Not-Load-Or-Do: Do not reopen T067; do not start/modify T066; do not relaunch E3; do not claim individual E4 host statuses beyond the Human report unless observable host evidence is obtained; do not relabel ChatGPT/Codex parity.
+Do-Not-Load-Or-Do: Do not reopen T067; do not start/modify T066; do not relaunch E3; do not relabel ChatGPT/Codex parity.
 
 ## Experimental Human-readable identifier rule
 
@@ -53,19 +53,24 @@ E3 / Stage 6 remains accepted. The accepted package identities are:
 
 Accepted manifest SHA-256: `cdea239717707565cd5c0324de63ffacb62957bcdbb3220074989d1230415adf`.
 
-The Human reported that installation was completed on 2026-09-15. The current Orchestrator runtime cannot directly enumerate newly uploaded personal Skills through its available plugin/skill management interfaces. Therefore E4 is recorded as Human-reported complete, while E5 remains the empirical host-use gate.
+## E4 visual host evidence
 
-## Host-evidence interpretation
+On 2026-09-15 the Human provided a ChatGPT Skills UI screenshot showing exactly the six expected T068 Skills under `Instaladas` and also under `Creadas por mí`:
 
-Current official OpenAI documentation states that uploaded Skills are scanned before they become available and that installed Skills can be used automatically when helpful. The user-visible Skills page is the authoritative Human surface for Installed/Created/Shared categories. Availability and syncing may vary by product and surface.
+- `repository change control`;
+- `executor launch handoff`;
+- `upstream version revalidation`;
+- `research evidence traceability`;
+- `durable work checkpoint`;
+- `source maintainer`.
 
-The current chat's inspectable plugin-skill resource list does not expose the six personal T068 Skills. This absence MUST NOT be interpreted by itself as installation failure because the available inspection interface is not documented as an authoritative enumeration of personal uploaded Skills.
+No seventh `workspace-isolation` top-level Skill is visible. This visually verifies six-of-six host installation and preserves the D082 topology boundary. The screenshot is Human-visible host evidence; it does not by itself prove automatic routing behavior, which remains E5 scope.
 
-E5 should therefore run in a fresh ChatGPT chat to avoid carrying any stale chat-session capability snapshot and to test the installed host state directly. Fresh-chat use is a conservative experiment-control choice, not an asserted OpenAI product requirement.
+Therefore E4 is COMPLETE/VERIFIED and E5 is authorized.
 
 ## E5 qualification gate
 
-E5 is authorized after this checkpoint. Use the frozen corpus `evals/t068_chatgpt_skill_host/qualification-corpus.json` and preserve its 22 observable scenarios:
+Use the frozen corpus `evals/t068_chatgpt_skill_host/qualification-corpus.json` and preserve its 22 observable scenarios:
 
 - six explicit invocation cases;
 - six automatic positive-routing cases;
