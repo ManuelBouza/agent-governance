@@ -1,11 +1,11 @@
 # Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O333  
+Checkpoint-Sequence: O334  
 Date: 2026-09-15  
 Canonical-Branch: `develop`  
 Current-Work-Unit: `T068 / ChatGPT Skill host materialization and qualification`  
-State: T068_E5_BLOCKED_FAIL_CLOSED_HOST_SKILL_SELECTION_UNAVAILABLE  
+State: T068_E5_DIAGNOSTIC_PROBE_AUTHORIZED  
 Chat-Closure: KEEP_CURRENT_CHAT  
 Human-Objective: Materialize the adopted R029/D082 Skills in ChatGPT and qualify real host activation/routing  
 T068-Task-Contract: `docs/tasks/T068-chatgpt-skill-host-materialization-and-qualification.md`  
@@ -17,15 +17,16 @@ T068-Stage6-Implementation-Head: `b25a5a3e7ac91137a302cde4849c4b1262393b2d`
 T068-Stage6-Handoff-Head: `48852fff2dd0272836c9c814f65335bdc98fd035`  
 T068-E4-Gate-Checkpoint-Head: `2dbdd18bd4ff6c70c3d602526e2ef2ebae294d5b`  
 T068-E5-Input-Head: `214d967887d0b7c26d2eb43df7968ad597eadee5`  
+T068-E5-Blocked-Head: `3ec70dcb1e92a09a7136e63a22e8dcaba036183f`  
 T068-E5-Result: `evals/t068_chatgpt_skill_host/qualification-result-2026-09-15.json`  
 T068-Execution-Shape: MULTI_EXECUTION  
 T068-Execution1-State: COMPLETE  
 T068-Execution2-State: COMPLETE_ACCEPTED  
 T068-E4-State: VERIFIED_BY_HUMAN_VISIBLE_CHATGPT_SKILLS_UI  
-T068-Immediate-Unit: `Execution 3 / E5 ChatGPT host behavioral qualification`  
+T068-Immediate-Unit: `E5 diagnostic host name/index probe`  
 T068-Stage6-State: ACCEPTED  
 T068-ChatGPT-Install-State: VERIFIED_INSTALLED_SIX_OF_SIX  
-T068-ChatGPT-Qualification-State: BLOCKED_FAIL_CLOSED  
+T068-ChatGPT-Qualification-State: BLOCKED_FAIL_CLOSED_DIAGNOSTIC_AUTHORIZED  
 Active-Executor: none  
 T067-State: ACCEPTED_INTEGRATED_OPERATIONALLY_CLOSED  
 T067-Coordinator: retired  
@@ -33,74 +34,51 @@ T066-Stage5-State: NOT_STARTED
 ChatGPT-Empirical-Parity: NOT_ESTABLISHED  
 Experimental-Human-Readability-Rule: ACTIVE_TRIAL_CHATGPT_ONLY  
 Next-ChatGPT-Effort: MEDIUM  
-Next-Execution-Shape: SINGLE_EXECUTION  
-Next-Action: Do not start E6. Repeat T068 E5 only from a ChatGPT execution surface where the six installed Skills are actually selectable/invokable or their activation is otherwise observably surfaced. Preserve the frozen 22-scenario corpus and observable-only scoring boundary. Treat the current E5 result as fail-closed host evidence, not as evidence that the installed Skill packages themselves are semantically defective. Do not start/modify T066.  
-Next-Chat-Minimum-Load: `docs/tasks/T068-chatgpt-skill-host-materialization-and-qualification.md`; `evals/t068_chatgpt_skill_host/qualification-corpus.json`; `evals/t068_chatgpt_skill_host/qualification-result-2026-09-15.json`; R031 only if a host/version claim must be revalidated  
-Do-Not-Load-Or-Do: Do not reopen T067; do not start/modify T066; do not relaunch E3; do not advance to E6; do not relabel ChatGPT/Codex parity.
+Next-Action: Run one reversible host diagnostic probe using a disposable copy of `repository-change-control-skill` whose only semantic-file modification is a unique temporary frontmatter `name:`. Do not modify or commit canonical Skill sources, packager, corpus, Task Contract, research, or product files. Generate one temporary ZIP with readable normalized file permissions, install it manually in ChatGPT, and observe whether it becomes discoverable/invokable through the explicit Skill surface. Use the result only to distinguish host name/index/session provisioning hypotheses. Do not advance to E6 or modify T066.  
+Next-Chat-Minimum-Load: `docs/tasks/T068-chatgpt-skill-host-materialization-and-qualification.md`; `evals/t068_chatgpt_skill_host/qualification-result-2026-09-15.json`; this checkpoint; R031 only if a new consequential host claim requires revalidation  
+Do-Not-Load-Or-Do: Do not reopen T067; do not start/modify T066; do not relaunch E3; do not advance to E6; do not modify canonical Skill semantics/topology; do not relabel ChatGPT/Codex parity.
 
 ## Experimental Human-readable identifier rule
 
 This remains an experimental ChatGPT Human-facing presentation rule only. ChatGPT should gloss opaque governance identifiers on first meaningful use in Human-visible prose. Do not propagate the gloss requirement to Codex, Executor prompts, machine-readable evidence, Task Contracts, handoffs, commands, branches, SHAs, filenames, or internal reasoning.
 
-## Accepted pre-host evidence
+## Accepted evidence retained
 
-E3 / Stage 6 remains accepted. The accepted package identities are:
+E3 / Stage 6 remains accepted. E4 remains COMPLETE/VERIFIED from Human-visible ChatGPT Skills UI evidence showing the six canonical T068 Skills installed and no top-level `workspace-isolation` Skill.
 
-1. `source-maintainer` — SHA-256 `71d88c6d537a9cfd9211fc26cd42e7df5389389d45c880e311f2d21fe4e9437d`
-2. `repository-change-control` — SHA-256 `e96e5503fb8cd117aee48f5a0671ba21f6d3f0205272e007a6f3c39782c716f2`
-3. `upstream-version-revalidation` — SHA-256 `b6c7f097f331df42667d870f501567204e0d6ace4fc29b7d73776e88cd8cca95`
-4. `research-evidence-traceability` — SHA-256 `963635682b463173e6581cf9049905e81ccdf33a15a522cec174b626595e921c`
-5. `durable-work-checkpoint` — SHA-256 `6682f7501c05d41266ab3380d002357ce8ca8c994e7d373e462da73343519872`
-6. `executor-launch-handoff` — SHA-256 `f4285711f64f66ed43086143b6b2bf522b0ce5b2e9976d285ddebb5c22b07fff`
+E5 remains blocked fail-closed. The durable result `evals/t068_chatgpt_skill_host/qualification-result-2026-09-15.json` records 22 preserved scenarios, 0 PASS, 0 semantic FAIL, 6 `BLOCKED_UNAVAILABLE`, and 16 `NOT_RUN_INCONCLUSIVE`. This is host-surface evidence only and does not establish a semantic defect in the Skill packages.
 
-Accepted manifest SHA-256: `cdea239717707565cd5c0324de63ffacb62957bcdbb3220074989d1230415adf`.
+## Narrow diagnostic authorization
 
-## E4 visual host evidence
+Human `go` on 2026-09-15 authorizes a single reversible diagnostic probe before any broader change.
 
-On 2026-09-15 the Human provided a ChatGPT Skills UI screenshot showing exactly the six expected T068 Skills under `Instaladas` and also under `Creadas por mí`:
+The probe MUST:
 
-- `repository change control`;
-- `executor launch handoff`;
-- `upstream version revalidation`;
-- `research evidence traceability`;
-- `durable work checkpoint`;
-- `source maintainer`.
+- use `repository-change-control-skill` as the source because it is a one-file Skill and minimizes variables;
+- operate only on an untracked/disposable copy outside canonical Skill source directories;
+- change only the YAML frontmatter `name:` in the disposable `SKILL.md` to a unique value such as `repository-change-control-t068-probe-20260915`;
+- preserve the remainder of the source bytes exactly;
+- emit one temporary ZIP with root `SKILL.md`, deterministic/readable archive metadata and file mode equivalent to `0644`;
+- record the probe ZIP SHA-256 and a byte/diff check proving the only content delta is the frontmatter name value;
+- leave Git tracked state unchanged and create no commit/push;
+- stop after artifact generation so the Human can upload the probe to ChatGPT.
 
-No seventh `workspace-isolation` top-level Skill is visible. This visually verifies six-of-six host installation and preserves the D082 topology boundary. The screenshot is Human-visible host evidence; it does not by itself prove automatic routing behavior.
+The probe is not a seventh canonical Skill, not a D082 topology change, not a semantic host fork, and not qualification evidence by itself. It is disposable diagnostic input only.
 
-Therefore E4 remains COMPLETE/VERIFIED.
+After Human upload, observe whether the uniquely named probe appears in the ChatGPT explicit Skill selection/invocation surface. Interpret only the observable result:
 
-## E5 observed qualification result
+- unique probe becomes selectable/invokable -> supports stale-name/indexing hypothesis;
+- probe appears installed but not selectable/invokable -> supports broader runtime/session provisioning failure;
+- probe is rejected during upload/scan -> record exact host packaging/scan evidence and stop;
+- any ambiguous outcome -> remain fail-closed.
 
-E5 was attempted from a fresh ChatGPT execution using the frozen corpus and observable-only scoring boundary.
-
-The current runtime exposed no selectable/invokable resource for any of the six installed T068 Skills. The visible Skill/plugin resource catalog available to this execution contained other installed/preinstalled Skills but not:
-
-- `source-maintainer`;
-- `repository-change-control`;
-- `upstream-version-revalidation`;
-- `research-evidence-traceability`;
-- `durable-work-checkpoint`;
-- `executor-launch-handoff`.
-
-Because the corpus explicitly requires fail-closed handling when a required Skill cannot be selected, invoked, or observed, no hidden activation was inferred. The six explicit scenarios are recorded as `BLOCKED_UNAVAILABLE`; the remaining sixteen scenarios are `NOT_RUN_INCONCLUSIVE` because automatic routing, anti-trigger behavior, composition, and Maintainer internal-route selection cannot be attributed observably from this execution surface.
-
-Durable evidence is recorded in `evals/t068_chatgpt_skill_host/qualification-result-2026-09-15.json`:
-
-- 22 scenarios preserved;
-- 0 PASS;
-- 0 semantic FAIL;
-- 6 `BLOCKED_UNAVAILABLE`;
-- 16 `NOT_RUN_INCONCLUSIVE`;
-- qualification claim `NOT_ESTABLISHED`;
-- ChatGPT/Codex empirical parity remains `NOT_ESTABLISHED`.
-
-This result is host-surface evidence only. It does not negate E4 installation evidence and does not establish a package semantic defect.
+Do not alter the frozen 22-scenario corpus during this diagnostic.
 
 ## Ordered remaining geometry
 
-1. **Execution 3 / E5** — BLOCKED_FAIL_CLOSED on unavailable observable Skill selection/invocation surface.
-2. **Execution 4 / E6** — BLOCKED until E5 produces scorable observable evidence.
+1. **E5 diagnostic probe** — AUTHORIZED, reversible, one temporary renamed Skill only.
+2. **E5 qualification retry** — blocked until diagnostic evidence identifies a valid observable execution path.
+3. **E6** — blocked until E5 produces scorable observable evidence.
 
 No wall-clock, minute-budget, token-ceiling or provider-session assumption is attached to this geometry.
 
@@ -109,6 +87,6 @@ No wall-clock, minute-budget, token-ceiling or provider-session assumption is at
 - D082 topology remains one Maintainer Skill with Orchestrator/Executor internal routes plus exactly five transverse Skills.
 - `workspace-isolation` remains internal to `executor-launch-handoff`, not a sixth top-level Skill.
 - Git remains canonical authority over installed host snapshots.
-- Skill absence/disablement must not break authority, ownership, cold-start or fail-closed correctness.
+- Canonical Skill source bytes and semantics remain unchanged by the diagnostic.
 - T066 remains separate and unstarted.
 - ChatGPT/Codex empirical parity remains `NOT_ESTABLISHED`.
