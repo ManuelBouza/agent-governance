@@ -1,0 +1,57 @@
+{
+  "schema": "t068-chatgpt-skill-host-qualification-result/v1",
+  "task_id": "T068",
+  "execution_unit": "E5",
+  "date": "2026-09-15",
+  "branch": "feat/t068-chatgpt-skill-host-activation",
+  "input_head": "214d967887d0b7c26d2eb43df7968ad597eadee5",
+  "corpus": "evals/t068_chatgpt_skill_host/qualification-corpus.json",
+  "scoring_boundary": {
+    "observable_only": true,
+    "hidden_chain_of_thought_used": false,
+    "explicit_invocation_alone_proves_auto_routing": false
+  },
+  "host_observation": {
+    "prior_human_visual_installation_evidence": "six expected Skills visible in ChatGPT Skills UI",
+    "current_runtime_skill_catalog_observation": "the Skill/plugin resource catalog exposed to this ChatGPT execution did not expose source-maintainer, repository-change-control, upstream-version-revalidation, research-evidence-traceability, durable-work-checkpoint, or executor-launch-handoff as selectable/invokable Skill resources",
+    "workspace_isolation_top_level_observed": false,
+    "independent_trial_spawn_or_user-message-injection_surface_observed": false
+  },
+  "disposition": "BLOCKED_FAIL_CLOSED",
+  "qualification_claim": "NOT_ESTABLISHED",
+  "chatgpt_codex_empirical_parity": "NOT_ESTABLISHED",
+  "summary": {
+    "scenario_count": 22,
+    "pass": 0,
+    "fail": 0,
+    "blocked_unavailable": 6,
+    "not_run_inconclusive": 16
+  },
+  "results": [
+    {"id":"T068-EXPLICIT-01","status":"BLOCKED_UNAVAILABLE","reason":"target Skill could not be selected/invoked/observed from the current runtime"},
+    {"id":"T068-EXPLICIT-02","status":"BLOCKED_UNAVAILABLE","reason":"target Skill could not be selected/invoked/observed from the current runtime"},
+    {"id":"T068-EXPLICIT-03","status":"BLOCKED_UNAVAILABLE","reason":"target Skill could not be selected/invoked/observed from the current runtime"},
+    {"id":"T068-EXPLICIT-04","status":"BLOCKED_UNAVAILABLE","reason":"target Skill could not be selected/invoked/observed from the current runtime"},
+    {"id":"T068-EXPLICIT-05","status":"BLOCKED_UNAVAILABLE","reason":"target Skill could not be selected/invoked/observed from the current runtime"},
+    {"id":"T068-EXPLICIT-06","status":"BLOCKED_UNAVAILABLE","reason":"target Skill could not be selected/invoked/observed from the current runtime"},
+    {"id":"T068-AUTO-POS-01","status":"NOT_RUN_INCONCLUSIVE","reason":"automatic routing cannot be scored observably after explicit target availability failed and no isolated trial surface is exposed"},
+    {"id":"T068-AUTO-POS-02","status":"NOT_RUN_INCONCLUSIVE","reason":"automatic routing cannot be scored observably after explicit target availability failed and no isolated trial surface is exposed"},
+    {"id":"T068-AUTO-POS-03","status":"NOT_RUN_INCONCLUSIVE","reason":"automatic routing cannot be scored observably after explicit target availability failed and no isolated trial surface is exposed"},
+    {"id":"T068-AUTO-POS-04","status":"NOT_RUN_INCONCLUSIVE","reason":"automatic routing cannot be scored observably after explicit target availability failed and no isolated trial surface is exposed"},
+    {"id":"T068-AUTO-POS-05","status":"NOT_RUN_INCONCLUSIVE","reason":"automatic routing cannot be scored observably after explicit target availability failed and no isolated trial surface is exposed"},
+    {"id":"T068-AUTO-POS-06","status":"NOT_RUN_INCONCLUSIVE","reason":"automatic routing cannot be scored observably after explicit target availability failed and no isolated trial surface is exposed"},
+    {"id":"T068-AUTO-NEG-01","status":"NOT_RUN_INCONCLUSIVE","reason":"no isolated fresh-trial surface is exposed for an observable anti-trigger measurement"},
+    {"id":"T068-AUTO-NEG-02","status":"NOT_RUN_INCONCLUSIVE","reason":"no isolated fresh-trial surface is exposed for an observable anti-trigger measurement"},
+    {"id":"T068-AUTO-NEG-03","status":"NOT_RUN_INCONCLUSIVE","reason":"no isolated fresh-trial surface is exposed for an observable anti-trigger measurement"},
+    {"id":"T068-AUTO-NEG-04","status":"NOT_RUN_INCONCLUSIVE","reason":"no isolated fresh-trial surface is exposed for an observable anti-trigger measurement"},
+    {"id":"T068-AUTO-NEG-05","status":"NOT_RUN_INCONCLUSIVE","reason":"no isolated fresh-trial surface is exposed for an observable anti-trigger measurement"},
+    {"id":"T068-AUTO-NEG-06","status":"NOT_RUN_INCONCLUSIVE","reason":"no isolated fresh-trial surface is exposed for an observable anti-trigger measurement"},
+    {"id":"T068-COMPOSE-01","status":"NOT_RUN_INCONCLUSIVE","reason":"multi-Skill activation cannot be scored observably because the target Skills are not selectable/observable in this runtime"},
+    {"id":"T068-COMPOSE-02","status":"NOT_RUN_INCONCLUSIVE","reason":"multi-Skill activation cannot be scored observably because the target Skills are not selectable/observable in this runtime"},
+    {"id":"T068-COMPOSE-03","status":"NOT_RUN_INCONCLUSIVE","reason":"multi-Skill activation cannot be scored observably because the target Skills are not selectable/observable in this runtime"},
+    {"id":"T068-ROLE-01","status":"NOT_RUN_INCONCLUSIVE","reason":"Maintainer internal-route activation cannot be attributed observably without the source-maintainer Skill being selectable/observable"}
+  ],
+  "next_gate": "E6_BLOCKED",
+  "required_resolution": "repeat E5 only in a ChatGPT execution surface where the six installed Skills are actually selectable/invokable or their activation is otherwise observably surfaced, while preserving the frozen 22-scenario corpus and observable-only scoring boundary",
+  "t066_touched": false
+}
