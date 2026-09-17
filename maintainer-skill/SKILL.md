@@ -61,4 +61,6 @@ A transverse Skill can structure workflow but cannot override Agent Governance s
 
 Start from `AGENTS.md` plus the current frontier/Task Contract. Load only the applicable route, controlling Decisions/policy, and exact source surfaces needed for the current stage. Prefer references to standing repository policy rather than copying it into Skill-local prose.
 
+When the host does not expose this Skill or a required transverse Skill through native Skill routing, load `references/git-backed-skill-loading.md` and use the canonical Git-backed fallback. Bind Skill content to the same represented Git revision that controls the active work, and never describe fallback loading as native host activation.
+
 Deterministic tests, CI, source tooling, and cold-start bootstrap remain valid when this Skill is absent or disabled.
