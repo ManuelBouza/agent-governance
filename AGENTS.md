@@ -85,6 +85,8 @@ A fresh ChatGPT Orchestrator starts from the current `develop`, then reads this 
 
 For source-product maintenance, use the single `maintainer-skill/` domain entry point when Skill routing is available. It has internal Orchestrator and Executor routes; those routes select context and do not create authority.
 
+When native Skill routing is unavailable, does not expose the required repository-owned Skill, or cannot load its resources, use the Git-backed fallback defined by `maintainer-skill/references/git-backed-skill-loading.md`: load the applicable canonical `SKILL.md` directly from the same represented Git revision that governs the active work, follow only the required progressive-disclosure references, and do not claim native host activation. Native and Git-backed loading are two discovery/loading mechanisms for the same repository-owned Skill semantics; Git remains authoritative in both modes.
+
 Use the adopted transverse capabilities only for their distinct intent:
 
 - `repository-change-control` -> controlled tracked repository mutation/change-path selection;
