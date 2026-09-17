@@ -1,71 +1,95 @@
 # Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O325  
-Date: 2026-09-14  
+Checkpoint-Sequence: O338  
+Date: 2026-09-17  
 Canonical-Branch: `develop`  
-Current-Work-Unit: `T067 / R029 D082 materialization and qualification`  
-State: T067_ACCEPTED_INTEGRATED_OPERATIONAL_CLOSURE_PENDING_OP073  
+Current-Work-Unit: `T069 / Git-backed Skill loading fallback`  
+State: T069_STAGE5_CANDIDATE_PUBLISHED_STAGE6_AWAITING_HUMAN_START  
 Chat-Closure: KEEP_CURRENT_CHAT  
-R029-Research-State: COMPLETE  
-R029-Decision-State: DECIDED  
-R029-Decision-Ref: `docs/decisions/D082-r029-lean-root-and-transverse-skill-architecture.md`  
-R029-Architecture-State: ADOPTED_MATERIALIZATION_ACCEPTED  
-R029-Materialization-State: STAGE7_ACCEPTED  
-R029-Qualification-State: PASS  
-T067-Task-Contract: `docs/tasks/T067-r029-d082-materialization-and-qualification.md`  
-T067-Integration-PR: `#426` -> `develop`  
-T067-Integration-Commit: `3ff616873b3eff095e739bd83b35a21c213114e1`  
-T067-Integration-State: MERGED  
-T067-Closure-Operation: `docs/operations/OP072-t067-post-integration-closure.md`  
-T067-Closure-Receipt: PR `#427` issue comment `5660103454`  
-T067-Closure-State: OP072_DONE_VERIFIED  
-T067-Topic-Branch: ABSENT  
-OP072-Authoring-Branch: ABSENT  
-Final-Closure-Operation: `docs/operations/OP073-retire-o325-t067-closure-branch.md`  
+Human-Objective: Continue repository-owned Skill development in GitHub and load canonical Skills from Git when native host Skill routing is unavailable  
+T069-Task-Contract: `docs/tasks/T069-git-backed-skill-loading.md`  
+T069-Topic-Branch: `feat/t069-git-backed-skill-loading`  
+T069-Base: `develop@5bed8b952a3c552e3af0abfdbe07895864319696`  
+T069-Candidate-Content-Anchor: `972e9dff59079d2820b5b750f9a4a5c52913fa9e`  
+T069-Execution-Shape: SINGLE_EXECUTION  
+T069-Stage5-State: COMPLETE  
+T069-Stage6-State: AUTHORIZED_AWAITING_HUMAN_START  
 Active-Executor: none  
+T067-State: ACCEPTED_INTEGRATED_OPERATIONALLY_CLOSED  
+T068-State: DEFERRED_UNTIL_PERSONAL_PLUS_NATIVE_SKILLS_AVAILABLE  
+T068-Deferred-Branch: `feat/t068-chatgpt-skill-host-activation@d9ead79ce06ee693b8ed315d1a209370f0270779`  
 T066-Stage5-State: NOT_STARTED  
 ChatGPT-Empirical-Parity: NOT_ESTABLISHED  
-Codex-Transverse-Historical-Result: `36/36 PASS`, reused as regression evidence; no ceremonial rerun authorized  
-Maintainer-Historical-Signal: `21/36 observed`, informational/unscored/not-qualified  
 Next-ChatGPT-Effort: MEDIUM  
-Next-Action: Complete OP073 only: retire the merged O325/OP073 authoring branch under its integrated Operational Contract, then ChatGPT verifies the durable receipt and remote branch absence, retires `AG | agent-governance | T067 | root-1`, and marks T067 fully operationally closed. After that, await explicit Human selection of the next objective. Do not start T066 automatically.  
-Next-Chat-Minimum-Load: `docs/operations/OP073-retire-o325-t067-closure-branch.md`; PR `#427` receipt only if T067 closure evidence needs reconfirmation  
-Do-Not-Load-Or-Do: Do not restart T067 implementation/qualification; do not repeat historical 36 Codex trials; do not relabel empirical parity; do not start or modify T066 without explicit Human selection.
+Next-Action: Human launches the T069 Stage 6 Executor against the exact current remote topic-branch HEAD. Executor loads `docs/tasks/T069-git-backed-skill-loading.md`, verifies the metadata-only delta after candidate content anchor `972e9dff59079d2820b5b750f9a4a5c52913fa9e`, runs required focused/relevant/full verification, performs bounded technical repair only if authorized, persists `handoffs/T069-executor-handoff.json`, pushes the result, and returns the exact remote HEAD. Do not resume T068 or start T066.  
+Next-Chat-Minimum-Load: this checkpoint; `docs/tasks/T069-git-backed-skill-loading.md`; `maintainer-skill/SKILL.md`; `maintainer-skill/references/git-backed-skill-loading.md`; returned `handoffs/T069-executor-handoff.json` only after Stage 6 completion  
+Do-Not-Load-Or-Do: Do not reopen T067; do not resume T068 host qualification; do not start/modify T066; do not alter D082 Skill topology; do not relabel empirical parity; do not claim Git-backed loading is native host Skill activation.
 
-## Completed frontier
+## Completed predecessor closure
 
-T067 / R029 D082 materialization and qualification is semantically accepted and integrated.
+T067 is fully operationally closed. PR `#428` is merged into `develop` at `5bed8b952a3c552e3af0abfdbe07895864319696`; OP073 receipt `5660156180` reports `DONE`, and the remote `docs/o325-t067-closed` branch is absent.
 
-Accepted Stage 7 evidence remains:
+## T069 Stage 5 outcome
 
-- deterministic qualification `18/18 PASS`;
-- preservation `79/79`, `39/20/20`, unresolved `0`;
-- one Maintainer Skill with two internal routes, exactly five transverse Skills, workspace isolation internal;
-- cold-start anchors restored and tested;
-- full repository suite `527 passed` plus Ruff/code-health PASS;
-- measured root `11496` bytes vs `34567` baseline, Skill catalog metadata `2799` bytes, max representative reference depth `4`, duplicate normative owner IDs `0`;
-- no T066 changes and no new provider/model trial launch.
+The Orchestrator materialized the complete T069 candidate on a fresh topic branch from current `develop`.
 
-PR `#426` was squash-merged to `develop` at `3ff616873b3eff095e739bd83b35a21c213114e1`.
+Material candidate surfaces through content anchor `972e9dff59079d2820b5b750f9a4a5c52913fa9e`:
 
-OP072 was integrated by PR `#427` at `3ab8a2ebdbca790fb5f08491ec04f51b051a8cb0`. Its durable receipt reports `DONE`; ChatGPT independently verified current `develop` remained at that commit and both `refactor/r029-d082-materialization` and `docs/op072-t067-post-integration-closure` were absent remotely.
+- `AGENTS.md` — LR-07 now defines the native-unavailable Git-backed loading fallback;
+- `maintainer-skill/SKILL.md` — routes native-unavailable work to the fallback reference;
+- `maintainer-skill/references/git-backed-skill-loading.md` — defines revision binding, progressive loading, canonical Skill paths, host-neutral coexistence, and non-goals;
+- `tests/test_git_backed_skill_loading.py` — Orchestrator-owned semantic conformance projection.
 
-Local closure evidence in the OP072 receipt reports the T067/OP072 local branches/worktrees absent, primary checkout on clean current `develop`, no tracked-content mutation, no unrelated target mutation, and no review items.
+Post-anchor metadata-only authority:
 
-## Preserved residuals
+- `docs/tasks/T069-git-backed-skill-loading.md`;
+- this checkpoint.
 
+## Accepted Design boundary
+
+When native host Skill routing is available, the host may discover/load the repository-owned Skill projection.
+
+When native routing/resources are unavailable, the flow instead:
+
+```text
+bootstrap canonical Git authority
+    -> resolve Skill intent
+    -> read canonical SKILL.md from the represented controlling revision
+    -> progressively load only required routes/references
+    -> compose only independently-triggered transverse Skills
+```
+
+The fallback never emulates native runtime state, never creates a host-specific semantic fork, and never permits a native-activation claim without observable native exposure.
+
+Canonical source-maintenance topology remains:
+
+- one Maintainer domain Skill: `maintainer-skill/SKILL.md`;
+- exactly five transverse top-level Skills;
+- `workspace-isolation` subordinate under `executor-launch-handoff`.
+
+## T068 disposition
+
+The Human explicitly selected on 2026-09-17 that ChatGPT-native Skill materialization/qualification is not to continue on the Personal Plus account while native Skills are unavailable there. T068 evidence remains preserved on its topic branch and may be revalidated/resumed only after a later explicit Human selection when native Plus Skills become available.
+
+This disposition does not invalidate canonical Git Skills and does not require moving T068 qualification to another ChatGPT account/workspace.
+
+## Stage 6 gate
+
+Stage 6 is verification-only plus bounded technical repair of the Python conformance test mechanics. Executor has no authority to edit committed Markdown, Skill semantics, topology, Task Contract, checkpoint, or conformance meaning.
+
+Before execution it must establish:
+
+- remote topic branch is based on `develop@5bed8b952a3c552e3af0abfdbe07895864319696`;
+- candidate content anchor is exactly `972e9dff59079d2820b5b750f9a4a5c52913fa9e`;
+- all post-anchor changes before launch are metadata-only Task Contract/checkpoint Markdown;
+- no unrelated branch/worktree authority is being consumed.
+
+## Preserved boundaries
+
+- Git remains canonical authority over Skill semantics and active work state.
+- Cold-start correctness remains independent of native Skill availability.
+- Native host routing and Git-backed loading are discovery/loading alternatives, not separate semantic Skills.
+- T068 remains deferred, not failed or accepted.
+- T066 remains separate and unstarted.
 - ChatGPT/Codex empirical parity remains `NOT_ESTABLISHED`.
-- ChatGPT empirical trials remain `0/36`; Human waiver remains controlling.
-- Historical Maintainer `21/36` remains informational/unscored/not-qualified.
-- Historical Codex transverse `36/36` remains reused as regression evidence.
-- Authority, ownership, safety, cold-start and fail-closed behavior remain independent of Skill activation.
-- T066 remains separate, unchanged and not started.
-
-## Final closure gate
-
-O325 corrects the now-consumed O324 integration/retirement frontier. Because this checkpoint and OP073 are normal committed Markdown, they are authored on `docs/o325-t067-closed` and integrated by PR before chat closure.
-
-OP073 is an attached-closure operation whose sole mutation target is that O325/OP073 authoring branch. After its merged PR is verified and that branch is retired, no T067 lifecycle branch remains and `AG | agent-governance | T067 | root-1` may be retired.
-
-No new implementation/research objective is selected by this closure mechanics. The next product objective requires explicit Human selection; T066 is not implicitly selected.
