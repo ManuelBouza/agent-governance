@@ -1,11 +1,11 @@
 # Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O338  
-Date: 2026-09-17  
+Checkpoint-Sequence: O342  
+Date: 2026-09-18  
 Canonical-Branch: `develop`  
 Current-Work-Unit: `T069 / Git-backed Skill loading fallback`  
-State: T069_STAGE5_CANDIDATE_PUBLISHED_STAGE6_AWAITING_HUMAN_START  
+State: T069_STAGE6_REVALIDATED_POST_D083_AWAITING_HUMAN_START  
 Chat-Closure: KEEP_CURRENT_CHAT  
 Human-Objective: Continue repository-owned Skill development in GitHub and load canonical Skills from Git when native host Skill routing is unavailable  
 T069-Task-Contract: `docs/tasks/T069-git-backed-skill-loading.md`  
@@ -14,17 +14,17 @@ T069-Base: `develop@5bed8b952a3c552e3af0abfdbe07895864319696`
 T069-Candidate-Content-Anchor: `972e9dff59079d2820b5b750f9a4a5c52913fa9e`  
 T069-Execution-Shape: SINGLE_EXECUTION  
 T069-Stage5-State: COMPLETE  
-T069-Stage6-State: AUTHORIZED_AWAITING_HUMAN_START  
-Active-Executor: none  
+T069-Stage6-State: REVALIDATED_AUTHORIZED_AWAITING_HUMAN_START  
+Active-Executor: Codex  
 T067-State: ACCEPTED_INTEGRATED_OPERATIONALLY_CLOSED  
 T068-State: DEFERRED_UNTIL_PERSONAL_PLUS_NATIVE_SKILLS_AVAILABLE  
 T068-Deferred-Branch: `feat/t068-chatgpt-skill-host-activation@d9ead79ce06ee693b8ed315d1a209370f0270779`  
 T066-Stage5-State: NOT_STARTED  
 ChatGPT-Empirical-Parity: NOT_ESTABLISHED  
 Next-ChatGPT-Effort: MEDIUM  
-Next-Action: Human launches the T069 Stage 6 Executor against the exact current remote topic-branch HEAD. Executor loads `docs/tasks/T069-git-backed-skill-loading.md`, verifies the metadata-only delta after candidate content anchor `972e9dff59079d2820b5b750f9a4a5c52913fa9e`, runs required focused/relevant/full verification, performs bounded technical repair only if authorized, persists `handoffs/T069-executor-handoff.json`, pushes the result, and returns the exact remote HEAD. Do not resume T068 or start T066.  
-Next-Chat-Minimum-Load: this checkpoint; `docs/tasks/T069-git-backed-skill-loading.md`; `maintainer-skill/SKILL.md`; `maintainer-skill/references/git-backed-skill-loading.md`; returned `handoffs/T069-executor-handoff.json` only after Stage 6 completion  
-Do-Not-Load-Or-Do: Do not reopen T067; do not resume T068 host qualification; do not start/modify T066; do not alter D082 Skill topology; do not relabel empirical parity; do not claim Git-backed loading is native host Skill activation.
+Next-Action: Human launches the T069 Stage 6 Executor from the exact current remote topic-branch HEAD after this checkpoint update. Use the accepted D083 classifier: GPT-5.6 Terra / Low initially; escalate to Terra / Medium only for non-trivial in-contract diagnosis. Semantic/authority conflict remains STOP -> Orchestrator re-entry. Do not launch automatically.  
+Next-Chat-Minimum-Load: this checkpoint; `docs/tasks/T069-git-backed-skill-loading.md`; returned `handoffs/T069-executor-handoff.json` only after Stage 6 completion  
+Do-Not-Load-Or-Do: Do not reopen T067; do not resume T068 host qualification; do not start/modify T066; do not alter D082 Skill topology; do not relabel empirical parity; do not claim Git-backed loading is native host Skill activation; do not rebase or rewrite the frozen T069 content anchor merely because `develop` advanced by D083 policy metadata.  
 
 ## Completed predecessor closure
 
@@ -73,6 +73,26 @@ Canonical source-maintenance topology remains:
 The Human explicitly selected on 2026-09-17 that ChatGPT-native Skill materialization/qualification is not to continue on the Personal Plus account while native Skills are unavailable there. T068 evidence remains preserved on its topic branch and may be revalidated/resumed only after a later explicit Human selection when native Plus Skills become available.
 
 This disposition does not invalidate canonical Git Skills and does not require moving T068 qualification to another ChatGPT account/workspace.
+
+## Post-D083 revalidation
+
+Current canonical `develop` advanced from the T069 frozen base `5bed8b952a3c552e3af0abfdbe07895864319696` to `df132019444f2e735374fbe3e435fd5e61bfc489` solely through the accepted R032/D083 policy integration (PR #429). That upstream delta changes research/decision/launch-profile/checkpoint Markdown, not the T069 semantic candidate surfaces (`AGENTS.md`, Maintainer Skill/reference, or conformance test).
+
+Therefore the frozen T069 Stage 5 candidate remains valid without rebasing: the Task Contract intentionally records its exact base/content anchor, and D083 is Human-facing launch policy rather than candidate semantics. The topic branch may remain based on the frozen base while the Executor first synchronizes current canonical remote state under D042 and then executes the represented T069 authority.
+
+D083 classification after revalidation:
+
+```text
+authority completeness: HIGH / complete
+execution determinism: HIGH
+technical branching: LOW
+verification strength: STRONG
+risk modifiers: none material at launch
+initial model: GPT-5.6 Terra
+effort: Low
+escalation: Terra / Medium only for non-trivial in-contract diagnosis
+semantic/authority conflict: STOP -> Orchestrator re-entry
+```
 
 ## Stage 6 gate
 
