@@ -2,6 +2,7 @@
 
 Status: ACTIVE SOURCE-MAINTAINER GUIDANCE  
 Controlling decision: `docs/decisions/D055-executor-launch-session-and-compute-profile.md`  
+Model/effort classifier refinement: `docs/decisions/D083-codex-model-effort-selection-classifier.md`  
 Coordinator/worktree refinement: `docs/decisions/D058-executor-coordinator-session-and-worktree-hygiene.md`  
 Task-scoped coordinator continuity: `docs/decisions/D060-task-scoped-executor-coordinator-continuity.md`  
 Bootstrap authority: `docs/decisions/D042-remote-baseline-freshness-before-contract-load.md`
@@ -146,16 +147,32 @@ Two writable coordinators must not share the same worktree or branch. Before mut
 
 Post-integration worktree retirement and primary-checkout convergence follow `docs/EXECUTOR-SESSION-WORKTREE-HYGIENE.md` and the existing branch-cleanup policy.
 
-## Effort rule
+## Model/effort classifier — D083
+
+Before selecting a Codex profile:
+
+```text
+authority complete?
+    -> execution determinism
+    -> technical branching
+    -> verification strength
+    -> concrete risk modifiers
+    -> choose model capability
+    -> choose reasoning effort independently
+```
+
+Authority ambiguity, missing context/files/permissions, or incomplete specification is a STOP/re-entry condition; it is never repaired by raising model or effort.
+
+Effort remains:
 
 ```text
 LOW     = mechanical/bounded execution with strong deterministic guidance
-MEDIUM  = normal AG implementation/review default
+MEDIUM  = bounded ordinary technical search/implementation depth
 HIGH    = substantial technical reasoning risk
 XHIGH/MAX/ULTRA = exceptional escalation only
 ```
 
-Do not raise effort to compensate for an incomplete specification or missing Design/Plan authority. Stop/re-enter instead.
+Model capability and reasoning effort are separate axes. Raise model for capability/breadth insufficiency; raise effort for additional search/diagnosis depth.
 
 ## Current adapter — Codex
 
@@ -165,13 +182,15 @@ Current host: native Windows source-maintenance workstation
 
 OpenAI currently exposes the GPT-5.6 family in Codex with Sol, Terra and Luna tiers and configurable effort. The current Agent Governance recommendation is:
 
-| Work class | Recommended Codex model | Effort | Typical use |
+| Work shape | Recommended Codex model | Effort | Typical use |
 | --- | --- | --- | --- |
-| Read-only/repetitive observation | GPT-5.6 Luna | Low | baseline/status/log collection with deterministic postconditions |
-| Narrow mechanical implementation | GPT-5.6 Terra | Low | tightly specified local/config/test synchronization with strong tests |
-| Standard AG implementation/rework | GPT-5.6 Sol | Medium | default multi-file implementation, ordinary refactor/debug/review |
-| Complex/high-risk technical work | GPT-5.6 Sol | High | concurrency, subtle fail-closed/security, hard portability, complex Git/history, difficult diagnosis |
-| Exceptional long-horizon work | GPT-5.6 Sol | XHigh/Max only when justified | only after concrete evidence that High is insufficient |
+| Read-only/repetitive; high determinism; low branching; strong postcondition | GPT-5.6 Luna | Low | baseline/status/log collection and repetitive checks with obvious deterministic completion |
+| Narrow tracked mutation; high determinism; low branching; strong verification; bounded/reversible blast radius | GPT-5.6 Terra | Low | tightly specified config/test/local synchronization with strong tests |
+| Bounded local implementation/refactor; high-to-medium determinism; low/medium branching; strong or mixed verification | GPT-5.6 Terra | Medium | local implementation with some technical choice but bounded search |
+| Ordinary multi-file implementation/rework; medium branching or mixed verifier; no exceptional risk | GPT-5.6 Sol | Medium | safe fallback for normal implementation, refactor, debugging and review |
+| High branching, weak verifier, non-local diagnosis, or serious concrete risk modifier | GPT-5.6 Sol | High | concurrency, subtle fail-closed/security, hard portability/history, difficult diagnosis |
+| Concrete evidence that Sol/High is capability-limited | GPT-6 Astra or current stronger supported tier | Low/Medium initially | capability escalation before reflexively maximizing effort |
+| Exceptional long-horizon/bound-testing work | strongest justified supported model | XHigh/Max/Ultra only when evidenced | only when a concrete marginal benefit is identified |
 
 The current Codex desktop surface used by Agent Governance has demonstrated host-generated conversation titles. Do not assume deterministic thread/session rename capability from the presence of a visible title. When a supported naming/rename surface is directly available in the active host version, the Human may align the visible title to the governance `Coordinator-ID`; otherwise the host-generated title remains separate adapter metadata.
 
@@ -188,14 +207,16 @@ Current OpenAI long-running-agent guidance also recommends deliberate compaction
 
 ## Default bias
 
-For the current source-maintenance workflow, the expected distribution is qualitative, not a quota:
+There is no target quota by model or effort. Apply D083's observable classifier to each launch.
 
-- **MEDIUM / Sol** should be the center of gravity and likely cover more than half of ordinary Executor implementation work;
-- **LOW** should be used deliberately for a substantial set of mechanical/read-only tasks instead of paying for unnecessary reasoning;
-- **HIGH** should be materially less common and must have a concrete technical rationale;
-- the highest modes should be rare exceptions.
+- use Luna/Low only for read-only/repetitive highly deterministic work with strong postconditions unless a lower implementation class is separately qualified;
+- use Terra/Low or Terra/Medium intentionally when bounded implementation satisfies the determinism/branching/verification gates;
+- keep Sol/Medium as the safe fallback when a task is not clearly eligible for downshift;
+- use Sol/High only for concrete technical branching, weak verification, non-local diagnosis or material risk;
+- use Astra/stronger tiers only for concrete capability insufficiency;
+- keep highest effort modes exceptional.
 
-Do not force tasks into these percentages. Actual task risk and evidence control.
+Actual task shape and evidence control.
 
 ## Examples
 
