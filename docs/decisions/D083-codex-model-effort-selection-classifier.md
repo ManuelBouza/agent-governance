@@ -1,8 +1,8 @@
 # D083 — Codex model and effort selection classifier
 
-Status: PROPOSED  
+Status: ACCEPTED  
 Date: 2026-09-17  
-Authority: pending Human Owner / ChatGPT Orchestrator acceptance  
+Authority: Human Owner / ChatGPT Orchestrator  
 Research: `docs/research/R032-CODEX-MODEL-EFFORT-SELECTION.md`  
 Refines: D055  
 Preserves: D039, D041, D053, D054, D057, D060, D063, D065, D068, D075, D077, D080, D081  
@@ -21,9 +21,9 @@ Without an explicit classifier, two errors remain possible:
 
 R032 establishes a conservative classifier that separates authority completeness from technical execution difficulty and treats model capability and reasoning effort as independent axes.
 
-## Proposed decision
+## Decision
 
-If accepted, D083 SHALL refine D055 with the following pre-launch classifier for the Human-visible Codex Executor root.
+D083 SHALL refine D055 with the following pre-launch classifier for the Human-visible Codex Executor root.
 
 ### Gate 0 — authority completeness
 
@@ -104,9 +104,9 @@ Raise the floor when the work includes a concrete material modifier such as:
 
 Task importance alone is not a risk modifier.
 
-## Proposed conservative Codex mapping
+## Conservative Codex mapping
 
-If accepted, use this as the current adapter mapping unless a Task Contract/evaluation freezes another profile:
+Use this as the current adapter mapping unless a Task Contract/evaluation freezes another profile:
 
 | Work shape | Initial model | Effort |
 | --- | --- | --- |
@@ -168,7 +168,7 @@ Do not retry indefinitely at an insufficient tier.
 
 ## Boundaries
 
-D083, if accepted, would NOT:
+D083 does NOT:
 
 - adopt the failed T063 frozen adaptive child-routing mapping;
 - establish Luna/Terra as globally qualified replacements for Sol;
@@ -193,17 +193,23 @@ Effort: Low
 
 with escalation to Terra/Medium only for non-trivial in-contract diagnosis. A material semantic/authority conflict returns to the Orchestrator rather than escalating through Sol/High to cross the governance boundary.
 
-This T069 application MUST NOT occur until D083 is accepted and the current T069 launch authority is revalidated.
+This T069 application may occur only after the current T069 launch authority is revalidated.
 
-## Acceptance gate
+## Acceptance record
 
-D083 remains `PROPOSED` until all are true:
+Human acceptance was given explicitly on 2026-09-18 after R032 had been persisted and represented in `docs/RESEARCH-TRACEABILITY.md`.
 
-1. R032 is represented in `docs/RESEARCH-TRACEABILITY.md`;
-2. R032 remains `COMPLETE` with no unresolved contradictory evidence;
-3. the Human explicitly accepts the proposed refinement;
-4. the research registry transitions R032 to `Decision-State: DECIDED` with this decision path;
-5. the current Codex adapter guidance is updated consistently;
-6. any active launch frontier relying on the new classifier is revalidated before execution.
+Acceptance effects:
 
-Until then D055 and `docs/EXECUTOR-LAUNCH-PROFILES.md` remain controlling unchanged.
+1. R032 transitions to `Decision-State: DECIDED` with D083 as its decision authority;
+2. this decision refines D055 without replacing its minimum-sufficient-compute principle;
+3. `docs/EXECUTOR-LAUNCH-PROFILES.md` must reflect this classifier;
+4. any active launch frontier must still be revalidated against current Git authority before execution.
+
+## Disposition
+
+```text
+Status: ACCEPTED
+Research: R032 COMPLETE / DECIDED
+Refines: D055
+```
