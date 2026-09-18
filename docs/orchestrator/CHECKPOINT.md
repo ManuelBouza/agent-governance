@@ -1,66 +1,94 @@
 # Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O344  
+Checkpoint-Sequence: O345  
 Date: 2026-09-18  
 Canonical-Branch: `develop`  
-Current-Work-Unit: `T069 / Git-backed Skill loading fallback`  
-State: T069_ACCEPTED_INTEGRATED_CLOSED  
-Chat-Closure: CLOSE_CURRENT_CHAT  
-Human-Objective: Continue repository-owned Skill development in GitHub and load canonical Skills from Git when native host Skill routing is unavailable  
-T069-Task-Contract: `docs/tasks/T069-git-backed-skill-loading.md`  
-T069-State: ACCEPTED_INTEGRATED  
-T069-Integration-PR: `#430`  
-T069-Integration-SHA: `a0211be8647e0e0dda40d6a1e797bfa8370414ee`  
-T069-Candidate-Content-Anchor: `972e9dff59079d2820b5b750f9a4a5c52913fa9e`  
-T069-Stage6-Executor-Head: `961ed27e117c94b0d2bfbc3e34f548d67874504a`  
-T069-Stage6-Implementation-Head: `d2cea150377fe9a5d4650cf628a8dcf130e8621a`  
-D083-State: ACCEPTED_INTEGRATED  
-T068-State: DEFERRED_UNTIL_PERSONAL_PLUS_NATIVE_SKILLS_AVAILABLE  
-T066-Stage5-State: NOT_STARTED  
-ChatGPT-Empirical-Parity: NOT_ESTABLISHED  
+Current-Work-Unit: `T066 / R027-R028 ChatGPT + Codex efficiency screening`  
+State: T066_STAGE5_FREEZE_A_COMPLETE_AWAITING_HUMAN_LAUNCH  
+Chat-Closure: HUMAN_GATE  
+Human-Objective: Materialize T066 Stage 5 provider-free Freeze A from current `develop`  
+T066-Task-Contract: `docs/tasks/T066-r027-chatgpt-codex-efficiency-evaluation.md`  
+T066-Stage5-State: COMPLETE  
+Freeze-A-State: PUBLISHED_PROVIDER_FREE_VERIFIED  
+Scientific-Branch: `test/r027-chatgpt-codex-efficiency-v2`  
+Scientific-Branch-Head: `e00acd9bbee6ca8e260fdd3d96bbd26452d0ef48`  
+Scientific-Branch-Base: `develop@6b7d2aa8f2f8682a39afb84ee99aa0b4383f4acc`  
+Abandoned-Branch: `test/r027-chatgpt-codex-efficiency-v1@dc8fd229bf403fbc2085ee906740f0cad63cbd43`  
+Abandoned-Branch-Disposition: HUMAN_DISCARD_DO_NOT_CONSUM  
+D077-T066-Disposition: MATERIAL_UPSTREAM_CHANGE_REVALIDATED_FOR_FREEZE_A  
+Provider-Free-Verification: PASS  
+Provider-Model-Calls-T066: 0  
+Scored-Observations-T066: 0  
+Executor-Authorization: NOT_AUTHORIZED_PENDING_SEPARATE_HUMAN_LAUNCH  
 Active-Executor: none  
-Next-ChatGPT-Effort: MEDIUM  
-Next-Action: Await a new explicit Human objective. A new chat must bootstrap from current `develop`, read `AGENTS.md` and this checkpoint, then follow the selected objective. Do not resume T068 or T066 without explicit Human selection.  
-Next-Chat-Minimum-Load: current `develop`; `AGENTS.md`; this checkpoint  
-Do-Not-Load-Or-Do: Do not reopen T067; do not resume T068 host qualification; do not start/modify T066; do not alter D082 Skill topology; do not relabel empirical parity; do not claim Git-backed loading is native host Skill activation.
+T068-State: DEFERRED_UNTIL_PERSONAL_PLUS_NATIVE_SKILLS_AVAILABLE  
+ChatGPT-Empirical-Parity: NOT_ESTABLISHED  
+Next-ChatGPT-Effort: HIGH  
+Next-Action: Await a separate explicit Human launch authorization for T066. If authorized, perform live-host measurement/instruction/model/rate-card preflight and begin Phase 1 only if every preflight condition passes. Do not consume a scored arm while any required identity or measurement is ambiguous.  
+Next-Chat-Minimum-Load: current `develop`; `AGENTS.md`; this checkpoint; T066 Task Contract; `evals/r027_efficiency/freeze_a.json` from the exact frozen scientific HEAD  
+Do-Not-Load-Or-Do: Do not consume the abandoned v1 branch; do not mutate the frozen v2 scientific branch; do not launch Codex/Executor or consume provider/model calls without separate Human authorization; do not resume T068 unless separately selected; do not claim empirical parity or production-policy adoption from T066 screening.
 
-## T069 closure
+## Stage 5 closure
 
-T069 Stage 7 accepted the persisted Executor handoff and integrated PR #430 into `develop` at `a0211be8647e0e0dda40d6a1e797bfa8370414ee`.
+The Human Owner selected T066 Stage 5 and explicitly chose to discard the pre-existing divergent v1 scientific branch.
 
-Accepted Stage 6 evidence:
-
-- focused T069 conformance: 4 passed;
-- related Skill/layout/reference tests: 112 passed;
-- full repository pytest: 531 passed;
-- targeted Ruff and Ruff format: PASS;
-- code-health: PASS;
-- `git diff --check`: PASS;
-- Executor review findings: none;
-- unresolved issues: none.
-
-The sole Executor repair removed one surplus blank line from `tests/test_git_backed_skill_loading.py`; conformance semantics were unchanged.
-
-## Integrated behavior
-
-When native repository-owned Skill routing/resources are unavailable, source maintenance now has an explicit Git-backed fallback:
+A fresh scientific branch was created from the canonical baseline:
 
 ```text
-bootstrap canonical Git authority
-    -> resolve applicable Skill intent
-    -> load canonical SKILL.md from the represented controlling revision
-    -> progressively load only required routes/references
-    -> compose transverse Skills only when independently triggered
+develop@6b7d2aa8f2f8682a39afb84ee99aa0b4383f4acc
+-> test/r027-chatgpt-codex-efficiency-v2
+-> Freeze A e00acd9bbee6ca8e260fdd3d96bbd26452d0ef48
 ```
 
-The fallback does not emulate native runtime state, does not create a host-specific semantic fork, and does not permit a native-activation claim without observable native exposure.
+Freeze A freezes:
 
-D082 topology remains one Maintainer domain Skill plus five transverse top-level Skills; `workspace-isolation` remains subordinate under `executor-launch-handoff`.
+- 9 matched pairs / 18 opaque arms across Phases 1-3 and archetypes A/B/C;
+- deterministic D052 acceptance oracles and repository-realistic fixture generation;
+- counterbalanced scheduler seed/order and fail-closed phase gates;
+- contamination/isolation controls;
+- common progressive verification contract;
+- scoring and credit normalization;
+- terminal result schema;
+- current D077, rate-card, runtime, instruction-loading and model-identity receipts;
+- provider-free integrity/conformance tests.
+
+Provider-free verification evidence:
+
+```text
+exact reconstructed Git blob SHA match: PASS
+python3 evals/r027_efficiency/integrity.py: PASS
+python3 -m pytest -q tests/test_r027_efficiency_freeze.py: 5 passed
+provider/model calls consumed: 0
+scored observations: 0
+```
+
+The frozen branch is now immutable experimental authority for Stage 6 launch preparation. Do not append further Stage 5 work to it.
+
+## D077 / live preflight boundary
+
+Stage 5 found material drift relative to historical R027/R028 inputs:
+
+- current root `AGENTS.md` is 12,095 bytes, below the documented default 32 KiB project-instruction budget;
+- current official purchased-credit rates differ from the historical R028 rate assumptions;
+- current stable Codex CLI observed upstream is 0.155.0.
+
+Those observations are evidence, not a production-policy change.
+
+Before the first scored arm, the live host must still prove:
+
+- actual client/runtime identity;
+- applicable signed-in account / pricing regime;
+- exact per-arm token attribution;
+- requested/resolved model identity where observable;
+- required `MEDIUM` reasoning and `STANDARD` speed;
+- complete active instruction loading without truncation.
+
+Failure or ambiguity in any required measurement/configuration remains a fail-closed stop condition.
 
 ## Preserved frontier
 
-- T068 remains deferred until native Skills are available for the selected Personal Plus surface and the Human explicitly resumes it.
-- T066 remains separate and unstarted.
+- D055/D068 and other production ownership/model policies are unchanged.
+- T068 remains deferred.
+- T066 remains screening-only; no result can self-promote into policy.
 - ChatGPT/Codex empirical parity remains `NOT_ESTABLISHED`.
-- D083 remains the accepted Codex model/effort classifier refining D055.
