@@ -10,7 +10,8 @@ SDD-Profile: ASSURED
 Test-Authorship-Mode: mixed  
 Date: 2026-09-12  
 Base-Branch: `develop`  
-Prospective-Scientific-Branch: `test/r027-chatgpt-codex-efficiency-v1`  
+Scientific-Branch: `test/r027-chatgpt-codex-efficiency-v2`  
+Abandoned-Preexisting-Branch: `test/r027-chatgpt-codex-efficiency-v1@dc8fd229bf403fbc2085ee906740f0cad63cbd43` (Human disposition: DISCARD; do not consume)  
 Expected-Handoff: `handoffs/T066-executor-handoff.json`  
 Experimental-Scope: SCREENING_ONLY
 
@@ -541,11 +542,12 @@ Then update R027/R028 disposition as appropriate:
 Task Contract design: COMPLETE (v2 screening revision)
 R027 research: COMPLETE / EVALUATING
 R028 deep revalidation: COMPLETE / EVALUATING
-Stage 5 benchmark/harness materialization: NOT_STARTED
-Scientific branch: NOT_CREATED
+Stage 5 benchmark/harness materialization: IN_PROGRESS
+Scientific branch: `test/r027-chatgpt-codex-efficiency-v2` from `develop@6b7d2aa8f2f8682a39afb84ee99aa0b4383f4acc`
+Preexisting v1 scientific branch: ABANDONED_BY_HUMAN; retained untouched only because the current GitHub connector exposes no branch-delete operation
 Executor launch: NOT_AUTHORIZED
 Provider/model calls consumed by T066: 0
 Scored observations: 0
 ```
 
-Next action when T066 is explicitly selected as the active work unit: ChatGPT Orchestrator performs Stage 5 provider-free materialization and Freeze A on a fresh scientific branch, then stops before any live Executor launch for a separate Human authorization.
+Current action: T066 is Human-selected. ChatGPT Orchestrator performs Stage 5 provider-free materialization and Freeze A on the fresh v2 scientific branch, then stops before any live Executor launch for a separate Human authorization.
