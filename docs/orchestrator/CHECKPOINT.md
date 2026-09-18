@@ -1,71 +1,63 @@
 # Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O325  
-Date: 2026-09-14  
+Checkpoint-Sequence: O341  
+Date: 2026-09-18  
 Canonical-Branch: `develop`  
-Current-Work-Unit: `T067 / R029 D082 materialization and qualification`  
-State: T067_ACCEPTED_INTEGRATED_OPERATIONAL_CLOSURE_PENDING_OP073  
+Current-Work-Unit: `R032 / Codex model-effort selection classifier`  
+State: R032_DECIDED_D083_ACCEPTED_T069_REVALIDATION_NEXT  
 Chat-Closure: KEEP_CURRENT_CHAT  
-R029-Research-State: COMPLETE  
-R029-Decision-State: DECIDED  
-R029-Decision-Ref: `docs/decisions/D082-r029-lean-root-and-transverse-skill-architecture.md`  
-R029-Architecture-State: ADOPTED_MATERIALIZATION_ACCEPTED  
-R029-Materialization-State: STAGE7_ACCEPTED  
-R029-Qualification-State: PASS  
-T067-Task-Contract: `docs/tasks/T067-r029-d082-materialization-and-qualification.md`  
-T067-Integration-PR: `#426` -> `develop`  
-T067-Integration-Commit: `3ff616873b3eff095e739bd83b35a21c213114e1`  
-T067-Integration-State: MERGED  
-T067-Closure-Operation: `docs/operations/OP072-t067-post-integration-closure.md`  
-T067-Closure-Receipt: PR `#427` issue comment `5660103454`  
-T067-Closure-State: OP072_DONE_VERIFIED  
-T067-Topic-Branch: ABSENT  
-OP072-Authoring-Branch: ABSENT  
-Final-Closure-Operation: `docs/operations/OP073-retire-o325-t067-closure-branch.md`  
+Human-Objective: Define a proportionate Codex model/reasoning selection policy from execution determinism, technical branching, verification strength and concrete risk rather than defaulting mechanically to Sol/Medium  
+R032-Research: `docs/research/R032-CODEX-MODEL-EFFORT-SELECTION.md`  
+R032-Research-State: COMPLETE  
+R032-Decision-State: DECIDED  
+R032-Branch: `docs/r032-codex-model-effort-selection`  
+R032-Research-Commit: `ebcb7e07035e0bf7b65a77712d8b0f119dad13c7`  
+R032-Traceability-Commit: `3bcf5b1b4b0ea9de27b74c227839ccc4edbe9dd7`  
+D083-Proposal: `docs/decisions/D083-codex-model-effort-selection-classifier.md`  
+D083-State: ACCEPTED  
+D083-Proposal-Commit: `d0e6a06862eabbe2163e3894e9cde056c4db961a`  
 Active-Executor: none  
+T069-State: PAUSED_BEFORE_STAGE6_PENDING_POST_D083_REVALIDATION  
+T069-Branch: `feat/t069-git-backed-skill-loading@24d5a4fc0fd5a307ba0b7eb4b1428fa82de53337`  
+T068-State: DEFERRED_UNTIL_PERSONAL_PLUS_NATIVE_SKILLS_AVAILABLE  
+T068-Branch: `feat/t068-chatgpt-skill-host-activation@d9ead79ce06ee693b8ed315d1a209370f0270779`  
 T066-Stage5-State: NOT_STARTED  
-ChatGPT-Empirical-Parity: NOT_ESTABLISHED  
-Codex-Transverse-Historical-Result: `36/36 PASS`, reused as regression evidence; no ceremonial rerun authorized  
-Maintainer-Historical-Signal: `21/36 observed`, informational/unscored/not-qualified  
 Next-ChatGPT-Effort: MEDIUM  
-Next-Action: Complete OP073 only: retire the merged O325/OP073 authoring branch under its integrated Operational Contract, then ChatGPT verifies the durable receipt and remote branch absence, retires `AG | agent-governance | T067 | root-1`, and marks T067 fully operationally closed. After that, await explicit Human selection of the next objective. Do not start T066 automatically.  
-Next-Chat-Minimum-Load: `docs/operations/OP073-retire-o325-t067-closure-branch.md`; PR `#427` receipt only if T067 closure evidence needs reconfirmation  
-Do-Not-Load-Or-Do: Do not restart T067 implementation/qualification; do not repeat historical 36 Codex trials; do not relabel empirical parity; do not start or modify T066 without explicit Human selection.
+Next-Action: Revalidate current T069 remote branch, Task Contract, Stage 5 candidate/anchor and launch authority against current Git state. If still valid, classify the Stage 6 launch under accepted D083 and present the Human launch card/prompt. Do not launch automatically.  
+Next-Chat-Minimum-Load: this checkpoint; `docs/decisions/D083-codex-model-effort-selection-classifier.md`; `docs/EXECUTOR-LAUNCH-PROFILES.md`; T069 Task Contract and current T069 branch/checkpoint only for revalidation  
+Do-Not-Load-Or-Do: Do not resume T068; do not start/modify T066; do not launch T069 Stage 6 automatically; do not treat T063 as qualification of root routing; do not adopt Astra as default; do not use higher model/effort to cross an authority boundary.  
 
-## Completed frontier
+## Research conclusion
 
-T067 / R029 D082 materialization and qualification is semantically accepted and integrated.
+R032 is complete analytical evidence and is now represented in the canonical research registry. It confirms D055's minimum-sufficient-compute principle and proposes a more explicit classifier with four steps after the authority gate:
 
-Accepted Stage 7 evidence remains:
+```text
+authority complete?
+    -> execution determinism
+    -> technical branching
+    -> verification strength
+    -> concrete risk modifiers
+    -> choose model capability
+    -> choose reasoning effort independently
+    -> verify and escalate only the deficient axis
+```
 
-- deterministic qualification `18/18 PASS`;
-- preservation `79/79`, `39/20/20`, unresolved `0`;
-- one Maintainer Skill with two internal routes, exactly five transverse Skills, workspace isolation internal;
-- cold-start anchors restored and tested;
-- full repository suite `527 passed` plus Ruff/code-health PASS;
-- measured root `11496` bytes vs `34567` baseline, Skill catalog metadata `2799` bytes, max representative reference depth `4`, duplicate normative owner IDs `0`;
-- no T066 changes and no new provider/model trial launch.
+The proposed conservative Codex mapping is:
 
-PR `#426` was squash-merged to `develop` at `3ff616873b3eff095e739bd83b35a21c213114e1`.
+- Luna/Low for read-only or repetitive high-determinism work with strong postconditions;
+- Terra/Low for narrow tracked mutation with high determinism, low branching and strong deterministic verification;
+- Terra/Medium for bounded local implementation/refactor with low-to-medium branching;
+- Sol/Medium for ordinary multi-file implementation/rework when the task is not clearly eligible for downshift;
+- Sol/High for high branching, weak verification, non-local diagnosis or serious concrete risk modifiers;
+- Astra or stronger current tier only for concrete capability insufficiency, not as a default.
 
-OP072 was integrated by PR `#427` at `3ab8a2ebdbca790fb5f08491ec04f51b051a8cb0`. Its durable receipt reports `DONE`; ChatGPT independently verified current `develop` remained at that commit and both `refactor/r029-d082-materialization` and `docs/op072-t067-post-integration-closure` were absent remotely.
+This mapping is accepted by D083 and now controls Codex root launch classification together with D055.
 
-Local closure evidence in the OP072 receipt reports the T067/OP072 local branches/worktrees absent, primary checkout on clean current `develop`, no tracked-content mutation, no unrelated target mutation, and no review items.
+## D057 traceability status
 
-## Preserved residuals
+R032 is now `COMPLETE / DECIDED` and D083 is the accepted decision authority. The research registry and Codex adapter guidance have been updated consistently.
 
-- ChatGPT/Codex empirical parity remains `NOT_ESTABLISHED`.
-- ChatGPT empirical trials remain `0/36`; Human waiver remains controlling.
-- Historical Maintainer `21/36` remains informational/unscored/not-qualified.
-- Historical Codex transverse `36/36` remains reused as regression evidence.
-- Authority, ownership, safety, cold-start and fail-closed behavior remain independent of Skill activation.
-- T066 remains separate, unchanged and not started.
+## T069 interaction
 
-## Final closure gate
-
-O325 corrects the now-consumed O324 integration/retirement frontier. Because this checkpoint and OP073 are normal committed Markdown, they are authored on `docs/o325-t067-closed` and integrated by PR before chat closure.
-
-OP073 is an attached-closure operation whose sole mutation target is that O325/OP073 authoring branch. After its merged PR is verified and that branch is retired, no T067 lifecycle branch remains and `AG | agent-governance | T067 | root-1` may be retired.
-
-No new implementation/research objective is selected by this closure mechanics. The next product objective requires explicit Human selection; T066 is not implicitly selected.
+T069 Stage 6 remains paused until a fresh Git revalidation is completed. D083 suggests `Terra / Low` if the current Task Contract still presents high determinism, low technical branching, strong deterministic verification, bounded repair authority and fail-closed semantic re-entry. Revalidation, not this remembered classification, controls the actual launch card.
