@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from pathlib import Path
 
-
 CANONICAL_SKILL_PATHS = (
     "maintainer-skill/SKILL.md",
     "repository-change-control-skill/SKILL.md",
