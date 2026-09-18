@@ -1,0 +1,77 @@
+{
+  "as_of": "2026-09-18",
+  "status": "PASS",
+  "branch": "test/r027-chatgpt-codex-efficiency-v2",
+  "verified_head": "b9f3b1d3c9a1b4b6bc73a506d08590c4a11e40f5",
+  "method": "Reconstructed exact canonical GitHub blob bytes in an isolated provider-free Python workspace; verified Git blob SHA equality before execution.",
+  "exact_blob_sha_match": "PASS",
+  "verified_blobs": [
+    {
+      "path": "evals/r027_efficiency/contamination_guard.py",
+      "git_blob_sha": "40539f8b2674a8e7d01bfb9de1f9120dfb25e16e"
+    },
+    {
+      "path": "evals/r027_efficiency/fixture_generator.py",
+      "git_blob_sha": "02437cf1d6b347813bcc110be0798b2737ad50c7"
+    },
+    {
+      "path": "evals/r027_efficiency/integrity.py",
+      "git_blob_sha": "cae1c1328c3e0e2947db671b7a1d31b23d0004d0"
+    },
+    {
+      "path": "evals/r027_efficiency/oracles.json",
+      "git_blob_sha": "fe94f8e980a83470f2a385ef04177d9f81759c7e"
+    },
+    {
+      "path": "evals/r027_efficiency/pairs.json",
+      "git_blob_sha": "d751b48c15fe8a24216ee29e9f84b63865878b87"
+    },
+    {
+      "path": "evals/r027_efficiency/schedule.json",
+      "git_blob_sha": "c75491478bbbe90654be5c3f1551990512a8b3ae"
+    },
+    {
+      "path": "evals/r027_efficiency/scheduler.py",
+      "git_blob_sha": "199ad585467577212d404c044aa769fae42d8182"
+    },
+    {
+      "path": "evals/r027_efficiency/scoring.py",
+      "git_blob_sha": "d742a8d478e21aefbed2ee16ed2d76aac0d693f7"
+    },
+    {
+      "path": "evals/r027_efficiency/tasks.json",
+      "git_blob_sha": "2f2433bd6d7b53a9974509153eedf9e843ecf6b0"
+    },
+    {
+      "path": "tests/test_r027_efficiency_freeze.py",
+      "git_blob_sha": "d5b3d7e544ff6152a33b30908e1a5b122dfa0fce"
+    }
+  ],
+  "commands": [
+    {
+      "command": "python3 evals/r027_efficiency/integrity.py",
+      "result": "PASS",
+      "stdout": "T066 Freeze A integrity: PASS"
+    },
+    {
+      "command": "python3 -m pytest -q tests/test_r027_efficiency_freeze.py",
+      "result": "PASS",
+      "stdout": "5 passed in 0.08s"
+    }
+  ],
+  "proven": [
+    "9 pairs / 18 unique arms",
+    "schedule covers every arm exactly once",
+    "counterbalanced first-side order in every phase",
+    "oracle coverage equals arm set",
+    "pair path/archetype geometry is isomorphic",
+    "all generated Python sources compile",
+    "all clean fixtures preserve baseline behavior",
+    "all clean fixtures fail the target delta",
+    "no SOLUTION.patch is materialized",
+    "scoring threshold/credit derivation focal checks pass"
+  ],
+  "provider_model_calls": 0,
+  "scored_observations": 0,
+  "environment_note": "Direct git clone was unavailable because the local sandbox could not resolve github.com; canonical contents were read through the authorized GitHub connector and byte identity was verified by Git blob SHA before execution."
+}

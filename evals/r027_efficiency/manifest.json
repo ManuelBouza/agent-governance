@@ -28,7 +28,9 @@
     "delegation_posture": "CONTRACT_FIXED",
     "verification": "L0-L4 progressive; L4 before terminal acceptance"
   },
-  "freeze_a_status": "MATERIALIZED_UNVERIFIED",
+  "freeze_a_status": "PUBLISHED_PROVIDER_FREE_VERIFIED",
+  "freeze_a_path": "evals/r027_efficiency/freeze_a.json",
+  "verification_basis_head": "b9f3b1d3c9a1b4b6bc73a506d08590c4a11e40f5",
   "provider_model_calls": 0,
   "scored_observations": 0
 }

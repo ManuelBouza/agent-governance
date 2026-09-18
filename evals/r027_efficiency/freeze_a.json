@@ -1,0 +1,124 @@
+{
+  "schema_version": 1,
+  "freeze": "A",
+  "task": "T066",
+  "status": "PUBLISHED_PROVIDER_FREE_VERIFIED",
+  "screening_only": true,
+  "scientific_branch": "test/r027-chatgpt-codex-efficiency-v2",
+  "develop_baseline": "6b7d2aa8f2f8682a39afb84ee99aa0b4383f4acc",
+  "materialization_head_before_freeze_receipts": "b9f3b1d3c9a1b4b6bc73a506d08590c4a11e40f5",
+  "human_branch_disposition": {
+    "abandoned_ref": "test/r027-chatgpt-codex-efficiency-v1",
+    "abandoned_head": "dc8fd229bf403fbc2085ee906740f0cad63cbd43",
+    "disposition": "DISCARD_DO_NOT_CONSUM"
+  },
+  "research_authority": [
+    "docs/research/R027-CHATGPT-CODEX-COST-EFFICIENT-RESPONSIBILITY-SPLIT.md",
+    "docs/research/R028-R027-DEEP-REVALIDATION-AND-LEAN-EXECUTOR.md"
+  ],
+  "frozen_core": [
+    {
+      "path": "AGENTS.md",
+      "git_blob_sha": "0230109a2631bc39498a548104c3d7bafb72ce65"
+    },
+    {
+      "path": "docs/tasks/T066-r027-chatgpt-codex-efficiency-evaluation.md",
+      "git_blob_sha": "29b89e785047887eb8cb62f3a17b9d9524f3932e"
+    },
+    {
+      "path": "evals/r027_efficiency/README.md",
+      "git_blob_sha": "530affb3c475c53793511e4d18c0c94dc8420f32"
+    },
+    {
+      "path": "evals/r027_efficiency/contamination_guard.py",
+      "git_blob_sha": "40539f8b2674a8e7d01bfb9de1f9120dfb25e16e"
+    },
+    {
+      "path": "evals/r027_efficiency/fixture_generator.py",
+      "git_blob_sha": "02437cf1d6b347813bcc110be0798b2737ad50c7"
+    },
+    {
+      "path": "evals/r027_efficiency/integrity.py",
+      "git_blob_sha": "cae1c1328c3e0e2947db671b7a1d31b23d0004d0"
+    },
+    {
+      "path": "evals/r027_efficiency/launch-envelope.json",
+      "git_blob_sha": "26bb42e9a9db6d75bf2609dc2b2656b014dc5319"
+    },
+    {
+      "path": "evals/r027_efficiency/oracles.json",
+      "git_blob_sha": "fe94f8e980a83470f2a385ef04177d9f81759c7e"
+    },
+    {
+      "path": "evals/r027_efficiency/pairs.json",
+      "git_blob_sha": "d751b48c15fe8a24216ee29e9f84b63865878b87"
+    },
+    {
+      "path": "evals/r027_efficiency/schedule.json",
+      "git_blob_sha": "c75491478bbbe90654be5c3f1551990512a8b3ae"
+    },
+    {
+      "path": "evals/r027_efficiency/scheduler.py",
+      "git_blob_sha": "199ad585467577212d404c044aa769fae42d8182"
+    },
+    {
+      "path": "evals/r027_efficiency/scoring.py",
+      "git_blob_sha": "d742a8d478e21aefbed2ee16ed2d76aac0d693f7"
+    },
+    {
+      "path": "evals/r027_efficiency/tasks.json",
+      "git_blob_sha": "2f2433bd6d7b53a9974509153eedf9e843ecf6b0"
+    },
+    {
+      "path": "evals/r027_efficiency/terminal-result.schema.json",
+      "git_blob_sha": "48773c4f2869e241c598e66c69ae19d13aebd323"
+    },
+    {
+      "path": "evals/r027_efficiency/verification-contract.json",
+      "git_blob_sha": "4dc107c8054f1367ae5c8a4018a4e99026e40120"
+    },
+    {
+      "path": "tests/test_r027_efficiency_freeze.py",
+      "git_blob_sha": "d5b3d7e544ff6152a33b30908e1a5b122dfa0fce"
+    }
+  ],
+  "closure_receipts": [
+    {
+      "path": "evals/r027_efficiency/manifest.json",
+      "git_blob_sha": "19bce1326e034321254c86f8071aa9d90cbf17bc"
+    },
+    {
+      "path": "evals/r027_efficiency/receipts/provider-free-verification.json",
+      "git_blob_sha": "054fa1645f4e12b80598892e9942c26078b1fbde"
+    },
+    {
+      "path": "evals/r027_efficiency/receipts/rate-card.json",
+      "git_blob_sha": "dad3891240779f1b7e0b15c229207d9275740b62"
+    },
+    {
+      "path": "evals/r027_efficiency/receipts/d077.json",
+      "git_blob_sha": "a36d0e08c66356b0321840155e3852e96c72bcde"
+    },
+    {
+      "path": "evals/r027_efficiency/receipts/instruction-loading.json",
+      "git_blob_sha": "6a1f7c475f7fbdb49eeac9d377cf3050ca7058a0"
+    },
+    {
+      "path": "evals/r027_efficiency/receipts/model-identity.json",
+      "git_blob_sha": "e39b812250049513bd6a8bbcc0b86679beb4b6df"
+    },
+    {
+      "path": "evals/r027_efficiency/receipts/stage5-readiness.json",
+      "git_blob_sha": "76e0c802c9b2f2fbc8a5890a53b178509c73d8c6"
+    }
+  ],
+  "guarantees": {
+    "pair_count": 9,
+    "arm_count": 18,
+    "provider_model_calls": 0,
+    "scored_observations": 0,
+    "contains_scored_model_outputs": false
+  },
+  "live_execution_authorized": false,
+  "next_gate": "Separate Human authorization after live-host measurement/instruction/model/rate-card preflight."
+}

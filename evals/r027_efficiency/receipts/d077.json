@@ -1,47 +1,61 @@
 {
   "as_of": "2026-09-18",
-  "status": "REVALIDATED_FOR_PROVIDER_FREE_FREEZE",
+  "disposition": "MATERIAL_UPSTREAM_CHANGE",
+  "status": "REVALIDATED_FOR_FREEZE_A",
+  "question": "Are the volatile Codex instruction, pricing, speed, model-access and runtime assumptions used by T066 still current enough to freeze the provider-free experiment?",
   "findings": [
     {
       "fact": "Codex combined project instruction limit",
       "source": "https://learn.chatgpt.com/docs/agent-configuration/agents-md",
+      "freshness": "retrieved 2026-09-18",
       "observed": "project_doc_max_bytes defaults to 32 KiB"
     },
     {
       "fact": "Current root AGENTS.md",
-      "source": "GitHub develop",
+      "source": "GitHub develop@6b7d2aa8f2f8682a39afb84ee99aa0b4383f4acc",
       "sha": "0230109a2631bc39498a548104c3d7bafb72ce65",
       "bytes": 12095,
-      "comparison": "below 32 KiB default; R027 historical 34,567-byte condition is stale"
+      "observed": "current root is below the documented 32 KiB default; R027's historical 34,567-byte root condition no longer represents current develop"
     },
     {
       "fact": "GPT-5.6 Fast",
       "source": "https://learn.chatgpt.com/docs/agent-configuration/speed",
+      "freshness": "retrieved 2026-09-18",
       "observed": "about 1.5x speed; 2.5x Standard credit rate"
     },
     {
-      "fact": "Purchased-credit rates",
-      "source": "https://help.openai.com/en/articles/11481834-chatgpt-rate-card",
-      "observed": "Sol 100/10/500; Terra 50/5/300; Luna 5/0.5/30 per 1M uncached/cached/output"
+      "fact": "Codex purchased-credit token rates",
+      "source": "https://help.openai.com/en/articles/11481834",
+      "freshness": "article updated within 1 day of retrieval",
+      "observed": "Sol 100/10/500; Terra 50/5/300; Luna 5/0.5/30 credits per 1M uncached/cached/output; historical R028 Sol pricing is stale"
+    },
+    {
+      "fact": "Personal-plan flexible credits",
+      "source": "https://help.openai.com/en/articles/12642688-using-credits-for-flexible-usage-in-chatgpt-freegopluspro-sora",
+      "freshness": "article updated within 1 day of retrieval",
+      "observed": "eligible personal plans can use purchased credits after included limits; feature/plan availability is account-dependent and must be observed live"
     },
     {
       "fact": "GPT-5.6 Codex minimum client versions",
-      "source": "https://help.openai.com/en/articles/20001354-gpt-56-and-gpt-6-pro-in-chatgpt",
-      "observed": "CLI 0.144.0; desktop Codex mode 26.707.30751"
+      "source": "https://help.openai.com/en/articles/20001354-gpt-5-6",
+      "freshness": "retrieved 2026-09-18",
+      "observed": "Codex CLI 0.144.0; desktop Codex mode 26.707.30751"
     },
     {
       "fact": "Latest stable openai/codex release",
       "source": "https://github.com/openai/codex/releases/tag/rust-v0.155.0",
+      "freshness": "retrieved 2026-09-18",
       "observed": "0.155.0",
       "published_at": "2026-09-17T23:14:43Z"
     }
   ],
+  "consequence": "Freeze A uses current rates and current root-instruction geometry instead of historical R027/R028 measurements. No normative policy changes. Live host facts remain a fail-closed preflight.",
   "live_host_requirements": [
     "record actual client/runtime version",
-    "record auth/account pricing regime",
-    "prove model/resolved identity where observable",
+    "record signed-in auth/account pricing regime",
+    "prove requested and resolved model identity where observable",
+    "prove effort and STANDARD speed",
     "prove exact per-arm token attribution",
-    "prove STANDARD speed"
-  ],
-  "policy_effect": "evidence only; no policy adoption"
+    "prove complete active instruction chain"
+  ]
 }

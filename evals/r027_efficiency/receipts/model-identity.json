@@ -1,0 +1,65 @@
+{
+  "as_of": "2026-09-18",
+  "status": "PENDING_LIVE_HOST_OBSERVATION",
+  "frozen_requested_profiles": [
+    {
+      "phases": [
+        1
+      ],
+      "roles": [
+        "CONTROL_OWNERSHIP",
+        "EXECUTOR_OWNERSHIP"
+      ],
+      "model": "gpt-5.6-sol",
+      "effort": "MEDIUM",
+      "speed": "STANDARD"
+    },
+    {
+      "phases": [
+        2
+      ],
+      "roles": [
+        "EXECUTOR_SOL"
+      ],
+      "model": "gpt-5.6-sol",
+      "effort": "MEDIUM",
+      "speed": "STANDARD"
+    },
+    {
+      "phases": [
+        2
+      ],
+      "roles": [
+        "EXECUTOR_TERRA"
+      ],
+      "model": "gpt-5.6-terra",
+      "effort": "MEDIUM",
+      "speed": "STANDARD"
+    },
+    {
+      "phases": [
+        3
+      ],
+      "roles": [
+        "CURRENT_BUNDLE"
+      ],
+      "model": "gpt-5.6-sol",
+      "effort": "MEDIUM",
+      "speed": "STANDARD"
+    },
+    {
+      "phases": [
+        3
+      ],
+      "roles": [
+        "LEAN_EXECUTOR_BUNDLE"
+      ],
+      "model": "gpt-5.6-terra",
+      "effort": "MEDIUM",
+      "speed": "STANDARD",
+      "max_sol_escalations": 1
+    }
+  ],
+  "requirement": "Before each scored arm, persist requested model, resolved/observable model identity, reasoning effort and speed. Fail closed when the arm's required identity/configuration cannot be proven.",
+  "provider_calls_consumed": 0
+}
