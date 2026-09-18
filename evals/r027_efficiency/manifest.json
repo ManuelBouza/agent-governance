@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "experiment": "T066-R027-R028-efficiency-screening",
+  "screening_only": true,
+  "base_develop": "6b7d2aa8f2f8682a39afb84ee99aa0b4383f4acc",
+  "scientific_branch": "test/r027-chatgpt-codex-efficiency-v2",
+  "abandoned_branch": {
+    "ref": "test/r027-chatgpt-codex-efficiency-v1",
+    "head": "dc8fd229bf403fbc2085ee906740f0cad63cbd43",
+    "disposition": "HUMAN_DISCARD_DO_NOT_CONSUM"
+  },
+  "pair_count": 9,
+  "arm_count": 18,
+  "archetypes": [
+    "A",
+    "B",
+    "C"
+  ],
+  "phases": [
+    1,
+    2,
+    3
+  ],
+  "constants": {
+    "speed": "STANDARD",
+    "reasoning": "MEDIUM",
+    "children": 0,
+    "delegation_posture": "CONTRACT_FIXED",
+    "verification": "L0-L4 progressive; L4 before terminal acceptance"
+  },
+  "freeze_a_status": "MATERIALIZED_UNVERIFIED",
+  "provider_model_calls": 0,
+  "scored_observations": 0
+}

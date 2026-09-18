@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "scored_root_topology": "fresh independent Human-visible root per arm",
+  "allowed_global_read_paths": [
+    "AGENTS.md",
+    "docs/tasks/T066-r027-chatgpt-codex-efficiency-evaluation.md",
+    "evals/r027_efficiency/manifest.json",
+    "evals/r027_efficiency/tasks.json",
+    "evals/r027_efficiency/oracles.json",
+    "evals/r027_efficiency/verification-contract.json",
+    "evals/r027_efficiency/terminal-result.schema.json"
+  ],
+  "arm_workspace_template": "<isolated-worktree>/evals/r027_efficiency/workspaces/<arm_id>",
+  "prohibited": [
+    "other arm workspaces",
+    "other arm candidate refs",
+    "other arm handoffs",
+    "other arm diffs",
+    "scored outputs from earlier arms"
+  ],
+  "model_identity_must_be_observed": true,
+  "effort_must_be_observed": true,
+  "speed_must_be_observed": true,
+  "usage_receipt_required": true,
+  "exact_token_attribution_required": true
+}

@@ -1,0 +1,27 @@
+{
+  "as_of": "2026-09-18",
+  "source_kind": "official_openai_chatgpt_credit_rate_card",
+  "source": "https://help.openai.com/en/articles/11481834-chatgpt-rate-card",
+  "units": "credits_per_1M_tokens",
+  "rates": {
+    "gpt-5.6-sol": {
+      "uncached_input": 100,
+      "cached_input": 10,
+      "output_reasoning": 500
+    },
+    "gpt-5.6-terra": {
+      "uncached_input": 50,
+      "cached_input": 5,
+      "output_reasoning": 300
+    },
+    "gpt-5.6-luna": {
+      "uncached_input": 5,
+      "cached_input": 0.5,
+      "output_reasoning": 30
+    }
+  },
+  "fast_mode_note": "GPT-5.6 Fast consumes 2.5x Standard credits where supported; T066 freezes STANDARD.",
+  "applicability": "CONFIRM_ON_LIVE_ACCOUNT_BEFORE_SCORED_EXECUTION",
+  "changed_since_R028": true,
+  "note": "Historical R028 Sol rates are stale for the current purchased-credit schedule."
+}

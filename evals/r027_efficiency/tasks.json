@@ -1,0 +1,719 @@
+[
+  {
+    "arm_id": "a91f2c",
+    "pair_id": "P1-A",
+    "phase": 1,
+    "archetype": "A",
+    "variant_token": "ember",
+    "side": "LEFT",
+    "role": "CONTROL_OWNERSHIP",
+    "profile": {
+      "owner": "ORCHESTRATOR",
+      "model": "gpt-5.6-sol",
+      "effort": "medium",
+      "speed": "standard",
+      "mode": "verify_repair"
+    },
+    "specification": "Fix normalize_name so leading/trailing whitespace is removed before lowercasing. Add regression coverage using marker ember. Preserve existing behavior.",
+    "design": "Localized Python behavior fix in src/subject.py plus tests/test_subject.py.",
+    "plan": [
+      "inspect baseline",
+      "change normalization",
+      "add regression test",
+      "run focal checks",
+      "run required broader gates"
+    ],
+    "acceptance": {
+      "input": "  EMBER  ",
+      "expected": "ember",
+      "preserved_input": "EMBER",
+      "preserved_expected": "ember"
+    },
+    "expected_changed_paths": [
+      "src/subject.py",
+      "tests/test_subject.py"
+    ],
+    "children_used": 0,
+    "delegation_posture": "CONTRACT_FIXED",
+    "screening_only": true
+  },
+  {
+    "arm_id": "b47d8e",
+    "pair_id": "P1-A",
+    "phase": 1,
+    "archetype": "A",
+    "variant_token": "cedar",
+    "side": "RIGHT",
+    "role": "EXECUTOR_OWNERSHIP",
+    "profile": {
+      "owner": "EXECUTOR",
+      "model": "gpt-5.6-sol",
+      "effort": "medium",
+      "speed": "standard",
+      "mode": "materialize_verify"
+    },
+    "specification": "Fix normalize_name so leading/trailing whitespace is removed before lowercasing. Add regression coverage using marker cedar. Preserve existing behavior.",
+    "design": "Localized Python behavior fix in src/subject.py plus tests/test_subject.py.",
+    "plan": [
+      "inspect baseline",
+      "change normalization",
+      "add regression test",
+      "run focal checks",
+      "run required broader gates"
+    ],
+    "acceptance": {
+      "input": "  CEDAR  ",
+      "expected": "cedar",
+      "preserved_input": "CEDAR",
+      "preserved_expected": "cedar"
+    },
+    "expected_changed_paths": [
+      "src/subject.py",
+      "tests/test_subject.py"
+    ],
+    "children_used": 0,
+    "delegation_posture": "CONTRACT_FIXED",
+    "screening_only": true
+  },
+  {
+    "arm_id": "c18a55",
+    "pair_id": "P1-B",
+    "phase": 1,
+    "archetype": "B",
+    "variant_token": "maple",
+    "side": "LEFT",
+    "role": "CONTROL_OWNERSHIP",
+    "profile": {
+      "owner": "ORCHESTRATOR",
+      "model": "gpt-5.6-sol",
+      "effort": "medium",
+      "speed": "standard",
+      "mode": "verify_repair"
+    },
+    "specification": "Rename configuration key retry_count_maple to attempt_limit_maple across the bounded source/test surface while preserving retry_budget() == 3. Prove the old key is absent and the new key exists.",
+    "design": "Bounded multi-file config synchronization across settings, consumer and regression test.",
+    "plan": [
+      "inspect producer/consumer",
+      "rename consistently",
+      "update regression assertions",
+      "run focal checks",
+      "run required broader gates"
+    ],
+    "acceptance": {
+      "old_key": "retry_count_maple",
+      "new_key": "attempt_limit_maple",
+      "retry_budget": 3
+    },
+    "expected_changed_paths": [
+      "src/settings.py",
+      "src/consumer.py",
+      "tests/test_consumer.py"
+    ],
+    "children_used": 0,
+    "delegation_posture": "CONTRACT_FIXED",
+    "screening_only": true
+  },
+  {
+    "arm_id": "d62f09",
+    "pair_id": "P1-B",
+    "phase": 1,
+    "archetype": "B",
+    "variant_token": "birch",
+    "side": "RIGHT",
+    "role": "EXECUTOR_OWNERSHIP",
+    "profile": {
+      "owner": "EXECUTOR",
+      "model": "gpt-5.6-sol",
+      "effort": "medium",
+      "speed": "standard",
+      "mode": "materialize_verify"
+    },
+    "specification": "Rename configuration key retry_count_birch to attempt_limit_birch across the bounded source/test surface while preserving retry_budget() == 3. Prove the old key is absent and the new key exists.",
+    "design": "Bounded multi-file config synchronization across settings, consumer and regression test.",
+    "plan": [
+      "inspect producer/consumer",
+      "rename consistently",
+      "update regression assertions",
+      "run focal checks",
+      "run required broader gates"
+    ],
+    "acceptance": {
+      "old_key": "retry_count_birch",
+      "new_key": "attempt_limit_birch",
+      "retry_budget": 3
+    },
+    "expected_changed_paths": [
+      "src/settings.py",
+      "src/consumer.py",
+      "tests/test_consumer.py"
+    ],
+    "children_used": 0,
+    "delegation_posture": "CONTRACT_FIXED",
+    "screening_only": true
+  },
+  {
+    "arm_id": "e73b41",
+    "pair_id": "P1-C",
+    "phase": 1,
+    "archetype": "C",
+    "variant_token": "coral",
+    "side": "LEFT",
+    "role": "CONTROL_OWNERSHIP",
+    "profile": {
+      "owner": "ORCHESTRATOR",
+      "model": "gpt-5.6-sol",
+      "effort": "medium",
+      "speed": "standard",
+      "mode": "verify_repair"
+    },
+    "specification": "Add run([\"version\"]) returning version-coral. Preserve run([\"echo\", value]) and unsupported-command behavior; add regression coverage.",
+    "design": "Small CLI/API addition in src/cli.py plus tests/test_cli.py.",
+    "plan": [
+      "inspect dispatch",
+      "add version behavior",
+      "add regression test",
+      "run focal checks",
+      "run required broader gates"
+    ],
+    "acceptance": {
+      "argv": [
+        "version"
+      ],
+      "expected": "version-coral",
+      "preserved_argv": [
+        "echo",
+        "coral"
+      ],
+      "preserved_expected": "coral"
+    },
+    "expected_changed_paths": [
+      "src/cli.py",
+      "tests/test_cli.py"
+    ],
+    "children_used": 0,
+    "delegation_posture": "CONTRACT_FIXED",
+    "screening_only": true
+  },
+  {
+    "arm_id": "f05c96",
+    "pair_id": "P1-C",
+    "phase": 1,
+    "archetype": "C",
+    "variant_token": "indigo",
+    "side": "RIGHT",
+    "role": "EXECUTOR_OWNERSHIP",
+    "profile": {
+      "owner": "EXECUTOR",
+      "model": "gpt-5.6-sol",
+      "effort": "medium",
+      "speed": "standard",
+      "mode": "materialize_verify"
+    },
+    "specification": "Add run([\"version\"]) returning version-indigo. Preserve run([\"echo\", value]) and unsupported-command behavior; add regression coverage.",
+    "design": "Small CLI/API addition in src/cli.py plus tests/test_cli.py.",
+    "plan": [
+      "inspect dispatch",
+      "add version behavior",
+      "add regression test",
+      "run focal checks",
+      "run required broader gates"
+    ],
+    "acceptance": {
+      "argv": [
+        "version"
+      ],
+      "expected": "version-indigo",
+      "preserved_argv": [
+        "echo",
+        "indigo"
+      ],
+      "preserved_expected": "indigo"
+    },
+    "expected_changed_paths": [
+      "src/cli.py",
+      "tests/test_cli.py"
+    ],
+    "children_used": 0,
+    "delegation_posture": "CONTRACT_FIXED",
+    "screening_only": true
+  },
+  {
+    "arm_id": "g12d77",
+    "pair_id": "P2-A",
+    "phase": 2,
+    "archetype": "A",
+    "variant_token": "hazel",
+    "side": "LEFT",
+    "role": "EXECUTOR_SOL",
+    "profile": {
+      "owner": "EXECUTOR",
+      "model": "gpt-5.6-sol",
+      "effort": "medium",
+      "speed": "standard",
+      "mode": "materialize_verify"
+    },
+    "specification": "Fix normalize_name so leading/trailing whitespace is removed before lowercasing. Add regression coverage using marker hazel. Preserve existing behavior.",
+    "design": "Localized Python behavior fix in src/subject.py plus tests/test_subject.py.",
+    "plan": [
+      "inspect baseline",
+      "change normalization",
+      "add regression test",
+      "run focal checks",
+      "run required broader gates"
+    ],
+    "acceptance": {
+      "input": "  HAZEL  ",
+      "expected": "hazel",
+      "preserved_input": "HAZEL",
+      "preserved_expected": "hazel"
+    },
+    "expected_changed_paths": [
+      "src/subject.py",
+      "tests/test_subject.py"
+    ],
+    "children_used": 0,
+    "delegation_posture": "CONTRACT_FIXED",
+    "screening_only": true
+  },
+  {
+    "arm_id": "h64a30",
+    "pair_id": "P2-A",
+    "phase": 2,
+    "archetype": "A",
+    "variant_token": "onyx",
+    "side": "RIGHT",
+    "role": "EXECUTOR_TERRA",
+    "profile": {
+      "owner": "EXECUTOR",
+      "model": "gpt-5.6-terra",
+      "effort": "medium",
+      "speed": "standard",
+      "mode": "materialize_verify"
+    },
+    "specification": "Fix normalize_name so leading/trailing whitespace is removed before lowercasing. Add regression coverage using marker onyx. Preserve existing behavior.",
+    "design": "Localized Python behavior fix in src/subject.py plus tests/test_subject.py.",
+    "plan": [
+      "inspect baseline",
+      "change normalization",
+      "add regression test",
+      "run focal checks",
+      "run required broader gates"
+    ],
+    "acceptance": {
+      "input": "  ONYX  ",
+      "expected": "onyx",
+      "preserved_input": "ONYX",
+      "preserved_expected": "onyx"
+    },
+    "expected_changed_paths": [
+      "src/subject.py",
+      "tests/test_subject.py"
+    ],
+    "children_used": 0,
+    "delegation_posture": "CONTRACT_FIXED",
+    "screening_only": true
+  },
+  {
+    "arm_id": "j28e14",
+    "pair_id": "P2-B",
+    "phase": 2,
+    "archetype": "B",
+    "variant_token": "sable",
+    "side": "LEFT",
+    "role": "EXECUTOR_SOL",
+    "profile": {
+      "owner": "EXECUTOR",
+      "model": "gpt-5.6-sol",
+      "effort": "medium",
+      "speed": "standard",
+      "mode": "materialize_verify"
+    },
+    "specification": "Rename configuration key retry_count_sable to attempt_limit_sable across the bounded source/test surface while preserving retry_budget() == 3. Prove the old key is absent and the new key exists.",
+    "design": "Bounded multi-file config synchronization across settings, consumer and regression test.",
+    "plan": [
+      "inspect producer/consumer",
+      "rename consistently",
+      "update regression assertions",
+      "run focal checks",
+      "run required broader gates"
+    ],
+    "acceptance": {
+      "old_key": "retry_count_sable",
+      "new_key": "attempt_limit_sable",
+      "retry_budget": 3
+    },
+    "expected_changed_paths": [
+      "src/settings.py",
+      "src/consumer.py",
+      "tests/test_consumer.py"
+    ],
+    "children_used": 0,
+    "delegation_posture": "CONTRACT_FIXED",
+    "screening_only": true
+  },
+  {
+    "arm_id": "k83b52",
+    "pair_id": "P2-B",
+    "phase": 2,
+    "archetype": "B",
+    "variant_token": "ivory",
+    "side": "RIGHT",
+    "role": "EXECUTOR_TERRA",
+    "profile": {
+      "owner": "EXECUTOR",
+      "model": "gpt-5.6-terra",
+      "effort": "medium",
+      "speed": "standard",
+      "mode": "materialize_verify"
+    },
+    "specification": "Rename configuration key retry_count_ivory to attempt_limit_ivory across the bounded source/test surface while preserving retry_budget() == 3. Prove the old key is absent and the new key exists.",
+    "design": "Bounded multi-file config synchronization across settings, consumer and regression test.",
+    "plan": [
+      "inspect producer/consumer",
+      "rename consistently",
+      "update regression assertions",
+      "run focal checks",
+      "run required broader gates"
+    ],
+    "acceptance": {
+      "old_key": "retry_count_ivory",
+      "new_key": "attempt_limit_ivory",
+      "retry_budget": 3
+    },
+    "expected_changed_paths": [
+      "src/settings.py",
+      "src/consumer.py",
+      "tests/test_consumer.py"
+    ],
+    "children_used": 0,
+    "delegation_posture": "CONTRACT_FIXED",
+    "screening_only": true
+  },
+  {
+    "arm_id": "m49c01",
+    "pair_id": "P2-C",
+    "phase": 2,
+    "archetype": "C",
+    "variant_token": "amber",
+    "side": "LEFT",
+    "role": "EXECUTOR_SOL",
+    "profile": {
+      "owner": "EXECUTOR",
+      "model": "gpt-5.6-sol",
+      "effort": "medium",
+      "speed": "standard",
+      "mode": "materialize_verify"
+    },
+    "specification": "Add run([\"version\"]) returning version-amber. Preserve run([\"echo\", value]) and unsupported-command behavior; add regression coverage.",
+    "design": "Small CLI/API addition in src/cli.py plus tests/test_cli.py.",
+    "plan": [
+      "inspect dispatch",
+      "add version behavior",
+      "add regression test",
+      "run focal checks",
+      "run required broader gates"
+    ],
+    "acceptance": {
+      "argv": [
+        "version"
+      ],
+      "expected": "version-amber",
+      "preserved_argv": [
+        "echo",
+        "amber"
+      ],
+      "preserved_expected": "amber"
+    },
+    "expected_changed_paths": [
+      "src/cli.py",
+      "tests/test_cli.py"
+    ],
+    "children_used": 0,
+    "delegation_posture": "CONTRACT_FIXED",
+    "screening_only": true
+  },
+  {
+    "arm_id": "n95f68",
+    "pair_id": "P2-C",
+    "phase": 2,
+    "archetype": "C",
+    "variant_token": "cobalt",
+    "side": "RIGHT",
+    "role": "EXECUTOR_TERRA",
+    "profile": {
+      "owner": "EXECUTOR",
+      "model": "gpt-5.6-terra",
+      "effort": "medium",
+      "speed": "standard",
+      "mode": "materialize_verify"
+    },
+    "specification": "Add run([\"version\"]) returning version-cobalt. Preserve run([\"echo\", value]) and unsupported-command behavior; add regression coverage.",
+    "design": "Small CLI/API addition in src/cli.py plus tests/test_cli.py.",
+    "plan": [
+      "inspect dispatch",
+      "add version behavior",
+      "add regression test",
+      "run focal checks",
+      "run required broader gates"
+    ],
+    "acceptance": {
+      "argv": [
+        "version"
+      ],
+      "expected": "version-cobalt",
+      "preserved_argv": [
+        "echo",
+        "cobalt"
+      ],
+      "preserved_expected": "cobalt"
+    },
+    "expected_changed_paths": [
+      "src/cli.py",
+      "tests/test_cli.py"
+    ],
+    "children_used": 0,
+    "delegation_posture": "CONTRACT_FIXED",
+    "screening_only": true
+  },
+  {
+    "arm_id": "p31a84",
+    "pair_id": "P3-A",
+    "phase": 3,
+    "archetype": "A",
+    "variant_token": "moss",
+    "side": "LEFT",
+    "role": "CURRENT_BUNDLE",
+    "profile": {
+      "owner": "ORCHESTRATOR",
+      "model": "gpt-5.6-sol",
+      "effort": "medium",
+      "speed": "standard",
+      "mode": "verify_repair"
+    },
+    "specification": "Fix normalize_name so leading/trailing whitespace is removed before lowercasing. Add regression coverage using marker moss. Preserve existing behavior.",
+    "design": "Localized Python behavior fix in src/subject.py plus tests/test_subject.py.",
+    "plan": [
+      "inspect baseline",
+      "change normalization",
+      "add regression test",
+      "run focal checks",
+      "run required broader gates"
+    ],
+    "acceptance": {
+      "input": "  MOSS  ",
+      "expected": "moss",
+      "preserved_input": "MOSS",
+      "preserved_expected": "moss"
+    },
+    "expected_changed_paths": [
+      "src/subject.py",
+      "tests/test_subject.py"
+    ],
+    "children_used": 0,
+    "delegation_posture": "CONTRACT_FIXED",
+    "screening_only": true
+  },
+  {
+    "arm_id": "q76d20",
+    "pair_id": "P3-A",
+    "phase": 3,
+    "archetype": "A",
+    "variant_token": "slate",
+    "side": "RIGHT",
+    "role": "LEAN_EXECUTOR_BUNDLE",
+    "profile": {
+      "owner": "EXECUTOR",
+      "model": "gpt-5.6-terra",
+      "effort": "medium",
+      "speed": "standard",
+      "mode": "materialize_verify",
+      "max_sol_escalations": 1
+    },
+    "specification": "Fix normalize_name so leading/trailing whitespace is removed before lowercasing. Add regression coverage using marker slate. Preserve existing behavior.",
+    "design": "Localized Python behavior fix in src/subject.py plus tests/test_subject.py.",
+    "plan": [
+      "inspect baseline",
+      "change normalization",
+      "add regression test",
+      "run focal checks",
+      "run required broader gates"
+    ],
+    "acceptance": {
+      "input": "  SLATE  ",
+      "expected": "slate",
+      "preserved_input": "SLATE",
+      "preserved_expected": "slate"
+    },
+    "expected_changed_paths": [
+      "src/subject.py",
+      "tests/test_subject.py"
+    ],
+    "children_used": 0,
+    "delegation_posture": "CONTRACT_FIXED",
+    "screening_only": true
+  },
+  {
+    "arm_id": "r44e13",
+    "pair_id": "P3-B",
+    "phase": 3,
+    "archetype": "B",
+    "variant_token": "pearl",
+    "side": "LEFT",
+    "role": "CURRENT_BUNDLE",
+    "profile": {
+      "owner": "ORCHESTRATOR",
+      "model": "gpt-5.6-sol",
+      "effort": "medium",
+      "speed": "standard",
+      "mode": "verify_repair"
+    },
+    "specification": "Rename configuration key retry_count_pearl to attempt_limit_pearl across the bounded source/test surface while preserving retry_budget() == 3. Prove the old key is absent and the new key exists.",
+    "design": "Bounded multi-file config synchronization across settings, consumer and regression test.",
+    "plan": [
+      "inspect producer/consumer",
+      "rename consistently",
+      "update regression assertions",
+      "run focal checks",
+      "run required broader gates"
+    ],
+    "acceptance": {
+      "old_key": "retry_count_pearl",
+      "new_key": "attempt_limit_pearl",
+      "retry_budget": 3
+    },
+    "expected_changed_paths": [
+      "src/settings.py",
+      "src/consumer.py",
+      "tests/test_consumer.py"
+    ],
+    "children_used": 0,
+    "delegation_posture": "CONTRACT_FIXED",
+    "screening_only": true
+  },
+  {
+    "arm_id": "s89b57",
+    "pair_id": "P3-B",
+    "phase": 3,
+    "archetype": "B",
+    "variant_token": "rust",
+    "side": "RIGHT",
+    "role": "LEAN_EXECUTOR_BUNDLE",
+    "profile": {
+      "owner": "EXECUTOR",
+      "model": "gpt-5.6-terra",
+      "effort": "medium",
+      "speed": "standard",
+      "mode": "materialize_verify",
+      "max_sol_escalations": 1
+    },
+    "specification": "Rename configuration key retry_count_rust to attempt_limit_rust across the bounded source/test surface while preserving retry_budget() == 3. Prove the old key is absent and the new key exists.",
+    "design": "Bounded multi-file config synchronization across settings, consumer and regression test.",
+    "plan": [
+      "inspect producer/consumer",
+      "rename consistently",
+      "update regression assertions",
+      "run focal checks",
+      "run required broader gates"
+    ],
+    "acceptance": {
+      "old_key": "retry_count_rust",
+      "new_key": "attempt_limit_rust",
+      "retry_budget": 3
+    },
+    "expected_changed_paths": [
+      "src/settings.py",
+      "src/consumer.py",
+      "tests/test_consumer.py"
+    ],
+    "children_used": 0,
+    "delegation_posture": "CONTRACT_FIXED",
+    "screening_only": true
+  },
+  {
+    "arm_id": "t25c60",
+    "pair_id": "P3-C",
+    "phase": 3,
+    "archetype": "C",
+    "variant_token": "teal",
+    "side": "LEFT",
+    "role": "CURRENT_BUNDLE",
+    "profile": {
+      "owner": "ORCHESTRATOR",
+      "model": "gpt-5.6-sol",
+      "effort": "medium",
+      "speed": "standard",
+      "mode": "verify_repair"
+    },
+    "specification": "Add run([\"version\"]) returning version-teal. Preserve run([\"echo\", value]) and unsupported-command behavior; add regression coverage.",
+    "design": "Small CLI/API addition in src/cli.py plus tests/test_cli.py.",
+    "plan": [
+      "inspect dispatch",
+      "add version behavior",
+      "add regression test",
+      "run focal checks",
+      "run required broader gates"
+    ],
+    "acceptance": {
+      "argv": [
+        "version"
+      ],
+      "expected": "version-teal",
+      "preserved_argv": [
+        "echo",
+        "teal"
+      ],
+      "preserved_expected": "teal"
+    },
+    "expected_changed_paths": [
+      "src/cli.py",
+      "tests/test_cli.py"
+    ],
+    "children_used": 0,
+    "delegation_posture": "CONTRACT_FIXED",
+    "screening_only": true
+  },
+  {
+    "arm_id": "u71f04",
+    "pair_id": "P3-C",
+    "phase": 3,
+    "archetype": "C",
+    "variant_token": "ochre",
+    "side": "RIGHT",
+    "role": "LEAN_EXECUTOR_BUNDLE",
+    "profile": {
+      "owner": "EXECUTOR",
+      "model": "gpt-5.6-terra",
+      "effort": "medium",
+      "speed": "standard",
+      "mode": "materialize_verify",
+      "max_sol_escalations": 1
+    },
+    "specification": "Add run([\"version\"]) returning version-ochre. Preserve run([\"echo\", value]) and unsupported-command behavior; add regression coverage.",
+    "design": "Small CLI/API addition in src/cli.py plus tests/test_cli.py.",
+    "plan": [
+      "inspect dispatch",
+      "add version behavior",
+      "add regression test",
+      "run focal checks",
+      "run required broader gates"
+    ],
+    "acceptance": {
+      "argv": [
+        "version"
+      ],
+      "expected": "version-ochre",
+      "preserved_argv": [
+        "echo",
+        "ochre"
+      ],
+      "preserved_expected": "ochre"
+    },
+    "expected_changed_paths": [
+      "src/cli.py",
+      "tests/test_cli.py"
+    ],
+    "children_used": 0,
+    "delegation_posture": "CONTRACT_FIXED",
+    "screening_only": true
+  }
+]

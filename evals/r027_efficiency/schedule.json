@@ -1,0 +1,47 @@
+{
+  "seed": "T066-R027-20260918-V2-660281",
+  "policy": "blocked_by_phase_and_archetype_counterbalanced",
+  "phases": [
+    {
+      "phase": 1,
+      "arm_order": [
+        "b47d8e",
+        "a91f2c",
+        "c18a55",
+        "d62f09",
+        "f05c96",
+        "e73b41"
+      ],
+      "gate_after": true
+    },
+    {
+      "phase": 2,
+      "arm_order": [
+        "h64a30",
+        "g12d77",
+        "j28e14",
+        "k83b52",
+        "n95f68",
+        "m49c01"
+      ],
+      "gate_after": true,
+      "requires_prior_phase_pass": true
+    },
+    {
+      "phase": 3,
+      "arm_order": [
+        "q76d20",
+        "p31a84",
+        "r44e13",
+        "s89b57",
+        "u71f04",
+        "t25c60"
+      ],
+      "gate_after": true,
+      "requires_prior_phase_pass": true
+    }
+  ],
+  "max_scored_arms": 18,
+  "fresh_root_per_arm": true,
+  "concurrent_scored_roots": false
+}

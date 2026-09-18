@@ -1,0 +1,14 @@
+{
+  "as_of": "2026-09-18",
+  "root_agents_sha": "0230109a2631bc39498a548104c3d7bafb72ce65",
+  "root_agents_bytes": 12095,
+  "documented_default_project_doc_max_bytes": 32768,
+  "status": "STATIC_ROOT_FITS_DEFAULT_LIMIT_LIVE_CHAIN_PROOF_PENDING",
+  "live_proof_required_before_scored_execution": true,
+  "required_proof": [
+    "record active instruction sources",
+    "record configured project_doc_max_bytes",
+    "prove no governing-chain truncation",
+    "identical envelope within matched pair"
+  ]
+}

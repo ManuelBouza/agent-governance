@@ -1,0 +1,11 @@
+{
+  "levels": {
+    "L0": "syntax/static/preflight where applicable",
+    "L1": "exact focal acceptance check",
+    "L2": "affected-module tests and focal lint/type checks",
+    "L3": "impacted-area/dependency tests only when frozen geometry requires",
+    "L4": "mandatory full repository/merge gate once before terminal acceptance unless later repair invalidates it"
+  },
+  "identical_within_pair": true,
+  "broad_gate_not_reflexively_repeated": true
+}

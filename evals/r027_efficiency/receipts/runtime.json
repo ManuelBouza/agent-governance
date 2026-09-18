@@ -1,0 +1,9 @@
+{
+  "as_of": "2026-09-18",
+  "latest_stable_codex_cli": "0.155.0",
+  "latest_stable_published_at": "2026-09-17T23:14:43Z",
+  "documented_minimum_for_gpt_5_6": "0.144.0",
+  "actual_scored_host_runtime": null,
+  "status": "PENDING_LIVE_HOST_OBSERVATION",
+  "blocking_condition": "actual runtime/client identity must be recorded before first scored arm"
+}

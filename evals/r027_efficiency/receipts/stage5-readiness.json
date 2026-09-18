@@ -1,0 +1,15 @@
+{
+  "as_of": "2026-09-18",
+  "provider_free_materialization": "MATERIALIZED_UNVERIFIED",
+  "live_scored_execution": "NOT_AUTHORIZED",
+  "blockers_before_scored_execution": [
+    "provider-free verification not yet recorded",
+    "actual Codex runtime/client receipt pending",
+    "live account rate-card applicability pending",
+    "exact per-arm usage attribution proof pending",
+    "instruction-chain live proof pending",
+    "separate Human launch authorization required"
+  ],
+  "provider_model_calls": 0,
+  "scored_observations": 0
+}

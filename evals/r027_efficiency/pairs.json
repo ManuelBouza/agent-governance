@@ -1,0 +1,128 @@
+[
+  {
+    "pair_id": "P1-A",
+    "phase": 1,
+    "archetype": "A",
+    "arm_ids": [
+      "a91f2c",
+      "b47d8e"
+    ],
+    "roles": [
+      "CONTROL_OWNERSHIP",
+      "EXECUTOR_OWNERSHIP"
+    ],
+    "isomorphism": "identical geometry and acceptance meaning; identifiers/constants only differ"
+  },
+  {
+    "pair_id": "P1-B",
+    "phase": 1,
+    "archetype": "B",
+    "arm_ids": [
+      "c18a55",
+      "d62f09"
+    ],
+    "roles": [
+      "CONTROL_OWNERSHIP",
+      "EXECUTOR_OWNERSHIP"
+    ],
+    "isomorphism": "identical geometry and acceptance meaning; identifiers/constants only differ"
+  },
+  {
+    "pair_id": "P1-C",
+    "phase": 1,
+    "archetype": "C",
+    "arm_ids": [
+      "e73b41",
+      "f05c96"
+    ],
+    "roles": [
+      "CONTROL_OWNERSHIP",
+      "EXECUTOR_OWNERSHIP"
+    ],
+    "isomorphism": "identical geometry and acceptance meaning; identifiers/constants only differ"
+  },
+  {
+    "pair_id": "P2-A",
+    "phase": 2,
+    "archetype": "A",
+    "arm_ids": [
+      "g12d77",
+      "h64a30"
+    ],
+    "roles": [
+      "EXECUTOR_SOL",
+      "EXECUTOR_TERRA"
+    ],
+    "isomorphism": "identical geometry and acceptance meaning; identifiers/constants only differ"
+  },
+  {
+    "pair_id": "P2-B",
+    "phase": 2,
+    "archetype": "B",
+    "arm_ids": [
+      "j28e14",
+      "k83b52"
+    ],
+    "roles": [
+      "EXECUTOR_SOL",
+      "EXECUTOR_TERRA"
+    ],
+    "isomorphism": "identical geometry and acceptance meaning; identifiers/constants only differ"
+  },
+  {
+    "pair_id": "P2-C",
+    "phase": 2,
+    "archetype": "C",
+    "arm_ids": [
+      "m49c01",
+      "n95f68"
+    ],
+    "roles": [
+      "EXECUTOR_SOL",
+      "EXECUTOR_TERRA"
+    ],
+    "isomorphism": "identical geometry and acceptance meaning; identifiers/constants only differ"
+  },
+  {
+    "pair_id": "P3-A",
+    "phase": 3,
+    "archetype": "A",
+    "arm_ids": [
+      "p31a84",
+      "q76d20"
+    ],
+    "roles": [
+      "CURRENT_BUNDLE",
+      "LEAN_EXECUTOR_BUNDLE"
+    ],
+    "isomorphism": "identical geometry and acceptance meaning; identifiers/constants only differ"
+  },
+  {
+    "pair_id": "P3-B",
+    "phase": 3,
+    "archetype": "B",
+    "arm_ids": [
+      "r44e13",
+      "s89b57"
+    ],
+    "roles": [
+      "CURRENT_BUNDLE",
+      "LEAN_EXECUTOR_BUNDLE"
+    ],
+    "isomorphism": "identical geometry and acceptance meaning; identifiers/constants only differ"
+  },
+  {
+    "pair_id": "P3-C",
+    "phase": 3,
+    "archetype": "C",
+    "arm_ids": [
+      "t25c60",
+      "u71f04"
+    ],
+    "roles": [
+      "CURRENT_BUNDLE",
+      "LEAN_EXECUTOR_BUNDLE"
+    ],
+    "isomorphism": "identical geometry and acceptance meaning; identifiers/constants only differ"
+  }
+]
