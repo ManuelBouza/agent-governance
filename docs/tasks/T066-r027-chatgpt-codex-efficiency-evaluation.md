@@ -2,7 +2,7 @@
 
 Status: READY  
 Revision: v2 — R028 deep-revalidation optimization  
-Stage-Readiness: READY_FOR_STAGE5  
+Stage-Readiness: STAGE5_FREEZE_A_COMPLETE_AWAITING_SEPARATE_HUMAN_LAUNCH  
 Executor-Authorization: NOT_AUTHORIZED_PENDING_SEPARATE_HUMAN_LAUNCH  
 Owner: ChatGPT Orchestrator (evaluation specification, fixtures/oracles, control materialization, scoring and acceptance) / Codex Executor (scored technical execution only after separate Human launch)  
 Type: test/eval  
@@ -10,7 +10,9 @@ SDD-Profile: ASSURED
 Test-Authorship-Mode: mixed  
 Date: 2026-09-12  
 Base-Branch: `develop`  
-Prospective-Scientific-Branch: `test/r027-chatgpt-codex-efficiency-v1`  
+Scientific-Branch: `test/r027-chatgpt-codex-efficiency-v2`  
+Freeze-A-Head: `e00acd9bbee6ca8e260fdd3d96bbd26452d0ef48`  
+Abandoned-Scientific-Branch: `test/r027-chatgpt-codex-efficiency-v1@dc8fd229bf403fbc2085ee906740f0cad63cbd43` — Human disposition: DISCARD / DO_NOT_CONSUM  
 Expected-Handoff: `handoffs/T066-executor-handoff.json`  
 Experimental-Scope: SCREENING_ONLY
 
@@ -142,9 +144,9 @@ The broadest gate must not be reflexively rerun after every intermediate repair 
 
 ## Instruction-loading control
 
-R027 measured current root `AGENTS.md` at 34,567 bytes. Current Codex documentation reports a default combined project-instruction budget of 32 KiB.
+R027 measured the then-current root `AGENTS.md` at 34,567 bytes. Stage 5 D077 revalidation on 2026-09-18 measured the current `develop` root at 12,095 bytes (`0230109a2631bc39498a548104c3d7bafb72ce65`), below Codex's documented default combined project-instruction budget of 32 KiB. The historical overflow condition is therefore stale for current `develop`, but root size alone does not prove the complete live instruction chain.
 
-Before any scored arm, Stage 5/preflight MUST establish one identical explicit instruction-loading configuration that proves the complete governing instruction chain is loaded for every arm.
+Before any scored arm, live preflight MUST establish one identical explicit instruction-loading configuration that proves the complete governing instruction chain is loaded for every arm.
 
 T066 MUST NOT compare a truncated arm with a complete arm, and it MUST NOT silently adopt a thin-root policy to make this experiment cheaper.
 
@@ -535,17 +537,47 @@ Then update R027/R028 disposition as appropriate:
 - move to `DECIDED` only if an accepted normative Decision explicitly adopts a conclusion;
 - never promote T066 screening evidence directly into policy without the D057 decision gate.
 
+## Stage 5 Freeze A result
+
+Human selection on 2026-09-18 discarded the pre-existing divergent v1 scientific line. Its artifacts are non-authoritative and MUST NOT be consumed.
+
+Fresh Stage 5 authority was materialized from:
+
+```text
+develop baseline: 6b7d2aa8f2f8682a39afb84ee99aa0b4383f4acc
+scientific branch: test/r027-chatgpt-codex-efficiency-v2
+Freeze A HEAD: e00acd9bbee6ca8e260fdd3d96bbd26452d0ef48
+```
+
+Freeze A contains the nine matched pairs / eighteen opaque arms, D052 acceptance oracles, deterministic fixture generator, counterbalanced scheduler, isolation/contamination guard, progressive verification contract, scoring and credit normalization, terminal result schema, D077/rate-card/runtime/instruction/model receipts, and provider-free integrity tests.
+
+Provider-free verification was executed against bytes reconstructed from canonical GitHub blobs with exact Git blob SHA matching before execution:
+
+```text
+exact blob SHA match: PASS
+python3 evals/r027_efficiency/integrity.py: PASS
+python3 -m pytest -q tests/test_r027_efficiency_freeze.py: 5 passed
+provider/model calls: 0
+scored observations: 0
+```
+
+D077 found material upstream/current-state drift relative to historical R027/R028 inputs. Freeze A therefore uses the current 2026-09-18 credit snapshot and current root instruction geometry. This is experimental evidence only and does not modify D055/D068 or another production policy.
+
+Live execution remains fail-closed until the host proves actual runtime/client identity, signed-in account/rate-card applicability, exact per-arm token attribution, requested/resolved model identity where observable, `MEDIUM` effort, `STANDARD` speed, and complete instruction loading.
+
 ## Current readiness
 
 ```text
 Task Contract design: COMPLETE (v2 screening revision)
 R027 research: COMPLETE / EVALUATING
 R028 deep revalidation: COMPLETE / EVALUATING
-Stage 5 benchmark/harness materialization: NOT_STARTED
-Scientific branch: NOT_CREATED
-Executor launch: NOT_AUTHORIZED
+Stage 5 benchmark/harness materialization: COMPLETE
+Freeze A: PUBLISHED_PROVIDER_FREE_VERIFIED
+Scientific branch: test/r027-chatgpt-codex-efficiency-v2@e00acd9bbee6ca8e260fdd3d96bbd26452d0ef48
+Abandoned v1 branch: HUMAN_DISCARD_DO_NOT_CONSUM
+Executor launch: NOT_AUTHORIZED_PENDING_SEPARATE_HUMAN_LAUNCH
 Provider/model calls consumed by T066: 0
 Scored observations: 0
 ```
 
-Next action when T066 is explicitly selected as the active work unit: ChatGPT Orchestrator performs Stage 5 provider-free materialization and Freeze A on a fresh scientific branch, then stops before any live Executor launch for a separate Human authorization.
+Next action: wait for a separate explicit Human launch authorization. If authorized, perform the live-host measurement/instruction/model/rate-card preflight and start Phase 1 only if every preflight condition passes. Do not consume a scored arm while any measurement or configuration identity remains ambiguous.
