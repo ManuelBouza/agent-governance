@@ -1,63 +1,70 @@
 # Orchestrator Checkpoint
 
 Checkpoint-State: CURRENT  
-Checkpoint-Sequence: O341  
+Checkpoint-Sequence: O343  
 Date: 2026-09-18  
 Canonical-Branch: `develop`  
-Current-Work-Unit: `R032 / Codex model-effort selection classifier`  
-State: R032_DECIDED_D083_ACCEPTED_T069_REVALIDATION_NEXT  
+Current-Work-Unit: `T069 / Git-backed Skill loading fallback`  
+State: T069_STAGE7_ACCEPTED_INTEGRATION_READY_PR430  
 Chat-Closure: KEEP_CURRENT_CHAT  
-Human-Objective: Define a proportionate Codex model/reasoning selection policy from execution determinism, technical branching, verification strength and concrete risk rather than defaulting mechanically to Sol/Medium  
-R032-Research: `docs/research/R032-CODEX-MODEL-EFFORT-SELECTION.md`  
-R032-Research-State: COMPLETE  
-R032-Decision-State: DECIDED  
-R032-Branch: `docs/r032-codex-model-effort-selection`  
-R032-Research-Commit: `ebcb7e07035e0bf7b65a77712d8b0f119dad13c7`  
-R032-Traceability-Commit: `3bcf5b1b4b0ea9de27b74c227839ccc4edbe9dd7`  
-D083-Proposal: `docs/decisions/D083-codex-model-effort-selection-classifier.md`  
-D083-State: ACCEPTED  
-D083-Proposal-Commit: `d0e6a06862eabbe2163e3894e9cde056c4db961a`  
+Human-Objective: Continue repository-owned Skill development in GitHub and load canonical Skills from Git when native host Skill routing is unavailable  
+T069-Task-Contract: `docs/tasks/T069-git-backed-skill-loading.md`  
+T069-Topic-Branch: `feat/t069-git-backed-skill-loading`  
+T069-Base: `develop@5bed8b952a3c552e3af0abfdbe07895864319696`  
+T069-Candidate-Content-Anchor: `972e9dff59079d2820b5b750f9a4a5c52913fa9e`  
+T069-Stage6-Executor-Head: `961ed27e117c94b0d2bfbc3e34f548d67874504a`  
+T069-Stage6-Implementation-Head: `d2cea150377fe9a5d4650cf628a8dcf130e8621a`  
+T069-Stage6-State: COMPLETE_ACCEPTED  
+T069-Stage7-State: ACCEPTED_INTEGRATION_READY  
+T069-PR: `#430`  
 Active-Executor: none  
-T069-State: PAUSED_BEFORE_STAGE6_PENDING_POST_D083_REVALIDATION  
-T069-Branch: `feat/t069-git-backed-skill-loading@24d5a4fc0fd5a307ba0b7eb4b1428fa82de53337`  
+D083-State: ACCEPTED  
 T068-State: DEFERRED_UNTIL_PERSONAL_PLUS_NATIVE_SKILLS_AVAILABLE  
-T068-Branch: `feat/t068-chatgpt-skill-host-activation@d9ead79ce06ee693b8ed315d1a209370f0270779`  
 T066-Stage5-State: NOT_STARTED  
+ChatGPT-Empirical-Parity: NOT_ESTABLISHED  
 Next-ChatGPT-Effort: MEDIUM  
-Next-Action: Revalidate current T069 remote branch, Task Contract, Stage 5 candidate/anchor and launch authority against current Git state. If still valid, classify the Stage 6 launch under accepted D083 and present the Human launch card/prompt. Do not launch automatically.  
-Next-Chat-Minimum-Load: this checkpoint; `docs/decisions/D083-codex-model-effort-selection-classifier.md`; `docs/EXECUTOR-LAUNCH-PROFILES.md`; T069 Task Contract and current T069 branch/checkpoint only for revalidation  
-Do-Not-Load-Or-Do: Do not resume T068; do not start/modify T066; do not launch T069 Stage 6 automatically; do not treat T063 as qualification of root routing; do not adopt Astra as default; do not use higher model/effort to cross an authority boundary.  
+Next-Action: Integrate PR #430 into current `develop` after the explicit D083/T069 checkpoint conflict is reconciled without changing the frozen T069 semantic candidate. After merge, persist the post-integration checkpoint/closure state.  
+Next-Chat-Minimum-Load: this checkpoint; PR #430 merged state; current `develop` HEAD  
+Do-Not-Load-Or-Do: Do not reopen T067; do not resume T068 host qualification; do not start/modify T066; do not alter D082 Skill topology; do not relabel empirical parity; do not claim Git-backed loading is native host Skill activation.
 
-## Research conclusion
+## Stage 7 acceptance
 
-R032 is complete analytical evidence and is now represented in the canonical research registry. It confirms D055's minimum-sufficient-compute principle and proposes a more explicit classifier with four steps after the authority gate:
+The Executor handoff at `961ed27e117c94b0d2bfbc3e34f548d67874504a` is accepted.
 
-```text
-authority complete?
-    -> execution determinism
-    -> technical branching
-    -> verification strength
-    -> concrete risk modifiers
-    -> choose model capability
-    -> choose reasoning effort independently
-    -> verify and escalate only the deficient axis
-```
+Observed Stage 6 evidence:
 
-The proposed conservative Codex mapping is:
+- focused T069 conformance: 4 passed;
+- related Skill/layout/reference tests: 112 passed;
+- full repository pytest: 531 passed;
+- targeted Ruff and Ruff format: PASS;
+- code-health: PASS;
+- `git diff --check`: PASS;
+- Executor code-review findings: none;
+- unresolved issues: none.
 
-- Luna/Low for read-only or repetitive high-determinism work with strong postconditions;
-- Terra/Low for narrow tracked mutation with high determinism, low branching and strong deterministic verification;
-- Terra/Medium for bounded local implementation/refactor with low-to-medium branching;
-- Sol/Medium for ordinary multi-file implementation/rework when the task is not clearly eligible for downshift;
-- Sol/High for high branching, weak verification, non-local diagnosis or serious concrete risk modifiers;
-- Astra or stronger current tier only for concrete capability insufficiency, not as a default.
+The only Stage 6 repair was removal of one surplus blank line in `tests/test_git_backed_skill_loading.py`; conformance semantics did not change.
 
-This mapping is accepted by D083 and now controls Codex root launch classification together with D055.
+## Acceptance conclusion
 
-## D057 traceability status
+T069 satisfies AC-T069-1 through AC-T069-7:
 
-R032 is now `COMPLETE / DECIDED` and D083 is the accepted decision authority. The research registry and Codex adapter guidance have been updated consistently.
+- Git-backed loading is explicit when native Skill routing/resources are unavailable;
+- Skill content is bound to the represented controlling Git revision and ambiguity/staleness fails closed;
+- progressive disclosure and the six canonical Skill source paths are preserved;
+- no native host activation claim is introduced;
+- D082 topology remains one Maintainer domain Skill plus five transverse Skills, with `workspace-isolation` subordinate;
+- Stage 6 verification passes with no unresolved material finding;
+- T068 remains deferred, T066 remains untouched, and ChatGPT/Codex empirical parity remains `NOT_ESTABLISHED`.
 
-## T069 interaction
+## Integration reconciliation
 
-T069 Stage 6 remains paused until a fresh Git revalidation is completed. D083 suggests `Terra / Low` if the current Task Contract still presents high determinism, low technical branching, strong deterministic verification, bounded repair authority and fail-closed semantic re-entry. Revalidation, not this remembered classification, controls the actual launch card.
+Current `develop@df132019444f2e735374fbe3e435fd5e61bfc489` contains accepted R032/D083 policy work from PR #429. T069 remains based on its frozen pre-D083 base by design.
+
+PR #430 initially reported a merge conflict because both lines edited `docs/orchestrator/CHECKPOINT.md`. The reconciliation is metadata-only:
+
+- preserve all accepted R032/D083 files from current `develop`;
+- preserve the complete T069 candidate and accepted Stage 6 handoff;
+- replace the competing checkpoints with this O343 T069 Stage 7 frontier;
+- do not modify the frozen T069 content anchor or semantic candidate.
+
+No additional Executor run is required by this metadata-only integration reconciliation.
